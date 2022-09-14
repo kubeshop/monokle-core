@@ -1,6 +1,6 @@
 <p align="center">
-  <img src="src/assets/MonokleLogoLight.svg#gh-light-mode-only" alt="Monokle Logo Light"/>
-  <img src="src/assets/MonokleLogoDark.svg#gh-dark-mode-only" alt="Monokle Logo Dark" />
+  <img src="assets/MonokleLogoLight.svg#gh-light-mode-only" alt="Monokle Logo Light"/>
+  <img src="assets/MonokleLogoDark.svg#gh-dark-mode-only" alt="Monokle Logo Dark" />
 </p>
 
 <p align="center">
@@ -32,7 +32,7 @@
   </a>
 </p> -->
 
-<p align="center">
+<!-- <p align="center">
     <p align="center">
         What is Monokle?
     </p>
@@ -40,13 +40,13 @@
     <img src="docs/img/monokle-intro-thumbnail.png" alt="Monokle Overview" />
     <p align="center">Click on the image or this link to watch the "Intro to Monokle" short video (3 mins)</p>
   </a>
-</p>
+</p> -->
 
 Read the [Feature Overview](https://kubeshop.github.io/monokle/features/) document or the [introductory blog-post](https://medium.com/kubeshop-i/hello-monokle-83ecb42f5d96) to get a quick intro and overview.
 
 ## Installation
 
-Material UI is available as an [npm package](https://www.npmjs.com/package/@kubeshop/monokle-core).
+Monokle Core is available as an [npm package](https://www.npmjs.com/package/@kubeshop/monokle-core).
 
 **npm:**
 
