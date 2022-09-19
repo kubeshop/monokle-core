@@ -1,14 +1,11 @@
-import { keyBy } from 'lodash';
-import invariant from 'tiny-invariant';
-import { getResourceId } from '../utils/sarif';
-import { ValidationResult, ValidationRun } from './sarif';
-import {
-  Incremental,
-  Resource, Validator, ValidatorConfig
-} from './types';
+import keyBy from "lodash/keyBy.js";
+import invariant from "tiny-invariant";
+import { getResourceId } from "../utils/sarif.js";
+import { ValidationResult, ValidationRun } from "./sarif.js";
+import { Incremental, Resource, Validator, ValidatorConfig } from "./types.js";
 
 const UNLOADED_ERR_MSG =
-  'Cannot validate resources. The service must first be loaded.';
+  "Cannot validate resources. The service must first be loaded.";
 
 export abstract class AbstractValidator<
   TConfig extends ValidatorConfig = ValidatorConfig

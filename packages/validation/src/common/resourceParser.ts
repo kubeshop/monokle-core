@@ -1,6 +1,6 @@
-import { parseDocument, Document, LineCounter, ParsedNode } from 'yaml';
-import { Resource } from './types';
-import { Region } from './sarif';
+import { parseDocument, Document, LineCounter, ParsedNode } from "yaml";
+import { Resource } from "./types.js";
+import { Region } from "./sarif.js";
 
 type ParsedResource = {
   parsedDoc: Document.Parsed<ParsedNode>;
@@ -34,10 +34,7 @@ export class ResourceParser {
     return doc;
   }
 
-  parseErrorRegion(
-    resource: Resource,
-    pos: [number, number, number?]
-  ): Region {
+  parseErrorRegion(resource: Resource, pos: [number, number, number?]): Region {
     const { lineCounter } = this.parse(resource);
     const start = lineCounter.linePos(pos[0]);
     const end = lineCounter.linePos(pos[1]);

@@ -4,10 +4,13 @@ node_modules
 .idea
 .pnp.js
 *.iml
+.turbo
 
 # production
 /build
 /dist
+**/dist/**
+**/lib/**
 
 # misc
 .DS_Store

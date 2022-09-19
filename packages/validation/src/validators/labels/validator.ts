@@ -1,8 +1,8 @@
-import { YAMLMap } from 'yaml';
-import { ResourceParser } from '../../common/resourceParser';
-import { AbstractValidator } from '../../common/AbstractValidator';
-import { Incremental, Resource, ValidatorConfig } from '../../common/types';
-import { ValidationResult } from '../../common/sarif';
+import { YAMLMap } from "yaml";
+import { ResourceParser } from "../../common/resourceParser.js";
+import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { ValidationResult } from "../../common/sarif.js";
 
 export type LabelsValidatorConfig = ValidatorConfig<"labels">;
 
@@ -11,7 +11,7 @@ export type LabelsValidatorConfig = ValidatorConfig<"labels">;
  */
 export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
   constructor(private parser: ResourceParser) {
-    super('labels');
+    super("labels");
   }
 
   async doValidate(
@@ -20,7 +20,7 @@ export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
   ): Promise<ValidationResult[]> {
     const invalidResources: Resource[] = [];
     const dirtyResources = incremental
-      ? resources.filter(r => incremental.resourceIds.includes(r.id))
+      ? resources.filter((r) => incremental.resourceIds.includes(r.id))
       : resources;
 
     for (const resource of dirtyResources) {
@@ -32,36 +32,38 @@ export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
       }
     }
 
-    const results = invalidResources.map(r => this.createValidationResult(r));
+    const results = invalidResources.map((r) => this.createValidationResult(r));
     return results;
   }
 
   private createValidationResult(resource: Resource): ValidationResult {
     const { parsedDoc } = this.parser.parse(resource);
-    const node = parsedDoc.getIn(['metadata'], true) as YAMLMap | undefined;
+    const node = parsedDoc.getIn(["metadata"], true) as YAMLMap | undefined;
     const region = node?.range
       ? this.parser.parseErrorRegion(resource, node.range)
       : undefined;
 
     return {
-      ruleId: 'Unlabelled',
+      ruleId: "Unlabelled",
       message: {
-        text: 'Resource is unlabelled.',
+        text: "Resource is unlabelled.",
       },
-      locations: [{
-        physicalLocation: {
-          artifactLocation: {
-            uri: resource.filePath.substring(1),
+      locations: [
+        {
+          physicalLocation: {
+            artifactLocation: {
+              uri: resource.filePath.substring(1),
+            },
+            region,
           },
-          region,
+          logicalLocations: [
+            {
+              kind: "resource",
+              name: resource.id,
+            },
+          ],
         },
-        logicalLocations: [
-          {
-            kind: 'resource',
-            name: resource.id,
-          },
-        ],
-      }],
+      ],
     };
   }
 }

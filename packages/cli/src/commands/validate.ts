@@ -1,38 +1,49 @@
-import { it, expect } from "vitest";
-import { ResourceParser } from "./common/resourceParser.js";
-import { Resource } from "./common/types.js";
-import { MonokleValidator } from "./MonokleValidator.js";
-import { LabelsValidator } from "./validators/labels/validator.js";
+import { command } from "../utils/command.js";
+import { C, print, S } from "../utils/screens.js";
+import { LabelsValidator, MonokleValidator } from "validation";
+import { failure, success } from "./validate.io.js";
 
-it("should be easy to configure", async () => {
-  const validator = new MonokleValidator([LabelsValidator]);
+type Options = {
+  name: string;
+};
 
-  await validator.configure({
-    tool: "labels",
-    enabled: true,
-  });
+export const validate = command<Options>({
+  command: "validate",
+  describe: "Validate your Kubernetes resources",
+  async handler() {
+    const resources = [BAD_RESOURCE];
 
-  const response = await validator.validate([BAD_RESOURCE]);
-  const hasErrors = response.runs.some((r) => r.results.length > 0);
-  expect(hasErrors).toBeTruthy();
+    const validator = new MonokleValidator([LabelsValidator]);
+
+    await validator.configure({
+      tool: "labels",
+      enabled: true,
+    });
+
+    const response = await validator.validate(resources);
+    const errorCount = response.runs.reduce(
+      (sum, r) => sum + r.results.length,
+      0
+    );
+
+    if (errorCount) {
+      print(failure(errorCount));
+
+      for (const run of response.runs) {
+        if (run.results.length === 0) continue;
+
+        print(`${C.blue(`Tool: ${run.tool.driver.name}`)}`);
+        for (const result of run.results) {
+          print(`${S.error} [${result.ruleId}] ${result.message.text}`);
+        }
+      }
+    } else {
+      print(success());
+    }
+  },
 });
 
-it("should be flexible to configure", async () => {
-  const customParser = new ResourceParser();
-  const labelsValidator = new LabelsValidator(customParser);
-  const validator = new MonokleValidator([labelsValidator]);
-
-  await validator.configure({
-    tool: "labels",
-    enabled: true,
-  });
-
-  const response = await validator.validate([BAD_RESOURCE]);
-  const hasErrors = response.runs.some((r) => r.results.length > 0);
-  expect(hasErrors).toBeTruthy();
-});
-
-const BAD_RESOURCE: Resource = {
+const BAD_RESOURCE: any = {
   fileId: "vanilla-panda-blog/deployment.yaml",
   filePath: "vanilla-panda-blog/deployment.yaml",
   text: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: panda-blog\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: panda-blog\n  template:\n    metadata:\n      labels:\n        app: panda-blog\n    spec:\n      containers:\n        - name: panda-blog\n          image: panda-blog:latest\n          ports:\n            - name: http-web\n              containerPort: 8080\n",

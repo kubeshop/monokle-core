@@ -1,5 +1,5 @@
-import { ResourceParser } from "./resourceParser";
-import { ValidationRun } from "./sarif";
+import { ResourceParser } from "./resourceParser.js";
+import { ValidationRun } from "./sarif.js";
 
 export type Resource = {
   id: string;
@@ -32,9 +32,7 @@ export interface ValidatorConstructor {
   new (parser: ResourceParser): Validator;
 }
 
-export interface Validator<
-  TConfig extends ValidatorConfig = ValidatorConfig
-> {
+export interface Validator<TConfig extends ValidatorConfig = ValidatorConfig> {
   get name(): string;
   get enabled(): boolean;
   load(config: TConfig): Promise<void>;

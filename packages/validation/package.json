@@ -1,14 +1,18 @@
 {
-  "name": "monokle-validation",
+  "name": "validation",
   "version": "0.1.0",
   "description": "Kubernetes resource validation",
   "author": "Kubeshop",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
+  "main": "lib/index.js",
   "source": "src/index.ts",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
