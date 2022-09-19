@@ -1,0 +1,42 @@
+{
+  "name": "monokle-validation",
+  "version": "0.1.0",
+  "description": "Kubernetes resource validation",
+  "author": "Kubeshop",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "source": "src/index.ts",
+  "module": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "rimraf lib && tsc --build tsconfig.build.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kubeshop/monokle-core.git"
+  },
+  "keywords": [
+    "monokle",
+    "kubernetes",
+    "validation"
+  ],
+  "bugs": {
+    "url": "https://github.com/kubeshop/monokle-core/issues"
+  },
+  "homepage": "https://github.com/kubeshop/monokle-core#readme",
+  "devDependencies": {
+    "@types/lodash": "4.14.185",
+    "rimraf": "3.0.2",
+    "typescript": "4.8.3",
+    "vite": "3.1.2",
+    "vitest": "0.23.4"
+  },
+  "dependencies": {
+    "lodash": "4.17.21",
+    "tiny-invariant": "1.2.0",
+    "yaml": "2.1.1"
+  }
+}
