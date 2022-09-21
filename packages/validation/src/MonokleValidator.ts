@@ -1,5 +1,4 @@
 import invariant from "tiny-invariant";
-import { isDefined } from "./utils/isDefined.js";
 import { ResourceParser } from "./common/resourceParser.js";
 import { ValidationResponse } from "./common/sarif.js";
 import {
@@ -8,14 +7,16 @@ import {
   Validator,
   ValidatorConstructor,
 } from "./common/types.js";
+import { isDefined } from "./utils/isDefined.js";
 import { LabelsValidatorConfig } from "./validators/labels/validator.js";
+import { OpenPolicyAgentConfig } from "./validators/open-policy-agent/validator.js";
 
 type Config = {
   debug?: boolean;
   parser?: ResourceParser;
 };
 
-type ValidatorConfig = LabelsValidatorConfig;
+type ValidatorConfig = LabelsValidatorConfig | OpenPolicyAgentConfig;
 
 export class MonokleValidator {
   #validators: Validator[];

@@ -16,6 +16,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:snapshot": "vitest --update",
     "build": "rimraf lib && tsc --build tsconfig.build.json"
   },
   "repository": {
@@ -39,6 +40,7 @@
     "vitest": "0.23.4"
   },
   "dependencies": {
+    "@open-policy-agent/opa-wasm": "1.8.0",
     "lodash": "4.17.21",
     "tiny-invariant": "1.2.0",
     "yaml": "2.1.1"
