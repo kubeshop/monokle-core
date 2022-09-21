@@ -1,3 +1,4 @@
+import { isArray } from "lodash";
 import invariant from "tiny-invariant";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
@@ -8,6 +9,7 @@ import type {
   ValidatorConstructor,
 } from "./common/types.js";
 import { isDefined } from "./utils/isDefined.js";
+import type { KubernetesSchemaConfig } from "./validators/kubernetes-schema/validator.js";
 import type { LabelsValidatorConfig } from "./validators/labels/validator.js";
 import type { OpenPolicyAgentConfig } from "./validators/open-policy-agent/validator.js";
 import type { YamlValidatorConfig } from "./validators/yaml-syntax/validator.js";
@@ -19,6 +21,7 @@ type Config = {
 
 type ValidatorConfig =
   | LabelsValidatorConfig
+  | KubernetesSchemaConfig
   | YamlValidatorConfig
   | OpenPolicyAgentConfig;
 
@@ -35,10 +38,16 @@ export class MonokleValidator {
     );
   }
 
-  async configure(config: ValidatorConfig): Promise<void> {
-    const validator = this.#validators.find((v) => v.name === config.tool);
-    invariant(validator, "validator not found");
-    await validator.load(config);
+  async configure(config: ValidatorConfig | ValidatorConfig[]): Promise<void> {
+    const normalizedConfig = isArray(config) ? config : [config];
+
+    await Promise.all(
+      normalizedConfig.map((c) => {
+        const validator = this.#validators.find((v) => v.name === c.tool);
+        invariant(validator, "validator not found");
+        return validator.load(c);
+      })
+    );
   }
 
   /**

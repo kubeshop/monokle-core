@@ -1,11 +1,9 @@
 import keyBy from "lodash/keyBy.js";
 import invariant from "tiny-invariant";
+import { UNLOADED_ERR_MSG } from "../constants.js";
 import { getResourceId } from "../utils/sarif.js";
 import { ValidationResult, ValidationRun } from "./sarif.js";
 import { Incremental, Resource, Validator, ValidatorConfig } from "./types.js";
-
-const UNLOADED_ERR_MSG =
-  "Cannot validate resources. The service must first be loaded.";
 
 export abstract class AbstractValidator<
   TConfig extends ValidatorConfig = ValidatorConfig
@@ -29,7 +27,6 @@ export abstract class AbstractValidator<
     this.config = config;
     if (!this.config.enabled) return;
     await this.doLoad(config);
-
     this.loaded = true;
   }
 
@@ -46,7 +43,7 @@ export abstract class AbstractValidator<
     resources: Resource[],
     incremental?: Incremental
   ): Promise<ValidationRun> {
-    invariant(this.loaded, UNLOADED_ERR_MSG);
+    invariant(this.loaded, UNLOADED_ERR_MSG(this.name));
 
     let results = await this.doValidate(resources, incremental);
 
