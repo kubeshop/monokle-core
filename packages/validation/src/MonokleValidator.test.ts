@@ -6,6 +6,7 @@ import { LabelsValidator } from "./validators/labels/validator.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { NodeWasmLoader } from "./validators/open-policy-agent/wasmLoader/NodeWasmLoader.js";
 import path from "path";
+import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 
 it("should be easy to configure", async () => {
   const validator = new MonokleValidator([LabelsValidator]);
@@ -23,14 +24,24 @@ it("should be easy to configure", async () => {
 it("should be flexible to configure", async () => {
   const customParser = new ResourceParser();
   const labelsValidator = new LabelsValidator(customParser);
+  const yamlValidator = new YamlValidator(customParser);
 
   const wasmLoader = new NodeWasmLoader();
   const opaValidator = new OpenPolicyAgentValidator(customParser, wasmLoader);
 
-  const validator = new MonokleValidator([labelsValidator, opaValidator]);
+  const validator = new MonokleValidator([
+    labelsValidator,
+    yamlValidator,
+    opaValidator,
+  ]);
 
   await validator.configure({
     tool: "labels",
+    enabled: true,
+  });
+
+  await validator.configure({
+    tool: "yaml-syntax",
     enabled: true,
   });
 
@@ -46,7 +57,7 @@ it("should be flexible to configure", async () => {
 
   const response = await validator.validate([BAD_RESOURCE]);
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toMatchInlineSnapshot('12');
+  expect(hasErrors).toMatchInlineSnapshot("12");
 });
 
 const BAD_RESOURCE: Resource = {
