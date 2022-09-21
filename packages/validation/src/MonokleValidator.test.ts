@@ -3,6 +3,9 @@ import { ResourceParser } from "./common/resourceParser.js";
 import { Resource } from "./common/types.js";
 import { MonokleValidator } from "./MonokleValidator.js";
 import { LabelsValidator } from "./validators/labels/validator.js";
+import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
+import { NodeWasmLoader } from "./validators/open-policy-agent/wasmLoader/NodeWasmLoader.js";
+import path from "path";
 
 it("should be easy to configure", async () => {
   const validator = new MonokleValidator([LabelsValidator]);
@@ -20,16 +23,30 @@ it("should be easy to configure", async () => {
 it("should be flexible to configure", async () => {
   const customParser = new ResourceParser();
   const labelsValidator = new LabelsValidator(customParser);
-  const validator = new MonokleValidator([labelsValidator]);
+
+  const wasmLoader = new NodeWasmLoader();
+  const opaValidator = new OpenPolicyAgentValidator(customParser, wasmLoader);
+
+  const validator = new MonokleValidator([labelsValidator, opaValidator]);
 
   await validator.configure({
     tool: "labels",
     enabled: true,
   });
 
+  await validator.configure({
+    tool: "open-policy-agent",
+    enabled: true,
+    plugin: {
+      id: "trivy",
+      enabled: true,
+      wasmSrc: path.join(__dirname, "./assets/policies/trivy.wasm"),
+    },
+  });
+
   const response = await validator.validate([BAD_RESOURCE]);
-  const hasErrors = response.runs.some((r) => r.results.length > 0);
-  expect(hasErrors).toBeTruthy();
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toMatchInlineSnapshot('12');
 });
 
 const BAD_RESOURCE: Resource = {
