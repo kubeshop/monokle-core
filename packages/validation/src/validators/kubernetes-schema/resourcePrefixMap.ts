@@ -1,4 +1,4 @@
-import type { KnownResourceKinds } from "../../utils/knownResourceKinds";
+import type { KnownResourceKinds } from "../../utils/knownResourceKinds.js";
 
 export function getResourceSchemaPrefix(kind: string): string | undefined {
   const prefix = RESOURCE_SCHEMA_PREFIX[kind as KnownResourceKinds];

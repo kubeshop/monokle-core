@@ -1,5 +1,5 @@
-import { Resource } from "../../common/types";
-import { isKnownResourceKind } from "../../utils/knownResourceKinds";
+import { Resource } from "../../common/types.js";
+import { isKnownResourceKind } from "../../utils/knownResourceKinds.js";
 
 export type FullSchema = { definitions: Record<string, ResourceSchema> };
 export type ResourceSchema = any;

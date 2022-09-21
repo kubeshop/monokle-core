@@ -1,13 +1,16 @@
 import Ajv, { ErrorObject, ValidateFunction } from "ajv";
 import { Document, isCollection, ParsedNode } from "yaml";
-import { AbstractValidator } from "../../common/AbstractValidator";
-import { ResourceParser } from "../../common/resourceParser";
-import { ValidationResult } from "../../common/sarif";
-import { Incremental, Resource, ValidatorConfig } from "../../common/types";
-import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds";
-import { findDefaultVersion, extractSchema } from "./customResourceDefinitions";
-import { getResourceSchemaPrefix } from "./resourcePrefixMap";
-import { SchemaLoader } from "./schemaLoader";
+import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { ResourceParser } from "../../common/resourceParser.js";
+import { ValidationResult } from "../../common/sarif.js";
+import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
+import {
+  findDefaultVersion,
+  extractSchema,
+} from "./customResourceDefinitions.js";
+import { getResourceSchemaPrefix } from "./resourcePrefixMap.js";
+import { SchemaLoader } from "./schemaLoader.js";
 
 export type KubernetesSchemaConfig = ValidatorConfig<"kubernetes-schema"> & {
   schemaVersion: string;
@@ -42,7 +45,6 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
       schemas: [schema.schema],
     });
 
-    console.log("yippie!");
     this.warmup();
   }
 

@@ -1,15 +1,15 @@
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
 import { isNode, Node } from "yaml";
 
-import { get } from "lodash";
+import get from "lodash/get.js";
 
-import { DEFAULT_TRIVY_PLUGIN } from "./trivy";
+import { DEFAULT_TRIVY_PLUGIN } from "./trivy.js";
 import { LoadedPolicy, PolicyError, PolicyRule } from "./types";
-import { Incremental, Resource, ValidatorConfig } from "../../common/types";
-import { ValidationResult, Region } from "../../common/sarif";
-import { AbstractValidator } from "../../common/AbstractValidator";
-import { ResourceParser } from "../../common/resourceParser";
-import { WasmLoader } from "./wasmLoader/WasmLoader";
+import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { ValidationResult, Region } from "../../common/sarif.js";
+import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { ResourceParser } from "../../common/resourceParser.js";
+import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 
 export type OpenPolicyAgentConfig = ValidatorConfig<"open-policy-agent"> & {
   plugin: {
