@@ -1,22 +1,26 @@
 import invariant from "tiny-invariant";
 import { ResourceParser } from "./common/resourceParser.js";
-import { ValidationResponse } from "./common/sarif.js";
-import {
+import type { ValidationResponse } from "./common/sarif.js";
+import type {
   Incremental,
   Resource,
   Validator,
   ValidatorConstructor,
 } from "./common/types.js";
 import { isDefined } from "./utils/isDefined.js";
-import { LabelsValidatorConfig } from "./validators/labels/validator.js";
-import { OpenPolicyAgentConfig } from "./validators/open-policy-agent/validator.js";
+import type { LabelsValidatorConfig } from "./validators/labels/validator.js";
+import type { OpenPolicyAgentConfig } from "./validators/open-policy-agent/validator.js";
+import type { YamlValidatorConfig } from "./validators/yaml-syntax/validator.js";
 
 type Config = {
   debug?: boolean;
   parser?: ResourceParser;
 };
 
-type ValidatorConfig = LabelsValidatorConfig | OpenPolicyAgentConfig;
+type ValidatorConfig =
+  | LabelsValidatorConfig
+  | YamlValidatorConfig
+  | OpenPolicyAgentConfig;
 
 export class MonokleValidator {
   #validators: Validator[];
