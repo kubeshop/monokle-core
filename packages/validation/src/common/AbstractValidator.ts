@@ -27,6 +27,7 @@ export abstract class AbstractValidator<
     this.config = config;
     if (!this.config.enabled) return;
     await this.doLoad(config);
+
     this.loaded = true;
   }
 

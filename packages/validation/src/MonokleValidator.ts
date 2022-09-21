@@ -12,6 +12,7 @@ import { isDefined } from "./utils/isDefined.js";
 import type { KubernetesSchemaConfig } from "./validators/kubernetes-schema/validator.js";
 import type { LabelsValidatorConfig } from "./validators/labels/validator.js";
 import type { OpenPolicyAgentConfig } from "./validators/open-policy-agent/validator.js";
+import type { ResourceLinksValidatorConfig } from "./validators/resource-links/validator.js";
 import type { YamlValidatorConfig } from "./validators/yaml-syntax/validator.js";
 
 type Config = {
@@ -23,7 +24,8 @@ type ValidatorConfig =
   | LabelsValidatorConfig
   | KubernetesSchemaConfig
   | YamlValidatorConfig
-  | OpenPolicyAgentConfig;
+  | OpenPolicyAgentConfig
+  | ResourceLinksValidatorConfig;
 
 export class MonokleValidator {
   #validators: Validator[];
