@@ -1,8 +1,8 @@
 import { YAMLError } from "yaml";
-import { AbstractValidator } from "../../common/AbstractValidator";
-import { ResourceParser } from "../../common/resourceParser";
-import { ValidationResult } from "../../common/sarif";
-import { Incremental, Resource, ValidatorConfig } from "../../common/types";
+import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { ResourceParser } from "../../common/resourceParser.js";
+import { ValidationResult } from "../../common/sarif.js";
+import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
 
 export type YamlValidatorConfig = ValidatorConfig<"yaml-syntax">;
 

@@ -1,4 +1,4 @@
-import { isArray } from "lodash";
+import isArray from "lodash/isArray.js";
 import invariant from "tiny-invariant";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";

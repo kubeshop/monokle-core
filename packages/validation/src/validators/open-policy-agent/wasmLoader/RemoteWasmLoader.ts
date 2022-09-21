@@ -1,4 +1,4 @@
-import { WasmLoader } from "./WasmLoader";
+import { WasmLoader } from "./WasmLoader.js";
 
 export class RemoteWasmLoader implements WasmLoader {
   async load(url: string): Promise<ArrayBuffer> {
