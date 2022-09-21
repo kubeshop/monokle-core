@@ -4,7 +4,7 @@ import { Resource } from "./common/types.js";
 import { MonokleValidator } from "./MonokleValidator.js";
 import { LabelsValidator } from "./validators/labels/validator.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
-import { NodeWasmLoader } from "./validators/open-policy-agent/wasmLoader/NodeWasmLoader.js";
+import { FileWasmLoader } from "./validators/open-policy-agent/wasmLoader/FileWasmLoader.js";
 import path from "path";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
@@ -18,7 +18,7 @@ it("should be flexible to configure", async () => {
   const labelsValidator = new LabelsValidator(customParser);
   const yamlValidator = new YamlValidator(customParser);
 
-  const wasmLoader = new NodeWasmLoader();
+  const wasmLoader = new FileWasmLoader();
   const opaValidator = new OpenPolicyAgentValidator(customParser, wasmLoader);
 
   const schemaLoader = new SchemaLoader();
