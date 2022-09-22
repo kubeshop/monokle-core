@@ -1,0 +1,52 @@
+{
+  "name": "monokle-cli",
+  "version": "0.1.0",
+  "description": "Monokle validation and more through the CLI",
+  "main": "./dist/main.js",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "rimraf dist && tsc && chmod +x ./dist/main.js",
+    "cli": "./dist/main.js",
+    "dev": "npm run build && npm run cli"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kubeshop/monokle-core.git"
+  },
+  "keywords": [
+    "monokle",
+    "cli",
+    "validation"
+  ],
+  "author": "Kubeshop",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kubeshop/monokle-core/issues"
+  },
+  "homepage": "https://github.com/kubeshop/monokle-core#readme",
+  "devDependencies": {
+    "@types/clear": "0.1.2",
+    "@types/lodash": "4.14.185",
+    "@types/marked": "4.0.7",
+    "@types/marked-terminal": "3.1.3",
+    "@types/node": "18.7.18",
+    "@types/uuid": "8.3.4",
+    "@types/yaml": "1.9.7",
+    "@types/yargs": "17.0.12",
+    "rimraf": "3.0.2",
+    "turbo": "1.4.7",
+    "typescript": "4.8.3"
+  },
+  "dependencies": {
+    "boxen": "7.0.0",
+    "chalk": "5.0.1",
+    "clear": "0.1.0",
+    "log-symbols": "5.1.0",
+    "strands": "1.0.1",
+    "uuid": "9.0.0",
+    "validation": "*",
+    "yaml": "2.1.1",
+    "yargs": "17.5.1"
+  }
+}

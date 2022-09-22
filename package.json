@@ -1,13 +1,15 @@
 {
-    "name": "monokle-core",
-    "private": false,
-    "workspaces": {
-        "packages": [
-            "packages/*"
-        ]
-    },
-    "devDependencies": {
-        "prettier": "2.5.1",
-        "pretty-quick": "3.1.3"
-    }
+  "name": "monokle-core",
+  "private": false,
+  "scripts": {
+    "build": "turbo run build"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "prettier": "2.5.1",
+    "pretty-quick": "3.1.3",
+    "turbo": "latest"
+  }
 }
