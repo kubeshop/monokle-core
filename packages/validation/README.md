@@ -4,10 +4,10 @@ Flexible validation of Kubernetes resources.
 
 ## Getting started
 
-Start by adding monokle-validation to your codebase:
+Start by installing monokle-validation to your codebase:
 
 ```
-npm add monokle-validation
+npm install @monokle/validation
 ```
 
 Afterwards you can compose your validator as follows:
@@ -65,3 +65,4 @@ The response uses [Static Analysis Results Interchange Format (SARIF)](https://d
 ## Caveats
 
 - Use `processRefs` before validating with a _resource-links_ validator. It creates a graph between resources and sees if links between them are present or missing.
+- @monokle/validation expects fetch on global scope so please use isomorphic-fetch if this is not available (e.g. NodeJs).

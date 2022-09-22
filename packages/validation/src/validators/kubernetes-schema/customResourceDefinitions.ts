@@ -1,7 +1,7 @@
 export function extractSchema(crd: any, versionName: string | undefined) {
   const versions: any[] = crd?.spec?.versions || [];
   const version = versions.find((v: any) => v.name === versionName);
-  const schema = structuredClone(version?.schema?.openAPIV3Schema);
+  const schema = JSON.parse(JSON.stringify(version?.schema?.openAPIV3Schema));
 
   if (!schema) {
     return;

@@ -1,5 +1,5 @@
 import { LineCounter, Scalar } from "yaml";
-import { RefPosition } from "../../common/types.js";
+import { RefPosition } from "./types.js";
 
 /**
  * Utility class used when parsing and creating refs

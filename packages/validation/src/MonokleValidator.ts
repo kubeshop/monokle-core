@@ -8,6 +8,7 @@ import type {
   Validator,
   ValidatorConstructor,
 } from "./common/types.js";
+import { NOT_FOUND_ERR_MSG } from "./constants.js";
 import { isDefined } from "./utils/isDefined.js";
 import type { KubernetesSchemaConfig } from "./validators/kubernetes-schema/validator.js";
 import type { LabelsValidatorConfig } from "./validators/labels/validator.js";
@@ -46,7 +47,7 @@ export class MonokleValidator {
     await Promise.all(
       normalizedConfig.map((c) => {
         const validator = this.#validators.find((v) => v.name === c.tool);
-        invariant(validator, "validator not found");
+        invariant(validator, NOT_FOUND_ERR_MSG(c.tool));
         return validator.load(c);
       })
     );

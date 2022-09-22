@@ -13,7 +13,7 @@ import {
   getResourceRefNodes,
 } from "./utils/getResourceNodes.js";
 import { isOptionalRef } from "./utils/helpers.js";
-import { NodeWrapper } from "./utils/NodeWrapper.js";
+import { NodeWrapper } from "../common/NodeWrapper.js";
 import { shouldCreateSatisfiedRef } from "./utils/shouldCreateSatisfiedRef.js";
 import { shouldCreateUnsatisfiedRef } from "./utils/shouldCreateUnsatisfiedRef.js";
 

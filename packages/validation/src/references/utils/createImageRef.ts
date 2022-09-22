@@ -1,6 +1,6 @@
 import { Resource, ResourceRefType } from "../../common/types.js";
 import { areRefPosEqual } from "./helpers.js";
-import { NodeWrapper } from "./NodeWrapper.js";
+import { NodeWrapper } from "../../common/NodeWrapper.js";
 
 /**
  * Adds a image ref with the specified type/target to the specified resource
