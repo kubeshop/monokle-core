@@ -1,5 +1,5 @@
-import { ValidationResponse } from "validation";
-import { C, S, Screen } from "../utils/screens.js";
+import { ValidationResponse } from "@monokle/validation";
+import { B, C, S, Screen } from "../utils/screens.js";
 
 export const success = () => `
 ${S.success} All resources are valid.
@@ -10,7 +10,13 @@ export const failure = (
   response: ValidationResponse
 ) => {
   const screen = new Screen()
-    .line(`${S.warning} ${validationCount} resources are invalid.`)
+    .line()
+    .line(
+      B(` ${S.warning} ${validationCount} resources are invalid.`, {
+        padding: 1,
+        dimBorder: true,
+      })
+    )
     .line();
 
   for (const run of response.runs) {
@@ -21,6 +27,8 @@ export const failure = (
     for (const result of run.results) {
       screen.line(`${S.error} [${result.ruleId}] ${result.message.text}`);
     }
+
+    screen.line();
   }
 
   return screen.toString();

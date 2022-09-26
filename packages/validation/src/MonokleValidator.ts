@@ -1,21 +1,32 @@
+import isArray from "lodash/isArray.js";
 import invariant from "tiny-invariant";
-import { isDefined } from "./utils/isDefined.js";
 import { ResourceParser } from "./common/resourceParser.js";
-import { ValidationResponse } from "./common/sarif.js";
-import {
+import type { ValidationResponse } from "./common/sarif.js";
+import type {
   Incremental,
   Resource,
   Validator,
   ValidatorConstructor,
 } from "./common/types.js";
-import { LabelsValidatorConfig } from "./validators/labels/validator.js";
+import { NOT_FOUND_ERR_MSG } from "./constants.js";
+import { isDefined } from "./utils/isDefined.js";
+import type { KubernetesSchemaConfig } from "./validators/kubernetes-schema/validator.js";
+import type { LabelsValidatorConfig } from "./validators/labels/validator.js";
+import type { OpenPolicyAgentConfig } from "./validators/open-policy-agent/validator.js";
+import type { ResourceLinksValidatorConfig } from "./validators/resource-links/validator.js";
+import type { YamlValidatorConfig } from "./validators/yaml-syntax/validator.js";
 
 type Config = {
   debug?: boolean;
   parser?: ResourceParser;
 };
 
-type ValidatorConfig = LabelsValidatorConfig;
+type ValidatorConfig =
+  | LabelsValidatorConfig
+  | KubernetesSchemaConfig
+  | YamlValidatorConfig
+  | OpenPolicyAgentConfig
+  | ResourceLinksValidatorConfig;
 
 export class MonokleValidator {
   #validators: Validator[];
@@ -30,10 +41,16 @@ export class MonokleValidator {
     );
   }
 
-  async configure(config: ValidatorConfig): Promise<void> {
-    const validator = this.#validators.find((v) => v.name === config.tool);
-    invariant(validator, "validator not found");
-    await validator.load(config);
+  async configure(config: ValidatorConfig | ValidatorConfig[]): Promise<void> {
+    const normalizedConfig = isArray(config) ? config : [config];
+
+    await Promise.all(
+      normalizedConfig.map((c) => {
+        const validator = this.#validators.find((v) => v.name === c.tool);
+        invariant(validator, NOT_FOUND_ERR_MSG(c.tool));
+        return validator.load(c);
+      })
+    );
   }
 
   /**
