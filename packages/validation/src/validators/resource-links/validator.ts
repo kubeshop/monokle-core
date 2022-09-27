@@ -21,11 +21,7 @@ export type ResourceLinksValidatorConfig = ValidatorConfig<"resource-links">;
  */
 export class ResourceLinksValidator extends AbstractValidator<ResourceLinksValidatorConfig> {
   constructor() {
-    super("resource-links");
-  }
-
-  getRules(): ValidationRule[] {
-    return RESOURCE_LINK_RULES;
+    super("resource-links", RESOURCE_LINK_RULES);
   }
 
   override merge(
@@ -55,13 +51,13 @@ export class ResourceLinksValidator extends AbstractValidator<ResourceLinksValid
     const unsatisfiedRefs = refs.filter(isUnsatisfied);
 
     const results = unsatisfiedRefs.map((ref) => {
-      return this.createValidationResult(resource, ref);
+      return this.adaptToValidationResult(resource, ref);
     });
 
     return results;
   }
 
-  private createValidationResult(resource: Resource, ref: ResourceRef) {
+  private adaptToValidationResult(resource: Resource, ref: ResourceRef) {
     const region: Region | undefined =
       ref.position?.endColumn && ref.position.endLine
         ? {
@@ -72,8 +68,7 @@ export class ResourceLinksValidator extends AbstractValidator<ResourceLinksValid
           }
         : undefined;
 
-    const result: ValidationResult = {
-      ruleId: "LNK001",
+    return this.createValidationResult("LNK001", {
       message: {
         text: "Unsatisfied resource link.",
       },
@@ -93,9 +88,7 @@ export class ResourceLinksValidator extends AbstractValidator<ResourceLinksValid
           },
         },
       ],
-    };
-
-    return result;
+    });
   }
 }
 

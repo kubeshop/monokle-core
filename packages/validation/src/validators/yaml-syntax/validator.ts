@@ -3,17 +3,13 @@ import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult, ValidationRule } from "../../common/sarif.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
-import { YAML_RULES } from "./rules.js";
+import { YAML_RULES, YAML_RULE_MAP } from "./rules.js";
 
 export type YamlValidatorConfig = ValidatorConfig<"yaml-syntax">;
 
 export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
   constructor(private resourceParser: ResourceParser) {
-    super("yaml-syntax");
-  }
-
-  getRules(): ValidationRule[] {
-    return YAML_RULES;
+    super("yaml-syntax", YAML_RULES);
   }
 
   async doValidate(
@@ -45,17 +41,17 @@ export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
     });
 
     const results = parsedDoc.errors.map((err) => {
-      return this.createValidationResult(resource, err);
+      return this.adaptToValidationResult(resource, err);
     });
 
     return results;
   }
 
-  private createValidationResult(resource: Resource, err: YAMLError) {
+  private adaptToValidationResult(resource: Resource, err: YAMLError) {
     const region = this.resourceParser.parseErrorRegion(resource, err.pos);
+    const ruleId = YAML_RULE_MAP[err.code];
 
-    const result: ValidationResult = {
-      ruleId: err.code,
+    return this.createValidationResult(ruleId, {
       message: {
         text: err.message,
       },
@@ -75,8 +71,6 @@ export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
           },
         },
       ],
-    };
-
-    return result;
+    });
   }
 }

@@ -106,6 +106,9 @@ export type GitHubProperties = {
 
 export type ValidationResult = {
   ruleId: string;
+  rule: {
+    index: number;
+  };
   level?: ValidationLevel;
   message: {
     text: string;

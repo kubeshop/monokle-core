@@ -24,11 +24,7 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
     private resourceParser: ResourceParser,
     private schemaLoader: SchemaLoader
   ) {
-    super("kubernetes-schema");
-  }
-
-  getRules(): ValidationRule[] {
-    return KUBERNETES_SCHEMA_RULES;
+    super("kubernetes-schema", KUBERNETES_SCHEMA_RULES);
   }
 
   async doLoad(config: KubernetesSchemaConfig): Promise<void> {
@@ -129,7 +125,7 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
 
     const errors = validate.errors ?? [];
     const results = errors.map((err) => {
-      return this.createValidationResult(resource, err);
+      return this.adaptToValidationResult(resource, err);
     });
 
     return results;
@@ -162,7 +158,7 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
     return validate;
   }
 
-  private createValidationResult(resource: Resource, err: ErrorObject) {
+  private adaptToValidationResult(resource: Resource, err: ErrorObject) {
     const { parsedDoc } = this.resourceParser.parse(resource);
 
     const valueNode = findJsonPointerNode(
@@ -175,8 +171,7 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
       valueNode.range
     );
 
-    const result: ValidationResult = {
-      ruleId: "K8S001",
+    return this.createValidationResult("K8S001", {
       message: {
         text: err.message ? `Value at ${err.dataPath} ${err.message}` : "",
       },
@@ -196,9 +191,7 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
           },
         },
       ],
-    };
-
-    return result;
+    });
   }
 }
 
