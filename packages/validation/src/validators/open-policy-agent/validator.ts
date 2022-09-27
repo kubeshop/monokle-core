@@ -3,13 +3,18 @@ import { isNode, Node } from "yaml";
 
 import get from "lodash/get.js";
 
-import { DEFAULT_TRIVY_PLUGIN } from "./trivy.js";
-import { LoadedPolicy, PolicyError, PolicyRule } from "./types";
+import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
+import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
-import { ValidationResult, Region } from "../../common/sarif.js";
+import {
+  ValidationResult,
+  Region,
+  ValidationRule,
+} from "../../common/sarif.js";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
+import invariant from "tiny-invariant";
 
 export type OpenPolicyAgentConfig = ValidatorConfig<"open-policy-agent"> & {
   plugin: {
@@ -31,7 +36,10 @@ const CONTROLLER_KINDS = [
 
 type YamlPath = Array<string | number>;
 
-export class OpenPolicyAgentValidator extends AbstractValidator<OpenPolicyAgentConfig> {
+export class OpenPolicyAgentValidator extends AbstractValidator<
+  OpenPolicyAgentConfig,
+  OpaProperties
+> {
   private validator!: LoadedPolicy;
 
   constructor(
@@ -39,6 +47,10 @@ export class OpenPolicyAgentValidator extends AbstractValidator<OpenPolicyAgentC
     private wasmLoader: WasmLoader
   ) {
     super("open-policy-agent");
+  }
+
+  getRules(): ValidationRule<OpaProperties>[] {
+    return OPEN_POLICY_AGENT_RULES;
   }
 
   override async doLoad(config: OpenPolicyAgentConfig): Promise<void> {
@@ -72,7 +84,7 @@ export class OpenPolicyAgentValidator extends AbstractValidator<OpenPolicyAgentC
       return [];
     }
 
-    const rules = DEFAULT_TRIVY_PLUGIN.rules;
+    const rules = this.getRules();
     const enabledRules = rules.filter(
       (r) => this.config!.plugin.enabledRules?.includes(r.id) ?? true
     );
@@ -86,12 +98,11 @@ export class OpenPolicyAgentValidator extends AbstractValidator<OpenPolicyAgentC
 
   private validatePolicyRule(
     resource: Resource,
-    rule: PolicyRule
+    rule: ValidationRule<OpaProperties>
   ): ValidationResult[] {
-    const evaluation = this.validator.evaluate(
-      resource.content,
-      rule.properties.entrypoint
-    );
+    const entrypoint = rule.properties?.entrypoint;
+    invariant(entrypoint, "Validator's rule misconfigured");
+    const evaluation = this.validator.evaluate(resource.content, entrypoint);
 
     const violations: PolicyError[] = evaluation[0]?.result ?? [];
     const errors = violations.map((err) => {
@@ -103,7 +114,7 @@ export class OpenPolicyAgentValidator extends AbstractValidator<OpenPolicyAgentC
 
   private createValidationResult(
     resource: Resource,
-    rule: PolicyRule,
+    rule: ValidationRule<OpaProperties>,
     err: PolicyError
   ) {
     const regexMatch = err.msg?.match(/Container '([A-Za-z-]*)'/);
@@ -113,7 +124,7 @@ export class OpenPolicyAgentValidator extends AbstractValidator<OpenPolicyAgentC
       : rule.shortDescription.text;
     // const property = rule.properties.path?.replace(/\./g, '/') ?? resource.name;
 
-    const pathHint = rule.properties.path;
+    const pathHint = rule.properties?.path;
     const region = this.determineErrorRegion(resource, pathHint, container);
 
     const result: ValidationResult = {

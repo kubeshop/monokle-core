@@ -1,11 +1,16 @@
 import { AbstractValidator } from "../../common/AbstractValidator.js";
-import { ValidationResult, Region } from "../../common/sarif.js";
+import {
+  ValidationResult,
+  Region,
+  ValidationRule,
+} from "../../common/sarif.js";
 import {
   Resource,
   ResourceRef,
   ResourceRefType,
   ValidatorConfig,
 } from "../../common/types.js";
+import { RESOURCE_LINK_RULES } from "./rules.js";
 
 export type ResourceLinksValidatorConfig = ValidatorConfig<"resource-links">;
 
@@ -17,6 +22,10 @@ export type ResourceLinksValidatorConfig = ValidatorConfig<"resource-links">;
 export class ResourceLinksValidator extends AbstractValidator<ResourceLinksValidatorConfig> {
   constructor() {
     super("resource-links");
+  }
+
+  getRules(): ValidationRule[] {
+    return RESOURCE_LINK_RULES;
   }
 
   override merge(

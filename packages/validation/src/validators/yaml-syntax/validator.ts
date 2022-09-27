@@ -1,14 +1,19 @@
 import { YAMLError } from "yaml";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
-import { ValidationResult } from "../../common/sarif.js";
+import { ValidationResult, ValidationRule } from "../../common/sarif.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { YAML_RULES } from "./rules.js";
 
 export type YamlValidatorConfig = ValidatorConfig<"yaml-syntax">;
 
 export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
   constructor(private resourceParser: ResourceParser) {
     super("yaml-syntax");
+  }
+
+  getRules(): ValidationRule[] {
+    return YAML_RULES;
   }
 
   async doValidate(

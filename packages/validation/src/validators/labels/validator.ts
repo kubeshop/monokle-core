@@ -2,7 +2,8 @@ import { YAMLMap } from "yaml";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
-import { ValidationResult } from "../../common/sarif.js";
+import { ValidationResult, ValidationRule } from "../../common/sarif.js";
+import { LABELS_RULES } from "./rules.js";
 
 export type LabelsValidatorConfig = ValidatorConfig<"labels">;
 
@@ -12,6 +13,10 @@ export type LabelsValidatorConfig = ValidatorConfig<"labels">;
 export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
   constructor(private parser: ResourceParser) {
     super("labels");
+  }
+
+  getRules(): ValidationRule[] {
+    return LABELS_RULES;
   }
 
   async doValidate(

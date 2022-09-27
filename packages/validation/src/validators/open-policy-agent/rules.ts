@@ -11,6 +11,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
   rules: [
     {
       id: "KSV001",
+      name: "PROCESS_ELEVATED",
       shortDescription: {
         text: "Process can elevate its own privileges",
       },
@@ -30,6 +31,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV002",
+      name: "APP_ARMOR_UNSET",
       shortDescription: {
         text: "Default AppArmor profile not set",
       },
@@ -42,6 +44,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Remove 'container.apparmor.security.beta.kubernetes.io' annotation or set it to 'runtime/default'.",
       },
       properties: {
+        problem: {
+          severity: "warning",
+        },
         severity: "medium",
         entrypoint: "appshield/kubernetes/KSV002/deny",
         path: "$container.AppArmor",
@@ -49,6 +54,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV003",
+      name: "ALL_DEFAULT_ENABLED",
       shortDescription: {
         text: "Default capabilities not dropped",
       },
@@ -68,6 +74,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV005",
+      name: "SYS_ADMIN_ENABLED",
       shortDescription: {
         text: "SYS_ADMIN capability added",
       },
@@ -87,6 +94,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV006",
+      name: "DOCKER_SOCK_MOUNTED",
       shortDescription: {
         text: "hostPath volume mounted with docker.sock",
       },
@@ -106,11 +114,12 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV008",
+      name: "HOST_IPC_ENABLED",
       shortDescription: {
         text: "Access to host IPC namespace",
       },
       longDescription: {
-        text: "Sharing the host’s IPC namespace allows container processes to communicate with processes on the host.",
+        text: "Sharing the host's IPC namespace allows container processes to communicate with processes on the host.",
       },
       helpUri:
         "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
@@ -125,6 +134,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV009",
+      name: "HOST_NETWORK_ENABLED",
       shortDescription: {
         text: "Access to host network",
       },
@@ -144,6 +154,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV010",
+      name: "HOST_PID_ENABLED",
       shortDescription: {
         text: "Access to host PID",
       },
@@ -163,6 +174,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV011",
+      name: "CPU_LIMIT_MISSING",
       shortDescription: {
         text: "CPU not limited",
       },
@@ -182,6 +194,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV012",
+      name: "RUN_AS_NON_ROOT_DISABLED",
       shortDescription: {
         text: "Runs as root user",
       },
@@ -201,6 +214,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV013",
+      name: "IMAGE_LATEST",
       shortDescription: {
         text: 'Image tag ":latest" used',
       },
@@ -220,6 +234,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV014",
+      name: "READONLY_DISABLED",
       shortDescription: {
         text: "Root file system is not read-only",
       },
@@ -239,6 +254,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV015",
+      name: "CPU_REQUEST_MISSING",
       shortDescription: {
         text: "CPU requests not specified",
       },
@@ -258,6 +274,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV016",
+      name: "MEM_REQUEST_MISSING",
       shortDescription: {
         text: "Memory requests not specified",
       },
@@ -276,6 +293,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV017",
+      name: "PRIVILEGED_ENABLED",
       shortDescription: {
         text: "Privileged container",
       },
@@ -285,7 +303,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       helpUri:
         "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
       help: {
-        text: "Change 'containers[].securityContext.privileged' to",
+        text: "Change 'containers[].securityContext.privileged' to false",
       },
       properties: {
         severity: "high",
@@ -295,6 +313,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV018",
+      name: "MEM_LIMIT_MISSING",
       shortDescription: {
         text: "Memory not limited",
       },
@@ -313,6 +332,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV020",
+      name: "LOW_USER_ID",
       shortDescription: {
         text: "Runs with low user ID",
       },
@@ -332,6 +352,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV021",
+      name: "LOW_GROUP_ID",
       shortDescription: {
         text: "Runs with low group ID",
       },
@@ -351,6 +372,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV023",
+      name: "HOST_PATH_MOUNTED",
       shortDescription: {
         text: "hostPath volumes mounted",
       },
@@ -370,6 +392,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV024",
+      name: "HOST_PORT_ACCESS",
       shortDescription: {
         text: "Access to host ports",
       },
@@ -389,11 +412,12 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV025",
+      name: "SELINUX_MISCONFIG",
       shortDescription: {
         text: "SELinux custom options set",
       },
       longDescription: {
-        text: "Force the container to run with group ID > 10000 to avoid conflicts with the host’s user table.",
+        text: "Force the container to run with group ID > 10000 to avoid conflicts with the host's user table.",
       },
       helpUri:
         "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
@@ -408,6 +432,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV027",
+      name: "PROC_MOUNT_SET",
       shortDescription: {
         text: "Non-default /proc masks set",
       },
@@ -427,6 +452,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV028",
+      name: "VOLUME_NON_EPHEMERAL",
       shortDescription: {
         text: "Non-ephemeral volume types used",
       },
@@ -446,6 +472,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV029",
+      name: "DEFAULT_GROUP_ID",
       shortDescription: {
         text: "A root primary or supplementary GID set.",
       },
@@ -465,6 +492,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV030",
+      name: "SECCOMP_PROFILE_MISSING",
       shortDescription: {
         text: "Default Seccomp profile not set",
       },
@@ -484,3 +512,5 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
   ],
 };
+
+export const OPEN_POLICY_AGENT_RULES = DEFAULT_TRIVY_PLUGIN.rules;
