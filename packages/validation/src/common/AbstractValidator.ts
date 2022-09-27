@@ -15,17 +15,40 @@ export abstract class AbstractValidator<
   public loaded = false;
 
   protected config: TConfig | undefined;
+  protected _rules: ValidationRule<TRuleProperties>[];
+  protected _ruleReverseLookup: Map<string, number>; // Lookup index by rule identifier;
   protected previous: ValidationResult[] = [];
 
-  constructor(name: string) {
+  constructor(name: string, rules: ValidationRule<TRuleProperties>[]) {
     this.name = name;
+    this._rules = rules;
+    this._ruleReverseLookup = new Map();
+    rules.forEach((r, idx) => this._ruleReverseLookup.set(r.id, idx));
   }
 
   get enabled(): boolean {
     return this.config?.enabled ?? false;
   }
 
-  abstract getRules(): ValidationRule<TRuleProperties>[];
+  get rules(): ValidationRule<TRuleProperties>[] {
+    return this.rules;
+  }
+
+  protected createValidationResult(
+    ruleId: string,
+    args: Omit<ValidationResult, "ruleId" | "rule">
+  ): ValidationResult {
+    const index = this._ruleReverseLookup.get(ruleId);
+    invariant(index !== undefined, "rules misconfigured");
+
+    return {
+      ruleId,
+      rule: {
+        index,
+      },
+      ...args,
+    };
+  }
 
   async load(config: TConfig): Promise<void> {
     this.config = config;
@@ -63,7 +86,7 @@ export abstract class AbstractValidator<
         driver: {
           name: this.name,
         },
-        rules: this.getRules(),
+        rules: this.rules,
       },
       results,
     };

@@ -12,11 +12,7 @@ export type LabelsValidatorConfig = ValidatorConfig<"labels">;
  */
 export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
   constructor(private parser: ResourceParser) {
-    super("labels");
-  }
-
-  getRules(): ValidationRule[] {
-    return LABELS_RULES;
+    super("labels", LABELS_RULES);
   }
 
   async doValidate(
@@ -37,19 +33,20 @@ export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
       }
     }
 
-    const results = invalidResources.map((r) => this.createValidationResult(r));
+    const results = invalidResources.map((r) =>
+      this.adaptToValidationResult(r)
+    );
     return results;
   }
 
-  private createValidationResult(resource: Resource): ValidationResult {
+  private adaptToValidationResult(resource: Resource): ValidationResult {
     const { parsedDoc } = this.parser.parse(resource);
     const node = parsedDoc.getIn(["metadata"], true) as YAMLMap | undefined;
     const region = node?.range
       ? this.parser.parseErrorRegion(resource, node.range)
       : undefined;
 
-    return {
-      ruleId: "Unlabelled",
+    return this.createValidationResult("LBL001", {
       message: {
         text: "Resource is unlabelled.",
       },
@@ -69,6 +66,6 @@ export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
           ],
         },
       ],
-    };
+    });
   }
 }

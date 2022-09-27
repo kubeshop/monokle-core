@@ -46,11 +46,7 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
     private resourceParser: ResourceParser,
     private wasmLoader: WasmLoader
   ) {
-    super("open-policy-agent");
-  }
-
-  getRules(): ValidationRule<OpaProperties>[] {
-    return OPEN_POLICY_AGENT_RULES;
+    super("open-policy-agent", OPEN_POLICY_AGENT_RULES);
   }
 
   override async doLoad(config: OpenPolicyAgentConfig): Promise<void> {
@@ -84,8 +80,7 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
       return [];
     }
 
-    const rules = this.getRules();
-    const enabledRules = rules.filter(
+    const enabledRules = this.rules.filter(
       (r) => this.config!.plugin.enabledRules?.includes(r.id) ?? true
     );
 
@@ -106,13 +101,13 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
 
     const violations: PolicyError[] = evaluation[0]?.result ?? [];
     const errors = violations.map((err) => {
-      return this.createValidationResult(resource, rule, err);
+      return this.adaptToValidationResult(resource, rule, err);
     });
 
     return errors;
   }
 
-  private createValidationResult(
+  private adaptToValidationResult(
     resource: Resource,
     rule: ValidationRule<OpaProperties>,
     err: PolicyError
@@ -127,8 +122,7 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
     const pathHint = rule.properties?.path;
     const region = this.determineErrorRegion(resource, pathHint, container);
 
-    const result: ValidationResult = {
-      ruleId: rule.id,
+    return this.createValidationResult(rule.id, {
       message: {
         text: description,
       },
@@ -148,9 +142,7 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
           },
         },
       ],
-    };
-
-    return result;
+    });
   }
 
   private determineErrorRegion(
