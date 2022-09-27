@@ -5,3 +5,4 @@ export const NOT_FOUND_ERR_MSG = (name: string) =>
 
 export const REF_PATH_SEPARATOR = "#";
 export const NAME_REFNODE_PATH = `metadata${REF_PATH_SEPARATOR}name`;
+export const NO_HELP_AVAILABLE = "No help available.";

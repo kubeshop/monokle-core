@@ -1,12 +1,14 @@
 import keyBy from "lodash/keyBy.js";
 import invariant from "tiny-invariant";
+import { JsonObject } from "type-fest";
 import { UNLOADED_ERR_MSG } from "../constants.js";
 import { getResourceId } from "../utils/sarif.js";
-import { ValidationResult, ValidationRun } from "./sarif.js";
+import { ValidationResult, ValidationRule, ValidationRun } from "./sarif.js";
 import { Incremental, Resource, Validator, ValidatorConfig } from "./types.js";
 
 export abstract class AbstractValidator<
-  TConfig extends ValidatorConfig = ValidatorConfig
+  TConfig extends ValidatorConfig = ValidatorConfig,
+  TRuleProperties extends JsonObject = {}
 > implements Validator<TConfig>
 {
   public name: string;
@@ -22,6 +24,8 @@ export abstract class AbstractValidator<
   get enabled(): boolean {
     return this.config?.enabled ?? false;
   }
+
+  abstract getRules(): ValidationRule<TRuleProperties>[];
 
   async load(config: TConfig): Promise<void> {
     this.config = config;
@@ -59,6 +63,7 @@ export abstract class AbstractValidator<
         driver: {
           name: this.name,
         },
+        rules: this.getRules(),
       },
       results,
     };

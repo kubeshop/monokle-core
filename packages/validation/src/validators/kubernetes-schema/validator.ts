@@ -2,7 +2,7 @@ import Ajv, { ErrorObject, ValidateFunction } from "ajv";
 import { Document, isCollection, ParsedNode } from "yaml";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
-import { ValidationResult } from "../../common/sarif.js";
+import { ValidationResult, ValidationRule } from "../../common/sarif.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
 import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
 import {
@@ -10,6 +10,7 @@ import {
   extractSchema,
 } from "./customResourceDefinitions.js";
 import { getResourceSchemaPrefix } from "./resourcePrefixMap.js";
+import { KUBERNETES_SCHEMA_RULES } from "./rules.js";
 import { SchemaLoader } from "./schemaLoader.js";
 
 export type KubernetesSchemaConfig = ValidatorConfig<"kubernetes-schema"> & {
@@ -26,12 +27,15 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
     super("kubernetes-schema");
   }
 
+  getRules(): ValidationRule[] {
+    return KUBERNETES_SCHEMA_RULES;
+  }
+
   async doLoad(config: KubernetesSchemaConfig): Promise<void> {
     const version = config.schemaVersion;
     const schema = await this.schemaLoader.getFullSchema(version);
 
     if (!schema) {
-      console.log("BOOM");
       return;
     }
 
@@ -172,7 +176,7 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
     );
 
     const result: ValidationResult = {
-      ruleId: "K8S",
+      ruleId: "K8S001",
       message: {
         text: err.message ? `Value at ${err.dataPath} ${err.message}` : "",
       },

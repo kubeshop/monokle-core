@@ -1,4 +1,5 @@
-import { loadPolicy } from '@open-policy-agent/opa-wasm';
+import { loadPolicy } from "@open-policy-agent/opa-wasm";
+import { ValidationRule } from "../../common/sarif";
 
 export type LoadedPolicy = Awaited<ReturnType<typeof loadPolicy>>;
 export type PolicyError = { msg?: string };
@@ -17,26 +18,17 @@ export type PolicyMetadata = {
   description: string;
   type: string;
   module: string;
-  rules: PolicyRule[];
+  rules: ValidationRule<OpaProperties>[];
 };
 
-export type Severity = 'high' | 'medium' | 'low';
-
-export type PolicyRule = {
-  id: string;
-  shortDescription: {
-    text: string;
-  };
-  longDescription: {
-    text: string;
-  };
-  helpUri: string;
-  help: {
-    text: string;
-  };
-  properties: {
-    severity: Severity;
-    entrypoint?: string;
-    path?: string;
-  };
+/**
+ * These are a rule's custom properties used by the OPA validator.
+ */
+export type OpaProperties = {
+  /**
+   * @deprecated use properties.problem.severity instead.
+   */
+  severity: "low" | "medium" | "high";
+  entrypoint: string;
+  path: string;
 };
