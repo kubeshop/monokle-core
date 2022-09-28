@@ -31,7 +31,7 @@ export abstract class AbstractValidator<
   }
 
   get rules(): ValidationRule<TRuleProperties>[] {
-    return this.rules;
+    return this._rules;
   }
 
   protected createValidationResult(
