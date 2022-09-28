@@ -45,6 +45,9 @@ export abstract class AbstractValidator<
       ruleId,
       rule: {
         index,
+        toolComponent: {
+          name: this.name,
+        },
       },
       ...args,
     };
