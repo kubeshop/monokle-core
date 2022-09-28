@@ -48,5 +48,8 @@
     "lodash": "4.17.21",
     "tiny-invariant": "1.2.0",
     "yaml": "2.1.1"
+  },
+  "browser": {
+    "./lib/validators/open-policy-agent/wasmLoader/FileWasmLoader.js": false
   }
 }
