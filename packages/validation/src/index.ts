@@ -3,6 +3,8 @@ export * from "./common/types.js";
 export * from "./common/NodeWrapper.js";
 export * from "./references/index.js";
 
+export * from "./utils/getRule.js";
+
 export * from "./MonokleValidator.js";
 export * from "./common/resourceParser.js";
 export * from "./validators/labels/index.js";

@@ -108,6 +108,7 @@ export type ValidationResult = {
   ruleId: string;
   rule: {
     index: number;
+    toolComponent: ToolComponentReference;
   };
   level?: ValidationLevel;
   message: {
@@ -117,6 +118,13 @@ export type ValidationResult = {
     physicalLocation?: PhysicalLocation;
     logicalLocations?: LogicalLocation[];
   }>;
+};
+
+/**
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541313
+ */
+export type ToolComponentReference = {
+  name: string;
 };
 
 export type PhysicalLocation = {
