@@ -9,6 +9,7 @@
   "main": "lib/index.js",
   "source": "src/index.ts",
   "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
   "files": [
     "lib"
