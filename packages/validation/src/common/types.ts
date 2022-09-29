@@ -9,6 +9,7 @@ export type Resource = {
   id: string;
   fileId: string;
   filePath: string;
+  fileOffset: number; // Offset of this resource's startLine within the parent file.
   name: string;
   apiVersion: string;
   kind: string;

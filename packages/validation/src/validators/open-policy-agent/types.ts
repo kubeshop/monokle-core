@@ -1,5 +1,5 @@
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
-import { ValidationRule } from "../../common/sarif";
+import { ValidationRule } from "../../common/sarif.js";
 
 export type LoadedPolicy = Awaited<ReturnType<typeof loadPolicy>>;
 export type PolicyError = { msg?: string };

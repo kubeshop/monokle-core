@@ -1,15 +1,12 @@
 import { AbstractValidator } from "../../common/AbstractValidator.js";
-import {
-  ValidationResult,
-  Region,
-  ValidationRule,
-} from "../../common/sarif.js";
+import { ValidationResult, Region } from "../../common/sarif.js";
 import {
   Resource,
   ResourceRef,
   ResourceRefType,
   ValidatorConfig,
 } from "../../common/types.js";
+import { createLocations } from "../../utils/createLocations.js";
 import { RESOURCE_LINK_RULES } from "./rules.js";
 
 export type ResourceLinksValidatorConfig = ValidatorConfig<"resource-links">;
@@ -68,26 +65,13 @@ export class ResourceLinksValidator extends AbstractValidator<ResourceLinksValid
           }
         : undefined;
 
+    const locations = createLocations(resource, region);
+
     return this.createValidationResult("LNK001", {
       message: {
         text: "Unsatisfied resource link.",
       },
-      locations: [
-        {
-          logicalLocations: [
-            {
-              kind: "resource",
-              name: resource.id,
-            },
-          ],
-          physicalLocation: {
-            artifactLocation: {
-              uri: resource.filePath.substring(1),
-            },
-            region,
-          },
-        },
-      ],
+      locations,
     });
   }
 }

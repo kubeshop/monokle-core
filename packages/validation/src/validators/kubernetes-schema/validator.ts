@@ -4,6 +4,7 @@ import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult, ValidationRule } from "../../common/sarif.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { createLocations } from "../../utils/createLocations.js";
 import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
 import {
   findDefaultVersion,
@@ -171,26 +172,13 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
       valueNode.range
     );
 
+    const locations = createLocations(resource, region);
+
     return this.createValidationResult("K8S001", {
       message: {
         text: err.message ? `Value at ${err.dataPath} ${err.message}` : "",
       },
-      locations: [
-        {
-          logicalLocations: [
-            {
-              kind: "resource",
-              name: resource.id,
-            },
-          ],
-          physicalLocation: {
-            artifactLocation: {
-              uri: resource.filePath.substring(1),
-            },
-            region,
-          },
-        },
-      ],
+      locations,
     });
   }
 }

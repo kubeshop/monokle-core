@@ -3,7 +3,8 @@ import {
   ValidationResponse,
   ValidationResult,
   ValidationRule,
-} from "../common/sarif";
+} from "../common/sarif.js";
+import { getResourceId } from "./sarif.js";
 
 export function getRuleForResult(
   response: ValidationResponse,
@@ -12,7 +13,7 @@ export function getRuleForResult(
   const tool = result.rule.toolComponent.name;
   const run = response.runs.find((run) => run.tool.driver.name === tool);
   const ruleIndex = result.rule.index;
-  const rule = run?.tool.rules[ruleIndex];
+  const rule = run?.tool.driver.rules[ruleIndex];
   invariant(rule, "rule not found");
   return rule;
 }
@@ -25,20 +26,18 @@ export function createResourceErrorMap(
   const errors = response.runs.flatMap((run) => run.results);
 
   for (const err of errors) {
-    const locations = err.locations?.[0]?.logicalLocations ?? [];
+    const resourceId = getResourceId(err);
 
-    for (const { name } of locations) {
-      if (name === undefined) {
-        continue;
-      }
-
-      if (!result.has(name)) {
-        result.set(name, []);
-      }
-
-      const current = result.get(name);
-      current?.push(err);
+    if (!resourceId) {
+      continue;
     }
+
+    if (!result.has(resourceId)) {
+      result.set(resourceId, []);
+    }
+
+    const current = result.get(resourceId);
+    current?.push(err);
   }
 
   return result;
