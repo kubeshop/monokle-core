@@ -52,7 +52,7 @@ it("should be valid SARIF", async () => {
   validateSarif(response);
 
   // uncomment to debug
-  console.error(JSON.stringify(validateSarif.errors, null, 2));
+  // console.error(JSON.stringify(validateSarif.errors, null, 2));
 
   expect(validateSarif.errors?.length ?? 0).toBe(0);
 });

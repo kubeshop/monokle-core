@@ -5,8 +5,26 @@ import { FALLBACK_REGION } from "../constants.js";
 export function createLocations(
   resource: Resource,
   region: Region = FALLBACK_REGION
-): [Location] | [Location, Location] {
+): [Location, Location] {
+  // SARIF expects relative paths without leading path separator '/'.
+  const filePath = resource.filePath.startsWith("/")
+    ? resource.filePath.substring(1)
+    : resource.filePath;
+
   return [
+    {
+      physicalLocation: {
+        artifactLocation: {
+          uriBaseId: "SRCROOT",
+          uri: filePath,
+        },
+        region: {
+          ...region,
+          startLine: region.startLine + (resource.fileOffset ?? 0),
+          endLine: region.endLine + (resource.fileOffset ?? 0),
+        },
+      },
+    },
     {
       physicalLocation: {
         artifactLocation: {
@@ -14,19 +32,6 @@ export function createLocations(
           uri: resource.id,
         },
         region,
-      },
-    },
-    {
-      physicalLocation: {
-        artifactLocation: {
-          uriBaseId: "SRCROOT",
-          // it should be relative path without leading path separator '/'.
-          uri: resource.filePath.substring(1),
-        },
-        region: {
-          ...region,
-          startLine: region.startLine + (resource.fileOffset ?? 0),
-        },
       },
     },
   ];
