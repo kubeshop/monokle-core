@@ -16,8 +16,8 @@ export type ValidationRun = {
   tool: {
     driver: {
       name: string;
+      rules: ValidationRule[];
     };
-    rules: ValidationRule[];
   };
   results: ValidationResult[];
 };
@@ -36,7 +36,7 @@ export type ValidationRule<TProperties extends JsonObject = {}> = {
   shortDescription: {
     text: string;
   };
-  longDescription: {
+  fullDescription: {
     text: string;
   };
   helpUri?: string;

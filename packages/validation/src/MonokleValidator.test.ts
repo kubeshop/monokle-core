@@ -1,3 +1,4 @@
+import Ajv from "ajv";
 import path from "path";
 import { expect, it } from "vitest";
 import { ResourceParser } from "./common/resourceParser.js";
@@ -17,43 +18,43 @@ import "isomorphic-fetch";
 
 it("should be flexible to configure", async () => {
   const parser = new ResourceParser();
-  const validator = createValidator(parser);
   const resources = [BAD_DEPLOYMENT, BAD_SERVICE];
 
+  const validator = createValidator(parser);
   processRefs(resources, parser);
-
-  await validator.configure([
-    {
-      tool: "labels",
-      enabled: true,
-    },
-    {
-      tool: "yaml-syntax",
-      enabled: true,
-    },
-    {
-      tool: "resource-links",
-      enabled: true,
-    },
-    {
-      tool: "kubernetes-schema",
-      enabled: true,
-      schemaVersion: "1.24.2",
-    },
-    {
-      tool: "open-policy-agent",
-      enabled: true,
-      plugin: {
-        id: "trivy",
-        enabled: true,
-        wasmSrc: path.join(__dirname, "./assets/policies/trivy.wasm"),
-      },
-    },
-  ]);
+  await configureValidator(validator);
 
   const response = await validator.validate(resources);
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
   expect(hasErrors).toMatchInlineSnapshot("14");
+});
+
+it("should be valid SARIF", async () => {
+  const parser = new ResourceParser();
+  const resources = [BAD_DEPLOYMENT, BAD_SERVICE];
+
+  const validator = createValidator(parser);
+  processRefs(resources, parser);
+  await configureValidator(validator);
+  const response = await validator.validate(resources);
+
+  const ajv = new Ajv({
+    jsonPointers: true,
+    verbose: true,
+    allErrors: true,
+  });
+
+  const res = await fetch("https://json.schemastore.org/sarif-2.1.0.json");
+  if (!res.ok) throw new Error("schema_download_failed");
+  const schema = await res.json();
+
+  const validateSarif = ajv.compile(schema);
+  validateSarif(response);
+
+  // uncomment to debug
+  console.error(JSON.stringify(validateSarif.errors, null, 2));
+
+  expect(validateSarif.errors?.length ?? 0).toBe(0);
 });
 
 function createValidator(parser: ResourceParser) {
@@ -84,9 +85,41 @@ function createValidator(parser: ResourceParser) {
   return validator;
 }
 
+function configureValidator(validator: MonokleValidator) {
+  return validator.configure([
+    {
+      tool: "labels",
+      enabled: true,
+    },
+    {
+      tool: "yaml-syntax",
+      enabled: true,
+    },
+    {
+      tool: "resource-links",
+      enabled: true,
+    },
+    {
+      tool: "kubernetes-schema",
+      enabled: true,
+      schemaVersion: "1.24.2",
+    },
+    {
+      tool: "open-policy-agent",
+      enabled: true,
+      plugin: {
+        id: "trivy",
+        enabled: true,
+        wasmSrc: path.join(__dirname, "./assets/policies/trivy.wasm"),
+      },
+    },
+  ]);
+}
+
 const BAD_DEPLOYMENT: Resource = {
   fileId: "vanilla-panda-blog/deployment.yaml",
   filePath: "vanilla-panda-blog/deployment.yaml",
+  fileOffset: 0,
   text: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: panda-blog\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: panda-blog\n  template:\n    metadata:\n      labels:\n        app: panda-blog\n    spec:\n      containers:\n        - name: panda-blog\n          image: panda-blog:latest\n          ports:\n            - name: 20\n              containerPort: 8080\n",
   name: "panda-blog",
   id: "31fc266e-be6e-527a-8292-469fe956c0d6",
@@ -133,6 +166,7 @@ const BAD_DEPLOYMENT: Resource = {
 const BAD_SERVICE: Resource = {
   fileId: "vanilla-panda-blog/service.yaml",
   filePath: "vanilla-panda-blog/service.yaml",
+  fileOffset: 0,
   text: "apiVersion: v1\nkind: Service\nmetadata:\n  name: panda-blog\n  labels:\n    monokle.io/demo: vanilla-panda-blog\nspec:\n  selector:\n    app: panda-boom\n  ports:\n    - name: http-web\n      protocol: TCP\n      port: 80\n      targetPort: 8080\n",
   name: "panda-blog",
   id: "047aedde-e54d-51fc-9ae7-860ea5c581bc",
