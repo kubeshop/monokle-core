@@ -1,4 +1,4 @@
-import { ValidationRule } from "../../common/sarif";
+import { ValidationRule } from "../../common/sarif.js";
 
 export const LABELS_RULES: ValidationRule[] = [
   {
@@ -7,7 +7,7 @@ export const LABELS_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot find any label.",
     },
-    longDescription: {
+    fullDescription: {
       text: "The resource should use labels to easily identify it. Without labels it is difficult to determine source of deployment and ownership.",
     },
     help: {

@@ -88,8 +88,8 @@ export abstract class AbstractValidator<
       tool: {
         driver: {
           name: this.name,
+          rules: this.rules,
         },
-        rules: this.rules,
       },
       results,
     };

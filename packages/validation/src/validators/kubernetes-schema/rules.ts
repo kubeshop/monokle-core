@@ -1,4 +1,4 @@
-import { ValidationRule } from "../../common/sarif";
+import { ValidationRule } from "../../common/sarif.js";
 
 export const KUBERNETES_SCHEMA_RULES: ValidationRule[] = [
   {
@@ -7,7 +7,7 @@ export const KUBERNETES_SCHEMA_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The resource is formated incorrectly.",
     },
-    longDescription: {
+    fullDescription: {
       text: "The resource is violating the schema violation. The Kubernetes API will not accept this resource.",
     },
     help: {

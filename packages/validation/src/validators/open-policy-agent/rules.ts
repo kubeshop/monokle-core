@@ -15,7 +15,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Process can elevate its own privileges",
       },
-      longDescription: {
+      fullDescription: {
         text: "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
       },
       helpUri:
@@ -35,7 +35,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Default AppArmor profile not set",
       },
-      longDescription: {
+      fullDescription: {
         text: "A program inside the container can bypass AppArmor protection policies.",
       },
       helpUri:
@@ -58,7 +58,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Default capabilities not dropped",
       },
-      longDescription: {
+      fullDescription: {
         text: "The container should drop all default capabilities and add only those that are needed for its execution.",
       },
       helpUri:
@@ -78,7 +78,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "SYS_ADMIN capability added",
       },
-      longDescription: {
+      fullDescription: {
         text: "SYS_ADMIN gives the processes running inside the container privileges that are equivalent to root.",
       },
       helpUri:
@@ -98,7 +98,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "hostPath volume mounted with docker.sock",
       },
-      longDescription: {
+      fullDescription: {
         text: "Mounting docker.sock from the host can give the container full root access to the host.",
       },
       helpUri:
@@ -118,7 +118,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Access to host IPC namespace",
       },
-      longDescription: {
+      fullDescription: {
         text: "Sharing the host's IPC namespace allows container processes to communicate with processes on the host.",
       },
       helpUri:
@@ -138,7 +138,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Access to host network",
       },
-      longDescription: {
+      fullDescription: {
         text: "Sharing the host’s network namespace permits processes in the pod to communicate with processes bound to the host’s loopback adapter.",
       },
       helpUri:
@@ -158,7 +158,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Access to host PID",
       },
-      longDescription: {
+      fullDescription: {
         text: "Sharing the host’s PID namespace allows visibility on host processes, potentially leaking information such as environment variables and configuration.",
       },
       helpUri:
@@ -178,7 +178,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "CPU not limited",
       },
-      longDescription: {
+      fullDescription: {
         text: "Enforcing CPU limits prevents DoS via resource exhaustion.",
       },
       helpUri:
@@ -198,7 +198,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Runs as root user",
       },
-      longDescription: {
+      fullDescription: {
         text: '"runAsNonRoot" forces the running image to run as a non-root user to ensure least privileges.',
       },
       helpUri:
@@ -218,7 +218,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: 'Image tag ":latest" used',
       },
-      longDescription: {
+      fullDescription: {
         text: "It is best to avoid using the ':latest' image tag when deploying containers in production. Doing so makes it hard to track which version of the image is running, and hard to roll back the version.",
       },
       helpUri:
@@ -238,7 +238,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Root file system is not read-only",
       },
-      longDescription: {
+      fullDescription: {
         text: "An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.",
       },
       helpUri:
@@ -258,7 +258,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "CPU requests not specified",
       },
-      longDescription: {
+      fullDescription: {
         text: "When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
       },
       helpUri:
@@ -278,7 +278,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Memory requests not specified",
       },
-      longDescription: {
+      fullDescription: {
         text: "When containers have memory requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
       },
       helpUri: "https://kubesec.io/basics/containers-resources-limits-memory/",
@@ -297,7 +297,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Privileged container",
       },
-      longDescription: {
+      fullDescription: {
         text: "Privileged containers share namespaces with the host system and do not offer any security. They should be used exclusively for system containers that require high privileges.",
       },
       helpUri:
@@ -317,7 +317,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Memory not limited",
       },
-      longDescription: {
+      fullDescription: {
         text: "Enforcing memory limits prevents DoS via resource exhaustion.",
       },
       helpUri: "https://kubesec.io/basics/containers-resources-limits-memory/",
@@ -336,7 +336,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Runs with low user ID",
       },
-      longDescription: {
+      fullDescription: {
         text: "Force the container to run with user ID > 10000 to avoid conflicts with the host’s user table.",
       },
       helpUri:
@@ -356,7 +356,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Runs with low group ID",
       },
-      longDescription: {
+      fullDescription: {
         text: "Force the container to run with group ID > 10000 to avoid conflicts with the host’s user table.",
       },
       helpUri:
@@ -376,7 +376,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "hostPath volumes mounted",
       },
-      longDescription: {
+      fullDescription: {
         text: "HostPath volumes must be forbidden.",
       },
       helpUri:
@@ -396,7 +396,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Access to host ports",
       },
-      longDescription: {
+      fullDescription: {
         text: "HostPorts should be disallowed, or at minimum restricted to a known list.",
       },
       helpUri:
@@ -416,7 +416,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "SELinux custom options set",
       },
-      longDescription: {
+      fullDescription: {
         text: "Force the container to run with group ID > 10000 to avoid conflicts with the host's user table.",
       },
       helpUri:
@@ -436,7 +436,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Non-default /proc masks set",
       },
-      longDescription: {
+      fullDescription: {
         text: "The default /proc masks are set up to reduce attack surface, and should be required.",
       },
       helpUri:
@@ -456,7 +456,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Non-ephemeral volume types used",
       },
-      longDescription: {
+      fullDescription: {
         text: "In addition to restricting HostPath volumes, usage of non-ephemeral volume types should be limited to those defined through PersistentVolumes.",
       },
       helpUri:
@@ -476,7 +476,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "A root primary or supplementary GID set.",
       },
-      longDescription: {
+      fullDescription: {
         text: "Containers should be forbidden from running with a root primary or supplementary GID.",
       },
       helpUri:
@@ -496,7 +496,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       shortDescription: {
         text: "Default Seccomp profile not set",
       },
-      longDescription: {
+      fullDescription: {
         text: "The RuntimeDefault seccomp profile must be required, or allow specific additional profiles.",
       },
       helpUri:

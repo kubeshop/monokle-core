@@ -1,6 +1,6 @@
 import { ErrorCode } from "yaml";
-import { ValidationRule } from "../../common/sarif";
-import { NO_HELP_AVAILABLE } from "../../constants";
+import { ValidationRule } from "../../common/sarif.js";
+import { NO_HELP_AVAILABLE } from "../../constants.js";
 
 /**
  * Maps a YAML error code to its rule identifier.
@@ -41,7 +41,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The alias props are incorrect.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Unlike scalars and collections, alias nodes cannot have an anchor or tag associated with it.",
     },
     help: {
@@ -54,7 +54,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The alias' format is incorrect.",
     },
-    longDescription: {
+    fullDescription: {
       text: "An alias identifier must be a non-empty sequence of valid characters.",
     },
     help: {
@@ -67,7 +67,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The directive is incorrect.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Only the %YAML and %TAG directives are supported, and they need to follow the specified structure.",
     },
     help: {
@@ -80,7 +80,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The double quotes are escaped incorrectly.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Double-quotes strings may include '\\' escaped content, but that needs to be valid.",
     },
     help: {
@@ -93,7 +93,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The indentation is incorrect.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Indentation is important in YAML, and collection items need to all start at the same level. Block scalars are also picky about their leading content.",
     },
     help: {
@@ -106,7 +106,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The anchors and tags are used incorrectly.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Anchors and tags must be placed after the ?, : and - indicators.",
     },
     help: {
@@ -119,7 +119,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The scalar is formatted incorrectly.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Plain scalars cannot start with a block scalar indicator, or one of the two reserved characters: @ and `.",
     },
     help: {
@@ -132,7 +132,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The identation is incorrect.",
     },
-    longDescription: {
+    fullDescription: {
       text: "There's probably something wrong with the indentation, or you're trying to parse something like a: b: c, where it's not clear what's the key and what's the value.",
     },
     help: {
@@ -145,7 +145,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot use block within flow.",
     },
-    longDescription: {
+    fullDescription: {
       text: "YAML scalars and collections both have block and flow styles. Flow is allowed within block, but not the other way around.",
     },
     help: {
@@ -158,7 +158,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot use duplicate keys.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Keys within a map must be unique.",
     },
     help: {
@@ -171,7 +171,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Something unexpected went wrong",
     },
-    longDescription: {
+    fullDescription: {
       text: "This really should not happen. If you encounter this error code, please file a bug.",
     },
     help: {
@@ -184,7 +184,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The key is too long.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Due to legacy reasons, implicit keys must have their following : indicator after at most 1k characters.",
     },
     help: {
@@ -197,7 +197,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The anchor is missing.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Aliases can only dereference anchors that are before them in the document.",
     },
     help: {
@@ -210,7 +210,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "A character is missing.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Some character or characters are missing here. See the error message for what you need to add.",
     },
     help: {
@@ -223,7 +223,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot use multiple lines with implicit keys.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Implicit keys need to be on a single line.",
     },
     help: {
@@ -236,7 +236,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot have multiple anchors.",
     },
-    longDescription: {
+    fullDescription: {
       text: "A node is only allowed to have one anchor.",
     },
     help: {
@@ -249,7 +249,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot parse this document.",
     },
-    longDescription: {
+    fullDescription: {
       text: "A YAML stream may include multiple documents.",
     },
     help: {
@@ -262,7 +262,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot use multiple tags.",
     },
-    longDescription: {
+    fullDescription: {
       text: "A node is only allowed to have one tag.",
     },
     help: {
@@ -275,7 +275,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot use tabs for identation.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Only spaces are allowed as indentation.",
     },
     help: {
@@ -288,7 +288,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot resolve the tag.",
     },
-    longDescription: {
+    fullDescription: {
       text: "Something went wrong when resolving a node's tag with the current schema.",
     },
     help: {
@@ -301,7 +301,7 @@ export const YAML_RULES: ValidationRule[] = [
     shortDescription: {
       text: "The token was unexpected.",
     },
-    longDescription: {
+    fullDescription: {
       text: "A token was encountered in a place where it wasn't expected.",
     },
     help: {

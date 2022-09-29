@@ -1,4 +1,4 @@
-import { ValidationRule } from "../../common/sarif";
+import { ValidationRule } from "../../common/sarif.js";
 
 export const RESOURCE_LINK_RULES: ValidationRule[] = [
   {
@@ -7,7 +7,7 @@ export const RESOURCE_LINK_RULES: ValidationRule[] = [
     shortDescription: {
       text: "Cannot find referenced resource.",
     },
-    longDescription: {
+    fullDescription: {
       text: "The resource has a reference and it cannot be found. This will likely cause problems during deployments.",
     },
     help: {
