@@ -114,10 +114,18 @@ export type ValidationResult = {
   message: {
     text: string;
   };
-  locations?: Array<{
-    physicalLocation?: PhysicalLocation;
-    logicalLocations?: LogicalLocation[];
-  }>;
+
+  /**
+   * The location of the error.
+   *
+   * [resource, file] when there is a physical file.
+   * [resource] when there is no physical file (e.g. previews).
+   *
+   * The `uriBaseId` can be used to differentiate between resource and file.
+   * This is a loose interpretation of the spec but our resources are kept in-memory
+   * yet we want access to regions.
+   */
+  locations: [Location, Location] | [Location];
 };
 
 /**
@@ -127,10 +135,15 @@ export type ToolComponentReference = {
   name: string;
 };
 
+export type Location = {
+  physicalLocation?: PhysicalLocation;
+  // logicalLocations?: LogicalLocation[];
+};
+
 export type PhysicalLocation = {
   artifactLocation: {
     uri: string;
-    uriBaseId?: string;
+    uriBaseId: "SRCROOT" | "RESOURCE";
   };
   region?: Region;
 };

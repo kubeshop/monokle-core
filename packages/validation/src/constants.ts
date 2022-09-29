@@ -1,3 +1,5 @@
+import { Region } from "./common/sarif.js";
+
 export const UNLOADED_ERR_MSG = (name: string) =>
   `Cannot validate resources. The ${name} validator must first be loaded.`;
 export const NOT_FOUND_ERR_MSG = (name: string) =>
@@ -6,3 +8,10 @@ export const NOT_FOUND_ERR_MSG = (name: string) =>
 export const REF_PATH_SEPARATOR = "#";
 export const NAME_REFNODE_PATH = `metadata${REF_PATH_SEPARATOR}name`;
 export const NO_HELP_AVAILABLE = "No help available.";
+
+export const FALLBACK_REGION: Region = {
+  startLine: 1,
+  startColumn: 1,
+  endLine: 1,
+  endColumn: 1,
+};

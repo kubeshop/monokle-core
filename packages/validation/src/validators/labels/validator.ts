@@ -2,8 +2,9 @@ import { YAMLMap } from "yaml";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
-import { ValidationResult, ValidationRule } from "../../common/sarif.js";
+import { ValidationResult } from "../../common/sarif.js";
 import { LABELS_RULES } from "./rules.js";
+import { createLocations } from "../../utils/createLocations.js";
 
 export type LabelsValidatorConfig = ValidatorConfig<"labels">;
 
@@ -46,26 +47,13 @@ export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
       ? this.parser.parseErrorRegion(resource, node.range)
       : undefined;
 
+    const locations = createLocations(resource, region);
+
     return this.createValidationResult("LBL001", {
       message: {
         text: "Resource is unlabelled.",
       },
-      locations: [
-        {
-          physicalLocation: {
-            artifactLocation: {
-              uri: resource.filePath.substring(1),
-            },
-            region,
-          },
-          logicalLocations: [
-            {
-              kind: "resource",
-              name: resource.id,
-            },
-          ],
-        },
-      ],
+      locations,
     });
   }
 }

@@ -15,6 +15,7 @@ import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 import invariant from "tiny-invariant";
+import { createLocations } from "../../utils/createLocations.js";
 
 export type OpenPolicyAgentConfig = ValidatorConfig<"open-policy-agent"> & {
   plugin: {
@@ -121,27 +122,13 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
 
     const pathHint = rule.properties?.path;
     const region = this.determineErrorRegion(resource, pathHint, container);
+    const locations = createLocations(resource, region);
 
     return this.createValidationResult(rule.id, {
       message: {
         text: description,
       },
-      locations: [
-        {
-          logicalLocations: [
-            {
-              kind: "resource",
-              name: resource.id,
-            },
-          ],
-          physicalLocation: {
-            artifactLocation: {
-              uri: resource.filePath.substring(1),
-            },
-            region,
-          },
-        },
-      ],
+      locations,
     });
   }
 

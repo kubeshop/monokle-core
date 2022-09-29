@@ -1,8 +1,9 @@
 import { YAMLError } from "yaml";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
-import { ValidationResult, ValidationRule } from "../../common/sarif.js";
+import { ValidationResult } from "../../common/sarif.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { createLocations } from "../../utils/createLocations.js";
 import { YAML_RULES, YAML_RULE_MAP } from "./rules.js";
 
 export type YamlValidatorConfig = ValidatorConfig<"yaml-syntax">;
@@ -49,28 +50,14 @@ export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
 
   private adaptToValidationResult(resource: Resource, err: YAMLError) {
     const region = this.resourceParser.parseErrorRegion(resource, err.pos);
+    const locations = createLocations(resource, region);
     const ruleId = YAML_RULE_MAP[err.code];
 
     return this.createValidationResult(ruleId, {
       message: {
         text: err.message,
       },
-      locations: [
-        {
-          logicalLocations: [
-            {
-              kind: "resource",
-              name: resource.id,
-            },
-          ],
-          physicalLocation: {
-            artifactLocation: {
-              uri: resource.filePath.substring(1),
-            },
-            region,
-          },
-        },
-      ],
+      locations,
     });
   }
 }
