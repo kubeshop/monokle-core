@@ -123,9 +123,7 @@ export type ValidationResult = {
    * File is first when possible because other SARIF consumers take the first as main location
    * and a resource uuid means nothing to these tools.
    *
-   * The `uriBaseId` can be used to differentiate between resource and file.
-   * This is a loose interpretation of the spec but our resources are kept in-memory
-   * yet we want access to regions.
+   * @hint use getFileLocation and getResourceLocation from utils/sarif.ts
    */
   locations: [Location, Location];
 };
