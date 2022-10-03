@@ -1,6 +1,10 @@
 import { parseDocument, Document, LineCounter, ParsedNode } from "yaml";
 import { Resource } from "./types.js";
 import { Region } from "./sarif.js";
+import {
+  clearAllRefNodesCache,
+  clearRefNodesCache,
+} from "../references/utils/getResourceNodes.js";
 
 type ParsedResource = {
   parsedDoc: Document.Parsed<ParsedNode>;
@@ -50,13 +54,13 @@ export class ResourceParser {
   clear(resourceIds?: string[]) {
     if (!resourceIds) {
       this.cache.clear();
-      // clearAllRefNodesCache();
+      clearAllRefNodesCache();
       return;
     }
 
     for (const id of resourceIds) {
       this.cache.delete(id);
-      // clearRefNodesCache(id);
+      clearRefNodesCache(id);
     }
   }
 
