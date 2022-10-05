@@ -43,8 +43,7 @@ export function handlePairRefMapping(
     });
 
   // if no target resources are found, then mark all source ref nodes as unsatisfied
-  const { lineCounter: sourceLineCounter } =
-    config.parser.parse(sourceResource);
+  const sourceLineCounter = config.parser.getLineCounter(sourceResource);
 
   if (targetResources.length === 0) {
     sourceRefNodes.forEach((sourceRefNode) => {
@@ -93,7 +92,7 @@ export function handlePairRefMapping(
               )
             ) {
               const targetLineCounter =
-                config.parser.parse(targetResource).lineCounter;
+                config.parser.getLineCounter(targetResource);
 
               foundMatchByTargetResourceId[targetResource.id] = true;
 

@@ -38,7 +38,7 @@ export function handleRefMappingByKey(
     return;
   }
 
-  const sourceLineCounter = config.parser.parse(sourceResource).lineCounter;
+  const sourceLineCounter = config.parser.getLineCounter(sourceResource);
 
   sourceRefNodes.forEach((sourceRefNode) => {
     const createRef =
@@ -73,7 +73,7 @@ export function handleRefMappingByKey(
 
       targetResources.forEach((targetResource) => {
         const targetLineCounter =
-          config.parser.parse(targetResource).lineCounter;
+          config.parser.getLineCounter(targetResource);
 
         if (outgoingRefMapper.type === "name") {
           if (targetResource.name === sourceRefNode.scalar.value) {

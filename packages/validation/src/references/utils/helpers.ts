@@ -8,6 +8,8 @@ import {
 } from "../../common/types.js";
 import { RefMapper } from "../mappers/index.js";
 import { getSiblingValue } from "./GetSiblings.js";
+import { LineCounter, parseDocument } from "yaml";
+import path from "path";
 
 export function refMapperMatchesKind(refMapper: RefMapper, kind: string) {
   if (refMapper.target.kind.startsWith("$")) {
@@ -92,4 +94,43 @@ export function isOptionalRef(
         )
       )
     : false;
+}
+
+// some (older) kustomization yamls don't contain kind/group properties to identify them as such
+// they are identified only by their name
+function isUntypedKustomizationFile(filePath = ''): boolean {
+  return /kustomization*.yaml/.test(filePath.toLowerCase().trim());
+}
+
+export function isYamlFile(filePath:  string): boolean {
+  return filePath.endsWith('.yml') || filePath.endsWith('.yaml');
+}
+
+export function parseYamlDocument(text: string, lineCounter?: LineCounter) {
+  return parseDocument(text, { lineCounter, uniqueKeys: false, strict: false });
+}
+
+export function findResourceById(id: string, resources: Resource[]) {
+  return resources.find(r => r.id === id);
+}
+
+export function isFolderPath(filePath: string, files: Set<string>) {
+  return Object.keys(files).find(f => f.startsWith(filePath + path.sep)) !== undefined;
+}
+
+export function findChildren(files: Set<string>, parentFile: string) {
+  return Object.keys(files).filter(
+    f =>
+      f.startsWith(parentFile + path.sep) &&
+      f.indexOf(path.sep, parentFile.length + 1) === -1
+  );
+}
+
+export function getResourcesForPath(
+  filePath: string,
+  resources: Resource[] | undefined
+) {
+  return resources
+    ? resources.filter(resource => resource.filePath === filePath)
+    : [];
 }

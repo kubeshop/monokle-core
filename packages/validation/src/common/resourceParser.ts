@@ -59,6 +59,10 @@ export class ResourceParser {
       // clearRefNodesCache(id);
     }
   }
+
+  getLineCounter( resource: Resource ){
+    return this.parse( resource ).lineCounter;
+  }
 }
 
 function parseYamlDocument(text: string, lineCounter?: LineCounter) {
