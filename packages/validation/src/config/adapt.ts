@@ -14,10 +14,6 @@ export function adaptConfig(
 
   const rules = config.rules ?? {};
   for (const [rule, value] of Object.entries(rules)) {
-    if (!value) {
-      continue;
-    }
-
     const ruleReference = ruleMap[rule];
 
     if (!ruleReference) {
@@ -43,10 +39,11 @@ export function adaptConfig(
       };
     }
 
+    const enabled = value !== false;
     const policyRule: ValidationPolicyRule = {
       id: ruleId,
       defaultConfiguration: {
-        enabled: true,
+        enabled,
       },
     };
 

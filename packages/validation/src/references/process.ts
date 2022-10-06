@@ -15,7 +15,7 @@ import { clearOutgoingResourceRefs } from "./utils/clearOutgoingRefs.js";
 import { getResourceKindsWithTargetingRefs } from "./utils/getResourceKindsWithTargetingRefs.js";
 import { getResourceRefNodes } from "./utils/getResourceNodes.js";
 import { refMapperMatchesKind } from "./utils/helpers.js";
-import { processKustomizations } from "./utils/kustomizeRefs";
+import { processKustomizations } from "./utils/kustomizeRefs.js";
 
 /**
  * Processes resources and MUTATES them with their references to other resources.
@@ -39,8 +39,8 @@ export function processRefs(
   });
 
   // extract all unique file paths from resources
-  const filePaths = new Set( resources.map(obj => obj.filePath));
-  processKustomizations( resources, filePaths, parser );
+  const filePaths = new Set(resources.map((obj) => obj.filePath));
+  processKustomizations(resources, filePaths, parser);
 }
 
 function filterResources(resources: Resource[], incremental?: Incremental) {
