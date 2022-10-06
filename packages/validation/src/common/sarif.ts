@@ -44,11 +44,51 @@ export type ValidationRule<TProperties extends JsonObject = {}> = {
     text: string;
     markdown?: string;
   };
+  defaultConfig?: ValidationRuleConfig;
 
   /**
    * Optional, custom properties
    */
   properties?: GitHubProperties & TProperties;
+};
+
+/**
+ * The configuration of a validation rule, aka reportingConfiguration.
+ *
+ * Configuration default is found on `run.tool.driver.rules[x].defaultConfiguration`.
+ * Configuration override is found on `run.policies[x].rules[y]`.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541290
+ */
+export type ValidationRuleConfig = {
+  /**
+   * Whether the rule is enabled.
+   *
+   * @default true
+   */
+  enabled?: boolean;
+
+  /**
+   * The level of the rule.
+   *
+   * @default "warning"
+   */
+  level?: "warning" | "error" | "note" | "none";
+
+  /**
+   * The rank of the rule, used to sort the results.
+   *
+   * @remark GitHub has a limit of 5000 results. This property
+   * might be used to drop the least important results.
+   *
+   * @default -1
+   */
+  rank?: number; // between [0, 100].
+
+  /**
+   * The parameters for this rule.
+   */
+  parameters?: JsonObject;
 };
 
 /**

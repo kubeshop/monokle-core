@@ -23,7 +23,14 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       help: {
         text: "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
       },
+      defaultConfig: {
+        enabled: false,
+        level: "warning",
+      },
       properties: {
+        problem: {
+          severity: "warning",
+        },
         severity: "medium",
         entrypoint: "appshield/kubernetes/KSV001/deny",
         path: "$container.securityContext.allowPrivilegeEscalation",
