@@ -15,3 +15,6 @@ export const FALLBACK_REGION: Region = {
   endLine: 1,
   endColumn: 1,
 };
+
+export const KUSTOMIZATION_KIND = 'Kustomization';
+export const KUSTOMIZATION_API_GROUP = 'kustomize.config.k8s.io';
