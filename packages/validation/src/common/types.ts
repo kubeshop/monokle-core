@@ -93,7 +93,7 @@ export interface RefPosition {
 /* * * * * * * * * * * * * * * * *
  * Types for validators
  * * * * * * * * * * * * * * * * */
-export type ValidatorConfig<T extends string = string> = {
+export type ToolConfig<T extends string = string> = {
   tool: T;
   enabled: boolean;
   policy?: ValidationPolicy;
@@ -107,7 +107,7 @@ export interface ValidatorConstructor {
   new (parser: ResourceParser): Validator;
 }
 
-export interface Validator<TConfig extends ValidatorConfig = ValidatorConfig> {
+export interface Validator<TConfig extends ToolConfig = ToolConfig> {
   get name(): string;
   get enabled(): boolean;
   get rules(): ValidationRule[];

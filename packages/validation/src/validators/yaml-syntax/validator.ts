@@ -2,12 +2,12 @@ import { YAMLError } from "yaml";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
-import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { Incremental, Resource, ToolConfig } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { YAML_RULES, YAML_RULE_MAP } from "./rules.js";
 
-export type YamlValidatorConfig = ValidatorConfig<"yaml-syntax">;
+export type YamlValidatorConfig = ToolConfig<"yaml-syntax">;
 
 export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
   static toolName = "yaml-syntax";

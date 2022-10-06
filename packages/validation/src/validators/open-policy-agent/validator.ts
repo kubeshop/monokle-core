@@ -11,14 +11,14 @@ import {
   ValidationResult,
   ValidationRule,
 } from "../../common/sarif.js";
-import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { Incremental, Resource, ToolConfig } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
 import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 
-export type OpenPolicyAgentConfig = ValidatorConfig<"open-policy-agent"> & {
+export type OpenPolicyAgentConfig = ToolConfig<"open-policy-agent"> & {
   plugin?: OpaPlugin;
 };
 
