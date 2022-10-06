@@ -2,7 +2,6 @@ import { JsonObject } from "type-fest";
 import { expect, it } from "vitest";
 import { ResourceParser } from "./common/resourceParser.js";
 import { Resource } from "./common/types.js";
-import { adaptConfig, createRuleMap } from "./config/adapt.js";
 import { parseConfig } from "./config/parse.js";
 import { MonokleValidator } from "./MonokleValidator.js";
 import { processRefs } from "./references/process.js";
@@ -34,11 +33,8 @@ it("should work with monokle.validation.yaml", async () => {
     },
   };
 
-  const config = parseConfig(configJson);
-  const ruleMap = createRuleMap(validator);
-  const configuration = adaptConfig(config, ruleMap);
-  console.log("CONFIG", configuration);
-  await validator.configure(configuration);
+  const config = parseConfig(validator, configJson);
+  await validator.configure(config);
 
   // Step 3: Validate resources
   const resources = [BAD_DEPLOYMENT, BAD_SERVICE];

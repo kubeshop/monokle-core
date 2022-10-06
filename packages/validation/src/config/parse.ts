@@ -1,7 +1,20 @@
 import * as z from "zod";
 import { ZodType } from "zod";
+import { MonokleValidator } from "../MonokleValidator.js";
+import { adaptConfig } from "./adapt.js";
 
-export function parseConfig(config: unknown): Config {
+/**
+ * Parse the configuration as SARIF.
+ */
+export function parseConfig(validator: MonokleValidator, config: unknown) {
+  const raw = parseConfigRaw(config);
+  return adaptConfig(validator, raw);
+}
+
+/**
+ * Parse the configuration as Monokle Config.
+ */
+export function parseConfigRaw(config: unknown): Config {
   return configSchema.parse(config);
 }
 

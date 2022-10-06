@@ -1,15 +1,16 @@
-import { Config } from "./parse.js";
-import { MonokleValidator, ValidatorConfig } from "../MonokleValidator.js";
 import { ValidationPolicyRule, ValidationRuleConfig } from "../common/sarif.js";
+import { MonokleValidator, ValidatorConfig } from "../MonokleValidator.js";
+import { Config } from "./parse.js";
 
 /**
  * Adapt our configuration format to SARIF.
  */
 export function adaptConfig(
-  config: Config,
-  ruleMap: RuleMap
+  validator: MonokleValidator,
+  config: Config
 ): ValidatorConfig[] {
   const result = getPluginInit(config);
+  const ruleMap = createRuleMap(validator);
 
   const rules = config.rules ?? {};
   for (const [rule, value] of Object.entries(rules)) {
@@ -66,7 +67,7 @@ type RuleMap = Record<string, [string, string]>;
  *
  * @example ruleMap("open-policy-agent/no-latest-image") === ["open-policy-agent", "KSV013"]
  */
-export function createRuleMap(validator: MonokleValidator): RuleMap {
+function createRuleMap(validator: MonokleValidator): RuleMap {
   const result: RuleMap = {};
 
   for (const tool of validator.tools) {
@@ -83,7 +84,7 @@ function mapConfigLevel(input: "warn" | "err"): ValidationRuleConfig["level"] {
   return input === "warn" ? "warning" : "error";
 }
 
-export function getPluginInit(config: Config): ValidatorConfig[] {
+function getPluginInit(config: Config): ValidatorConfig[] {
   const result = [];
 
   const plugins = config.plugins ?? {};
