@@ -7,6 +7,7 @@ import {
   ValidatorConfig,
 } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
+import { isDefined } from "../../utils/isDefined.js";
 import { RESOURCE_LINK_RULES } from "./rules.js";
 
 export type ResourceLinksValidatorConfig = ValidatorConfig<"resource-links">;
@@ -47,9 +48,9 @@ export class ResourceLinksValidator extends AbstractValidator<ResourceLinksValid
     const refs = resource.refs ?? [];
     const unsatisfiedRefs = refs.filter(isUnsatisfied);
 
-    const results = unsatisfiedRefs.map((ref) => {
-      return this.adaptToValidationResult(resource, ref);
-    });
+    const results = unsatisfiedRefs
+      .map((ref) => this.adaptToValidationResult(resource, ref))
+      .filter(isDefined);
 
     return results;
   }

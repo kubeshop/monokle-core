@@ -4,6 +4,7 @@ import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
+import { isDefined } from "../../utils/isDefined.js";
 import { YAML_RULES, YAML_RULE_MAP } from "./rules.js";
 
 export type YamlValidatorConfig = ValidatorConfig<"yaml-syntax">;
@@ -41,9 +42,9 @@ export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
       forceParse: true,
     });
 
-    const results = parsedDoc.errors.map((err) => {
-      return this.adaptToValidationResult(resource, err);
-    });
+    const results = parsedDoc.errors
+      .map((err) => this.adaptToValidationResult(resource, err))
+      .filter(isDefined);
 
     return results;
   }

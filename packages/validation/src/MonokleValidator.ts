@@ -15,18 +15,20 @@ import type { LabelsValidatorConfig } from "./validators/labels/validator.js";
 import type { OpenPolicyAgentConfig } from "./validators/open-policy-agent/validator.js";
 import type { ResourceLinksValidatorConfig } from "./validators/resource-links/validator.js";
 import type { YamlValidatorConfig } from "./validators/yaml-syntax/validator.js";
+import type { ValidatorConfig as AnyValidatorConfig } from "./common/types.js";
 
 type Config = {
   debug?: boolean;
   parser?: ResourceParser;
 };
 
-type ValidatorConfig =
+export type ValidatorConfig =
   | LabelsValidatorConfig
   | KubernetesSchemaConfig
   | YamlValidatorConfig
   | OpenPolicyAgentConfig
-  | ResourceLinksValidatorConfig;
+  | ResourceLinksValidatorConfig
+  | AnyValidatorConfig;
 
 export class MonokleValidator {
   #validators: Validator[];
@@ -39,6 +41,10 @@ export class MonokleValidator {
     this.#validators = validators.map((v) =>
       typeof v === "function" ? new v(parser) : v
     );
+  }
+
+  get tools() {
+    return this.#validators;
   }
 
   async configure(config: ValidatorConfig | ValidatorConfig[]): Promise<void> {

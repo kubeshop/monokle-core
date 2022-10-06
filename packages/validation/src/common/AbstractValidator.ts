@@ -3,7 +3,13 @@ import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { UNLOADED_ERR_MSG } from "../constants.js";
 import { getResourceId } from "../utils/sarif.js";
-import { ValidationResult, ValidationRule, ValidationRun } from "./sarif.js";
+import {
+  ValidationPolicyRule,
+  ValidationResult,
+  ValidationRule,
+  ValidationRuleConfig,
+  ValidationRun,
+} from "./sarif.js";
 import { Incremental, Resource, Validator, ValidatorConfig } from "./types.js";
 
 export abstract class AbstractValidator<
@@ -16,13 +22,13 @@ export abstract class AbstractValidator<
 
   protected config: TConfig | undefined;
   protected _rules: ValidationRule<TRuleProperties>[];
-  protected _ruleReverseLookup: Map<string, number>; // Lookup index by rule identifier;
+  protected _ruleReverseLookup: Map<string, number> = new Map(); // Lookup index by rule identifier;
+  protected _policyRuleReverseLookup: Map<string, number> = new Map(); // Lookup index by rule identifier;
   protected previous: ValidationResult[] = [];
 
   constructor(name: string, rules: ValidationRule<TRuleProperties>[]) {
     this.name = name;
     this._rules = rules;
-    this._ruleReverseLookup = new Map();
     rules.forEach((r, idx) => this._ruleReverseLookup.set(r.id, idx));
   }
 
@@ -37,9 +43,13 @@ export abstract class AbstractValidator<
   protected createValidationResult(
     ruleId: string,
     args: Omit<ValidationResult, "ruleId" | "rule">
-  ): ValidationResult {
+  ): ValidationResult | undefined {
     const index = this._ruleReverseLookup.get(ruleId);
     invariant(index !== undefined, "rules misconfigured");
+
+    if (!this.isRuleEnabled(ruleId)) {
+      return undefined;
+    }
 
     return {
       ruleId,
@@ -56,6 +66,12 @@ export abstract class AbstractValidator<
   async load(config: TConfig): Promise<void> {
     this.config = config;
     if (!this.config.enabled) return;
+
+    this._policyRuleReverseLookup.clear();
+    config.policy?.rules.forEach((r, idx) => {
+      this._policyRuleReverseLookup.set(r.id, idx);
+    });
+
     await this.doLoad(config);
 
     this.loaded = true;
@@ -99,6 +115,37 @@ export abstract class AbstractValidator<
     resources: Resource[],
     incremental?: Incremental
   ): Promise<ValidationResult[]>;
+
+  protected isRuleEnabled(ruleId: string): boolean {
+    return this.getRuleConfig(ruleId).enabled ?? true;
+  }
+
+  protected getRuleConfig(ruleId: string): ValidationRuleConfig {
+    const rule = this.getRule(ruleId);
+    const policyRule = this.getPolicyRule(ruleId);
+
+    const defaultConfig = rule.defaultConfiguration;
+    const userConfig = policyRule?.defaultConfiguration;
+
+    return {
+      ...defaultConfig,
+      ...userConfig,
+    };
+  }
+
+  protected getRule(ruleId: string): ValidationRule {
+    const ruleIndex = this._ruleReverseLookup.get(ruleId);
+    invariant(ruleIndex !== undefined, `rule_not_found`);
+    const rule = this._rules[ruleIndex];
+    invariant(rule, `${ruleId} rule_not_found`);
+    return rule;
+  }
+
+  protected getPolicyRule(ruleId: string): ValidationPolicyRule | undefined {
+    const ruleIndex = this._policyRuleReverseLookup.get(ruleId);
+    if (ruleIndex === undefined) return undefined;
+    return this.config?.policy?.rules[ruleIndex];
+  }
 
   protected merge(
     previous: ValidationResult[],
