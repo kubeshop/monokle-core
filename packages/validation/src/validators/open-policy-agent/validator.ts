@@ -3,19 +3,20 @@ import { isNode, Node } from "yaml";
 
 import get from "lodash/get.js";
 
-import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
-import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
-import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
-import {
-  ValidationResult,
-  Region,
-  ValidationRule,
-} from "../../common/sarif.js";
+import invariant from "tiny-invariant";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
-import { WasmLoader } from "./wasmLoader/WasmLoader.js";
-import invariant from "tiny-invariant";
+import {
+  Region,
+  ValidationResult,
+  ValidationRule,
+} from "../../common/sarif.js";
+import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
+import { isDefined } from "../../utils/isDefined.js";
+import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
+import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
+import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 
 export type OpenPolicyAgentConfig = ValidatorConfig<"open-policy-agent"> & {
   plugin: {
@@ -74,6 +75,12 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
     return results;
   }
 
+  protected override isRuleEnabled(ruleId: string): boolean {
+    const isLegacyEnabled =
+      this.config?.plugin.enabledRules?.includes(ruleId) ?? false;
+    return super.isRuleEnabled(ruleId) || isLegacyEnabled;
+  }
+
   private async validateResource(
     resource: Resource
   ): Promise<ValidationResult[]> {
@@ -81,9 +88,7 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
       return [];
     }
 
-    const enabledRules = this.rules.filter(
-      (r) => this.config!.plugin.enabledRules?.includes(r.id) ?? true
-    );
+    const enabledRules = this.rules.filter((r) => this.isRuleEnabled(r.id));
 
     const errors = enabledRules.flatMap((rule) => {
       return this.validatePolicyRule(resource, rule);
@@ -101,9 +106,9 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
     const evaluation = this.validator.evaluate(resource.content, entrypoint);
 
     const violations: PolicyError[] = evaluation[0]?.result ?? [];
-    const errors = violations.map((err) => {
-      return this.adaptToValidationResult(resource, rule, err);
-    });
+    const errors = violations
+      .map((err) => this.adaptToValidationResult(resource, rule, err))
+      .filter(isDefined);
 
     return errors;
   }

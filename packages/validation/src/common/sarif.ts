@@ -14,15 +14,22 @@ export type ValidationResponse = {
 
 export type ValidationRun = {
   tool: {
-    driver: {
-      name: string;
-      rules: ValidationRule[];
-    };
+    driver: ValidationTool;
   };
   results: ValidationResult[];
 };
 
 export type ValidationLevel = "warning" | "error" | "none";
+
+/**
+ * A validation tool, aka toolComponent
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10540971
+ */
+export type ValidationTool = {
+  name: string;
+  rules: ValidationRule[];
+};
 
 /**
  * The validation rule, aka reportingDescriptor.
@@ -44,7 +51,7 @@ export type ValidationRule<TProperties extends JsonObject = {}> = {
     text: string;
     markdown?: string;
   };
-  defaultConfig?: ValidationRuleConfig;
+  defaultConfiguration?: ValidationRuleConfig;
 
   /**
    * Optional, custom properties
@@ -89,6 +96,23 @@ export type ValidationRuleConfig = {
    * The parameters for this rule.
    */
   parameters?: JsonObject;
+};
+
+/**
+ * The external configuration of validation rules.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10540976
+ */
+export type ValidationPolicy = {
+  name: string;
+  semanticVersion?: string;
+  associatedComponent: ToolComponentReference;
+  rules: ValidationPolicyRule[];
+};
+
+export type ValidationPolicyRule = {
+  id: string;
+  defaultConfiguration: ValidationRuleConfig;
 };
 
 /**

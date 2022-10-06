@@ -23,7 +23,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       help: {
         text: "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
       },
-      defaultConfig: {
+      defaultConfiguration: {
         enabled: false,
         level: "warning",
       },

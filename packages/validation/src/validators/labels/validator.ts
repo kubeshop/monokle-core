@@ -5,6 +5,7 @@ import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
 import { ValidationResult } from "../../common/sarif.js";
 import { LABELS_RULES } from "./rules.js";
 import { createLocations } from "../../utils/createLocations.js";
+import { isDefined } from "../../utils/isDefined.js";
 
 export type LabelsValidatorConfig = ValidatorConfig<"labels">;
 
@@ -34,13 +35,15 @@ export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
       }
     }
 
-    const results = invalidResources.map((r) =>
-      this.adaptToValidationResult(r)
-    );
+    const results = invalidResources
+      .map((r) => this.adaptToValidationResult(r))
+      .filter(isDefined);
     return results;
   }
 
-  private adaptToValidationResult(resource: Resource): ValidationResult {
+  private adaptToValidationResult(
+    resource: Resource
+  ): ValidationResult | undefined {
     const { parsedDoc } = this.parser.parse(resource);
     const node = parsedDoc.getIn(["metadata"], true) as YAMLMap | undefined;
     const region = node?.range

@@ -1,6 +1,6 @@
 import { Scalar } from "yaml";
 import { ResourceParser } from "./resourceParser.js";
-import { ValidationRun } from "./sarif.js";
+import { ValidationPolicy, ValidationRule, ValidationRun } from "./sarif.js";
 
 /* * * * * * * * * * * * * * * * *
  * The common resource type
@@ -96,6 +96,7 @@ export interface RefPosition {
 export type ValidatorConfig<T extends string = string> = {
   tool: T;
   enabled: boolean;
+  policy?: ValidationPolicy;
 };
 
 export type Incremental = {
@@ -109,6 +110,8 @@ export interface ValidatorConstructor {
 export interface Validator<TConfig extends ValidatorConfig = ValidatorConfig> {
   get name(): string;
   get enabled(): boolean;
+  get rules(): ValidationRule[];
+
   load(config: TConfig): Promise<void>;
   validate(
     resources: Resource[],
