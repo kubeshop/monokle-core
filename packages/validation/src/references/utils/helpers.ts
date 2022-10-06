@@ -99,7 +99,10 @@ export function isOptionalRef(
 // some (older) kustomization yamls don't contain kind/group properties to identify them as such
 // they are identified only by their name
 function isUntypedKustomizationFile(filePath = ''): boolean {
-  return /kustomization*.yaml/.test(filePath.toLowerCase().trim());
+  const base = path.parse(filePath).base.toLowerCase();
+  return ['kustomization.yaml', 'kustomization.yml', 'Kustomization'].includes(
+    base
+  );
 }
 
 export function isYamlFile(filePath:  string): boolean {

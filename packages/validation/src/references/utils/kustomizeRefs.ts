@@ -1,6 +1,6 @@
 import path from 'path';
 import { NodeWrapper } from "../../common/NodeWrapper";
-import { Resource, ResourceRefType } from "../../common/types";
+import { Resource, ResourceRef, ResourceRefType } from "../../common/types";
 import { KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND } from "../../constants";
 import { Document, LineCounter, ParsedNode, Scalar, YAMLSeq } from "yaml";
 import {
@@ -259,28 +259,23 @@ function createKustomizationFileRef(
   filePath: string,
   files: Set<string>
 ) {
-  let isFile = files.has(filePath);
-  let isFolder = !isFile && isFolderPath(filePath, files);
-  let refType =
+  const isFile = files.has(filePath);
+  const isFolder = !isFile && isFolderPath(filePath, files);
+  const refType =
     isFile || isFolder ? ResourceRefType.Outgoing : ResourceRefType.Unsatisfied;
   resource.refs = resource.refs || [];
   const refName = (refNode ? refNode.nodeValue() : filePath) || '<missing>';
 
-  let ref = {
+  const ref : ResourceRef = {
     type: refType,
     name: refName,
     position: refNode.getNodePosition(),
     target: {
       type: 'file',
-      filePath: isFile
-        ? filePath
-        : isFolder
-        ? `${filePath + path.sep}kustomization.yaml`
-        : undefined,
+      filePath: isFolder ? `${filePath + path.sep}kustomization.yaml` : filePath,
     },
   };
 
-  // @ts-ignore
   resource.refs.push(ref);
 }
 
