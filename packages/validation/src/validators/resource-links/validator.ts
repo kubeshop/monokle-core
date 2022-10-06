@@ -4,13 +4,13 @@ import {
   Resource,
   ResourceRef,
   ResourceRefType,
-  ValidatorConfig,
+  ToolConfig,
 } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { RESOURCE_LINK_RULES } from "./rules.js";
 
-export type ResourceLinksValidatorConfig = ValidatorConfig<"resource-links">;
+export type ResourceLinksValidatorConfig = ToolConfig<"resource-links">;
 
 /**
  * Validates whether there are unsatisfied references between resources.

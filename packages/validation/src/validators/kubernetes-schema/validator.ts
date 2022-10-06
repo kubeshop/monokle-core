@@ -3,7 +3,7 @@ import { Document, isCollection, ParsedNode } from "yaml";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult, ValidationRule } from "../../common/sarif.js";
-import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
+import { Incremental, Resource, ToolConfig } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
@@ -15,7 +15,7 @@ import { getResourceSchemaPrefix } from "./resourcePrefixMap.js";
 import { KUBERNETES_SCHEMA_RULES } from "./rules.js";
 import { SchemaLoader } from "./schemaLoader.js";
 
-export type KubernetesSchemaConfig = ValidatorConfig<"kubernetes-schema"> & {
+export type KubernetesSchemaConfig = ToolConfig<"kubernetes-schema"> & {
   schemaVersion?: string;
 };
 

@@ -10,10 +10,10 @@ import {
   ValidationRuleConfig,
   ValidationRun,
 } from "./sarif.js";
-import { Incremental, Resource, Validator, ValidatorConfig } from "./types.js";
+import { Incremental, Resource, Validator, ToolConfig } from "./types.js";
 
 export abstract class AbstractValidator<
-  TConfig extends ValidatorConfig = ValidatorConfig,
+  TConfig extends ToolConfig = ToolConfig,
   TRuleProperties extends JsonObject = {}
 > implements Validator<TConfig>
 {
