@@ -19,12 +19,26 @@ import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 
 export type OpenPolicyAgentConfig = ValidatorConfig<"open-policy-agent"> & {
-  plugin: {
-    id: "trivy";
-    wasmSrc: string; // Either a URL or file path, respectively for web and NodeJs.
-    enabled: boolean;
-    enabledRules?: string[];
-  };
+  plugin?: OpaPlugin;
+};
+
+type OpaPlugin = {
+  id: string;
+  wasmSrc: string; // Either a URL or file path, respectively for web and NodeJs.
+  enabled: boolean;
+
+  /**
+   * @deprecated superseded by config.policy.rules.defaultConfiguration.enabled.
+   */
+  enabledRules?: string[];
+};
+
+// see https://github.com/kubeshop/monokle-core/issues/16
+const DEFAULT_PLUGIN: OpaPlugin = {
+  id: "trivy",
+  enabled: true,
+  wasmSrc: "https://saas.monokle.io/assets/trivy.18d95eb9.wasm",
+  enabledRules: [],
 };
 
 const CONTROLLER_KINDS = [
@@ -42,17 +56,20 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
   OpenPolicyAgentConfig,
   OpaProperties
 > {
+  static toolName = "open-policy-agent";
+
   private validator!: LoadedPolicy;
 
   constructor(
     private resourceParser: ResourceParser,
     private wasmLoader: WasmLoader
   ) {
-    super("open-policy-agent", OPEN_POLICY_AGENT_RULES);
+    super(OpenPolicyAgentValidator.toolName, OPEN_POLICY_AGENT_RULES);
   }
 
   override async doLoad(config: OpenPolicyAgentConfig): Promise<void> {
-    const wasmSrc = config.plugin.wasmSrc;
+    const plugin = config.plugin ?? DEFAULT_PLUGIN;
+    const wasmSrc = plugin.wasmSrc;
     const wasm = await this.wasmLoader.load(wasmSrc);
     this.validator = await loadPolicy(wasm);
   }
@@ -76,8 +93,8 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
   }
 
   protected override isRuleEnabled(ruleId: string): boolean {
-    const isLegacyEnabled =
-      this.config?.plugin.enabledRules?.includes(ruleId) ?? false;
+    const plugin = this.config?.plugin ?? DEFAULT_PLUGIN;
+    const isLegacyEnabled = plugin.enabledRules?.includes(ruleId) ?? false;
     return super.isRuleEnabled(ruleId) || isLegacyEnabled;
   }
 

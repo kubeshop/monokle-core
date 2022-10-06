@@ -10,8 +10,10 @@ import { YAML_RULES, YAML_RULE_MAP } from "./rules.js";
 export type YamlValidatorConfig = ValidatorConfig<"yaml-syntax">;
 
 export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
+  static toolName = "yaml-syntax";
+
   constructor(private resourceParser: ResourceParser) {
-    super("yaml-syntax", YAML_RULES);
+    super(YamlValidator.toolName, YAML_RULES);
   }
 
   async doValidate(

@@ -5,6 +5,7 @@ import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult, ValidationRule } from "../../common/sarif.js";
 import { Incremental, Resource, ValidatorConfig } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
+import { isDefined } from "../../utils/isDefined.js";
 import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
 import {
   findDefaultVersion,
@@ -15,21 +16,25 @@ import { KUBERNETES_SCHEMA_RULES } from "./rules.js";
 import { SchemaLoader } from "./schemaLoader.js";
 
 export type KubernetesSchemaConfig = ValidatorConfig<"kubernetes-schema"> & {
-  schemaVersion: string;
+  schemaVersion?: string;
 };
 
+const DEFAULT_VERSION = "1.24.2";
+
 export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchemaConfig> {
+  static toolName = "kubernetes-schema";
+
   private ajv!: Ajv.Ajv;
 
   constructor(
     private resourceParser: ResourceParser,
     private schemaLoader: SchemaLoader
   ) {
-    super("kubernetes-schema", KUBERNETES_SCHEMA_RULES);
+    super(KubernetesSchemaValidator.toolName, KUBERNETES_SCHEMA_RULES);
   }
 
   async doLoad(config: KubernetesSchemaConfig): Promise<void> {
-    const version = config.schemaVersion;
+    const version = config.schemaVersion ?? DEFAULT_VERSION;
     const schema = await this.schemaLoader.getFullSchema(version);
 
     if (!schema) {
@@ -125,9 +130,9 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
     validate(resource.content);
 
     const errors = validate.errors ?? [];
-    const results = errors.map((err) => {
-      return this.adaptToValidationResult(resource, err);
-    });
+    const results = errors
+      .map((err) => this.adaptToValidationResult(resource, err))
+      .filter(isDefined);
 
     return results;
   }

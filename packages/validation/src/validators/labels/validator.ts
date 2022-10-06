@@ -13,8 +13,10 @@ export type LabelsValidatorConfig = ValidatorConfig<"labels">;
  * Trivial validator used for development and testing.
  */
 export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
+  static toolName = "labels";
+
   constructor(private parser: ResourceParser) {
-    super("labels", LABELS_RULES);
+    super(LabelsValidator.toolName, LABELS_RULES);
   }
 
   async doValidate(
