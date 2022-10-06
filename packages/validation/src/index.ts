@@ -5,6 +5,7 @@ export * from "./references/index.js";
 
 export * from "./utils/getRule.js";
 export * from "./utils/sarif.js";
+export * from "./config/index.js";
 
 export * from "./MonokleValidator.js";
 export * from "./common/resourceParser.js";
