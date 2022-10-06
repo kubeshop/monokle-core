@@ -11,9 +11,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
   rules: [
     {
       id: "KSV001",
-      name: "PROCESS_ELEVATED",
+      name: "no-elevated-process",
       shortDescription: {
-        text: "Process can elevate its own privileges",
+        text: "Disallow the process from elevating its privileges.",
       },
       fullDescription: {
         text: "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
@@ -31,9 +31,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV002",
-      name: "APP_ARMOR_UNSET",
+      name: "app-armor",
       shortDescription: {
-        text: "Default AppArmor profile not set",
+        text: "Require a default AppArmor profile",
       },
       fullDescription: {
         text: "A program inside the container can bypass AppArmor protection policies.",
@@ -54,9 +54,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV003",
-      name: "ALL_DEFAULT_ENABLED",
+      name: "drop-capabilities",
       shortDescription: {
-        text: "Default capabilities not dropped",
+        text: "Require default capabilities to be dropped",
       },
       fullDescription: {
         text: "The container should drop all default capabilities and add only those that are needed for its execution.",
@@ -74,9 +74,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV005",
-      name: "SYS_ADMIN_ENABLED",
+      name: "no-sys-admin",
       shortDescription: {
-        text: "SYS_ADMIN capability added",
+        text: "Disallow the SYS_ADMIN capability",
       },
       fullDescription: {
         text: "SYS_ADMIN gives the processes running inside the container privileges that are equivalent to root.",
@@ -94,9 +94,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV006",
-      name: "DOCKER_SOCK_MOUNTED",
+      name: "no-mounted-docker-sock",
       shortDescription: {
-        text: "hostPath volume mounted with docker.sock",
+        text: "Disallow mounteing the hostPath volume with docker.sock",
       },
       fullDescription: {
         text: "Mounting docker.sock from the host can give the container full root access to the host.",
@@ -114,9 +114,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV008",
-      name: "HOST_IPC_ENABLED",
+      name: "no-host-ipc",
       shortDescription: {
-        text: "Access to host IPC namespace",
+        text: "Disallow access to host IPC namespace",
       },
       fullDescription: {
         text: "Sharing the host's IPC namespace allows container processes to communicate with processes on the host.",
@@ -134,9 +134,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV009",
-      name: "HOST_NETWORK_ENABLED",
+      name: "no-host-network",
       shortDescription: {
-        text: "Access to host network",
+        text: "Disallow access to host network",
       },
       fullDescription: {
         text: "Sharing the host’s network namespace permits processes in the pod to communicate with processes bound to the host’s loopback adapter.",
@@ -154,9 +154,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV010",
-      name: "HOST_PID_ENABLED",
+      name: "no-host-pid",
       shortDescription: {
-        text: "Access to host PID",
+        text: "Disallow access to host PID",
       },
       fullDescription: {
         text: "Sharing the host’s PID namespace allows visibility on host processes, potentially leaking information such as environment variables and configuration.",
@@ -174,9 +174,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV011",
-      name: "CPU_LIMIT_MISSING",
+      name: "cpu-limit",
       shortDescription: {
-        text: "CPU not limited",
+        text: "Require the CPU to be limited",
       },
       fullDescription: {
         text: "Enforcing CPU limits prevents DoS via resource exhaustion.",
@@ -194,9 +194,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV012",
-      name: "RUN_AS_NON_ROOT_DISABLED",
+      name: "run-as-non-root",
       shortDescription: {
-        text: "Runs as root user",
+        text: "Requires the container to runs as non root user",
       },
       fullDescription: {
         text: '"runAsNonRoot" forces the running image to run as a non-root user to ensure least privileges.',
@@ -214,9 +214,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV013",
-      name: "IMAGE_LATEST",
+      name: "no-latest-image",
       shortDescription: {
-        text: 'Image tag ":latest" used',
+        text: "Disallow images with the latest tag",
       },
       fullDescription: {
         text: "It is best to avoid using the ':latest' image tag when deploying containers in production. Doing so makes it hard to track which version of the image is running, and hard to roll back the version.",
@@ -234,9 +234,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV014",
-      name: "READONLY_DISABLED",
+      name: "no-writable-fs",
       shortDescription: {
-        text: "Root file system is not read-only",
+        text: "Require a read-only root file system",
       },
       fullDescription: {
         text: "An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.",
@@ -254,9 +254,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV015",
-      name: "CPU_REQUEST_MISSING",
+      name: "cpu-request",
       shortDescription: {
-        text: "CPU requests not specified",
+        text: "Require the CPU to be requested",
       },
       fullDescription: {
         text: "When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
@@ -274,9 +274,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV016",
-      name: "MEM_REQUEST_MISSING",
+      name: "memory-request",
       shortDescription: {
-        text: "Memory requests not specified",
+        text: "Require the memory to be requested",
       },
       fullDescription: {
         text: "When containers have memory requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
@@ -293,9 +293,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV017",
-      name: "PRIVILEGED_ENABLED",
+      name: "no-privileged",
       shortDescription: {
-        text: "Privileged container",
+        text: "Disallow the use of privileged containers",
       },
       fullDescription: {
         text: "Privileged containers share namespaces with the host system and do not offer any security. They should be used exclusively for system containers that require high privileges.",
@@ -313,9 +313,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV018",
-      name: "MEM_LIMIT_MISSING",
+      name: "memory-limit",
       shortDescription: {
-        text: "Memory not limited",
+        text: "Require the memory to be limited",
       },
       fullDescription: {
         text: "Enforcing memory limits prevents DoS via resource exhaustion.",
@@ -332,9 +332,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV020",
-      name: "LOW_USER_ID",
+      name: "no-low-user-id",
       shortDescription: {
-        text: "Runs with low user ID",
+        text: "Disallow running with a low user ID",
       },
       fullDescription: {
         text: "Force the container to run with user ID > 10000 to avoid conflicts with the host’s user table.",
@@ -352,9 +352,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV021",
-      name: "LOW_GROUP_ID",
+      name: "no-low-group-id",
       shortDescription: {
-        text: "Runs with low group ID",
+        text: "Disallow running with a low group ID",
       },
       fullDescription: {
         text: "Force the container to run with group ID > 10000 to avoid conflicts with the host’s user table.",
@@ -372,9 +372,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV023",
-      name: "HOST_PATH_MOUNTED",
+      name: "no-host-mounted-path",
       shortDescription: {
-        text: "hostPath volumes mounted",
+        text: "Disallow mounting hostPath volumes",
       },
       fullDescription: {
         text: "HostPath volumes must be forbidden.",
@@ -392,9 +392,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV024",
-      name: "HOST_PORT_ACCESS",
+      name: "no-host-port-access",
       shortDescription: {
-        text: "Access to host ports",
+        text: "Disallow accessing the host ports",
       },
       fullDescription: {
         text: "HostPorts should be disallowed, or at minimum restricted to a known list.",
@@ -412,12 +412,12 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV025",
-      name: "SELINUX_MISCONFIG",
+      name: "no-selinux",
       shortDescription: {
-        text: "SELinux custom options set",
+        text: "Disallow custom SELinux options",
       },
       fullDescription: {
-        text: "Force the container to run with group ID > 10000 to avoid conflicts with the host's user table.",
+        text: "There should be no custom SELinux options for this container.",
       },
       helpUri:
         "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
@@ -432,9 +432,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV027",
-      name: "PROC_MOUNT_SET",
+      name: "no-proc-mount",
       shortDescription: {
-        text: "Non-default /proc masks set",
+        text: "Disallow setting proc masks",
       },
       fullDescription: {
         text: "The default /proc masks are set up to reduce attack surface, and should be required.",
@@ -452,9 +452,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV028",
-      name: "VOLUME_NON_EPHEMERAL",
+      name: "no-non-emphemeral-volumes",
       shortDescription: {
-        text: "Non-ephemeral volume types used",
+        text: "Disallow use of non-ephemeral volume types",
       },
       fullDescription: {
         text: "In addition to restricting HostPath volumes, usage of non-ephemeral volume types should be limited to those defined through PersistentVolumes.",
@@ -472,9 +472,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV029",
-      name: "DEFAULT_GROUP_ID",
+      name: "no-root-group",
       shortDescription: {
-        text: "A root primary or supplementary GID set.",
+        text: "Disallow setting runAsGroup to zero.",
       },
       fullDescription: {
         text: "Containers should be forbidden from running with a root primary or supplementary GID.",
@@ -492,9 +492,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV030",
-      name: "SECCOMP_PROFILE_MISSING",
+      name: "seccomp-profile",
       shortDescription: {
-        text: "Default Seccomp profile not set",
+        text: "Require a Seccomp profile",
       },
       fullDescription: {
         text: "The RuntimeDefault seccomp profile must be required, or allow specific additional profiles.",

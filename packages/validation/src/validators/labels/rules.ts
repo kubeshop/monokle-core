@@ -3,7 +3,7 @@ import { ValidationRule } from "../../common/sarif.js";
 export const LABELS_RULES: ValidationRule[] = [
   {
     id: "LBL001",
-    name: "LABEL_MISSING",
+    name: "no-empty-labels",
     shortDescription: {
       text: "Cannot find any label.",
     },

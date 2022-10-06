@@ -37,7 +37,7 @@ export const YAML_RULE_MAP: Record<ErrorCode | string, string> = {
 export const YAML_RULES: ValidationRule[] = [
   {
     id: "YML001",
-    name: "ALIAS_PROPS",
+    name: "alias-props",
     shortDescription: {
       text: "The alias props are incorrect.",
     },
@@ -50,7 +50,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML002",
-    name: "BAD_ALIAS",
+    name: "no-bad-alias",
     shortDescription: {
       text: "The alias' format is incorrect.",
     },
@@ -63,7 +63,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML003",
-    name: "BAD_DIRECTIVE",
+    name: "no-bad-directive",
     shortDescription: {
       text: "The directive is incorrect.",
     },
@@ -76,7 +76,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML004",
-    name: "BAD_DQ_ESCAPE",
+    name: "no-bad-dq-escape",
     shortDescription: {
       text: "The double quotes are escaped incorrectly.",
     },
@@ -89,7 +89,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML005",
-    name: "BAD_INDENT",
+    name: "no-bad-indent",
     shortDescription: {
       text: "The indentation is incorrect.",
     },
@@ -102,7 +102,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML006",
-    name: "BAD_PROP_ORDER",
+    name: "no-bad-prop-order",
     shortDescription: {
       text: "The anchors and tags are used incorrectly.",
     },
@@ -115,7 +115,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML007",
-    name: "BAD_SCALAR_START",
+    name: "no-bad-scalar-start",
     shortDescription: {
       text: "The scalar is formatted incorrectly.",
     },
@@ -128,7 +128,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML008",
-    name: "BLOCK_AS_IMPLICIT_KEY",
+    name: "no-block-as-implicit-key",
     shortDescription: {
       text: "The identation is incorrect.",
     },
@@ -141,7 +141,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML009",
-    name: "BLOCK_IN_FLOW",
+    name: "no-block-in-flow",
     shortDescription: {
       text: "Cannot use block within flow.",
     },
@@ -154,7 +154,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML010",
-    name: "DUPLICATE_KEY",
+    name: "no-duplicate-key",
     shortDescription: {
       text: "Cannot use duplicate keys.",
     },
@@ -167,7 +167,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML011",
-    name: "IMPOSSIBLE",
+    name: "impossible",
     shortDescription: {
       text: "Something unexpected went wrong",
     },
@@ -180,9 +180,9 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML012",
-    name: "KEY_OVER_1024_CHARS",
+    name: "no-long-key",
     shortDescription: {
-      text: "The key is too long.",
+      text: "The key is longer than 1024 characters.",
     },
     fullDescription: {
       text: "Due to legacy reasons, implicit keys must have their following : indicator after at most 1k characters.",
@@ -193,7 +193,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML013",
-    name: "MISSING_ANCHOR",
+    name: "no-missing-anchor",
     shortDescription: {
       text: "The anchor is missing.",
     },
@@ -206,7 +206,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML014",
-    name: "MISSING_CHAR",
+    name: "no-missing-char",
     shortDescription: {
       text: "A character is missing.",
     },
@@ -219,7 +219,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML015",
-    name: "MULTILINE_IMPLICIT_KEY",
+    name: "no-multiline-implicit-key",
     shortDescription: {
       text: "Cannot use multiple lines with implicit keys.",
     },
@@ -232,7 +232,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML016",
-    name: "MULTIPLE_ANCHORS",
+    name: "no-multiple-anchors",
     shortDescription: {
       text: "Cannot have multiple anchors.",
     },
@@ -245,7 +245,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML017",
-    name: "MULTIPLE_DOCS",
+    name: "no-multiple-docs",
     shortDescription: {
       text: "Cannot parse this document.",
     },
@@ -258,7 +258,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML018",
-    name: "MULTIPLE_TAGS",
+    name: "no-multiple-tags",
     shortDescription: {
       text: "Cannot use multiple tags.",
     },
@@ -271,7 +271,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML019",
-    name: "TAB_AS_INDENT",
+    name: "no-tab-as-indent",
     shortDescription: {
       text: "Cannot use tabs for identation.",
     },
@@ -284,7 +284,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML020",
-    name: "TAG_RESOLVE_FAILED",
+    name: "no-failed-tag-resolve",
     shortDescription: {
       text: "Cannot resolve the tag.",
     },
@@ -297,7 +297,7 @@ export const YAML_RULES: ValidationRule[] = [
   },
   {
     id: "YML021",
-    name: "UNEXPECTED_TOKEN",
+    name: "no-unexpected-token",
     shortDescription: {
       text: "The token was unexpected.",
     },

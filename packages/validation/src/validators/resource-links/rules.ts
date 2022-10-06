@@ -3,9 +3,9 @@ import { ValidationRule } from "../../common/sarif.js";
 export const RESOURCE_LINK_RULES: ValidationRule[] = [
   {
     id: "LNK001",
-    name: "LINK_MISSING",
+    name: "no-missing-links",
     shortDescription: {
-      text: "Cannot find referenced resource.",
+      text: "Disallow missing links.",
     },
     fullDescription: {
       text: "The resource has a reference and it cannot be found. This will likely cause problems during deployments.",
