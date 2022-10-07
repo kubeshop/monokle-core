@@ -25,6 +25,14 @@ it("should be flexible to configure", async () => {
   await configureValidator(validator);
 
   const response = await validator.validate(resources);
+
+  // uncomment to debug
+  // response.runs.forEach((r) =>
+  //   r.results.forEach((result) => {
+  //     console.error(result.ruleId, result.message.text);
+  //   })
+  // );
+
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
   expect(hasErrors).toMatchInlineSnapshot("14");
 });
