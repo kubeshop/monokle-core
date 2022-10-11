@@ -88,13 +88,13 @@ export class MonokleValidator {
   configureFile(config: Config | undefined) {
     this.#config.file = config;
     this.#config.merged = this.mergeConfiguration();
-    this.cancelLoad();
+    this.cancelLoad("configuration-file-updated");
   }
 
   configureArgs(config: Config | undefined) {
     this.#config.args = config;
     this.#config.merged = this.mergeConfiguration();
-    this.cancelLoad();
+    this.cancelLoad("args-updated");
   }
 
   private mergeConfiguration(): Config {
@@ -129,8 +129,8 @@ export class MonokleValidator {
     this.#loading = this.doLoad(this.#abortController.signal);
   }
 
-  private cancelLoad() {
-    this.#abortController.abort();
+  private cancelLoad(reason: string = "cancelled") {
+    this.#abortController.abort(reason);
     this.#loading = undefined;
   }
 
@@ -187,10 +187,13 @@ export class MonokleValidator {
     await this.#loading;
 
     const validators = this.#validators.filter((v) => v.enabled);
+    const abortSignal = this.#abortController.signal;
 
     const allRuns = await Promise.allSettled(
       validators.map((v) => v.validate(resources, incremental))
     );
+
+    abortSignal.throwIfAborted();
 
     const runs = allRuns
       .map((run) => (run.status === "fulfilled" ? run.value : undefined))
@@ -217,7 +220,7 @@ export class MonokleValidator {
   }
 
   async unload(): Promise<void> {
-    this.cancelLoad();
+    this.cancelLoad("unload");
     this.configureFile(undefined);
     this.configureArgs(undefined);
   }
