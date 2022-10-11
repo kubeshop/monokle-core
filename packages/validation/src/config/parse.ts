@@ -3,21 +3,6 @@ import * as z from "zod";
 import { ZodType } from "zod";
 
 /**
- * Parse the configuration as SARIF.
- */
-// export function parseConfig(validator: MonokleValidator, config: unknown) {
-//   const raw = parseConfigRaw(config);
-//   return adaptConfig(validator, raw);
-// }
-
-/**
- * Parse the configuration as Monokle Config.
- */
-export function parseConfigRaw(config: unknown): Config {
-  return configSchema.parse(config);
-}
-
-/**
  * A record that configures rules by their human-readable name.
  *
  * @example
@@ -45,3 +30,10 @@ export const configSchema: ZodType<Config> = z.object({
   plugins: z.record(z.boolean()).optional(),
   rules: z.record(z.boolean().or(z.enum(["warn", "err"]))).optional(),
 });
+
+/**
+ * Parse the configuration as Monokle Config.
+ */
+export function parseConfig(config: unknown): Config {
+  return configSchema.parse(config);
+}

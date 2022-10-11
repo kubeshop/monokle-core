@@ -2,7 +2,6 @@ import { isEqual, merge } from "lodash";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
 import type { Incremental, Resource, Validator } from "./common/types.js";
-import { Arguments } from "./config/arguments.js";
 import { Config } from "./config/parse.js";
 import { isDefined } from "./utils/isDefined.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
@@ -110,9 +109,7 @@ export class MonokleValidator {
    *
    * @param config
    */
-  async preload(
-    config: { file?: Config; args?: Arguments } = {}
-  ): Promise<void> {
+  async preload(config: { file?: Config; args?: Config } = {}): Promise<void> {
     if (config.file === undefined || typeof config.file === "object") {
       this.configureFile(config.file);
     }
