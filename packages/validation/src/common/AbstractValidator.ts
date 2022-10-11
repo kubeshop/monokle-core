@@ -96,8 +96,6 @@ export abstract class AbstractValidator implements Validator {
         continue; // rule not found.
       }
 
-      invariant(ruleIndex, "unexpected_missing_rule_index");
-
       const defaultConfig = this._rules[ruleIndex].defaultConfiguration;
 
       this._ruleConfig.set(
