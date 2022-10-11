@@ -3,7 +3,7 @@ import { ValidationRule } from "../../common/sarif.js";
 export const KUBERNETES_SCHEMA_RULES: ValidationRule[] = [
   {
     id: "K8S001",
-    name: "SCHEMA_VIOLATED",
+    name: "schema-violated",
     shortDescription: {
       text: "The resource is formated incorrectly.",
     },

@@ -17,7 +17,7 @@ export type ResourceLinksValidatorConfig = ToolConfig<"resource-links">;
  *
  * @prerequisite you MUST run `processRefs` before calling the validator.
  */
-export class ResourceLinksValidator extends AbstractValidator<ResourceLinksValidatorConfig> {
+export class ResourceLinksValidator extends AbstractValidator {
   static toolName = "resource-links";
 
   constructor() {

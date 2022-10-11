@@ -1,71 +1,185 @@
-import isArray from "lodash/isArray.js";
-import invariant from "tiny-invariant";
+import { isEqual, merge } from "lodash";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
-import type {
-  Incremental,
-  Resource,
-  Validator,
-  ValidatorConstructor,
-} from "./common/types.js";
-import { NOT_FOUND_ERR_MSG } from "./constants.js";
+import type { Incremental, Resource, Validator } from "./common/types.js";
+import { Arguments } from "./config/arguments.js";
+import { Config } from "./config/parse.js";
 import { isDefined } from "./utils/isDefined.js";
-import type { KubernetesSchemaConfig } from "./validators/kubernetes-schema/validator.js";
-import type { LabelsValidatorConfig } from "./validators/labels/validator.js";
-import type { OpenPolicyAgentConfig } from "./validators/open-policy-agent/validator.js";
-import type { ResourceLinksValidatorConfig } from "./validators/resource-links/validator.js";
-import type { YamlValidatorConfig } from "./validators/yaml-syntax/validator.js";
-import type { ToolConfig } from "./common/types.js";
+import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
+import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
+import { LabelsValidator } from "./validators/labels/validator.js";
+import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
+import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
+import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
+import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 
-type Config = {
-  debug?: boolean;
-  parser?: ResourceParser;
-};
+export type PluginLoader = (name: string) => Promise<Validator>;
 
-export type ValidatorConfig =
-  | LabelsValidatorConfig
-  | KubernetesSchemaConfig
-  | YamlValidatorConfig
-  | OpenPolicyAgentConfig
-  | ResourceLinksValidatorConfig
-  | ToolConfig;
+export function createMonokleValidator(loader: PluginLoader) {
+  return new MonokleValidator(loader);
+}
+
+export function createDefaultMonokleValidator(
+  parser: ResourceParser = new ResourceParser()
+) {
+  return new MonokleValidator(
+    async (name) => {
+      switch (name) {
+        case "open-policy-agent":
+          const wasmLoader = new RemoteWasmLoader();
+          return new OpenPolicyAgentValidator(parser, wasmLoader);
+        case "resource-links":
+          return new ResourceLinksValidator();
+        case "yaml-syntax":
+          return new YamlValidator(parser);
+        case "labels":
+          return new LabelsValidator(parser);
+        case "kubernetes-schema":
+          const schemaLoader = new SchemaLoader();
+          return new KubernetesSchemaValidator(parser, schemaLoader);
+        default:
+          throw new Error("validator_not_found");
+      }
+    },
+    {
+      plugins: {
+        "open-policy-agent": true,
+        "resource-links": true,
+        "yaml-syntax": true,
+        labels: true,
+        "kubernetes-schema": true,
+      },
+    }
+  );
+}
 
 export class MonokleValidator {
-  #validators: Validator[];
+  #config: {
+    default: Config;
+    file?: Config;
+    args?: Config;
+    merged: Config;
+  };
 
-  constructor(
-    validators: (Validator | ValidatorConstructor)[],
-    private config: Config = {}
-  ) {
-    const parser = config.parser ?? new ResourceParser();
-    this.#validators = validators.map((v) =>
-      typeof v === "function" ? new v(parser) : v
-    );
+  #abortController: AbortController = new AbortController();
+  #loading?: Promise<void>;
+  #loader: PluginLoader;
+  #previousPluginsInit?: Record<string, boolean>;
+  #validators: Validator[] = [];
+
+  constructor(loader: PluginLoader, defaultConfig: Config = {}) {
+    this.#loader = loader;
+    this.#config = {
+      default: defaultConfig,
+      merged: defaultConfig,
+    };
+  }
+
+  config() {
+    return this.#config;
+  }
+
+  configureFile(config: Config | undefined) {
+    this.#config.file = config;
+    this.#config.merged = this.mergeConfiguration();
+    this.cancelLoad();
+  }
+
+  configureArgs(config: Config | undefined) {
+    this.#config.args = config;
+    this.#config.merged = this.mergeConfiguration();
+    this.cancelLoad();
+  }
+
+  private mergeConfiguration(): Config {
+    return merge(this.#config.default, this.#config.file, this.#config.args);
   }
 
   get tools() {
     return this.#validators;
   }
 
-  async configure(config: ValidatorConfig | ValidatorConfig[]): Promise<void> {
-    const normalizedConfig = isArray(config) ? config : [config];
+  /**
+   * Eagerly load and configure the validation plugins.
+   *
+   * @param config
+   */
+  async preload(
+    config: { file?: Config; args?: Arguments } = {}
+  ): Promise<void> {
+    if (config.file === undefined || typeof config.file === "object") {
+      this.configureFile(config.file);
+    }
+    if (config.args === undefined || typeof config.args === "object") {
+      this.configureArgs(config.args);
+    }
 
-    await Promise.all(
-      normalizedConfig.map((c) => {
-        const validator = this.#validators.find((v) => v.name === c.tool);
-        invariant(validator, NOT_FOUND_ERR_MSG(c.tool));
-        return validator.load(c);
-      })
-    );
+    await this.load();
+  }
+
+  private async load() {
+    this.#abortController.abort();
+    this.#abortController = new AbortController();
+    this.#loading = this.doLoad(this.#abortController.signal);
+  }
+
+  private cancelLoad() {
+    this.#abortController.abort();
+    this.#loading = undefined;
+  }
+
+  private async doLoad(signal: AbortSignal) {
+    const config = this.#config.merged;
+    const previousPlugins = this.#previousPluginsInit;
+
+    if (isEqual(config.plugins, previousPlugins)) {
+      return;
+    }
+
+    // Ensure all validators are loaded
+    const plugins = config.plugins ?? {};
+    for (const [name, value] of Object.entries(plugins)) {
+      if (!value) continue;
+      const hasValidator = this.#validators.find((v) => v.name === name);
+      if (hasValidator) continue;
+      const validator = await this.#loader(name);
+      if (signal.aborted) return;
+      this.#validators.push(validator);
+    }
+
+    // Toggle validators
+    for (const validator of this.#validators) {
+      const value = plugins[validator.name];
+      validator.enabled = Boolean(value);
+    }
+
+    // Configure validators
+    for (const validator of this.#validators) {
+      await validator.configure({
+        rules: config.rules,
+        settings: config.settings,
+      });
+      if (signal.aborted) return;
+    }
+
+    this.#previousPluginsInit = plugins;
   }
 
   /**
    * Validates the resources.
    */
-  async validate(
-    resources: Resource[],
-    incremental?: Incremental
-  ): Promise<ValidationResponse> {
+  async validate({
+    resources,
+    incremental,
+  }: {
+    resources: Resource[];
+    incremental?: Incremental;
+  }): Promise<ValidationResponse> {
+    if (this.#loading === undefined) {
+      this.load();
+    }
+    await this.#loading;
+
     const validators = this.#validators.filter((v) => v.enabled);
 
     const allRuns = await Promise.allSettled(
@@ -76,7 +190,7 @@ export class MonokleValidator {
       .map((run) => (run.status === "fulfilled" ? run.value : undefined))
       .filter(isDefined);
 
-    if (this.config.debug && allRuns.length !== runs.length) {
+    if (this.#config.merged.settings?.debug && allRuns.length !== runs.length) {
       const failedRuns = allRuns.filter((r) => r.status === "rejected");
       // eslint-disable-next-line no-console
       console.warn("skipped failed validators", failedRuns);
@@ -92,5 +206,11 @@ export class MonokleValidator {
   /**
    * Clear the incremental caches.
    */
-  async clear(): Promise<void> {}
+  async clear(): Promise<void> {
+    await Promise.all(this.#validators.map((v) => v.clear()));
+  }
+
+  async unload(): Promise<void> {
+    this.cancelLoad();
+  }
 }

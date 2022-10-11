@@ -1,4 +1,6 @@
+import { JsonObject } from "type-fest";
 import { Scalar } from "yaml";
+import { RuleMap } from "../config/parse.js";
 import { ResourceParser } from "./resourceParser.js";
 import { ValidationPolicy, ValidationRule, ValidationRun } from "./sarif.js";
 
@@ -107,14 +109,18 @@ export interface ValidatorConstructor {
   new (parser: ResourceParser): Validator;
 }
 
-export interface Validator<TConfig extends ToolConfig = ToolConfig> {
+export interface Validator {
   get name(): string;
-  get enabled(): boolean;
   get rules(): ValidationRule[];
+  get enabled(): boolean;
+  set enabled(value: boolean);
 
-  load(config: TConfig): Promise<void>;
+  configure(config: { rules?: RuleMap; settings?: JsonObject }): Promise<void>;
+
   validate(
     resources: Resource[],
     incremental?: Incremental
   ): Promise<ValidationRun>;
+
+  clear(): Promise<void>;
 }
