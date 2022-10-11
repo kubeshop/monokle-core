@@ -1,18 +1,16 @@
 import { YAMLMap } from "yaml";
-import { ResourceParser } from "../../common/resourceParser.js";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
-import { Incremental, Resource, ToolConfig } from "../../common/types.js";
+import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
-import { LABELS_RULES } from "./rules.js";
+import { Incremental, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
-
-export type LabelsValidatorConfig = ToolConfig<"labels">;
+import { LABELS_RULES } from "./rules.js";
 
 /**
  * Trivial validator used for development and testing.
  */
-export class LabelsValidator extends AbstractValidator<LabelsValidatorConfig> {
+export class LabelsValidator extends AbstractValidator {
   static toolName = "labels";
 
   constructor(private parser: ResourceParser) {

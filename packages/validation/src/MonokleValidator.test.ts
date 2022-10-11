@@ -1,30 +1,36 @@
 import Ajv from "ajv";
-import path from "path";
 import { expect, it } from "vitest";
 import { ResourceParser } from "./common/resourceParser.js";
 import { Resource } from "./common/types.js";
-import { MonokleValidator } from "./MonokleValidator.js";
+import {
+  createDefaultMonokleValidator,
+  MonokleValidator,
+} from "./MonokleValidator.js";
 import { processRefs } from "./references/process.js";
-import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
-import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
-import { LabelsValidator } from "./validators/labels/validator.js";
-import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
-import { FileWasmLoader } from "./validators/open-policy-agent/wasmLoader/FileWasmLoader.js";
-import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
-import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 
 // Usage note: This library relies on fetch being on global scope!
 import "isomorphic-fetch";
 
+it("should be simple to configure", async () => {
+  const parser = new ResourceParser();
+  
+  const validator = createDefaultMonokleValidator(parser);
+  
+  processRefs(RESOURCES, parser);
+  const response = await validator.validate({ resources: RESOURCES });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toMatchInlineSnapshot("14");
+});
+
 it("should be flexible to configure", async () => {
   const parser = new ResourceParser();
-  const resources = [BAD_DEPLOYMENT, BAD_SERVICE];
 
-  const validator = createValidator(parser);
-  processRefs(resources, parser);
+  const validator = createDefaultMonokleValidator(parser);
+  processRefs(RESOURCES, parser);
   await configureValidator(validator);
 
-  const response = await validator.validate(resources);
+  const response = await validator.validate({ resources: RESOURCES });
 
   // uncomment to debug
   // response.runs.forEach((r) =>
@@ -41,10 +47,10 @@ it("should be valid SARIF", async () => {
   const parser = new ResourceParser();
   const resources = [BAD_DEPLOYMENT, BAD_SERVICE];
 
-  const validator = createValidator(parser);
+  const validator = createDefaultMonokleValidator(parser);
   processRefs(resources, parser);
   await configureValidator(validator);
-  const response = await validator.validate(resources);
+  const response = await validator.validate({ resources });
 
   const ajv = new Ajv({
     jsonPointers: true,
@@ -67,63 +73,24 @@ it("should be valid SARIF", async () => {
   expect(validateSarif.errors?.length ?? 0).toBe(0);
 });
 
-function createValidator(parser: ResourceParser) {
-  const labelsValidator = new LabelsValidator(parser);
-  const yamlValidator = new YamlValidator(parser);
-
-  const wasmLoader = new FileWasmLoader();
-  const opaValidator = new OpenPolicyAgentValidator(parser, wasmLoader);
-
-  const schemaLoader = new SchemaLoader();
-  const schemaValidator = new KubernetesSchemaValidator(parser, schemaLoader);
-
-  const resourceLinksValidator = new ResourceLinksValidator();
-
-  const validator = new MonokleValidator(
-    [
-      labelsValidator,
-      yamlValidator,
-      schemaValidator,
-      opaValidator,
-      resourceLinksValidator,
-    ],
-    {
-      debug: true,
-    }
-  );
-
-  return validator;
-}
-
 function configureValidator(validator: MonokleValidator) {
-  return validator.configure([
-    {
-      tool: "labels",
-      enabled: true,
-    },
-    {
-      tool: "yaml-syntax",
-      enabled: true,
-    },
-    {
-      tool: "resource-links",
-      enabled: true,
-    },
-    {
-      tool: "kubernetes-schema",
-      enabled: true,
-      schemaVersion: "1.24.2",
-    },
-    {
-      tool: "open-policy-agent",
-      enabled: true,
-      plugin: {
-        id: "trivy",
-        enabled: true,
-        wasmSrc: path.join(__dirname, "./assets/policies/trivy.wasm"),
+  return validator.preload({
+    file: {
+      plugins: {
+        labels: true,
+        "yaml-syntax": true,
+        "resource-links": true,
+        "kubernetes-schema": true,
+        "open-policy-agent": true,
+      },
+      settings: {
+        "kubernetes-schema": {
+          schemaVersion: "1.24.2",
+        },
+        debug: true,
       },
     },
-  ]);
+  });
 }
 
 const BAD_DEPLOYMENT: Resource = {
@@ -206,3 +173,5 @@ const BAD_SERVICE: Resource = {
     },
   },
 };
+
+const RESOURCES = [BAD_DEPLOYMENT, BAD_SERVICE];

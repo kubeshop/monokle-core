@@ -4,6 +4,8 @@ import { isNode, Node } from "yaml";
 import get from "lodash/get.js";
 
 import invariant from "tiny-invariant";
+import { JsonObject } from "type-fest";
+import { z } from "zod";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import {
@@ -11,35 +13,19 @@ import {
   ValidationResult,
   ValidationRule,
 } from "../../common/sarif.js";
-import { Incremental, Resource, ToolConfig } from "../../common/types.js";
+import { Incremental, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
 import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 
-export type OpenPolicyAgentConfig = ToolConfig<"open-policy-agent"> & {
-  plugin?: OpaPlugin;
-};
-
-type OpaPlugin = {
-  id: string;
-  wasmSrc: string; // Either a URL or file path, respectively for web and NodeJs.
-  enabled: boolean;
-
-  /**
-   * @deprecated superseded by config.policy.rules.defaultConfiguration.enabled.
-   */
-  enabledRules?: string[];
-};
-
-// see https://github.com/kubeshop/monokle-core/issues/16
-const DEFAULT_PLUGIN: OpaPlugin = {
-  id: "trivy",
-  enabled: true,
-  wasmSrc: "https://saas.monokle.io/assets/trivy.18d95eb9.wasm",
-  enabledRules: [],
-};
+type Settings = z.infer<typeof Settings>;
+const Settings = z.object({
+  wasmSrc: z
+    .string()
+    .default("https://saas.monokle.io/assets/trivy.18d95eb9.wasm"),
+});
 
 const CONTROLLER_KINDS = [
   "Deployment",
@@ -52,12 +38,10 @@ const CONTROLLER_KINDS = [
 
 type YamlPath = Array<string | number>;
 
-export class OpenPolicyAgentValidator extends AbstractValidator<
-  OpenPolicyAgentConfig,
-  OpaProperties
-> {
+export class OpenPolicyAgentValidator extends AbstractValidator {
   static toolName = "open-policy-agent";
 
+  private _settings!: Settings;
   private validator!: LoadedPolicy;
 
   constructor(
@@ -67,9 +51,9 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
     super(OpenPolicyAgentValidator.toolName, OPEN_POLICY_AGENT_RULES);
   }
 
-  override async doLoad(config: OpenPolicyAgentConfig): Promise<void> {
-    const plugin = config.plugin ?? DEFAULT_PLUGIN;
-    const wasmSrc = plugin.wasmSrc;
+  override async configureValidator(settings: JsonObject = {}): Promise<void> {
+    this._settings = Settings.parse(settings["open-policy-agent"] ?? {});
+    const wasmSrc = this._settings.wasmSrc;
     const wasm = await this.wasmLoader.load(wasmSrc);
     this.validator = await loadPolicy(wasm);
   }
@@ -92,12 +76,6 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
     return results;
   }
 
-  protected override isRuleEnabled(ruleId: string): boolean {
-    const plugin = this.config?.plugin ?? DEFAULT_PLUGIN;
-    const isLegacyEnabled = plugin.enabledRules?.includes(ruleId) ?? false;
-    return super.isRuleEnabled(ruleId) || isLegacyEnabled;
-  }
-
   private async validateResource(
     resource: Resource
   ): Promise<ValidationResult[]> {
@@ -108,7 +86,10 @@ export class OpenPolicyAgentValidator extends AbstractValidator<
     const enabledRules = this.rules.filter((r) => this.isRuleEnabled(r.id));
 
     const errors = enabledRules.flatMap((rule) => {
-      return this.validatePolicyRule(resource, rule);
+      return this.validatePolicyRule(
+        resource,
+        rule as ValidationRule<OpaProperties>
+      );
     });
 
     return errors;

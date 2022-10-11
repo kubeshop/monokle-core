@@ -1,7 +1,7 @@
 import { Region } from "./common/sarif.js";
 
-export const UNLOADED_ERR_MSG = (name: string) =>
-  `Cannot validate resources. The ${name} validator must first be loaded.`;
+export const NOT_CONFIGURED_ERR_MSG = (name: string) =>
+  `Cannot validate resources. The ${name} validator must first be configured.`;
 export const NOT_FOUND_ERR_MSG = (name: string) =>
   `Cannot find validator: ${name}.`;
 
@@ -16,5 +16,5 @@ export const FALLBACK_REGION: Region = {
   endColumn: 1,
 };
 
-export const KUSTOMIZATION_KIND = 'Kustomization';
-export const KUSTOMIZATION_API_GROUP = 'kustomize.config.k8s.io';
+export const KUSTOMIZATION_KIND = "Kustomization";
+export const KUSTOMIZATION_API_GROUP = "kustomize.config.k8s.io";

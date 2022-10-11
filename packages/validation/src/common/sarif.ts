@@ -16,10 +16,36 @@ export type ValidationRun = {
   tool: {
     driver: ValidationTool;
   };
+  invocations?: ValidationInvocation[];
   results: ValidationResult[];
 };
 
 export type ValidationLevel = "warning" | "error" | "none";
+
+/**
+ * An artifact is any blob data relevant to the run.
+ *
+ * It can be used for configuration, policies, any output file of a validator and more.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541049
+ */
+export type Artifact = ConfigurationArtifact;
+
+/**
+ * A Monokle Validation configuration file.
+ *
+ * @remark Store as JSON instead YAML as it's more machine-friendly.
+ * @remark Store content in-line instead file path for portability.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541049
+ */
+export type ConfigurationArtifact = {
+  roles: ["userSpecifiedConfiguration"];
+  mimeType: "application/json";
+  contents: {
+    text: string;
+  };
+};
 
 /**
  * A validation tool, aka toolComponent
@@ -80,7 +106,7 @@ export type ValidationRuleConfig = {
    *
    * @default "warning"
    */
-  level?: "warning" | "error" | "note" | "none";
+  level?: RuleLevel;
 
   /**
    * The rank of the rule, used to sort the results.
@@ -96,6 +122,17 @@ export type ValidationRuleConfig = {
    * The parameters for this rule.
    */
   parameters?: JsonObject;
+};
+
+export type RuleLevel = "warning" | "error" | "note" | "none";
+
+export type ValidationInvocation = {
+  ruleConfigurationOverrides: ValidationRuleConfigOverride;
+};
+
+export type ValidationRuleConfigOverride = {
+  description: RuleReference;
+  configuration: ValidationRuleConfig;
 };
 
 /**
@@ -197,6 +234,14 @@ export type ValidationResult = {
  */
 export type ToolComponentReference = {
   name: string;
+};
+
+/**
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541300
+ */
+export type RuleReference = {
+  index: number;
+  id: string;
 };
 
 export type Location = {

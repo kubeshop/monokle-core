@@ -7,9 +7,7 @@ import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { YAML_RULES, YAML_RULE_MAP } from "./rules.js";
 
-export type YamlValidatorConfig = ToolConfig<"yaml-syntax">;
-
-export class YamlValidator extends AbstractValidator<YamlValidatorConfig> {
+export class YamlValidator extends AbstractValidator {
   static toolName = "yaml-syntax";
 
   constructor(private resourceParser: ResourceParser) {

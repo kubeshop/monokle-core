@@ -1,42 +1,48 @@
 import keyBy from "lodash/keyBy.js";
 import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
-import { UNLOADED_ERR_MSG } from "../constants.js";
+import { RuleMap } from "../config/parse.js";
+import { NOT_CONFIGURED_ERR_MSG } from "../constants.js";
 import { getResourceId } from "../utils/sarif.js";
 import {
-  ValidationPolicyRule,
   ValidationResult,
   ValidationRule,
   ValidationRuleConfig,
   ValidationRun,
 } from "./sarif.js";
-import { Incremental, Resource, Validator, ToolConfig } from "./types.js";
+import { Incremental, Resource, Validator } from "./types.js";
 
-export abstract class AbstractValidator<
-  TConfig extends ToolConfig = ToolConfig,
-  TRuleProperties extends JsonObject = {}
-> implements Validator<TConfig>
-{
+export abstract class AbstractValidator implements Validator {
   public name: string;
-  public loaded = false;
+  public configured = false;
 
-  protected config: TConfig | undefined;
-  protected _rules: ValidationRule<TRuleProperties>[];
+  protected _enabled: boolean = true;
+
+  protected _rules: ValidationRule[];
   protected _ruleReverseLookup: Map<string, number> = new Map(); // Lookup index by rule identifier;
   protected _policyRuleReverseLookup: Map<string, number> = new Map(); // Lookup index by rule identifier;
-  protected previous: ValidationResult[] = [];
+  protected _ruleNameToIdLookup: Map<string, string> = new Map();
+  protected _ruleConfig: Map<string, ValidationRuleConfig> = new Map();
+  protected _previous: ValidationResult[] = [];
 
-  constructor(name: string, rules: ValidationRule<TRuleProperties>[]) {
+  constructor(name: string, rules: ValidationRule[]) {
     this.name = name;
     this._rules = rules;
     rules.forEach((r, idx) => this._ruleReverseLookup.set(r.id, idx));
+    rules.forEach((r) =>
+      this._ruleNameToIdLookup.set(`${this.name}/${r.name}`, r.id)
+    );
   }
 
   get enabled(): boolean {
-    return this.config?.enabled ?? false;
+    return this._enabled;
   }
 
-  get rules(): ValidationRule<TRuleProperties>[] {
+  set enabled(value: boolean) {
+    this._enabled = value;
+  }
+
+  get rules(): ValidationRule[] {
     return this._rules;
   }
 
@@ -63,42 +69,77 @@ export abstract class AbstractValidator<
     };
   }
 
-  async load(config: TConfig): Promise<void> {
-    this.config = config;
-    if (!this.config.enabled) return;
+  async configure(config: {
+    rules?: RuleMap;
+    settings?: JsonObject;
+  }): Promise<void> {
+    this.configureRules(config.rules);
+    await this.configureValidator(config.settings);
+    this.configured = true;
+  }
 
-    this._policyRuleReverseLookup.clear();
-    config.policy?.rules.forEach((r, idx) => {
-      this._policyRuleReverseLookup.set(r.id, idx);
-    });
+  protected configureRules(rules: RuleMap = {}) {
+    this._ruleConfig.clear();
 
-    await this.doLoad(config);
+    // Set defaults
+    for (const rule of this._rules) {
+      this._ruleConfig.set(rule.id, rule.defaultConfiguration ?? {});
+    }
 
-    this.loaded = true;
+    // Set overrides
+    for (const [ruleName, newConfig] of Object.entries(rules)) {
+      // ruleName is either "validator-name/rule-name" or 'rule-id".
+      const ruleId = this._ruleNameToIdLookup.get(ruleName) ?? ruleName;
+      const ruleIndex = this._ruleReverseLookup.get(ruleId);
+
+      if (ruleIndex === undefined) {
+        continue; // rule not found.
+      }
+
+      invariant(ruleIndex, "unexpected_missing_rule_index");
+
+      const defaultConfig = this._rules[ruleIndex].defaultConfiguration;
+
+      this._ruleConfig.set(
+        ruleId,
+        typeof newConfig === "boolean"
+          ? {
+              ...defaultConfig,
+              enabled: newConfig,
+            }
+          : {
+              ...defaultConfig,
+              enabled: true,
+              level: newConfig === "err" ? "error" : "warning",
+            }
+      );
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected doLoad(config: TConfig): Promise<void> {
+  protected configureValidator(
+    settings: JsonObject | undefined
+  ): Promise<void> {
     return Promise.resolve();
   }
 
   async clear() {
-    this.previous = [];
+    this._previous = [];
   }
 
   async validate(
     resources: Resource[],
     incremental?: Incremental
   ): Promise<ValidationRun> {
-    invariant(this.loaded, UNLOADED_ERR_MSG(this.name));
+    invariant(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
 
     let results = await this.doValidate(resources, incremental);
 
     if (incremental) {
-      results = this.merge(this.previous, results, incremental);
+      results = this.merge(this._previous, results, incremental);
     }
 
-    this.previous = results;
+    this._previous = results;
 
     return {
       tool: {
@@ -121,30 +162,9 @@ export abstract class AbstractValidator<
   }
 
   protected getRuleConfig(ruleId: string): ValidationRuleConfig {
-    const rule = this.getRule(ruleId);
-    const policyRule = this.getPolicyRule(ruleId);
-
-    const defaultConfig = rule.defaultConfiguration;
-    const userConfig = policyRule?.defaultConfiguration;
-
-    return {
-      ...defaultConfig,
-      ...userConfig,
-    };
-  }
-
-  protected getRule(ruleId: string): ValidationRule {
-    const ruleIndex = this._ruleReverseLookup.get(ruleId);
-    invariant(ruleIndex !== undefined, `rule_not_found`);
-    const rule = this._rules[ruleIndex];
-    invariant(rule, `${ruleId} rule_not_found`);
-    return rule;
-  }
-
-  protected getPolicyRule(ruleId: string): ValidationPolicyRule | undefined {
-    const ruleIndex = this._policyRuleReverseLookup.get(ruleId);
-    if (ruleIndex === undefined) return undefined;
-    return this.config?.policy?.rules[ruleIndex];
+    const ruleConfig = this._ruleConfig.get(ruleId);
+    invariant(ruleConfig, `rule_config_not_found`);
+    return ruleConfig;
   }
 
   protected merge(

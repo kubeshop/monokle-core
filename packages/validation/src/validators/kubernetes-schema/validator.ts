@@ -1,29 +1,31 @@
 import Ajv, { ErrorObject, ValidateFunction } from "ajv";
+import { JsonObject } from "type-fest";
 import { Document, isCollection, ParsedNode } from "yaml";
+import { z } from "zod";
 import { AbstractValidator } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
-import { ValidationResult, ValidationRule } from "../../common/sarif.js";
-import { Incremental, Resource, ToolConfig } from "../../common/types.js";
+import { ValidationResult } from "../../common/sarif.js";
+import { Incremental, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
 import {
-  findDefaultVersion,
   extractSchema,
+  findDefaultVersion,
 } from "./customResourceDefinitions.js";
 import { getResourceSchemaPrefix } from "./resourcePrefixMap.js";
 import { KUBERNETES_SCHEMA_RULES } from "./rules.js";
 import { SchemaLoader } from "./schemaLoader.js";
 
-export type KubernetesSchemaConfig = ToolConfig<"kubernetes-schema"> & {
-  schemaVersion?: string;
-};
+type Settings = z.infer<typeof Settings>;
+const Settings = z.object({
+  schemaVersion: z.string().default("1.24.2"),
+});
 
-const DEFAULT_VERSION = "1.24.2";
-
-export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchemaConfig> {
+export class KubernetesSchemaValidator extends AbstractValidator {
   static toolName = "kubernetes-schema";
 
+  private _settings!: Settings;
   private ajv!: Ajv.Ajv;
 
   constructor(
@@ -33,8 +35,11 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
     super(KubernetesSchemaValidator.toolName, KUBERNETES_SCHEMA_RULES);
   }
 
-  async doLoad(config: KubernetesSchemaConfig): Promise<void> {
-    const version = config.schemaVersion ?? DEFAULT_VERSION;
+  protected override async configureValidator(
+    rawSettings: JsonObject = {}
+  ): Promise<void> {
+    this._settings = Settings.parse(rawSettings["kubernetes-schema"] ?? {});
+    const version = this._settings.schemaVersion;
     const schema = await this.schemaLoader.getFullSchema(version);
 
     if (!schema) {
@@ -105,10 +110,11 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
   }
 
   private addCustomSchema(kind: string, schema: any) {
-    if (!this.config?.schemaVersion) {
+    const version = this._settings.schemaVersion;
+    if (!version) {
       return;
     }
-    const key = `${this.config.schemaVersion}-${kind}`;
+    const key = `${version}-${kind}`;
 
     if (this.schemaLoader.hasSchema(key)) {
       return;
@@ -148,8 +154,9 @@ export class KubernetesSchemaValidator extends AbstractValidator<KubernetesSchem
     const prefix = getResourceSchemaPrefix(kind);
 
     // could be custom resource
-    if (!prefix && this.config?.schemaVersion) {
-      const key = `${this.config.schemaVersion}-${kind}`;
+    const version = this._settings.schemaVersion;
+    if (!prefix && version) {
+      const key = `${version}-${kind}`;
       const validate = this.ajv.getSchema(`#/definitions/${key}`);
       return validate;
     }
