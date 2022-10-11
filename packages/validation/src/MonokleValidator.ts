@@ -15,42 +15,48 @@ import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 
 export type PluginLoader = (name: string) => Promise<Validator>;
 
-export function createMonokleValidator(loader: PluginLoader) {
-  return new MonokleValidator(loader);
+export function createMonokleValidator(
+  loader: PluginLoader,
+  defaultConfig?: Config
+) {
+  return new MonokleValidator(loader, defaultConfig);
 }
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser()
 ) {
-  return new MonokleValidator(
-    async (name) => {
-      switch (name) {
-        case "open-policy-agent":
-          const wasmLoader = new RemoteWasmLoader();
-          return new OpenPolicyAgentValidator(parser, wasmLoader);
-        case "resource-links":
-          return new ResourceLinksValidator();
-        case "yaml-syntax":
-          return new YamlValidator(parser);
-        case "labels":
-          return new LabelsValidator(parser);
-        case "kubernetes-schema":
-          const schemaLoader = new SchemaLoader();
-          return new KubernetesSchemaValidator(parser, schemaLoader);
-        default:
-          throw new Error("validator_not_found");
-      }
+  return new MonokleValidator(createDefaultPluginLoader(parser), {
+    plugins: {
+      "open-policy-agent": true,
+      "resource-links": true,
+      "yaml-syntax": true,
+      labels: true,
+      "kubernetes-schema": true,
     },
-    {
-      plugins: {
-        "open-policy-agent": true,
-        "resource-links": true,
-        "yaml-syntax": true,
-        labels: true,
-        "kubernetes-schema": true,
-      },
+  });
+}
+
+export function createDefaultPluginLoader(
+  parser: ResourceParser = new ResourceParser()
+) {
+  return async (pluginName: string) => {
+    switch (pluginName) {
+      case "open-policy-agent":
+        const wasmLoader = new RemoteWasmLoader();
+        return new OpenPolicyAgentValidator(parser, wasmLoader);
+      case "resource-links":
+        return new ResourceLinksValidator();
+      case "yaml-syntax":
+        return new YamlValidator(parser);
+      case "labels":
+        return new LabelsValidator(parser);
+      case "kubernetes-schema":
+        const schemaLoader = new SchemaLoader();
+        return new KubernetesSchemaValidator(parser, schemaLoader);
+      default:
+        throw new Error("validator_not_found");
     }
-  );
+  };
 }
 
 export class MonokleValidator {
@@ -212,5 +218,7 @@ export class MonokleValidator {
 
   async unload(): Promise<void> {
     this.cancelLoad();
+    this.configureFile(undefined);
+    this.configureArgs(undefined);
   }
 }
