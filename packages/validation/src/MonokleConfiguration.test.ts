@@ -51,6 +51,81 @@ it("should work with monokle.validation.yaml", async () => {
   expect(hasErrors).toMatchInlineSnapshot("11");
 });
 
+it("should handle race conditions", async () => {
+  for (let i = 0; i < 5; i++) {
+    const validator = createDefaultMonokleValidator();
+
+    validator.preload({
+      args: {
+        plugins: {
+          "open-policy-agent": true,
+          "yaml-syntax": true,
+          labels: true,
+          "kubernetes-schema": true,
+          "resource-links": true,
+        },
+        rules: {
+          KSV005: false,
+          KSV013: true,
+        },
+      },
+    });
+
+    validator.preload({
+      args: {
+        plugins: {
+          "open-policy-agent": false,
+          "yaml-syntax": true,
+          labels: false,
+          "kubernetes-schema": false,
+          "resource-links": false,
+        },
+        rules: {
+          KSV005: false,
+          KSV013: true,
+        },
+      },
+    });
+
+    validator.preload({
+      file: {
+        // Responsible for validator construction
+        plugins: {
+          "open-policy-agent": true,
+          "yaml-syntax": false,
+          labels: false,
+          "kubernetes-schema": false,
+          "resource-links": false,
+        },
+        // Responsbility for rules
+        rules: {
+          KSV005: "warn",
+          "open-policy-agent/no-latest-image": "warn",
+        },
+        // Responsible for validator runtime behavior
+        settings: {
+          debug: true,
+        },
+      },
+    });
+
+    const response = await validator.validate({ resources: RESOURCES });
+
+    // uncomment to debug
+    response.runs.forEach((r) =>
+      r.results.forEach((result) => {
+        console.error(result.ruleId, result.message.text);
+      })
+    );
+
+    const hasErrors = response.runs.reduce(
+      (sum, r) => sum + r.results.length,
+      0
+    );
+    expect(hasErrors).toMatchInlineSnapshot("11");
+  }
+});
+
 const BAD_DEPLOYMENT: Resource = {
   fileId: "vanilla-panda-blog/deployment.yaml",
   filePath: "vanilla-panda-blog/deployment.yaml",
@@ -131,3 +206,5 @@ const BAD_SERVICE: Resource = {
     },
   },
 };
+
+const RESOURCES = [BAD_DEPLOYMENT, BAD_SERVICE];

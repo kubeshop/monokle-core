@@ -1,8 +1,10 @@
-import { isEqual, merge } from "lodash";
+import isEqual from "lodash/isEqual.js";
+import merge from "lodash/merge.js";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
 import type { Incremental, Resource, Validator } from "./common/types.js";
 import { Config } from "./config/parse.js";
+import { nextTick, throwIfAborted } from "./utils/abort.js";
 import { isDefined } from "./utils/isDefined.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
 import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
@@ -186,11 +188,13 @@ export class MonokleValidator {
     const validators = this.#validators.filter((v) => v.enabled);
     const abortSignal = this.#abortController.signal;
 
+    await nextTick();
+
     const allRuns = await Promise.allSettled(
       validators.map((v) => v.validate(resources, incremental))
     );
 
-    abortSignal.throwIfAborted();
+    throwIfAborted(abortSignal);
 
     const runs = allRuns
       .map((run) => (run.status === "fulfilled" ? run.value : undefined))
