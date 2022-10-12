@@ -52,7 +52,7 @@ it("should work with monokle.validation.yaml", async () => {
 });
 
 it("should handle race conditions", async () => {
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 3; i++) {
     const validator = createDefaultMonokleValidator();
 
     validator.preload({
@@ -112,11 +112,11 @@ it("should handle race conditions", async () => {
     const response = await validator.validate({ resources: RESOURCES });
 
     // uncomment to debug
-    response.runs.forEach((r) =>
-      r.results.forEach((result) => {
-        console.error(result.ruleId, result.message.text);
-      })
-    );
+    // response.runs.forEach((r) =>
+    //   r.results.forEach((result) => {
+    //     console.error(result.ruleId, result.message.text);
+    //   })
+    // );
 
     const hasErrors = response.runs.reduce(
       (sum, r) => sum + r.results.length,
