@@ -115,6 +115,8 @@ export interface Validator {
   get enabled(): boolean;
   set enabled(value: boolean);
 
+  isRuleEnabled(rule: string): boolean;
+
   configure(config: { rules?: RuleMap; settings?: JsonObject }): Promise<void>;
 
   validate(

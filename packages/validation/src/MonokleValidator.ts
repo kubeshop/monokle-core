@@ -87,6 +87,14 @@ export class MonokleValidator {
     return this.#config;
   }
 
+  isRuleEnabled(rule: string) {
+    return this.#validators.some((v) => v.isRuleEnabled(rule));
+  }
+
+  isPluginEnabled(name: string) {
+    return this.#validators.some((v) => v.name === name && v.enabled);
+  }
+
   configureFile(config: Config | undefined) {
     this.#config.file = config;
     this.#config.merged = this.mergeConfiguration();
