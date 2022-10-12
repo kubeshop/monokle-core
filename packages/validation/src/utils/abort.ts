@@ -26,5 +26,12 @@ export function throwIfAborted(signal: AbortSignal) {
  * Useful to prioritise more high-priority execution such as rendering.
  */
 export function nextTick(): Promise<void> {
-  return new Promise((r) => setImmediate(r));
+  if (typeof setImmediate === "function") {
+    return new Promise((r) => setImmediate(r));
+  }
+
+  // Warning: setTimeout actually has a 4ms minimum wait time due to browser restrictions.
+  // Be careful using this often as you will ruin the performance.
+  // Note: there are some polyfill solutions to be investigated.
+  return new Promise((r) => setTimeout(r, 0));
 }
