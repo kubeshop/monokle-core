@@ -24,9 +24,10 @@ export function createMonokleValidator(
 }
 
 export function createDefaultMonokleValidator(
-  parser: ResourceParser = new ResourceParser()
+  parser: ResourceParser = new ResourceParser(),
+  schemaLoader: SchemaLoader = new SchemaLoader()
 ) {
-  return new MonokleValidator(createDefaultPluginLoader(parser), {
+  return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader), {
     plugins: {
       "open-policy-agent": true,
       "resource-links": true,
@@ -38,7 +39,8 @@ export function createDefaultMonokleValidator(
 }
 
 export function createDefaultPluginLoader(
-  parser: ResourceParser = new ResourceParser()
+  parser: ResourceParser = new ResourceParser(),
+  schemaLoader: SchemaLoader = new SchemaLoader()
 ) {
   return async (pluginName: string) => {
     switch (pluginName) {
@@ -52,7 +54,6 @@ export function createDefaultPluginLoader(
       case "labels":
         return new LabelsValidator(parser);
       case "kubernetes-schema":
-        const schemaLoader = new SchemaLoader();
         return new KubernetesSchemaValidator(parser, schemaLoader);
       default:
         throw new Error("validator_not_found");
