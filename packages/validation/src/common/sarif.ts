@@ -20,8 +20,6 @@ export type ValidationRun = {
   results: ValidationResult[];
 };
 
-export type ValidationLevel = "warning" | "error" | "none";
-
 /**
  * An artifact is any blob data relevant to the run.
  *
@@ -211,7 +209,7 @@ export type ValidationResult = {
     index: number;
     toolComponent: ToolComponentReference;
   };
-  level?: ValidationLevel;
+  level?: RuleLevel;
   message: {
     text: string;
   };

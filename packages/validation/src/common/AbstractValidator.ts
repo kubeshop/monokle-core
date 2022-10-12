@@ -57,6 +57,8 @@ export abstract class AbstractValidator implements Validator {
       return undefined;
     }
 
+    const ruleConfig = this.getRuleConfig(ruleId);
+
     return {
       ruleId,
       rule: {
@@ -65,6 +67,7 @@ export abstract class AbstractValidator implements Validator {
           name: this.name,
         },
       },
+      level: ruleConfig.level,
       ...args,
     };
   }

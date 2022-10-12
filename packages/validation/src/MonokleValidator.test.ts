@@ -13,14 +13,37 @@ import "isomorphic-fetch";
 
 it("should be simple to configure", async () => {
   const parser = new ResourceParser();
-  
+
   const validator = createDefaultMonokleValidator(parser);
-  
+
   processRefs(RESOURCES, parser);
   const response = await validator.validate({ resources: RESOURCES });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
   expect(hasErrors).toMatchInlineSnapshot("14");
+});
+
+it("should be abort properly", async () => {
+  const parser = new ResourceParser();
+
+  const validator = createDefaultMonokleValidator(parser);
+
+  try {
+    processRefs(RESOURCES, parser);
+    const validating = validator.validate({ resources: RESOURCES });
+
+    validator.configureArgs({
+      plugins: {
+        "kubernetes-schema": false,
+      },
+    });
+
+    await validating;
+
+    expect.fail("expected abort error");
+  } catch (err) {
+    expect((err as Error).name).toBe("AbortError");
+  }
 });
 
 it("should be flexible to configure", async () => {
