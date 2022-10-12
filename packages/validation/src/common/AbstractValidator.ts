@@ -46,6 +46,25 @@ export abstract class AbstractValidator implements Validator {
     return this._rules;
   }
 
+  isRuleEnabled(rule: string): boolean {
+    const ruleSplit = rule.split("/");
+    if (ruleSplit.length === 1) {
+      // rule-id
+      const ruleConfig = this._ruleConfig.get(rule);
+      if (!ruleConfig) return false;
+      return ruleConfig.enabled ?? true;
+    } else {
+      // validator-name/rule-name
+      const ruleId = this._ruleNameToIdLookup.get(rule);
+
+      if (!ruleId) {
+        return false;
+      }
+
+      return this.getRuleConfig(ruleId).enabled ?? true;
+    }
+  }
+
   protected createValidationResult(
     ruleId: string,
     args: Omit<ValidationResult, "ruleId" | "rule">
@@ -157,10 +176,6 @@ export abstract class AbstractValidator implements Validator {
     resources: Resource[],
     incremental?: Incremental
   ): Promise<ValidationResult[]>;
-
-  protected isRuleEnabled(ruleId: string): boolean {
-    return this.getRuleConfig(ruleId).enabled ?? true;
-  }
 
   protected getRuleConfig(ruleId: string): ValidationRuleConfig {
     const ruleConfig = this._ruleConfig.get(ruleId);
