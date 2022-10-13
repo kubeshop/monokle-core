@@ -128,13 +128,14 @@ export class MonokleValidator {
       this.configureArgs(config.args);
     }
 
-    await this.load();
+    return this.load();
   }
 
-  private async load() {
+  private load() {
     this.#abortController.abort();
     this.#abortController = new AbortController();
     this.#loading = this.doLoad(this.#abortController.signal);
+    return this.#loading;
   }
 
   private cancelLoad(reason: string = "cancelled") {
@@ -191,10 +192,11 @@ export class MonokleValidator {
     if (this.#loading === undefined) {
       this.load();
     }
+    const abortSignal = this.#abortController.signal;
     await this.#loading;
+    throwIfAborted(abortSignal);
 
     const validators = this.#validators.filter((v) => v.enabled);
-    const abortSignal = this.#abortController.signal;
 
     await nextTick();
     throwIfAborted(abortSignal);
