@@ -58,13 +58,21 @@ export class ResourceLinksValidator extends AbstractValidator {
   }
 
   private adaptToValidationResult(resource: Resource, ref: ResourceRef) {
+    const pos = ref.position;
     const region: Region | undefined =
-      ref.position?.endColumn && ref.position.endLine
+      pos?.endColumn && pos.endLine
         ? {
-            startLine: ref.position.line,
-            startColumn: ref.position.column,
-            endLine: ref.position.endLine,
-            endColumn: ref.position.endColumn,
+            startLine: pos.line,
+            startColumn: pos.column,
+            endLine: pos.endLine,
+            endColumn: pos.endColumn,
+          }
+        : pos
+        ? {
+            startLine: pos.line,
+            startColumn: pos.column,
+            endLine: pos.line,
+            endColumn: pos.column + pos.length,
           }
         : undefined;
 
