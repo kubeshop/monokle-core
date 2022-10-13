@@ -6,7 +6,7 @@ import {
   clearRefNodesCache,
 } from "../references/utils/getResourceNodes.js";
 
-type ParsedResource = {
+export type ParsedResource = {
   parsedDoc: Document.Parsed<ParsedNode>;
   lineCounter: LineCounter;
 };
@@ -64,8 +64,8 @@ export class ResourceParser {
     }
   }
 
-  getLineCounter( resource: Resource ){
-    return this.parse( resource ).lineCounter;
+  getLineCounter(resource: Resource) {
+    return this.parse(resource).lineCounter;
   }
 }
 
