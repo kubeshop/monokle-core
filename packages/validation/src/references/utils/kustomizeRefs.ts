@@ -1,7 +1,7 @@
 import path from "path";
-import { Scalar, YAMLSeq } from "yaml";
+import { isScalar, isSeq, Node, ParsedNode, Scalar, YAMLSeq } from "yaml";
 import { NodeWrapper } from "../../common/NodeWrapper.js";
-import { ResourceParser } from "../../common/resourceParser.js";
+import { ParsedResource, ResourceParser } from "../../common/resourceParser.js";
 import { Resource, ResourceRef, ResourceRefType } from "../../common/types.js";
 import {
   KUSTOMIZATION_API_GROUP,
@@ -305,7 +305,7 @@ export function getScalarNodes(
   nodePath: string,
   parser: ResourceParser
 ) {
-  let parents: any[] = [parser.parse(resource)];
+  let parents = [parser.parse(resource).parsedDoc];
 
   const names = parseNodePath(nodePath);
   for (let ix = 0; ix < names.length; ix += 1) {
@@ -315,7 +315,7 @@ export function getScalarNodes(
     parents.forEach((parent) => {
       const child = parent.get(name, true);
       if (child) {
-        if (child instanceof YAMLSeq) {
+        if (isSeq<any>(child)) {
           nextParents = nextParents.concat(child.items);
         } else {
           nextParents.push(child);
@@ -332,13 +332,13 @@ export function getScalarNodes(
 
   let results: NodeWrapper[] = [];
   parents.forEach((parent) => {
-    if (parent instanceof YAMLSeq) {
+    if (isSeq<any>(parent)) {
       results = results.concat(
         parent.items.map(
           (node) => new NodeWrapper(node, parser.getLineCounter(resource))
         )
       );
-    } else if (parent instanceof Scalar) {
+    } else if (isScalar(parent)) {
       results.push(new NodeWrapper(parent, parser.getLineCounter(resource)));
     }
   });

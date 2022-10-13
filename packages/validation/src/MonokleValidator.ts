@@ -83,16 +83,16 @@ export class MonokleValidator {
     };
   }
 
-  config() {
+  get config() {
     return this.#config;
   }
 
   isRuleEnabled(rule: string) {
-    return this.#validators.some((v) => v.isRuleEnabled(rule));
+    return Boolean(this.#config.merged.rules?.[rule]);
   }
 
-  isPluginEnabled(name: string) {
-    return this.#validators.some((v) => v.name === name && v.enabled);
+  isPluginEnabled(name: string): boolean {
+    return Boolean(this.#config.merged.plugins?.[name]);
   }
 
   configureFile(config: Config | undefined) {
@@ -146,25 +146,26 @@ export class MonokleValidator {
     const config = this.#config.merged;
     const previousPlugins = this.#previousPluginsInit;
 
-    if (isEqual(config.plugins, previousPlugins)) {
-      return;
-    }
+    if (!isEqual(config.plugins, previousPlugins)) {
+      // Ensure all validators are loaded
+      const plugins = config.plugins ?? {};
 
-    // Ensure all validators are loaded
-    const plugins = config.plugins ?? {};
-    for (const [name, value] of Object.entries(plugins)) {
-      if (!value) continue;
-      const hasValidator = this.#validators.find((v) => v.name === name);
-      if (hasValidator) continue;
-      const validator = await this.#loader(name);
-      if (signal.aborted) return;
-      this.#validators.push(validator);
-    }
+      for (const [name, value] of Object.entries(plugins)) {
+        if (!value) continue;
+        const hasValidator = this.#validators.find((v) => v.name === name);
+        if (hasValidator) continue;
+        const validator = await this.#loader(name);
+        if (signal.aborted) return;
+        this.#validators.push(validator);
+      }
 
-    // Toggle validators
-    for (const validator of this.#validators) {
-      const value = plugins[validator.name];
-      validator.enabled = Boolean(value);
+      // Toggle validators
+      for (const validator of this.#validators) {
+        const value = plugins[validator.name];
+        validator.enabled = Boolean(value);
+      }
+
+      this.#previousPluginsInit = plugins;
     }
 
     // Configure validators
@@ -175,8 +176,6 @@ export class MonokleValidator {
       });
       if (signal.aborted) return;
     }
-
-    this.#previousPluginsInit = plugins;
   }
 
   /**
@@ -198,11 +197,11 @@ export class MonokleValidator {
     const abortSignal = this.#abortController.signal;
 
     await nextTick();
+    throwIfAborted(abortSignal);
 
     const allRuns = await Promise.allSettled(
       validators.map((v) => v.validate(resources, incremental))
     );
-
     throwIfAborted(abortSignal);
 
     const runs = allRuns
