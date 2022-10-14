@@ -1,3 +1,4 @@
+import clone from "lodash/clone.js";
 import isEqual from "lodash/isEqual.js";
 import merge from "lodash/merge.js";
 import { ResourceParser } from "./common/resourceParser.js";
@@ -88,6 +89,18 @@ export class MonokleValidator {
   }
 
   isRuleEnabled(rule: string) {
+    const split = rule.split("/");
+    
+    if (split.length !== 2) {
+      return false;
+    }
+    
+    const [pluginName] = split;
+    
+    if (!this.isPluginEnabled(pluginName)) {
+      return false;
+    }
+
     return Boolean(this.#config.merged.rules?.[rule]);
   }
 
@@ -166,7 +179,7 @@ export class MonokleValidator {
         validator.enabled = Boolean(value);
       }
 
-      this.#previousPluginsInit = plugins;
+      this.#previousPluginsInit = clone(plugins);
     }
 
     // Configure validators
