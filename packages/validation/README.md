@@ -22,8 +22,8 @@ You might want to customize the configuration. The validator supports three leve
 
 ```typescript
 const validator = createDefaultMonokleValidator();
-await validator.configureFile({ plugins: { "kubernetes-schema": false } });
-await validator.configureArgs({ plugins: { "kubernetes-schema": true } });
+validator.configureFile({ plugins: { "kubernetes-schema": false } });
+validator.configureArgs({ plugins: { "kubernetes-schema": true } });
 await validator.validate({ resources }); // kubernetes-schema is validated.
 ```
 
@@ -134,9 +134,9 @@ validator.configureArgs({
   },
   settings: {
     "custom-plugin": {
-      "some-param": 42
-    }
-  }
+      "some-param": 42,
+    },
+  },
 });
 
 await validator.validate({ resources });
