@@ -11,7 +11,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
   rules: [
     {
       id: "KSV001",
-      name: "no-elevated-process",
       shortDescription: {
         text: "Disallow the process from elevating its privileges.",
       },
@@ -34,7 +33,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV002",
-      name: "app-armor",
       shortDescription: {
         text: "Require a default AppArmor profile",
       },
@@ -57,7 +55,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV003",
-      name: "drop-capabilities",
       shortDescription: {
         text: "Require default capabilities to be dropped",
       },
@@ -77,7 +74,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV005",
-      name: "no-sys-admin",
       shortDescription: {
         text: "Disallow the SYS_ADMIN capability",
       },
@@ -97,7 +93,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV006",
-      name: "no-mounted-docker-sock",
       shortDescription: {
         text: "Disallow mounteing the hostPath volume with docker.sock",
       },
@@ -117,7 +112,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV008",
-      name: "no-host-ipc",
       shortDescription: {
         text: "Disallow access to host IPC namespace",
       },
@@ -137,7 +131,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV009",
-      name: "no-host-network",
       shortDescription: {
         text: "Disallow access to host network",
       },
@@ -157,7 +150,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV010",
-      name: "no-host-pid",
       shortDescription: {
         text: "Disallow access to host PID",
       },
@@ -177,7 +169,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV011",
-      name: "cpu-limit",
       shortDescription: {
         text: "Require the CPU to be limited",
       },
@@ -197,7 +188,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV012",
-      name: "run-as-non-root",
       shortDescription: {
         text: "Requires the container to runs as non root user",
       },
@@ -217,7 +207,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV013",
-      name: "no-latest-image",
       shortDescription: {
         text: "Disallow images with the latest tag",
       },
@@ -237,7 +226,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV014",
-      name: "no-writable-fs",
       shortDescription: {
         text: "Require a read-only root file system",
       },
@@ -257,7 +245,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV015",
-      name: "cpu-request",
       shortDescription: {
         text: "Require the CPU to be requested",
       },
@@ -277,7 +264,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV016",
-      name: "memory-request",
       shortDescription: {
         text: "Require the memory to be requested",
       },
@@ -296,7 +282,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV017",
-      name: "no-privileged",
       shortDescription: {
         text: "Disallow the use of privileged containers",
       },
@@ -316,7 +301,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV018",
-      name: "memory-limit",
       shortDescription: {
         text: "Require the memory to be limited",
       },
@@ -335,7 +319,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV020",
-      name: "no-low-user-id",
       shortDescription: {
         text: "Disallow running with a low user ID",
       },
@@ -355,7 +338,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV021",
-      name: "no-low-group-id",
       shortDescription: {
         text: "Disallow running with a low group ID",
       },
@@ -375,7 +357,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV023",
-      name: "no-host-mounted-path",
       shortDescription: {
         text: "Disallow mounting hostPath volumes",
       },
@@ -395,7 +376,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV024",
-      name: "no-host-port-access",
       shortDescription: {
         text: "Disallow accessing the host ports",
       },
@@ -415,7 +395,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV025",
-      name: "no-selinux",
       shortDescription: {
         text: "Disallow custom SELinux options",
       },
@@ -435,7 +414,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV027",
-      name: "no-proc-mount",
       shortDescription: {
         text: "Disallow setting proc masks",
       },
@@ -455,7 +433,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV028",
-      name: "no-non-emphemeral-volumes",
       shortDescription: {
         text: "Disallow use of non-ephemeral volume types",
       },
@@ -475,7 +452,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV029",
-      name: "no-root-group",
       shortDescription: {
         text: "Disallow setting runAsGroup to zero.",
       },
@@ -495,7 +471,6 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: "KSV030",
-      name: "seccomp-profile",
       shortDescription: {
         text: "Require a Seccomp profile",
       },
