@@ -244,7 +244,7 @@ export type RuleReference = {
 
 export type Location = {
   physicalLocation?: PhysicalLocation;
-  // logicalLocations?: LogicalLocation[];
+  logicalLocations?: LogicalLocation[];
 };
 
 export type PhysicalLocation = {

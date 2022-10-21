@@ -13,7 +13,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       id: "KSV001",
       name: "no-elevated-process",
       shortDescription: {
-        text: "Disallow the process from elevating its privileges.",
+        text: "Disallow the process from elevating its privileges",
       },
       fullDescription: {
         text: "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",

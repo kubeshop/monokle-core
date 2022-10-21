@@ -1,3 +1,4 @@
+import toLower from "lodash/toLower.js";
 import { Location, Region } from "../common/sarif.js";
 import { Resource } from "../common/types.js";
 import { FALLBACK_REGION } from "../constants.js";
@@ -33,6 +34,19 @@ export function createLocations(
         },
         region,
       },
+      logicalLocations: [
+        {
+          kind: "resource",
+          fullyQualifiedName: createFullyQualifiedName(resource),
+          name: resource.name,
+        },
+      ],
     },
   ];
+}
+
+function createFullyQualifiedName(resource: Resource) {
+  return resource.namespace
+    ? `${resource.name}.${resource.namespace}.${resource.kind}@${resource.filePath}`
+    : `${resource.name}.${toLower(resource.kind)}@${resource.filePath}`;
 }
