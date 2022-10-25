@@ -1,0 +1,64 @@
+{
+  "name": "@monokle/components",
+  "version": "0.0.0",
+  "author": "Kubeshop",
+  "description": "UI library for Monokle",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kubeshop/monokle-core.git"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\"",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "devDependencies": {
+    "@ant-design/icons": "4.7.0",
+    "@babel/core": "7.17.8",
+    "@rjsf/antd": "5.0.0-beta.11",
+    "@storybook/addon-actions": "6.5.13",
+    "@storybook/addon-essentials": "6.5.13",
+    "@storybook/addon-interactions": "6.5.13",
+    "@storybook/addon-links": "6.5.13",
+    "@storybook/builder-vite": "0.2.4",
+    "@storybook/react": "^6.5.13",
+    "@storybook/testing-library": "0.0.13",
+    "@types/node": "17.0.23",
+    "@types/react": "18.0.14",
+    "@types/react-dom": "18.0.5",
+    "@types/styled-components": "5.1.25",
+    "@vitejs/plugin-react": "2.1.0",
+    "acorn-jsx": "5.3.2",
+    "antd": "4.23.6",
+    "babel-loader": "8.2.4",
+    "json": "11.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-use": "17.4.0",
+    "styled-components": "5.3.6",
+    "typescript": "4.8.3",
+    "vite": "3.1.0",
+    "vite-tsconfig-paths": "^3.5.2"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.0 || ^17.0 || ^16.0",
+    "react-dom": "^18.0 || ^17.0 || ^16.0",
+    "styled-components": "5.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/core.umd.js",
+  "module": "./dist/core.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/core.es.js",
+      "require": "./dist/core.umd.js"
+    }
+  }
+}
