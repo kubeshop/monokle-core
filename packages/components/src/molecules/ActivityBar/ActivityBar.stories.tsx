@@ -1,7 +1,7 @@
 import Colors from "@/styles/Colors";
 import { ComponentMeta, ComponentStoryObj } from "@storybook/react";
 import { ActivityBar } from "./ActivityBar";
-import Icon from "../../atoms/Icon";
+import { Icon } from "../../atoms/Icon";
 
 const meta: ComponentMeta<typeof ActivityBar> = {
   title: "Molecules/ActivityBar",

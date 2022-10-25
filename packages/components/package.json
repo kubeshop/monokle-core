@@ -3,15 +3,39 @@
   "version": "0.0.0",
   "author": "Kubeshop",
   "description": "UI library for Monokle",
+  "type": "module",
+  "sideEffects": false,
+  "source": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/kubeshop/monokle-core.git"
   },
+  "bugs": {
+    "url": "https://github.com/kubeshop/monokle-core/issues"
+  },
+  "keywords": [
+    "monokle",
+    "kubernetes",
+    "ui",
+    "components"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/core.umd.js",
+  "module": "./dist/core.es.js",
+  "types": "./dist/index.d.ts",
+  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/core.es.js",
+      "require": "./dist/core.umd.js"
+    }
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\"",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
@@ -45,22 +69,9 @@
     "vite": "3.1.0",
     "vite-tsconfig-paths": "^3.5.2"
   },
-  "license": "MIT",
   "peerDependencies": {
     "react": "^18.0 || ^17.0 || ^16.0",
     "react-dom": "^18.0 || ^17.0 || ^16.0",
     "styled-components": "5.0.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/core.umd.js",
-  "module": "./dist/core.es.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/core.es.js",
-      "require": "./dist/core.umd.js"
-    }
   }
 }

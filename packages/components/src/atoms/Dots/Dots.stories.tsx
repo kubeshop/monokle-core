@@ -1,12 +1,12 @@
-import { ComponentMeta, ComponentStoryObj } from '@storybook/react';
-import Dots from './Dots';
+import { ComponentMeta, ComponentStoryObj } from "@storybook/react";
+import { Dots } from "./Dots";
 
 const meta: ComponentMeta<typeof Dots> = {
-    title: 'Atoms/Dots',
-    component: Dots,
+  title: "Atoms/Dots",
+  component: Dots,
 };
 export default meta;
 
-export const Primary: ComponentStoryObj<typeof Dots> = {
-    args: {},
+export const Default: ComponentStoryObj<typeof Dots> = {
+  args: {},
 };
