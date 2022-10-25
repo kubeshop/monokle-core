@@ -1,14 +1,14 @@
-import {Spin} from 'antd';
+import { Spin } from "antd";
 
-import * as S from './Spinner.styled';
+import * as S from "./Spinner.styled";
 
-interface SpinnerProps {
+interface Props {
   isSpinning?: boolean;
-  size?: 'small' | 'default' | 'large';
+  size?: "small" | "default" | "large";
 }
 
-const Spinner: React.FC<SpinnerProps> = props => {
-  const {isSpinning = true, size = 'small'} = props;
+export const Spinner: React.FC<Props> = (props) => {
+  const { isSpinning = true, size = "small" } = props;
 
   return (
     <S.SpinnerWrapper>
@@ -16,5 +16,3 @@ const Spinner: React.FC<SpinnerProps> = props => {
     </S.SpinnerWrapper>
   );
 };
-
-export default Spinner;
