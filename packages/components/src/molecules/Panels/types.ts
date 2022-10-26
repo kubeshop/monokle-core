@@ -1,3 +1,5 @@
+import React from "react";
+
 export type ResizableColumnsPanelLayout = {
   left?: number;
   center: number;
@@ -25,5 +27,8 @@ export type ResizableRowsPanelType = {
   layout?: ResizableRowsPanelLayout;
   height?: number;
   width?: number;
+  splitterStyle?: React.CSSProperties;
+  topElementStyle?: React.CSSProperties;
+  bottomElementStyle?: React.CSSProperties;
   onStopResize?: (position: "top" | "bottom", flex: number) => void;
 };
