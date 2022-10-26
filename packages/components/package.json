@@ -3,8 +3,6 @@
   "version": "0.0.0",
   "author": "Kubeshop",
   "description": "UI library for Monokle",
-  "type": "module",
-  "sideEffects": false,
   "source": "src/index.ts",
   "repository": {
     "type": "git",

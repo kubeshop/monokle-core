@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { ResizableColumnsPanel, ResizableRowsPanel } from "../Panels";
-import { AllPanelsArgs } from "../Panels/ResizableColumnsPanel.stories";
+import { AllColumnsArgs } from "../Panels/args";
 
 export default {
   title: "Organisms/ResizablePanels",
@@ -10,7 +10,7 @@ export default {
 export const ResizablePanels: ComponentStory<typeof ResizableRowsPanel> = () => (
   <>
     <ResizableRowsPanel
-      top={<ResizableColumnsPanel {...AllPanelsArgs} height={undefined} />}
+      top={<ResizableColumnsPanel {...AllColumnsArgs} height={undefined} />}
       bottom={<div style={{ background: "#FF9933", height: "100%" }}>Bottom Panel</div>}
       height={700}
       width={1500}
