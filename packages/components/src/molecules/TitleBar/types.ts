@@ -7,4 +7,5 @@ export type TitleBarType = {
   expandable?: boolean;
   isOpen?: boolean;
   type?: "primary" | "secondary";
+  onExpand?: () => void;
 };

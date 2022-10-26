@@ -9,4 +9,5 @@ export const TextTitleBarArgs: TitleBarType = {
   ),
   description: <div>Some description</div>,
   title: "Resources",
+  expandable: true,
 };
