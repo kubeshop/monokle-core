@@ -18,6 +18,7 @@ export const Primary: ComponentStoryObj<typeof ActivityBar> = {
         tooltip: "File Explorer",
         icon: (selected) => <Icon name={selected ? "terminal" : "search"} color={Colors.grey9} />,
         component: <div>File Pane</div>,
+        useBadge: () => ({ count: 9, size: "small" }),
       },
       {
         type: "panel",
@@ -25,6 +26,7 @@ export const Primary: ComponentStoryObj<typeof ActivityBar> = {
         tooltip: "Kustomize",
         icon: () => <Icon name="kustomize" color={Colors.grey9} />,
         component: <div>Kustomize Pane</div>,
+        useBadge: () => ({ count: 1, dot: true }),
       },
       {
         type: "panel",
@@ -32,6 +34,7 @@ export const Primary: ComponentStoryObj<typeof ActivityBar> = {
         tooltip: "Helm",
         icon: () => <Icon name="helm" color={Colors.grey9} />,
         component: <div>Helm Pane</div>,
+        useBadge: () => undefined,
       },
     ],
     onChange: () => {},

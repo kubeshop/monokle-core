@@ -1,13 +1,13 @@
 import Colors from "@/styles/Colors";
 import styled from "styled-components";
 
-import { Badge as RawBadge, Button as RawButton } from 'antd';
+import { Badge as RawBadge, Button as RawButton } from "antd";
 
 interface GetColorParams {
-    isSelected: boolean;
-    isActive?: boolean;
-    isHighlighted?: boolean;
-  }
+  isSelected: boolean;
+  isActive?: boolean;
+  isHighlighted?: boolean;
+}
 
 export const ItemBox = styled.div<{ isSelected: boolean; isActive: boolean }>`
   background-color: ${({ isSelected, isActive }) =>
@@ -21,23 +21,34 @@ export const ItemBox = styled.div<{ isSelected: boolean; isActive: boolean }>`
 
 export const Badge = styled(RawBadge)`
   & .ant-badge-dot {
-    top: 10px;
-    right: 10px;
+    z-index: 100;
+    background-color: ${Colors.geekblue6} !important;
+    box-shadow: none;
+  }
+
+  & .ant-badge-count {
+    top: 1px;
+    right: -2px;
+    z-index: 100;
+    padding: 0px 4px;
+    background-color: ${Colors.geekblue6} !important;
+    box-shadow: none;
+  }
+
+  & .ant-badge-count-sm {
+    min-width: 12px;
+    height: 12px;
+    font-size: 8px;
+    line-height: 11px;
+    box-shadow: none;
   }
 `;
 
 const getButtonBackground = ({ isSelected }: GetColorParams): string =>
-  isSelected ? Colors.highlightBlue : 'rgba(51, 60, 63, 0.5)';
+  isSelected ? Colors.highlightBlue : "rgba(51, 60, 63, 0.5)";
 
-const getButtonForeground = ({
-  isSelected,
-  isHighlighted,
-}: GetColorParams): string =>
-  isSelected
-    ? Colors.highlightCyan
-    : isHighlighted
-    ? Colors.highlightBlue
-    : 'currentColor';
+const getButtonForeground = ({ isSelected, isHighlighted }: GetColorParams): string =>
+  isSelected ? Colors.highlightCyan : isHighlighted ? Colors.highlightBlue : "currentColor";
 
 export const Button = styled(RawButton)<{ $isSelected: boolean }>`
   display: flex;
