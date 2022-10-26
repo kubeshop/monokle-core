@@ -20,6 +20,7 @@
   "files": [
     "dist"
   ],
+  "source": "src/index.ts",
   "main": "./dist/core.umd.js",
   "module": "./dist/core.es.js",
   "types": "./dist/index.d.ts",
@@ -35,7 +36,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "test": "echo \"No tests\""
   },
   "devDependencies": {
     "@ant-design/icons": "4.7.0",
