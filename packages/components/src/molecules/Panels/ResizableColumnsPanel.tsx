@@ -2,28 +2,13 @@ import Colors from "@/styles/Colors";
 import { useCallback } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter, HandlerProps } from "react-reflex";
 
+import { ResizableColumnsPanelType } from "./types";
 import * as S from "./ResizableColumnsPanel.styled";
 
 export const MIN_PANE_WIDTH = 350;
 export const PANE_GUTTER_WIDTH = 15;
 
-type ResizableColumnsPanelLayout = {
-  left?: number;
-  center: number;
-  right: number;
-};
-
-type IProps = {
-  center: React.ReactNode;
-  right: React.ReactNode;
-  layout?: ResizableColumnsPanelLayout;
-  left?: React.ReactNode;
-  height?: number;
-  width?: number;
-  onStopResize?: (position: "left" | "center" | "right", flex: number) => void;
-};
-
-const ResizableColumnsPanel: React.FC<IProps> = (props) => {
+const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
   const { center, layout, left, right, height = "100%", width = "100%", onStopResize } = props;
 
   const makeOnStopResize = useCallback((position: "left" | "center" | "right") => {

@@ -1,21 +1,8 @@
 import { useCallback } from "react";
 import { HandlerProps, ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
+import { ResizableRowsPanelType } from "./types";
 
-type ResizableRowsPanelLayout = {
-  top: number;
-  bottom?: number;
-};
-
-type IProps = {
-  top: React.ReactNode;
-  bottom?: React.ReactNode;
-  layout?: ResizableRowsPanelLayout;
-  height?: number;
-  width?: number;
-  onStopResize?: (position: "top" | "bottom", flex: number) => void;
-};
-
-const ResizableRowsPanel: React.FC<IProps> = (props) => {
+const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = (props) => {
   const { layout, height = "100%", width = "100%", top, bottom, onStopResize } = props;
 
   const makeOnStopResize = useCallback((position: "top" | "bottom") => {

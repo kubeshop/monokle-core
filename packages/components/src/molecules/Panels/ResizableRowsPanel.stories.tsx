@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import ResizableRowsPanel from "./ResizableRowsPanel";
+import { ResizableRowsPanelType } from "./types";
 
 export default {
   title: "Molecules/ResizableRowsPanel",
@@ -8,8 +9,7 @@ export default {
 
 const Template: ComponentStory<typeof ResizableRowsPanel> = (args) => <ResizableRowsPanel {...args} />;
 
-export const AllPanels = Template.bind({});
-AllPanels.args = {
+export const AllPanelsArgs: ResizableRowsPanelType = {
   top: <div style={{ background: "#0057B7", height: "100%", color: "#fff" }}>Top Panel</div>,
   bottom: <div style={{ background: "#FFDD00", height: "100%" }}>Bottom Panel</div>,
   height: 700,
@@ -18,19 +18,19 @@ AllPanels.args = {
     top: 0.5,
     bottom: 0.5,
   },
-  onStopResize: (position, flex) => {
-    console.log("Position:", position);
-    console.log("Flex:", flex);
-  },
 };
 
-export const WithoutBottomPanel = Template.bind({});
-WithoutBottomPanel.args = {
+export const AllPanels = Template.bind({});
+AllPanels.args = AllPanelsArgs;
+
+export const WithoutBottomPanelArgs: ResizableRowsPanelType = {
   top: <div style={{ background: "#0057B7", height: "100%", color: "#fff" }}>Top Panel</div>,
   height: 800,
   width: 1000,
   layout: {
     top: 1,
   },
-  onStopResize: (position, flex) => {},
 };
+
+export const WithoutBottomPanel = Template.bind({});
+WithoutBottomPanel.args = WithoutBottomPanelArgs;
