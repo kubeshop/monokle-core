@@ -7,7 +7,7 @@ export type ResizableColumnsPanelLayout = {
 };
 
 export type ResizableRowsPanelLayout = {
-  top: number;
+  top?: number;
   bottom?: number;
 };
 
