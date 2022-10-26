@@ -1,4 +1,4 @@
-import { createTreeNavigator, SectionBlueprint } from "rtk-tree-navigator";
+import { createTreeNavigator, SectionBlueprint } from "@monokle/tree-navigator";
 import { FileEntry } from "../data/fileEntries";
 
 export const FileTreeNavigator = createTreeNavigator({ id: "FileNavigator" });

@@ -1,4 +1,4 @@
-import { getTreeNavigatorReducer, setupTreeNavigators } from "rtk-tree-navigator";
+import { getTreeNavigatorReducer, setupTreeNavigators } from "@monokle/tree-navigator";
 import {
   AnyAction,
   configureStore,
