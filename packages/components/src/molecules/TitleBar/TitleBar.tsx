@@ -2,7 +2,7 @@ import { TitleBarType } from "..";
 import * as S from "./TitleBar.styled";
 
 const TitleBar: React.FC<TitleBarType> = (props) => {
-  const { actions, expandable = false, isOpen = false, title, type = "primary" } = props;
+  const { actions, description, expandable = false, isOpen = false, title, type = "primary" } = props;
 
   return (
     <>
@@ -13,6 +13,8 @@ const TitleBar: React.FC<TitleBarType> = (props) => {
 
         <S.ActionsContainer>{actions}</S.ActionsContainer>
       </S.HeaderContainer>
+
+      {description && <S.DescriptionContainer $type={type}>{description}</S.DescriptionContainer>}
     </>
   );
 };

@@ -7,6 +7,6 @@ export const TextTitleBarArgs: TitleBarType = {
       Some action
     </Button>
   ),
+  description: <div>Some description</div>,
   title: "Resources",
-  type: "secondary",
 };
