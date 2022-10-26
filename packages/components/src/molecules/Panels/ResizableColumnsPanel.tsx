@@ -5,11 +5,8 @@ import { ReflexContainer, ReflexElement, ReflexSplitter, HandlerProps } from "re
 import { ResizableColumnsPanelType } from "./types";
 import * as S from "./ResizableColumnsPanel.styled";
 
-export const MIN_PANE_WIDTH = 350;
-export const PANE_GUTTER_WIDTH = 15;
-
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
-  const { center, layout, left, right, height = "100%", width = "100%", onStopResize } = props;
+  const { center, layout, left, right, height = "100%", width = "100%", onStopResize, minPaneWidth = 350 } = props;
 
   const makeOnStopResize = useCallback((position: "left" | "center" | "right") => {
     return (args: HandlerProps) => {
@@ -24,7 +21,7 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
   return (
     <ReflexContainer orientation="vertical" windowResizeAware style={{ height, width }}>
       {left && (
-        <ReflexElement minSize={MIN_PANE_WIDTH} onStopResize={makeOnStopResize("left")} flex={layout?.left}>
+        <ReflexElement minSize={minPaneWidth} onStopResize={makeOnStopResize("left")} flex={layout?.left}>
           <S.LeftPane>{left}</S.LeftPane>
         </ReflexElement>
       )}
@@ -33,8 +30,8 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
 
       {center && (
         <ReflexElement
-          minSize={MIN_PANE_WIDTH}
-          maxSize={MIN_PANE_WIDTH + 200}
+          minSize={minPaneWidth}
+          maxSize={minPaneWidth + 200}
           onStopResize={makeOnStopResize("center")}
           flex={layout?.center}
         >
@@ -44,7 +41,7 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
 
       {center && <ReflexSplitter propagate={Boolean(left)} />}
 
-      <ReflexElement minSize={MIN_PANE_WIDTH} onStopResize={makeOnStopResize("right")}>
+      <ReflexElement minSize={minPaneWidth} onStopResize={makeOnStopResize("right")}>
         <S.Pane>{right}</S.Pane>
       </ReflexElement>
     </ReflexContainer>

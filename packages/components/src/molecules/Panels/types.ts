@@ -3,7 +3,7 @@ import React from "react";
 export type ResizableColumnsPanelLayout = {
   left?: number;
   center?: number;
-  right: number;
+  right?: number;
 };
 
 export type ResizableRowsPanelLayout = {
@@ -18,6 +18,7 @@ export type ResizableColumnsPanelType = {
   left?: React.ReactNode;
   height?: number;
   width?: number;
+  minPaneWidth?: number;
   onStopResize?: (position: "left" | "center" | "right", flex: number) => void;
 };
 
