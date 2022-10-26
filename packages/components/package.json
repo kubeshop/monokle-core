@@ -1,6 +1,6 @@
 {
   "name": "@monokle/components",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Kubeshop",
   "description": "UI library for Monokle",
   "repository": {
@@ -17,7 +17,7 @@
     "components"
   ],
   "files": [
-    "dist"
+    "dist/*"
   ],
   "source": "src/index.ts",
   "main": "dist/lib.umd.js",
