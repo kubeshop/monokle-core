@@ -20,9 +20,9 @@
     "dist"
   ],
   "source": "src/index.ts",
-  "main": "./dist/lib.umd.js",
-  "module": "./dist/lib.es.js",
-  "types": "./dist/index.d.ts",
+  "main": "dist/lib.umd.js",
+  "module": "dist/lib.es.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
