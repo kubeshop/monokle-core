@@ -31,16 +31,18 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
 
       {left && <ReflexSplitter propagate style={{ backgroundColor: Colors.grey10 }} />}
 
-      <ReflexElement
-        minSize={MIN_PANE_WIDTH}
-        maxSize={MIN_PANE_WIDTH + 200}
-        onStopResize={makeOnStopResize("center")}
-        flex={layout?.center}
-      >
-        <S.Pane>{center}</S.Pane>
-      </ReflexElement>
+      {center && (
+        <ReflexElement
+          minSize={MIN_PANE_WIDTH}
+          maxSize={MIN_PANE_WIDTH + 200}
+          onStopResize={makeOnStopResize("center")}
+          flex={layout?.center}
+        >
+          <S.Pane>{center}</S.Pane>
+        </ReflexElement>
+      )}
 
-      <ReflexSplitter propagate={Boolean(left)} />
+      {center && <ReflexSplitter propagate={Boolean(left)} />}
 
       <ReflexElement minSize={MIN_PANE_WIDTH} onStopResize={makeOnStopResize("right")}>
         <S.Pane>{right}</S.Pane>

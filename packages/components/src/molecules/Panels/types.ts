@@ -2,7 +2,7 @@ import React from "react";
 
 export type ResizableColumnsPanelLayout = {
   left?: number;
-  center: number;
+  center?: number;
   right: number;
 };
 
@@ -12,8 +12,8 @@ export type ResizableRowsPanelLayout = {
 };
 
 export type ResizableColumnsPanelType = {
-  center: React.ReactNode;
   right: React.ReactNode;
+  center?: React.ReactNode;
   layout?: ResizableColumnsPanelLayout;
   left?: React.ReactNode;
   height?: number;
