@@ -2,7 +2,7 @@ import Colors from "@/styles/Colors";
 import { Tooltip } from "antd";
 import { useCallback } from "react";
 
-import { ActivityBarItemProps, ActivityType } from "./types";
+import { ActivityBarItemProps } from "./types";
 
 import * as S from "./ActivityBarItem.styled";
 
