@@ -10,9 +10,9 @@ const Template: ComponentStory<typeof ResizableColumnsPanel> = (args) => <Resiza
 
 export const AllPanels = Template.bind({});
 AllPanels.args = {
-  left: <div style={{ background: "blue", height: "100%" }}>Left Panel</div>,
-  center: <div style={{ background: "yellow", height: "100%" }}>Center Panel</div>,
-  right: <div style={{ background: "red", height: "100%" }}>Right Panel</div>,
+  left: <div style={{ background: "#002B7F", height: "100%", color: "#fff" }}>Left Panel</div>,
+  center: <div style={{ background: "#FCD116", height: "100%" }}>Center Panel</div>,
+  right: <div style={{ background: "#CE1126", height: "100%" }}>Right Panel</div>,
   height: 500,
   width: 1500,
   layout: {
@@ -25,14 +25,13 @@ AllPanels.args = {
 
 export const WithoutLeftPanel = Template.bind({});
 WithoutLeftPanel.args = {
-  center: <div style={{ background: "yellow", height: "100%" }}>Center Panel</div>,
-  right: <div style={{ background: "red", height: "100%" }}>Right Panel</div>,
+  center: <div style={{ background: "#FCD116", height: "100%" }}>Center Panel</div>,
+  right: <div style={{ background: "#CE1126", height: "100%" }}>Right Panel</div>,
   height: 500,
   width: 1500,
   layout: {
-    left: 0.3,
     center: 0.3,
-    right: 0.4,
+    right: 0.7,
   },
   onStopResize: (position, flex) => {},
 };

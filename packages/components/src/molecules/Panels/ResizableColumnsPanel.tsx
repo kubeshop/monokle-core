@@ -7,24 +7,24 @@ import * as S from "./ResizableColumnsPanel.styled";
 export const MIN_PANE_WIDTH = 350;
 export const PANE_GUTTER_WIDTH = 15;
 
-type ResizablePanelsLayout = {
-  left: number;
+type ResizableColumnsPanelLayout = {
+  left?: number;
   center: number;
   right: number;
 };
 
 type IProps = {
-  center: JSX.Element;
-  right: JSX.Element;
-  width?: number;
-  layout?: ResizablePanelsLayout;
-  left?: JSX.Element;
+  center: React.ReactNode;
+  right: React.ReactNode;
+  layout?: ResizableColumnsPanelLayout;
+  left?: React.ReactNode;
   height?: number;
+  width?: number;
   onStopResize?: (position: "left" | "center" | "right", flex: number) => void;
 };
 
 const ResizableColumnsPanel: React.FC<IProps> = (props) => {
-  const { center, layout, left, right, height, width, onStopResize } = props;
+  const { center, layout, left, right, height = "100%", width = "100%", onStopResize } = props;
 
   const makeOnStopResize = useCallback((position: "left" | "center" | "right") => {
     return (args: HandlerProps) => {
@@ -37,11 +37,7 @@ const ResizableColumnsPanel: React.FC<IProps> = (props) => {
   }, []);
 
   return (
-    <ReflexContainer
-      orientation="vertical"
-      windowResizeAware
-      style={{ height: height || "100%", width: width || "100%" }}
-    >
+    <ReflexContainer orientation="vertical" windowResizeAware style={{ height, width }}>
       {left && (
         <ReflexElement minSize={MIN_PANE_WIDTH} onStopResize={makeOnStopResize("left")} flex={layout?.left}>
           <S.LeftPane>{left}</S.LeftPane>
