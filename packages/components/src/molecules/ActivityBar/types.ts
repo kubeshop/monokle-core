@@ -1,13 +1,5 @@
-export type ActivityName =
-  | 'explorer'
-  | 'pulls'
-  | 'kustomize'
-  | 'validation'
-  | 'helm'
-  | 'images';
-
-export type ActivityType = {
-  type: 'fullscreen' | 'panel';
+export type ActivityType<ActivityName> = {
+  type: "fullscreen" | "panel";
   name: ActivityName;
   tooltip: string;
   icon: (selected: boolean) => JSX.Element;
