@@ -5,6 +5,7 @@ import { ResizableRowsPanelType } from "./types";
 const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = (props) => {
   const { layout, height = "100%", width = "100%", top, bottom, onStopResize } = props;
   const { bottomElementStyle = {}, splitterStyle = {}, topElementStyle = {} } = props;
+  const { bottomPaneMinSize = 200, bottomPaneMaxSize = 500 } = props;
 
   const makeOnStopResize = useCallback((position: "top" | "bottom") => {
     return (args: HandlerProps) => {
@@ -25,7 +26,12 @@ const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = (props) => {
       {bottom && <ReflexSplitter style={splitterStyle} />}
 
       {bottom && (
-        <ReflexElement minSize={200} maxSize={500} onStopResize={makeOnStopResize("bottom")} style={bottomElementStyle}>
+        <ReflexElement
+          minSize={bottomPaneMinSize}
+          maxSize={bottomPaneMaxSize}
+          onStopResize={makeOnStopResize("bottom")}
+          style={bottomElementStyle}
+        >
           {bottom}
         </ReflexElement>
       )}

@@ -30,5 +30,7 @@ export type ResizableRowsPanelType = {
   splitterStyle?: React.CSSProperties;
   topElementStyle?: React.CSSProperties;
   bottomElementStyle?: React.CSSProperties;
+  bottomPaneMinSize?: number;
+  bottomPaneMaxSize?: number;
   onStopResize?: (position: "top" | "bottom", flex: number) => void;
 };
