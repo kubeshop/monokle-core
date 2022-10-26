@@ -11,6 +11,8 @@ export type ResizableRowsPanelLayout = {
   bottom?: number;
 };
 
+export type OnStopResize = (position: "left" | "center" | "right", flex: number) => void;
+
 export type ResizableColumnsPanelType = {
   right: React.ReactNode;
   center?: React.ReactNode;
@@ -19,7 +21,7 @@ export type ResizableColumnsPanelType = {
   height?: number;
   width?: number;
   minPaneWidth?: number;
-  onStopResize?: (position: "left" | "center" | "right", flex: number) => void;
+  onStopResize?: OnStopResize;
 };
 
 export type ResizableRowsPanelType = {
