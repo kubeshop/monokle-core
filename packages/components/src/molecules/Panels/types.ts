@@ -1,7 +1,9 @@
+import React from "react";
+
 export type ResizableColumnsPanelLayout = {
   left?: number;
-  center: number;
-  right: number;
+  center?: number;
+  right?: number;
 };
 
 export type ResizableRowsPanelLayout = {
@@ -10,12 +12,13 @@ export type ResizableRowsPanelLayout = {
 };
 
 export type ResizableColumnsPanelType = {
-  center: React.ReactNode;
   right: React.ReactNode;
+  center?: React.ReactNode;
   layout?: ResizableColumnsPanelLayout;
   left?: React.ReactNode;
   height?: number;
   width?: number;
+  minPaneWidth?: number;
   onStopResize?: (position: "left" | "center" | "right", flex: number) => void;
 };
 
@@ -25,5 +28,10 @@ export type ResizableRowsPanelType = {
   layout?: ResizableRowsPanelLayout;
   height?: number;
   width?: number;
+  splitterStyle?: React.CSSProperties;
+  topElementStyle?: React.CSSProperties;
+  bottomElementStyle?: React.CSSProperties;
+  bottomPaneMinSize?: number;
+  bottomPaneMaxSize?: number;
   onStopResize?: (position: "top" | "bottom", flex: number) => void;
 };
