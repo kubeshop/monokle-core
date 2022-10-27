@@ -6,11 +6,11 @@ import * as S from "./ActivityBar.styled";
 export function ActivityBar<ActivityName extends string, ExtraActivityName extends string>(
   props: ActivityBarProps<ActivityName, ExtraActivityName>
 ) {
-  const { activities, isActive, value, onChange } = props;
+  const { activities, isActive, style = {}, value, onChange } = props;
   const { extraActivities = [], extraValue = "", onChangeExtra = () => {} } = props;
 
   return (
-    <S.BarBox $isActive={isActive}>
+    <S.BarBox $isActive={isActive} style={style}>
       <div>
         {activities.map((activity) => {
           return (

@@ -1,3 +1,5 @@
+import React from "react";
+
 export type ActivityType<ActivityName> = {
   component: JSX.Element;
   name: ActivityName;
@@ -14,6 +16,7 @@ export type ActivityBarProps<ActivityName, ExtraActivityName = any> = {
   value: ActivityName;
   extraActivities?: ActivityType<ExtraActivityName>[];
   extraValue?: ExtraActivityName;
+  style?: React.CSSProperties;
   onChange: (activityName: ActivityName) => void;
   onChangeExtra?: (activityName: ExtraActivityName) => void;
 };
