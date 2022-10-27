@@ -25,15 +25,17 @@ export function ActivityBar<ActivityName extends string, ExtraActivityName exten
         })}
       </div>
 
-      {extraActivities.map((activity) => (
-        <ActivityBarItem
-          key={activity.name}
-          activity={activity}
-          isActive={isActive}
-          isSelected={extraValue === activity.name}
-          onChange={onChangeExtra}
-        />
-      ))}
+      <div>
+        {extraActivities.map((activity) => (
+          <ActivityBarItem
+            key={activity.name}
+            activity={activity}
+            isActive={isActive}
+            isSelected={extraValue === activity.name}
+            onChange={onChangeExtra}
+          />
+        ))}
+      </div>
     </S.BarBox>
   );
 }
