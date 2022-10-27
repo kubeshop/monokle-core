@@ -5,8 +5,11 @@ import { useCallback } from "react";
 import { ActivityBarItemProps } from "./types";
 
 import * as S from "./ActivityBarItem.styled";
+import { TOOLTIP_DELAY } from "@/constants";
 
-export function ActivityBarItem<ActivityName>(props: ActivityBarItemProps<ActivityName>) {
+export function ActivityBarItem<ActivityName, ExtraActivityName>(
+  props: ActivityBarItemProps<ActivityName, ExtraActivityName>
+) {
   const { activity, isActive, isSelected, onChange } = props;
 
   const badge = activity.useBadge();
@@ -21,7 +24,7 @@ export function ActivityBarItem<ActivityName>(props: ActivityBarItemProps<Activi
 
   return (
     <S.ItemBox isActive={isActive} isSelected={isSelected}>
-      <Tooltip title={activity.tooltip} mouseEnterDelay={0.75} placement="right">
+      <Tooltip title={activity.tooltip} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
         <S.Button $isSelected={isSelected} onClick={toggle}>
           <S.Badge count={badge?.count ?? 0} color={Colors.blue6} size={badge?.size} dot={badge?.dot ?? false}>
             {activity.icon(isSelected)}
