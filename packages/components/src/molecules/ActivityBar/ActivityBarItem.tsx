@@ -14,18 +14,10 @@ export function ActivityBarItem<ActivityName, ExtraActivityName>(
 
   const badge = activity.useBadge();
 
-  const toggle = useCallback(() => {
-    if (isSelected) {
-      return;
-    }
-
-    onChange(activity.name);
-  }, [activity, isSelected]);
-
   return (
     <S.ItemBox isActive={isActive} isSelected={isSelected}>
       <Tooltip title={activity.tooltip} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
-        <S.Button $isSelected={isSelected} onClick={toggle}>
+        <S.Button $isSelected={isSelected} onClick={() => onChange(activity.name)}>
           <S.Badge count={badge?.count ?? 0} color={Colors.blue6} size={badge?.size} dot={badge?.dot ?? false}>
             {activity.icon(isSelected)}
           </S.Badge>
