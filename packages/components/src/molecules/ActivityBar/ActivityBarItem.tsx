@@ -7,7 +7,9 @@ import { ActivityBarItemProps } from "./types";
 import * as S from "./ActivityBarItem.styled";
 import { TOOLTIP_DELAY } from "@/constants";
 
-export function ActivityBarItem<ActivityName>(props: ActivityBarItemProps<ActivityName>) {
+export function ActivityBarItem<ActivityName, ExtraActivityName>(
+  props: ActivityBarItemProps<ActivityName, ExtraActivityName>
+) {
   const { activity, isActive, isSelected, onChange } = props;
 
   const badge = activity.useBadge();

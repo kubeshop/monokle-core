@@ -3,22 +3,37 @@ import { ActivityBarProps } from "./types";
 
 import * as S from "./ActivityBar.styled";
 
-export function ActivityBar<ActivityName extends string>(props: ActivityBarProps<ActivityName>) {
+export function ActivityBar<ActivityName extends string, ExtraActivityName extends string>(
+  props: ActivityBarProps<ActivityName, ExtraActivityName>
+) {
   const { activities, isActive, value, onChange } = props;
+  const { extraActivities = [], extraValue = "", onChangeExtra = () => {} } = props;
 
   return (
     <S.BarBox $isActive={isActive}>
-      {activities.map((activity) => {
-        return (
-          <ActivityBarItem
-            key={activity.name}
-            activity={activity}
-            isActive={isActive}
-            isSelected={value === activity.name}
-            onChange={onChange}
-          />
-        );
-      })}
+      <div>
+        {activities.map((activity) => {
+          return (
+            <ActivityBarItem
+              key={activity.name}
+              activity={activity}
+              isActive={isActive}
+              isSelected={value === activity.name}
+              onChange={onChange}
+            />
+          );
+        })}
+      </div>
+
+      {extraActivities.map((activity) => (
+        <ActivityBarItem
+          key={activity.name}
+          activity={activity}
+          isActive={isActive}
+          isSelected={extraValue === activity.name}
+          onChange={onChangeExtra}
+        />
+      ))}
     </S.BarBox>
   );
 }
