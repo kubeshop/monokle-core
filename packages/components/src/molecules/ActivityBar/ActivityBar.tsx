@@ -3,7 +3,7 @@ import { ActivityBarProps } from "./types";
 
 import * as S from "./ActivityBar.styled";
 
-export function ActivityBar<ActivityName extends string, ExtraActivityName extends string>(
+export function ActivityBar<ActivityName extends string, ExtraActivityName extends string | undefined>(
   props: ActivityBarProps<ActivityName, ExtraActivityName>
 ) {
   const { activities, isActive, style = {}, value, onChange } = props;
