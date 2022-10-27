@@ -1,7 +1,7 @@
 export type ActivityType<ActivityName> = {
   type: "fullscreen" | "panel";
   name: ActivityName;
-  tooltip: string;
+  tooltip: string | JSX.Element;
   icon: (selected: boolean) => JSX.Element;
   component: JSX.Element;
   walkthrough?: JSX.Element;
