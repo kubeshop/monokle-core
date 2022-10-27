@@ -1,4 +1,6 @@
 export type IconNames =
+  | "compare"
+  | "explorer"
   | "images"
   | "git-ops"
   | "kubernetes"
