@@ -1,6 +1,4 @@
-import groupBy from "lodash/groupBy.js";
-import keyBy from "lodash/keyBy.js";
-import uniq from "lodash/uniq.js";
+import { groupBy, keyBy, uniq } from "lodash-es";
 import { ResourceParser } from "../common/resourceParser.js";
 import {
   Incremental,

@@ -24,7 +24,7 @@ const Settings = z.object({
 
 export class KubernetesSchemaValidator extends AbstractPlugin {
   private _settings!: Settings;
-  private ajv!: Ajv.Ajv;
+  private ajv!: Ajv;
 
   constructor(
     private resourceParser: ResourceParser,
@@ -56,13 +56,12 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     }
 
     this.ajv = new Ajv({
-      unknownFormats: "ignore",
       validateSchema: false,
       logger: false,
-      jsonPointers: true,
       verbose: true,
       allErrors: true,
       schemas: [schema.schema],
+      code: { esm: true },
     });
 
     this.warmup();
@@ -185,7 +184,7 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
 
     const valueNode = findJsonPointerNode(
       parsedDoc,
-      err.dataPath.substring(1).split("/")
+      err.instancePath.substring(1).split("/")
     );
 
     const region = this.resourceParser.parseErrorRegion(
@@ -197,7 +196,7 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
 
     return this.createValidationResult("K8S001", {
       message: {
-        text: err.message ? `Value at ${err.dataPath} ${err.message}` : "",
+        text: err.message ? `Value at ${err.instancePath} ${err.message}` : "",
       },
       locations,
     });

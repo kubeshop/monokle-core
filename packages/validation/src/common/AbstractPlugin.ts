@@ -1,4 +1,4 @@
-import keyBy from "lodash/keyBy.js";
+import { keyBy } from "lodash-es";
 import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { RuleMap } from "../config/parse.js";

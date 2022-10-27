@@ -1,4 +1,4 @@
-import toLower from "lodash/toLower.js";
+import { toLower } from "lodash-es";
 import { Location, Region } from "../common/sarif.js";
 import { Resource } from "../common/types.js";
 import { FALLBACK_REGION } from "../constants.js";

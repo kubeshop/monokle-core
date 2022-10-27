@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "yaml": "https://cdn.skypack.dev/yaml"
+  }
+}

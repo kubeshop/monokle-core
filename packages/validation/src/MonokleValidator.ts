@@ -7,9 +7,9 @@ import type { Incremental, Resource, Plugin } from "./common/types.js";
 import { Config, PluginMap } from "./config/parse.js";
 import { nextTick, throwIfAborted } from "./utils/abort.js";
 import { isDefined } from "./utils/isDefined.js";
+import { SimpleCustomValidator } from "./validators/custom/simpleValidator.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
 import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
-import { LabelsValidator } from "./validators/labels/validator.js";
 import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
@@ -45,7 +45,8 @@ export function createDefaultPluginLoader(
       case "yaml-syntax":
         return new YamlValidator(parser);
       case "labels":
-        return new LabelsValidator(parser);
+        const labelPlugin = await import("./validators/labels/plugin.js");
+        return new SimpleCustomValidator(labelPlugin.default, parser);
       case "kubernetes-schema":
         return new KubernetesSchemaValidator(parser, schemaLoader);
       default:
@@ -251,6 +252,8 @@ export class MonokleValidator {
 
     await nextTick();
     throwIfAborted(loadAbortSignal, externalAbortSignal);
+
+    console.log("validators", validators.length);
 
     const allRuns = await Promise.allSettled(
       validators.map((v) => v.validate(resources, incremental))

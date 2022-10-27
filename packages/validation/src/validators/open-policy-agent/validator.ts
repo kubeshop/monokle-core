@@ -1,7 +1,7 @@
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
 import { isNode, Node } from "yaml";
 
-import get from "lodash/get.js";
+import { get } from "lodash-es";
 
 import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
