@@ -3,7 +3,6 @@ import { AnyAction } from "@reduxjs/toolkit";
 export interface ItemInstance {
   id: string;
   sectionId: string;
-  rootSectionId: string;
   treeNavigatorId: string;
   name: string;
   isSelected: boolean;
@@ -11,7 +10,7 @@ export interface ItemInstance {
   isVisible: boolean;
   isDirty: boolean;
   isDisabled: boolean;
-  isCheckable: boolean;
+  // isCheckable: boolean;
   isChecked: boolean;
   isLast: boolean;
   meta?: any;
@@ -20,7 +19,6 @@ export interface ItemInstance {
 export interface SectionInstance {
   id: string;
   name: string;
-  rootSectionId: string;
   treeNavigatorId: string;
   itemIds: string[];
   visibleItemIds: string[];

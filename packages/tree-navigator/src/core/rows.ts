@@ -1,35 +1,41 @@
 import {
-  ItemBlueprint,
   ItemInstance,
   TreeNavigatorRowItem,
   TreeNavigatorRow,
   TreeNavigatorRowSection,
-  RowBuilder,
   SectionBlueprint,
   SectionInstance,
   ITreeNavigator,
+  ItemsBuilder,
 } from "../types";
 
-function buildRowProp<InstanceType, PropsType extends { sectionInstance: SectionInstance } | undefined>(
-  builder: RowBuilder<InstanceType, PropsType> | undefined,
-  propName: keyof RowBuilder<InstanceType>,
-  instance: InstanceType,
-  defaultValue: number,
-  sectionInstance?: SectionInstance
-) {
-  let propValue = defaultValue;
-  const propBuilder = builder?.[propName];
-  if (typeof propBuilder === "number") {
-    propValue = propBuilder;
-  } else if (typeof propBuilder === "function") {
-    if (sectionInstance) {
-      propValue = propBuilder(instance, { sectionInstance } as PropsType);
-    } else {
-      propValue = propBuilder(instance);
-    }
-  }
-  return propValue;
-}
+// function buildRowProp<InstanceType, PropsType extends { sectionInstance: SectionInstance } | undefined>(
+//   builder: RowBuilder<InstanceType, PropsType> | undefined,
+//   propName: keyof RowBuilder<InstanceType>,
+//   instance: InstanceType,
+//   defaultValue: number,
+//   sectionInstance?: SectionInstance
+// ) {
+//   let propValue = defaultValue;
+//   const propBuilder = builder?.[propName];
+//   if (typeof propBuilder === "number") {
+//     propValue = propBuilder;
+//   } else if (typeof propBuilder === "function") {
+//     if (sectionInstance) {
+//       propValue = propBuilder(instance, { sectionInstance } as PropsType);
+//     } else {
+//       propValue = propBuilder(instance);
+//     }
+//   }
+//   return propValue;
+// }
+
+const DEFAULT_ROW = {
+  height: 30,
+  fontSize: 30 * 0.75,
+  marginBottom: 0,
+  indentation: 0,
+} as const;
 
 function makeSectionRow(payload: {
   treeNavigatorId: string;
@@ -39,47 +45,66 @@ function makeSectionRow(payload: {
   level: number;
 }): TreeNavigatorRowSection {
   const { treeNavigatorId, instance, blueprint, parentIndentation, level } = payload;
-  const { rowBuilder } = blueprint;
-  const height = buildRowProp(rowBuilder, "height", instance, 30);
-  const fontSize = buildRowProp(rowBuilder, "fontSize", instance, 30 * 0.75);
-  const marginBottom = buildRowProp(rowBuilder, "marginBottom", instance, 0);
-  const indentation = parentIndentation + buildRowProp(rowBuilder, "indentation", instance, 0);
+  const rowBuilder = blueprint.row;
+
+  if (!rowBuilder) {
+    return {
+      treeNavigatorId,
+      sectionId: instance.id,
+      type: "section",
+      level,
+      ...DEFAULT_ROW,
+      indentation: parentIndentation + DEFAULT_ROW.indentation,
+    };
+  }
+
+  const row = typeof rowBuilder === "function" ? rowBuilder(instance) : rowBuilder;
+
   return {
     treeNavigatorId,
     sectionId: instance.id,
     type: "section",
     level,
-    height,
-    indentation,
-    marginBottom,
-    fontSize,
+    ...DEFAULT_ROW,
+    ...row,
+    indentation: parentIndentation + (row.indentation || DEFAULT_ROW.indentation),
   };
 }
 
 function makeItemRow(payload: {
   treeNavigatorId: string;
   instance: ItemInstance;
-  blueprint: ItemBlueprint<any, any>;
+  blueprint: ItemsBuilder<any>;
   sectionId: string;
   parentIndentation: number;
   level: number;
 }): TreeNavigatorRowItem {
   const { treeNavigatorId, instance, blueprint, sectionId, parentIndentation, level } = payload;
-  const { rowBuilder } = blueprint;
-  const height = buildRowProp(rowBuilder, "height", instance, 30);
-  const fontSize = buildRowProp(rowBuilder, "fontSize", instance, 30 * 0.75);
-  const marginBottom = buildRowProp(rowBuilder, "marginBottom", instance, 0);
-  const indentation = parentIndentation + buildRowProp(rowBuilder, "indentation", instance, 0);
+  const rowBuilder = blueprint.row;
+
+  if (!rowBuilder) {
+    return {
+      type: "item",
+      treeNavigatorId,
+      itemId: instance.id,
+      sectionId,
+      level,
+      ...DEFAULT_ROW,
+      indentation: parentIndentation + DEFAULT_ROW.indentation,
+    };
+  }
+
+  const row = typeof rowBuilder === "function" ? rowBuilder(instance) : rowBuilder;
+
   return {
     treeNavigatorId,
     itemId: instance.id,
     type: "item",
     sectionId,
     level,
-    height,
-    indentation,
-    marginBottom,
-    fontSize,
+    ...DEFAULT_ROW,
+    ...row,
+    indentation: parentIndentation + (row.indentation || DEFAULT_ROW.indentation),
   };
 }
 
@@ -92,7 +117,7 @@ export function makeNavigatorRows(
   parentIndentation = 0
 ): TreeNavigatorRow[] {
   const rows: TreeNavigatorRow[] = [];
-  const blueprint: SectionBlueprint<any, any> | undefined = treeNavigator.getSectionBlueprint(instance.id);
+  const blueprint: SectionBlueprint<any> | undefined = treeNavigator.getSectionBlueprint(instance.id);
   if (!instance.isVisible || !blueprint) {
     return rows;
   }
@@ -106,9 +131,9 @@ export function makeNavigatorRows(
   });
   rows.push(sectionRow);
 
-  const itemBlueprint = blueprint.itemBlueprint;
+  const itemsBuilder = blueprint.items;
 
-  if (!instance.isCollapsed && itemBlueprint) {
+  if (!instance.isCollapsed && itemsBuilder) {
     rows.push(
       ...instance.visibleItemIds
         .map((itemId) => itemInstanceMap[itemId])
@@ -117,7 +142,7 @@ export function makeNavigatorRows(
           makeItemRow({
             treeNavigatorId: treeNavigator.id,
             instance: item,
-            blueprint: itemBlueprint,
+            blueprint: itemsBuilder,
             sectionId: blueprint.id,
             parentIndentation,
             level,

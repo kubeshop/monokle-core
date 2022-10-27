@@ -5,18 +5,20 @@ import {
   ITreeNavigator,
   RtkListener,
   SectionBlueprint,
+  SectionBuilder,
   StartListening,
   StopListening,
   TreeNavigatorCustomization,
   TreeNavigatorRendererComponent,
 } from "../types";
+import { AppDispatch } from "../types/appDispatch";
 import { createTreeNavigatorListener, createTreeNavigatorSectionListener } from "./listeners";
 
 const treeNavigatorMap: Record<string, ITreeNavigator> = {};
 
 let startListening: StartListening | undefined = undefined;
 let stopListening: StopListening | undefined = undefined;
-let dispatch: Dispatch<AnyAction> | undefined = undefined;
+let dispatch: AppDispatch | undefined = undefined;
 
 const makeNotFoundError = (id: string) => new Error(`Couldn't find section with id ${id}`);
 
@@ -27,7 +29,7 @@ export const getTreeNavigatorReducer = () => {
 export const setupTreeNavigators = (props: {
   startListening: StartListening;
   stopListening: StopListening;
-  dispatch: Dispatch<AnyAction>;
+  dispatch: AppDispatch;
 }) => {
   startListening = props.startListening;
   stopListening = props.stopListening;
@@ -59,16 +61,17 @@ export const getTreeNavigatorById = (id: string): ITreeNavigator | undefined => 
 export class TreeNavigator implements ITreeNavigator {
   readonly id: string;
   readonly Renderer: TreeNavigatorRendererComponent;
-  #rootSectionId?: string;
-  #sectionBlueprintMap: Record<string, SectionBlueprint<any, any>>;
+  #sectionBlueprintMap: Record<string, SectionBlueprint<any>>;
   #customization?: TreeNavigatorCustomization;
   #listenerMap: Record<string, RtkListener>;
+  #rootSectionIds: string[];
 
   constructor(id: string, customization?: TreeNavigatorCustomization) {
     this.id = id;
     this.#sectionBlueprintMap = {};
     this.#listenerMap = {};
     this.#customization = customization;
+    this.#rootSectionIds = [];
 
     this.Renderer = (props) => {
       const { height } = props;
@@ -92,8 +95,8 @@ export class TreeNavigator implements ITreeNavigator {
   //   Object.values(this.#listenerMap).forEach((listener) => stopListening(listener));
   // }
 
-  getRootSectionId() {
-    return this.#rootSectionId;
+  isRootSection(sectionId: string) {
+    return this.#rootSectionIds.includes(sectionId);
   }
 
   getCustomization() {
@@ -104,11 +107,7 @@ export class TreeNavigator implements ITreeNavigator {
     return this.#sectionBlueprintMap[sectionId];
   }
 
-  setRootSectionId(rootSectionId: string) {
-    this.#rootSectionId = rootSectionId;
-  }
-
-  #startSectionListener(sectionBlueprint: SectionBlueprint<any, any>) {
+  #startSectionListener(sectionBlueprint: SectionBlueprint<any>) {
     const listener = createTreeNavigatorSectionListener(this.id, sectionBlueprint);
     // if (!startListening) {
     //   throw new Error(`Cannot start listener for section ${sectionBlueprint.id} from TreeNavigator ${this.id}`);
@@ -126,40 +125,27 @@ export class TreeNavigator implements ITreeNavigator {
     stopListening(listener);
   }
 
-  registerSection(sectionBlueprint: SectionBlueprint<any, any>) {
+  registerSection(id: string, sectionBuilder: SectionBuilder<any>) {
+    if (!id.includes(".")) {
+      this.#rootSectionIds.push(id);
+    }
+
+    // TODO: implement logic for registering subsections based on the id
+    const sectionBlueprint: SectionBlueprint<any> = {
+      ...sectionBuilder,
+      id,
+      childSectionIds: [],
+    };
+
     this.#sectionBlueprintMap[sectionBlueprint.id] = sectionBlueprint;
     this.#startSectionListener(sectionBlueprint);
   }
 
   unregisterSection(sectionId: string) {
+    if (!sectionId.includes(".") && this.#rootSectionIds.includes(sectionId)) {
+      this.#rootSectionIds = this.#rootSectionIds.filter((id) => id !== sectionId);
+    }
     delete this.#sectionBlueprintMap[sectionId];
     this.#stopSectionListener(sectionId);
-  }
-
-  registerChildSection(parentSectionId: string, sectionBlueprint: SectionBlueprint<any, any>) {
-    const parentSection = this.#sectionBlueprintMap[parentSectionId];
-    if (!parentSection) {
-      throw makeNotFoundError(parentSectionId);
-    }
-    if (!parentSection.childSectionIds) {
-      parentSection.childSectionIds = [];
-    }
-    parentSection.childSectionIds.push(sectionBlueprint.id);
-    this.#sectionBlueprintMap[sectionBlueprint.id] = sectionBlueprint;
-    this.#startSectionListener(sectionBlueprint);
-  }
-
-  unregisterChildSection(parentSectionId: string, sectionId: string) {
-    const parentSection = this.#sectionBlueprintMap[parentSectionId];
-    const section = this.#sectionBlueprintMap[sectionId];
-    this.#stopSectionListener(sectionId);
-    if (!parentSection) {
-      throw makeNotFoundError(parentSectionId);
-    }
-    if (!section) {
-      throw makeNotFoundError(sectionId);
-    }
-    parentSection.childSectionIds = parentSection.childSectionIds?.filter((id) => id !== sectionId);
-    delete this.#sectionBlueprintMap[sectionId];
   }
 }

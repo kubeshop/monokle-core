@@ -8,7 +8,7 @@ export function computeSectionVisibility(
   treeNavigator: ITreeNavigator,
   sectionInstance: SectionInstance,
   sectionInstanceMap: Record<string, SectionInstance>,
-  sectionBlueprint: SectionBlueprint<any, any>,
+  sectionBlueprint: SectionBlueprint<any>,
   isLastChild?: boolean
 ): [boolean, string[] | undefined, string[] | undefined] {
   let visibleChildSectionIds: string[] = [];
