@@ -8,7 +8,7 @@ export type ActivityType<ActivityName> = {
   useBadge: () => { count: number; dot?: boolean; size?: "small" | "default" } | undefined;
 };
 
-export type ActivityBarProps<ActivityName, ExtraActivityName> = {
+export type ActivityBarProps<ActivityName, ExtraActivityName = any> = {
   activities: ActivityType<ActivityName>[];
   isActive: boolean;
   value: ActivityName;
@@ -18,7 +18,7 @@ export type ActivityBarProps<ActivityName, ExtraActivityName> = {
   onChangeExtra?: (activityName: ExtraActivityName) => void;
 };
 
-export type ActivityBarItemProps<ActivityName, ExtraActivityName> = {
+export type ActivityBarItemProps<ActivityName, ExtraActivityName = any> = {
   activity: ActivityType<ActivityName> | ActivityType<ExtraActivityName>;
   isActive: boolean;
   isSelected: boolean;

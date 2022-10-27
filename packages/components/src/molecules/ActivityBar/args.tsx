@@ -2,7 +2,7 @@ import { Icon } from "@/atoms";
 import Colors from "@/styles/Colors";
 import { ActivityBarProps } from "./types";
 
-export const MainActivityBarArgs: ActivityBarProps<string, string> = {
+export const MainActivityBarArgs: ActivityBarProps<string> = {
   activities: [
     {
       type: "panel",
