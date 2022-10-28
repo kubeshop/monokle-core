@@ -25,10 +25,6 @@ export type PolicyMetadata = {
  * These are a rule's custom properties used by the OPA validator.
  */
 export type OpaProperties = {
-  /**
-   * @deprecated use properties.problem.severity instead.
-   */
-  severity: "low" | "medium" | "high";
   entrypoint: string;
   path: string;
 };

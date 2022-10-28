@@ -27,7 +27,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         problem: {
           severity: "warning",
         },
-        severity: "medium",
+        "security-severity": 5,
         entrypoint: "appshield/kubernetes/KSV001/deny",
         path: "$container.securityContext.allowPrivilegeEscalation",
       },
@@ -50,7 +50,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         problem: {
           severity: "warning",
         },
-        severity: "medium",
+        "security-severity": 5,
         entrypoint: "appshield/kubernetes/KSV002/deny",
         path: "$container.AppArmor",
       },
@@ -70,7 +70,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Add 'ALL' to containers[].securityContext.capabilities.drop.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV003/deny",
         path: "$container.securityContext.capabilities.drop",
       },
@@ -90,7 +90,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Remove the SYS_ADMIN capability from 'containers[].securityContext.capabilities.add'.",
       },
       properties: {
-        severity: "high",
+        "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV005/deny",
         path: "$container.securityContext.capabilities.add",
       },
@@ -110,7 +110,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not specify `/var/run/docker.sock` in spec.template.volumes.hostPath.path.",
       },
       properties: {
-        severity: "high",
+        "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV006/deny",
         path: "spec.template.spec.volumes.hostPath.path",
       },
@@ -130,7 +130,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not set 'spec.template.spec.hostIPC' to true.",
       },
       properties: {
-        severity: "high",
+        "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV008/deny",
         path: "spec.template.spec.hostIPC",
       },
@@ -150,7 +150,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not set 'spec.template.spec.hostNetwork' to true.",
       },
       properties: {
-        severity: "high",
+        "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV009/deny",
         path: "spec.template.spec.hostNetwork",
       },
@@ -170,7 +170,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not set 'spec.template.spec.hostPID' to true.",
       },
       properties: {
-        severity: "high",
+        "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV010/deny",
         path: "spec.template.spec.hostPID",
       },
@@ -190,7 +190,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Add a cpu limitation to 'spec.resources.limits.cpu'.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV011/deny",
         path: "$container.resources.limits.cpu",
       },
@@ -210,7 +210,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Set 'containers[].securityContext.runAsNonRoot' to true.",
       },
       properties: {
-        severity: "medium",
+        "security-severity": 5,
         entrypoint: "appshield/kubernetes/KSV012/deny",
         path: "$container.securityContext.runAsNonRoot",
       },
@@ -230,7 +230,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Use a specific container image tag that is not 'latest'.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV013/deny",
         path: "$container.image",
       },
@@ -250,7 +250,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Change 'containers[].securityContext.readOnlyRootFilesystem' to 'true'.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV014/deny",
         path: "$container.securityContext.readOnlyRootFilesystem",
       },
@@ -270,7 +270,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Set 'containers[].resources.requests.cpu'.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV015/deny",
         path: "$container.resources.requests.cpu",
       },
@@ -289,7 +289,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Set 'containers[].resources.requests.memory'.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV016/deny",
         path: "$container.resources.requests.memory",
       },
@@ -309,7 +309,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Change 'containers[].securityContext.privileged' to false",
       },
       properties: {
-        severity: "high",
+        "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV017/deny",
         path: "$container.securityContext.privileged",
       },
@@ -328,7 +328,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Set a limit value under 'containers[].resources.limits.memory'.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV018/deny",
         path: "$container.resources.limits.memory",
       },
@@ -348,7 +348,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Set 'containers[].securityContext.runAsUser' to an integer > 10000.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV020/deny",
         path: "$container.securityContext.runAsUser",
       },
@@ -368,7 +368,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Set 'containers[].securityContext.runAsGroup' to an integer > 10000.",
       },
       properties: {
-        severity: "medium",
+        "security-severity": 5,
         entrypoint: "appshield/kubernetes/KSV021/deny",
         path: "$container.securityContext.runAsGroup",
       },
@@ -388,7 +388,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not set 'spec.volumes[*].hostPath'.",
       },
       properties: {
-        severity: "medium",
+        "security-severity": 5,
         entrypoint: "appshield/kubernetes/KSV023/deny",
         path: "spec.template.spec.volumes.hostPath",
       },
@@ -408,7 +408,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not set spec.containers[*].ports[*].hostPort and spec.initContainers[*].ports[*].hostPort.",
       },
       properties: {
-        severity: "high",
+        "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV024/deny",
         path: "$container.ports",
       },
@@ -428,7 +428,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not set spec.securityContext.seLinuxOptions, spec.containers[*].securityContext.seLinuxOptions and spec.initContainers[*].securityContext.seLinuxOptions.",
       },
       properties: {
-        severity: "medium",
+        "security-severity": 5,
         entrypoint: "appshield/kubernetes/KSV025/deny",
         path: "$container.securityContext.seLinuxOptions",
       },
@@ -448,7 +448,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not set spec.containers[*].securityContext.procMount and spec.initContainers[*].securityContext.procMount.",
       },
       properties: {
-        severity: "medium",
+        "security-severity": 5,
         entrypoint: "appshield/kubernetes/KSV027/deny",
         path: "$container.securityContext.procMount",
       },
@@ -468,7 +468,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Do not Set 'spec.volumes[*]' to any of the disallowed volume types.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV028/deny",
         path: "spec.template.spec.volumes",
       },
@@ -488,7 +488,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "containers[].securityContext.runAsGroup' to a non-zero integer or leave undefined.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV029/deny",
         path: "$container.securityContext.runAsGroup",
       },
@@ -508,7 +508,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         text: "Set 'spec.securityContext.seccompProfile.type', 'spec.containers[*].securityContext.seccompProfile' and 'spec.initContainers[*].securityContext.seccompProfile' to 'RuntimeDefault' or undefined.",
       },
       properties: {
-        severity: "low",
+        "security-severity": 2,
         entrypoint: "appshield/kubernetes/KSV030/deny",
         path: "$container.securityContext.seccompProfile.type",
       },

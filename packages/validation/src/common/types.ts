@@ -105,16 +105,84 @@ export type Incremental = {
   resourceIds: string[];
 };
 
-export interface ValidatorConstructor {
-  new (parser: ResourceParser): Validator;
+export interface PluginConstructor {
+  new (parser: ResourceParser): Plugin;
 }
 
-export interface Validator {
+export type PluginMetadata = {
+  /**
+   * The identifier of this plugin.
+   *
+   * @remark This is the prefix of all rule identifiers.
+   * @example "KSV"
+   */
+  id: string;
+
+  /**
+   * The name of this plugin
+   *
+   * @example "open-policy-agent"
+   */
+  name: string;
+
+  /**
+   * The display name of this plugin
+   *
+   * @example "Open Policy Agent
+   */
+  displayName: string;
+
+  /**
+   * The description of this plugin.
+   */
+  description: string;
+
+  /**
+   * The icon of this plugin
+   */
+  icon?: string;
+
+  /**
+   * The website of this plugin.
+   */
+  learnMoreUrl?: string;
+};
+
+export interface Plugin {
+  /**
+   * The name of this plugin.
+   *
+   * @deprecated use metadata.name.
+   */
   get name(): string;
+
+  /**
+   * The metadata of the plugin.
+   */
+  get metadata(): PluginMetadata;
+
+  /**
+   * The rules of this plugin.
+   */
   get rules(): ValidationRule[];
+
   get enabled(): boolean;
   set enabled(value: boolean);
 
+  /**
+   * Whether the rule exists in this plugin.
+   *
+   * @rule Either the rule identifier or display name.
+   * @example "KSV013" or "open-policy-agent/no-latest-image"
+   */
+  hasRule(rule: string): boolean;
+
+  /**
+   * Whether the rule is enabled in this plugin.
+   *
+   * @rule Either the rule identifier or display name.
+   * @example "KSV013" or "open-policy-agent/no-latest-image"
+   */
   isRuleEnabled(rule: string): boolean;
 
   configure(config: { rules?: RuleMap; settings?: JsonObject }): Promise<void>;

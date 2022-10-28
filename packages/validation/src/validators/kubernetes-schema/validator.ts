@@ -2,7 +2,7 @@ import Ajv, { ErrorObject, ValidateFunction } from "ajv";
 import { JsonObject } from "type-fest";
 import { Document, isCollection, ParsedNode } from "yaml";
 import { z } from "zod";
-import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
 import { Incremental, Resource } from "../../common/types.js";
@@ -22,9 +22,7 @@ const Settings = z.object({
   schemaVersion: z.string().default("1.24.2"),
 });
 
-export class KubernetesSchemaValidator extends AbstractValidator {
-  static toolName = "kubernetes-schema";
-
+export class KubernetesSchemaValidator extends AbstractPlugin {
   private _settings!: Settings;
   private ajv!: Ajv.Ajv;
 
@@ -32,7 +30,18 @@ export class KubernetesSchemaValidator extends AbstractValidator {
     private resourceParser: ResourceParser,
     private schemaLoader: SchemaLoader
   ) {
-    super(KubernetesSchemaValidator.toolName, KUBERNETES_SCHEMA_RULES);
+    super(
+      {
+        id: "K8S",
+        name: "kubernetes-schema",
+        displayName: "Kubernetes Schema",
+        description:
+          "Validates that your manifests are well-defined in the schema for their resource kind/version.",
+        icon: "k8s-schema",
+        learnMoreUrl: "https://kubeshop.github.io/monokle/resource-validation/",
+      },
+      KUBERNETES_SCHEMA_RULES
+    );
   }
 
   protected override async configureValidator(

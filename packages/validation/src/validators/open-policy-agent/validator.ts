@@ -6,7 +6,7 @@ import get from "lodash/get.js";
 import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { z } from "zod";
-import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import {
   Region,
@@ -38,7 +38,7 @@ const CONTROLLER_KINDS = [
 
 type YamlPath = Array<string | number>;
 
-export class OpenPolicyAgentValidator extends AbstractValidator {
+export class OpenPolicyAgentValidator extends AbstractPlugin {
   static toolName = "open-policy-agent";
 
   private _settings!: Settings;
@@ -48,7 +48,18 @@ export class OpenPolicyAgentValidator extends AbstractValidator {
     private resourceParser: ResourceParser,
     private wasmLoader: WasmLoader
   ) {
-    super(OpenPolicyAgentValidator.toolName, OPEN_POLICY_AGENT_RULES);
+    super(
+      {
+        id: "KSV",
+        name: "open-policy-agent",
+        displayName: "Open Policy Agent",
+        description:
+        "Open Policy Agent Policy-based control. Flexible, fine-grained control for administrators across the stack.",
+        icon: "open-policy-agent",
+        learnMoreUrl: "https://github.com/open-policy-agent/opa",
+      },
+      OPEN_POLICY_AGENT_RULES
+    );
   }
 
   override async configureValidator(settings: JsonObject = {}): Promise<void> {

@@ -10,10 +10,10 @@ import {
   ValidationRuleConfig,
   ValidationRun,
 } from "./sarif.js";
-import { Incremental, Resource, Validator } from "./types.js";
+import { Incremental, Resource, Plugin, PluginMetadata } from "./types.js";
 
-export abstract class AbstractValidator implements Validator {
-  public name: string;
+export abstract class AbstractPlugin implements Plugin {
+  public metadata: PluginMetadata;
   public configured = false;
 
   protected _enabled: boolean = true;
@@ -25,13 +25,17 @@ export abstract class AbstractValidator implements Validator {
   protected _ruleConfig: Map<string, ValidationRuleConfig> = new Map();
   protected _previous: ValidationResult[] = [];
 
-  constructor(name: string, rules: ValidationRule[]) {
-    this.name = name;
+  constructor(metadata: PluginMetadata, rules: ValidationRule[]) {
+    this.metadata = metadata;
     this._rules = rules;
     rules.forEach((r, idx) => this._ruleReverseLookup.set(r.id, idx));
     rules.forEach((r) =>
-      this._ruleNameToIdLookup.set(`${this.name}/${r.name}`, r.id)
+      this._ruleNameToIdLookup.set(`${metadata.name}/${r.name}`, r.id)
     );
+  }
+
+  get name(): string {
+    return this.metadata.name;
   }
 
   get enabled(): boolean {
@@ -44,6 +48,23 @@ export abstract class AbstractValidator implements Validator {
 
   get rules(): ValidationRule[] {
     return this._rules;
+  }
+
+  hasRule(rule: string): boolean {
+    const split = rule.split("/");
+    if (split.length !== 2) {
+      // rule identifier (e.g. KSV013)
+      const ruleConfig = this._ruleConfig.get(rule);
+      return ruleConfig !== undefined;
+    } else {
+      // rule display name (e.g. open-policy-agent/no-latest-image)
+      const [pluginName, ruleName] = split;
+      if (this.name !== pluginName) return false;
+      const ruleId = this._ruleNameToIdLookup.get(ruleName);
+      if (!ruleId) return false;
+      const ruleConfig = this._ruleConfig.get(ruleId);
+      return ruleConfig !== undefined;
+    }
   }
 
   isRuleEnabled(rule: string): boolean {

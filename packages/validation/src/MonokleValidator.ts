@@ -3,7 +3,7 @@ import isEqual from "lodash/isEqual.js";
 import merge from "lodash/merge.js";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
-import type { Incremental, Resource, Validator } from "./common/types.js";
+import type { Incremental, Resource, Plugin } from "./common/types.js";
 import { Config } from "./config/parse.js";
 import { nextTick, throwIfAborted } from "./utils/abort.js";
 import { isDefined } from "./utils/isDefined.js";
@@ -15,7 +15,7 @@ import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validat
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 
-export type PluginLoader = (name: string) => Promise<Validator>;
+export type PluginLoader = (name: string) => Promise<Plugin>;
 
 export function createMonokleValidator(
   loader: PluginLoader,
@@ -33,7 +33,6 @@ export function createDefaultMonokleValidator(
       "open-policy-agent": true,
       "resource-links": true,
       "yaml-syntax": true,
-      labels: true,
       "kubernetes-schema": true,
     },
   });
@@ -74,9 +73,12 @@ export class MonokleValidator {
   #loading?: Promise<void>;
   #loader: PluginLoader;
   #previousPluginsInit?: Record<string, boolean>;
-  #validators: Validator[] = [];
+  #plugins: Plugin[] = [];
 
-  constructor(loader: PluginLoader, defaultConfig: Config = {}) {
+  constructor(
+    loader: PluginLoader,
+    defaultConfig: Pick<Config, "plugins"> = {}
+  ) {
     this.#loader = loader;
     this.#config = {
       default: defaultConfig,
@@ -88,24 +90,36 @@ export class MonokleValidator {
     return this.#config;
   }
 
-  isRuleEnabled(rule: string) {
-    const split = rule.split("/");
-    
-    if (split.length !== 2) {
-      return false;
-    }
-    
-    const [pluginName] = split;
-    
-    if (!this.isPluginEnabled(pluginName)) {
-      return false;
-    }
-
-    return Boolean(this.#config.merged.rules?.[rule]);
+  /**
+   * Whether the rule exists in some plugin.
+   *
+   * @rule Either the rule identifier or display name.
+   * @example "KSV013" or "open-policy-agent/no-latest-image"
+   */
+  hasRule(rule: string): boolean {
+    return this.#plugins.some((p) => p.hasRule(rule));
   }
 
-  isPluginEnabled(name: string): boolean {
-    return Boolean(this.#config.merged.plugins?.[name]);
+  /**
+   * Whether the rule is enabled in some plugin.
+   *
+   * @rule Either the rule identifier or display name.
+   * @example "KSV013" or "open-policy-agent/no-latest-image"
+   */
+  isRuleEnabled(rule: string) {
+    return this.#plugins.some((p) => p.isRuleEnabled(rule));
+  }
+
+  isPluginLoaded(name: string): boolean {
+    return this.#plugins.some((p) => p.name === name);
+  }
+
+  getPlugins() {
+    return this.#plugins;
+  }
+
+  getPlugin(name: string) {
+    return this.#plugins.find((p) => p.name === name);
   }
 
   configureFile(config: Config | undefined) {
@@ -124,10 +138,6 @@ export class MonokleValidator {
     return merge(this.#config.default, this.#config.file, this.#config.args);
   }
 
-  get tools() {
-    return this.#validators;
-  }
-
   /**
    * Eagerly load and configure the validation plugins.
    *
@@ -144,6 +154,12 @@ export class MonokleValidator {
     return this.load();
   }
 
+  /**
+   * Load the plugin and prepare it.
+   * Afterwards plugin and rule metadata are available.
+   *
+   * @see config.plugins
+   */
   private load() {
     this.#abortController.abort();
     this.#abortController = new AbortController();
@@ -161,35 +177,35 @@ export class MonokleValidator {
     const previousPlugins = this.#previousPluginsInit;
 
     if (!isEqual(config.plugins, previousPlugins)) {
-      // Ensure all validators are loaded
-      const plugins = config.plugins ?? {};
+      // All validators found in configuration are loaded.
+      // That way the plugin and rule metadata becomes available.
+      const pluginsConfig = config.plugins ?? {};
 
-      for (const [name, value] of Object.entries(plugins)) {
-        if (!value) continue;
-        const hasValidator = this.#validators.find((v) => v.name === name);
-        if (hasValidator) continue;
+      for (const name of Object.keys(pluginsConfig)) {
+        if (this.isPluginLoaded(name)) continue;
         const validator = await this.#loader(name);
         if (signal.aborted) return;
-        this.#validators.push(validator);
+        this.#plugins.push(validator);
       }
 
       // Toggle validators
-      for (const validator of this.#validators) {
-        const value = plugins[validator.name];
+      for (const validator of this.#plugins) {
+        const value = pluginsConfig[validator.name];
         validator.enabled = Boolean(value);
       }
 
-      this.#previousPluginsInit = clone(plugins);
+      this.#previousPluginsInit = clone(pluginsConfig);
     }
 
     // Configure validators
-    for (const validator of this.#validators) {
-      await validator.configure({
-        rules: config.rules,
-        settings: config.settings,
-      });
-      if (signal.aborted) return;
-    }
+    await Promise.allSettled(
+      this.#plugins.map((p) =>
+        p.configure({
+          rules: config.rules,
+          settings: config.settings,
+        })
+      )
+    );
   }
 
   /**
@@ -198,26 +214,28 @@ export class MonokleValidator {
   async validate({
     resources,
     incremental,
+    abortSignal: externalAbortSignal,
   }: {
     resources: Resource[];
     incremental?: Incremental;
+    abortSignal?: AbortSignal;
   }): Promise<ValidationResponse> {
     if (this.#loading === undefined) {
       this.load();
     }
-    const abortSignal = this.#abortController.signal;
+    const loadAbortSignal = this.#abortController.signal;
     await this.#loading;
-    throwIfAborted(abortSignal);
+    throwIfAborted(loadAbortSignal, externalAbortSignal);
 
-    const validators = this.#validators.filter((v) => v.enabled);
+    const validators = this.#plugins.filter((v) => v.enabled);
 
     await nextTick();
-    throwIfAborted(abortSignal);
+    throwIfAborted(loadAbortSignal, externalAbortSignal);
 
     const allRuns = await Promise.allSettled(
       validators.map((v) => v.validate(resources, incremental))
     );
-    throwIfAborted(abortSignal);
+    throwIfAborted(loadAbortSignal, externalAbortSignal);
 
     const runs = allRuns
       .map((run) => (run.status === "fulfilled" ? run.value : undefined))
@@ -240,7 +258,7 @@ export class MonokleValidator {
    * Clear the incremental caches.
    */
   async clear(): Promise<void> {
-    await Promise.all(this.#validators.map((v) => v.clear()));
+    await Promise.all(this.#plugins.map((v) => v.clear()));
   }
 
   async unload(): Promise<void> {
