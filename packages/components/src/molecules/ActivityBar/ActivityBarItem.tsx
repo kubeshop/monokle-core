@@ -1,6 +1,5 @@
 import Colors from "@/styles/Colors";
 import { Tooltip } from "antd";
-import { useCallback } from "react";
 
 import { ActivityBarItemProps } from "./types";
 
@@ -13,12 +12,12 @@ import { TOOLTIP_DELAY } from "@/constants";
 export function ActivityBarItem<ActivityName, ExtraActivityName>(
   props: ActivityBarItemProps<ActivityName, ExtraActivityName>
 ) {
-  const { activity, isActive, isSelected, onChange } = props;
+  const { activity, isActivityBarActive, isSelected, onChange } = props;
 
   const badge = activity.useBadge();
 
   return (
-    <S.ItemBox isActive={isActive} isSelected={isSelected}>
+    <S.ItemBox $isActive={isActivityBarActive} $isSelected={isSelected}>
       <Tooltip title={activity.tooltip} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
         <S.Button $isSelected={isSelected} onClick={() => onChange(activity.name)}>
           <S.Badge count={badge?.count ?? 0} color={Colors.blue6} size={badge?.size} dot={badge?.dot ?? false}>
