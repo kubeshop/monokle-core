@@ -1,2 +1,2 @@
 export { getTreeNavigatorReducer, setupTreeNavigators, createTreeNavigator } from "./core/treeNavigator";
-export { SectionBlueprint, ItemBlueprint } from "./types";
+export { SectionBlueprint } from "./types";

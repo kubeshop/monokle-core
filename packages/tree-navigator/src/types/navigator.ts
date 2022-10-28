@@ -1,4 +1,4 @@
-import { SectionBlueprint, SectionRegister } from "./blueprint";
+import { SectionBlueprint, SectionBuilder } from "./blueprint";
 import { ItemInstance, SectionInstance } from "./instance";
 
 export type TreeNavigatorRowSection = {
@@ -54,6 +54,6 @@ export interface ITreeNavigator {
   getCustomization(): TreeNavigatorCustomization | undefined;
   getSectionBlueprint(sectionId: string): SectionBlueprint<any> | undefined;
   isRootSection(sectionId: string): boolean;
-  registerSection<ScopeType>(id: string, builder: SectionRegister<ScopeType>): void;
+  registerSection<ScopeType>(id: string, builder: SectionBuilder<ScopeType>): void;
   unregisterSection(sectionId: string): void;
 }
