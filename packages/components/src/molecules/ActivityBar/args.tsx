@@ -34,7 +34,7 @@ export const MainActivityBarArgs: ActivityBarProps<string> = {
   onChange: () => {},
 };
 
-export const ExtraActivityBarArgs: ActivityBarProps<string, string> = {
+export const ExtraActivityBarArgs: ActivityBarProps<string, string | undefined> = {
   activities: [
     {
       type: "panel",

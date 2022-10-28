@@ -13,8 +13,17 @@ export type ActivityType<ActivityName> = {
 export type ActivityBarProps<ActivityName, ExtraActivityName = any> = {
   activities: ActivityType<ActivityName>[];
   isActive: boolean;
+  /**
+   * Currently selected activity
+   */
   value: ActivityName;
+  /**
+   * Activities that will be shown at the bottom of the bar
+   */
   extraActivities?: ActivityType<ExtraActivityName>[];
+  /**
+   * Currently selected bottom activity
+   */
   extraValue?: ExtraActivityName;
   style?: React.CSSProperties;
   onChange: (activityName: ActivityName) => void;
