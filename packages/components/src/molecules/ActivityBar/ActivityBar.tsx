@@ -3,6 +3,15 @@ import { ActivityBarProps } from "./types";
 
 import * as S from "./ActivityBar.styled";
 
+/**
+ * ActivityBar is responsible for rendering icons in the left menu of the application.
+ * 
+ * It uses the **activities** prop for the main icons at the top,
+ * and **extraActivities** for the icons that are aligned on the bottom.
+ * 
+ * **activities** and **extraActivities** are separated because we can have an active selection for both of them.
+ * For example, you could have both the Explorer (top icon) and the Terminal (bottom icon) open.
+ */
 export function ActivityBar<ActivityName extends string, ExtraActivityName extends string | undefined>(
   props: ActivityBarProps<ActivityName, ExtraActivityName>
 ) {
