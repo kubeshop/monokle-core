@@ -1,5 +1,5 @@
 import { YAMLMap } from "yaml";
-import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
 import { Incremental, Resource } from "../../common/types.js";
@@ -10,11 +10,20 @@ import { LABELS_RULES } from "./rules.js";
 /**
  * Trivial validator used for development and testing.
  */
-export class LabelsValidator extends AbstractValidator {
-  static toolName = "labels";
-
+export class LabelsValidator extends AbstractPlugin {
   constructor(private parser: ResourceParser) {
-    super(LabelsValidator.toolName, LABELS_RULES);
+    super(
+      {
+        id: "LBL",
+        name: "labels",
+        displayName: "Label validator",
+        description:
+          "Validates whether your manifests have labels. This is a trivial validator used for development and testing.",
+        icon: "k8s-schema",
+        learnMoreUrl: "https://kubeshop.github.io/monokle/resource-validation/",
+      },
+      LABELS_RULES
+    );
   }
 
   async doValidate(

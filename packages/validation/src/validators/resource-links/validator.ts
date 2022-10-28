@@ -1,4 +1,4 @@
-import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractValidator.js";
 import { ValidationResult, Region } from "../../common/sarif.js";
 import {
   Resource,
@@ -17,11 +17,19 @@ export type ResourceLinksValidatorConfig = ToolConfig<"resource-links">;
  *
  * @prerequisite you MUST run `processRefs` before calling the validator.
  */
-export class ResourceLinksValidator extends AbstractValidator {
-  static toolName = "resource-links";
-
+export class ResourceLinksValidator extends AbstractPlugin {
   constructor() {
-    super(ResourceLinksValidator.toolName, RESOURCE_LINK_RULES);
+    super(
+      {
+        id: "LNK",
+        name: "resource-links",
+        displayName: "Resource Links",
+        description: "Validates that references to other resources are valid.",
+        icon: "resource-links",
+        learnMoreUrl: "https://kubeshop.github.io/monokle/resource-validation/",
+      },
+      RESOURCE_LINK_RULES
+    );
   }
 
   override merge(

@@ -1,17 +1,25 @@
 import { YAMLError } from "yaml";
-import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractValidator.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
-import { Incremental, Resource, ToolConfig } from "../../common/types.js";
+import { Incremental, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { YAML_RULES, YAML_RULE_MAP } from "./rules.js";
 
-export class YamlValidator extends AbstractValidator {
-  static toolName = "yaml-syntax";
-
+export class YamlValidator extends AbstractPlugin {
   constructor(private resourceParser: ResourceParser) {
-    super(YamlValidator.toolName, YAML_RULES);
+    super(
+      {
+        id: "YML",
+        name: "yaml-syntax",
+        icon: "yaml-syntax",
+        displayName: "YAML Syntax",
+        description: "Validates that your manifests have correct YAML syntax.",
+        learnMoreUrl: "https://kubeshop.github.io/monokle/resource-validation/",
+      },
+      YAML_RULES
+    );
   }
 
   async doValidate(
