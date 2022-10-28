@@ -1,6 +1,5 @@
-import { SectionBlueprint } from "./blueprint";
+import { SectionBlueprint, SectionRegister } from "./blueprint";
 import { ItemInstance, SectionInstance } from "./instance";
-import { StartListening, StopListening } from "./rtk";
 
 export type TreeNavigatorRowSection = {
   type: "section";
@@ -52,15 +51,9 @@ export interface ITreeNavigator {
   readonly Renderer: TreeNavigatorRendererComponent;
   // startListeners(startListening: StartListening): void;
   // stopListeners(stopListening: StopListening): void;
-  getRootSectionId(): string | undefined;
   getCustomization(): TreeNavigatorCustomization | undefined;
-  getSectionBlueprint(sectionId: string): SectionBlueprint<any, any> | undefined;
-  setRootSectionId(rootSectionId: string): void;
-  registerSection<RawItemType, ScopeType>(sectionBlueprint: SectionBlueprint<RawItemType, ScopeType>): void;
+  getSectionBlueprint(sectionId: string): SectionBlueprint<any> | undefined;
+  isRootSection(sectionId: string): boolean;
+  registerSection<ScopeType>(id: string, builder: SectionRegister<ScopeType>): void;
   unregisterSection(sectionId: string): void;
-  registerChildSection<RawItemType, ScopeType>(
-    parentSectionId: string,
-    sectionBlueprint: SectionBlueprint<RawItemType, ScopeType>
-  ): void;
-  unregisterChildSection(parentSectionId: string, sectionId: string): void;
 }

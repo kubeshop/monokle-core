@@ -42,30 +42,30 @@ setupTreeNavigators({
 // create your first tree navigator
 export const treeNavigator = createTreeNavigator("Resources");
 
-// create section blueprints
-const workloadsBlueprint: SectionBlueprint = { id: 'workloads' /* ... */ };
-const deploymentsBlueprint: SectionBlueprint = { id: 'deployments' /* ... */};
+// register a section
+treeNavigator.registerSection("sectionId" {
+	scope: (state) => state.main.resources,
+	build: {
+		label: "Some section
+	},
+	items: {
+		build: scope => scope.resources.map((resource) => {
+			return {
+				id: resource.id,
+				label: resource.name,
+				props: {
+					isSelected: resource.isSelected
+				}
+			}
+		}),
+	}
+});
 
-// alternative of creating sections (not implemented yet)
-defineSection({
-	id: “test”,
-	buildScope: (state) => { … },
-	buildItems: (mapItems, scope) => {
-		return mapItems(Object.values(scope.itemMap), (rawItem) => {
-			id: rawItem.id,
-			name: rawItem.name,
-			properties: {}
-			events: {}
-			customization: {}
-			…
-		};
-	} 
-})
+// register a subsection
+treeNavigator.registerSection("sectionId.subsectionId", {/*...*/});
 
-treeNavigator.registerSection(sectionBlueprint);
-treeNavigator.registerChildSection("workloads", deploymentsBlueprint);
-treeNavigator.setRootSectionId('workloads');
-treeNavigator.unregisterSection('workloads');
+// unregister a section
+treeNavigator.unregisterSection('id');
 
 // the tree navigator can be rendered by using the Renderer component
 <treeNavigator.Renderer />

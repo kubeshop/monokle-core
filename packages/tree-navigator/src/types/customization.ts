@@ -68,13 +68,15 @@ export interface SectionCustomization {
   };
 }
 
-export interface RowBuilder<InstanceType, PropsType = undefined> {
+export type RowBuilderResult = {
   /** If not specified, the default value will be 25. */
-  height?: number | ((instance: InstanceType, props?: PropsType) => number);
+  height?: number;
   /** If not specified, the default value will be rowHeight * 0.75 */
-  fontSize?: number | ((instance: InstanceType, props?: PropsType) => number);
+  fontSize?: number;
   /** If not specified, the default value will be 0. */
-  indentation?: number | ((instance: InstanceType, props?: PropsType) => number);
+  indentation?: number;
   /** If not specified, the default value will be 0. */
-  marginBottom?: number | ((instance: InstanceType, props?: PropsType) => number);
-}
+  marginBottom?: number;
+};
+
+export type RowBuilder<InstanceType> = RowBuilderResult | ((instance: InstanceType) => RowBuilderResult);

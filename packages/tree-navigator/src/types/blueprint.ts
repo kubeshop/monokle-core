@@ -1,50 +1,59 @@
-import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
-import { ItemCustomization, RowBuilder, SectionCustomization } from "./customization";
+import { AppDispatch } from "./appDispatch";
+import { ItemCustomization, RowBuilder } from "./customization";
 import { ItemInstance, SectionInstance } from "./instance";
+import { RootState } from "./rootState";
 
-export interface ItemBlueprint<RawItemType, ScopeType> {
-  getName: (rawItem: RawItemType, scope: ScopeType) => string;
-  getInstanceId: (rawItem: RawItemType, scope: ScopeType) => string;
-  rowBuilder?: RowBuilder<ItemInstance, { sectionInstance: SectionInstance }>;
-  instanceBuilder?: {
-    isSelected?: (rawItem: RawItemType, scope: ScopeType) => boolean;
-    isHighlighted?: (rawItem: RawItemType, scope: ScopeType) => boolean;
-    isVisible?: (rawItem: RawItemType, scope: ScopeType) => boolean;
-    isDirty?: (rawItem: RawItemType, scope: ScopeType) => boolean;
-    isDisabled?: (rawItem: RawItemType, scope: ScopeType) => boolean;
-    isCheckable?: (rawItem: RawItemType, scope: ScopeType) => boolean;
-    isChecked?: (rawItem: RawItemType, scope: ScopeType) => boolean;
-    getMeta?: (rawItem: RawItemType, scope: ScopeType) => any;
+export interface ItemBuildResult {
+  id: string;
+  label: string;
+  props?: {
+    isSelected?: boolean;
+    isHighlighted?: boolean;
+    isVisible?: boolean;
+    isDirty?: boolean;
+    isDisabled?: boolean;
+    isChecked?: boolean;
+    meta?: any;
   };
-  instanceHandler?: {
-    onClick?: (itemInstance: ItemInstance, dispatch: any) => void;
-    onCheck?: (itemInstance: ItemInstance, dispatch: any) => void;
-  };
-  customization?: ItemCustomization;
 }
 
-export interface SectionBlueprint<RawItemType, ScopeType = any> {
-  id: string;
-  name: string;
-  getScope: (state: any) => ScopeType; // TODO: can this become optional?
-  rootSectionId: string;
-  childSectionIds?: string[];
-  rowBuilder?: RowBuilder<SectionInstance>;
-  instanceBuilder?: {
-    transformName?: (originalName: string, scope: ScopeType) => string;
-    getRawItems?: (scope: ScopeType) => RawItemType[]; // TODO: this should be moved outside of the instanceBuilder
-    getMeta?: (scope: ScopeType, items: RawItemType[]) => any;
-    isLoading?: (scope: ScopeType, items: RawItemType[]) => boolean;
-    isVisible?: (scope: ScopeType, items: RawItemType[]) => boolean;
-    isInitialized?: (scope: ScopeType, items: RawItemType[]) => boolean;
-    isEmpty?: (scope: ScopeType, items: RawItemType[], itemInstances?: ItemInstance[]) => boolean;
-    makeCheckable?: (scope: ScopeType) => {
-      checkedItemIds: string[];
-      checkItemsActionCreator: ActionCreatorWithPayload<string[]>;
-      uncheckItemsActionCreator: ActionCreatorWithPayload<string[]>;
-    };
-    shouldBeVisibleBeforeInitialized?: boolean;
+export interface ItemsBuilder<ScopeType> {
+  build: ItemBuildResult[] | ((scope: ScopeType) => ItemBuildResult[]);
+  row?: RowBuilder<ItemInstance>;
+  options?: ItemCustomization;
+  events?: {
+    onClick?: (itemInstance: ItemInstance, dispatch: AppDispatch) => void;
+    // onCheck?: (itemInstance: ItemInstance, dispatch: AppDispatch) => void;
   };
-  customization?: SectionCustomization;
-  itemBlueprint?: ItemBlueprint<RawItemType, ScopeType>;
+}
+
+export interface SectionBuildResult {
+  label: string;
+  props?: {
+    isLoading?: boolean;
+    isVisible?: boolean;
+    isInitialized?: boolean;
+    isEmpty?: boolean;
+    meta?: any;
+  };
+}
+
+export interface SectionBuilder<ScopeType> {
+  scope: (state: RootState) => ScopeType; // TODO: should we allow this to be optional and an object of type ScopeType as well?
+  build: SectionBuildResult | ((scope: ScopeType, itemInstances: ItemInstance[]) => SectionBuildResult);
+  row?: RowBuilder<SectionInstance>;
+  options?: {
+    enableCheckboxes?: boolean;
+    isVisibleBeforeInit?: boolean;
+  };
+  events?: {
+    onClick?: (sectionInstance: SectionInstance, dispatch: AppDispatch) => void;
+    // onCheck?: (sectionInstance: SectionInstance, dispatch: AppDispatch) => void;
+  };
+  items?: ItemsBuilder<ScopeType>;
+}
+
+export interface SectionBlueprint<ScopeType = any> extends SectionBuilder<ScopeType> {
+  id: string;
+  childSectionIds: string[];
 }

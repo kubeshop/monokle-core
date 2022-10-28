@@ -7,6 +7,7 @@ import {
   RtkListener,
   SectionBlueprint,
   SectionInstance,
+  TreeNavigatorRow,
   TreeNavigatorState,
 } from "../types";
 import { computeSectionCheckable } from "./checkable";
@@ -19,7 +20,6 @@ export const createTreeNavigatorListener = (treeNavigator: ITreeNavigator) => {
   const listener: RtkListener = {
     predicate: (action) => {
       if (action.type === updateSectionInstance.type) {
-        console.log({ action });
         const sectionInstance: SectionInstance = action.payload.sectionInstance;
         return sectionInstance.treeNavigatorId === treeNavigator.id;
       }
@@ -27,12 +27,6 @@ export const createTreeNavigatorListener = (treeNavigator: ITreeNavigator) => {
     },
     effect: async (action, { cancelActiveListeners, dispatch, getState }) => {
       cancelActiveListeners();
-
-      const rootSectionId = treeNavigator.getRootSectionId();
-
-      if (!rootSectionId) {
-        return;
-      }
 
       const state = getState();
       const treeNavigatorState = state.treeNavigator.stateByTreeNavigatorId[treeNavigator.id];
@@ -44,29 +38,26 @@ export const createTreeNavigatorListener = (treeNavigator: ITreeNavigator) => {
       const sectionInstanceMap: Record<string, SectionInstance> = cloneDeep(treeNavigatorState.sectionInstanceMap);
       const itemInstanceMap: Record<string, ItemInstance> = cloneDeep(treeNavigatorState.itemInstanceMap);
 
-      const rootSectionInstance: SectionInstance | undefined = sectionInstanceMap[rootSectionId];
-      if (!rootSectionInstance) {
-        return;
-      }
-      const rootSectionBlueprint = treeNavigator.getSectionBlueprint(rootSectionInstance.id);
-      if (!rootSectionBlueprint) {
-        return;
-      }
-      computeSectionVisibility(treeNavigator, rootSectionInstance, sectionInstanceMap, rootSectionBlueprint);
-      // this has to run after the `computeSectionVisibility` because it depends on the `section.visibleDescendantItemIds`
+      const navigatorRows: TreeNavigatorRow[] = [];
+
       Object.values(sectionInstanceMap).forEach((sectionInstance) => {
-        if (sectionInstance.rootSectionId !== rootSectionId) {
+        if (!treeNavigator.isRootSection(sectionInstance.id)) {
           return;
         }
+
         const sectionBlueprint = treeNavigator.getSectionBlueprint(sectionInstance.id);
+
         if (!sectionBlueprint) {
           return;
         }
-        const sectionScope = sectionBlueprint.getScope(state);
-        computeSectionCheckable(sectionBlueprint, sectionInstance, sectionScope);
-      });
 
-      const navigatorRows = makeNavigatorRows(treeNavigator, rootSectionInstance, sectionInstanceMap, itemInstanceMap);
+        const sectionScope = sectionBlueprint.scope(state);
+
+        computeSectionVisibility(treeNavigator, sectionInstance, sectionInstanceMap, sectionBlueprint);
+        computeSectionCheckable(sectionBlueprint, sectionInstance, sectionScope);
+
+        navigatorRows.push(...makeNavigatorRows(treeNavigator, sectionInstance, sectionInstanceMap, itemInstanceMap));
+      });
 
       const rowIndexToScroll = getRowIndexToScroll({ rows: navigatorRows, itemInstanceMap });
 
@@ -100,8 +91,8 @@ export const createTreeNavigatorSectionListener = (
       ) {
         return true;
       }
-      const currentScope = sectionBlueprint.getScope(currentState);
-      const originalScope = sectionBlueprint.getScope(originalState);
+      const currentScope = sectionBlueprint.scope(currentState);
+      const originalScope = sectionBlueprint.scope(originalState);
       return isEqual(currentScope, originalScope);
     },
     effect: async (action, { dispatch, getState, cancelActiveListeners }) => {
@@ -110,11 +101,11 @@ export const createTreeNavigatorSectionListener = (
       const state = getState();
       const treeNavigatorState = state.treeNavigator.stateByTreeNavigatorId[treeNavigatorId];
       const { collapsedSectionIds = [] } = treeNavigatorState || {};
-      const sectionScope = sectionBlueprint.getScope(state);
+      const sectionScope = sectionBlueprint.scope(state);
 
       const itemInstanceMap: Record<string, ItemInstance> = {};
 
-      const { itemInstances, rawItems } = buildItemInstances({
+      const itemInstances = buildItemInstances({
         treeNavigatorId,
         sectionBlueprint,
         sectionScope,
@@ -129,7 +120,6 @@ export const createTreeNavigatorSectionListener = (
         sectionBlueprint,
         sectionScope,
         itemInstances,
-        rawItems,
         collapsedSectionIds,
       });
 
