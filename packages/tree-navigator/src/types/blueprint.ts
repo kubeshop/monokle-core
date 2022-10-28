@@ -1,5 +1,5 @@
 import { AppDispatch } from "./appDispatch";
-import { ItemCustomization, RowBuilder } from "./customization";
+import { ItemCustomization, RowBuilder, SectionCustomization } from "./customization";
 import { ItemInstance, SectionInstance } from "./instance";
 import { RootState } from "./rootState";
 
@@ -20,10 +20,11 @@ export interface ItemBuildResult {
 export interface ItemsBuilder<ScopeType> {
   build: ItemBuildResult[] | ((scope: ScopeType) => ItemBuildResult[]);
   row?: RowBuilder<ItemInstance>;
-  options?: ItemCustomization;
+  options?: {};
+  customization?: ItemCustomization;
   events?: {
     onClick?: (itemInstance: ItemInstance, dispatch: AppDispatch) => void;
-    // onCheck?: (itemInstance: ItemInstance, dispatch: AppDispatch) => void;
+    onCheck?: (itemInstance: ItemInstance, dispatch: AppDispatch) => void;
   };
 }
 
@@ -46,9 +47,10 @@ export interface SectionBuilder<ScopeType> {
     enableCheckboxes?: boolean;
     isVisibleBeforeInit?: boolean;
   };
+  customization?: SectionCustomization;
   events?: {
     onClick?: (sectionInstance: SectionInstance, dispatch: AppDispatch) => void;
-    // onCheck?: (sectionInstance: SectionInstance, dispatch: AppDispatch) => void;
+    onCheck?: (sectionInstance: SectionInstance, dispatch: AppDispatch) => void;
   };
   items?: ItemsBuilder<ScopeType>;
 }

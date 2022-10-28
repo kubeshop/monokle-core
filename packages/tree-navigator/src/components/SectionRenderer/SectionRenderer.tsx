@@ -105,7 +105,7 @@ function SectionRenderer(props: SectionRendererProps) {
       $isSelected={Boolean(sectionInstance.isSelected && sectionInstance.isCollapsed)}
       $isHighlighted={Boolean(sectionInstance.isHighlighted && sectionInstance.isCollapsed)}
       $isInitialized={Boolean(sectionInstance.isInitialized)}
-      $isSectionCheckable={Boolean(sectionBlueprint.instanceBuilder?.makeCheckable)}
+      $isSectionCheckable={Boolean(sectionBlueprint.options?.enableCheckboxes)}
       $hasCustomRow={Boolean(customRow.Component)}
       $marginBottom={sectionRow.marginBottom}
       onMouseEnter={() => setIsHovered(true)}
@@ -113,7 +113,7 @@ function SectionRenderer(props: SectionRendererProps) {
     >
       <S.NameContainer
         $isHovered={isHovered}
-        $isCheckable={Boolean(sectionBlueprint.instanceBuilder?.makeCheckable)}
+        $isCheckable={Boolean(sectionBlueprint.options?.enableCheckboxes)}
         $hasCustomRow={Boolean(customRow.Component)}
         $indentation={sectionRow.indentation}
       >
