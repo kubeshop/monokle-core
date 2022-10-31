@@ -22,8 +22,9 @@ function ItemRenderer(props: ItemRendererProps) {
     () => getTreeNavigatorById(treeNavigatorId)?.getSectionBlueprint(sectionId),
     [sectionId]
   );
-  const { itemBlueprint } = sectionBlueprint || {};
-  const { instanceHandler } = itemBlueprint || {};
+  const enableCheckboxes = Boolean(sectionBlueprint?.options?.enableCheckboxes);
+  const { items: itemsBuilder } = sectionBlueprint || {};
+  const itemsEvents = itemsBuilder?.events;
 
   const dispatch = useAppDispatch();
   const itemInstance = useAppSelector(
@@ -38,7 +39,7 @@ function ItemRenderer(props: ItemRendererProps) {
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const { customPrefix, customSuffix, customQuickAction, customContextMenu, customRow } = useItemCustomization(
-    itemBlueprint?.customization,
+    itemsBuilder?.customization,
     isHovered
   );
 
@@ -46,19 +47,19 @@ function ItemRenderer(props: ItemRendererProps) {
     if (!itemInstance) {
       return;
     }
-    if (instanceHandler && instanceHandler.onClick && !itemInstance.isDisabled) {
-      instanceHandler.onClick(itemInstance, dispatch);
+    if (itemsEvents?.onClick && !itemInstance.isDisabled) {
+      itemsEvents.onClick(itemInstance, dispatch);
     }
-  }, [instanceHandler, itemInstance, dispatch]);
+  }, [itemsEvents, itemInstance, dispatch]);
 
   const onCheck = useCallback(() => {
     if (!itemInstance) {
       return;
     }
-    if (instanceHandler && instanceHandler.onCheck && !itemInstance.isDisabled) {
-      instanceHandler.onCheck(itemInstance, dispatch);
+    if (itemsEvents?.onCheck && !itemInstance.isDisabled) {
+      itemsEvents.onCheck(itemInstance, dispatch);
     }
-  }, [instanceHandler, itemInstance, dispatch]);
+  }, [itemsEvents, itemInstance, dispatch]);
 
   if (!itemInstance) {
     return null;
@@ -71,15 +72,15 @@ function ItemRenderer(props: ItemRendererProps) {
         onMouseLeave={() => setIsHovered(false)}
         $isSelected={itemInstance.isSelected}
         $isHighlighted={itemInstance.isHighlighted}
-        $disableHoverStyle={Boolean(itemBlueprint?.customization?.row?.disableHoverStyle)}
+        $disableHoverStyle={Boolean(itemsBuilder?.customization?.row?.disableHoverStyle)}
         $isHovered={isHovered}
-        $hasOnClick={Boolean(instanceHandler?.onClick)}
+        $hasOnClick={Boolean(itemsEvents?.onClick)}
         $indentation={itemRow.indentation}
         $isSectionCheckable={isSectionCheckable}
         $hasCustomRow={Boolean(customRow.Component)}
       >
-        {itemInstance.isCheckable &&
-          (itemBlueprint?.customization?.checkbox?.isVisibleOnHover ? itemInstance.isChecked || isHovered : true) && (
+        {enableCheckboxes &&
+          (itemsBuilder?.customization?.checkbox?.isVisibleOnHover ? itemInstance.isChecked || isHovered : true) && (
             <span>
               <S.Checkbox
                 checked={itemInstance.isChecked}

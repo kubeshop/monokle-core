@@ -32,7 +32,7 @@ export type ActivityBarProps<ActivityName, ExtraActivityName = any> = {
 
 export type ActivityBarItemProps<ActivityName, ExtraActivityName = any> = {
   activity: ActivityType<ActivityName> | ActivityType<ExtraActivityName>;
-  isActive: boolean;
+  isActivityBarActive: boolean;
   isSelected: boolean;
   onChange: (activityName: ActivityName | ExtraActivityName) => void;
 };
