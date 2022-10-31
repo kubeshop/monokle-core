@@ -1,4 +1,4 @@
-import { AbstractPlugin } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractPlugin.js";
 import { ValidationResult, Region } from "../../common/sarif.js";
 import {
   Resource,

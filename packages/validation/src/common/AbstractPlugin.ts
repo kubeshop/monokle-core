@@ -117,7 +117,7 @@ export abstract class AbstractPlugin implements Plugin {
     settings?: JsonObject;
   }): Promise<void> {
     this.configureRules(config.rules);
-    await this.configureValidator(config.settings);
+    await this.configurePlugin(config.settings);
     this.configured = true;
   }
 
@@ -158,9 +158,7 @@ export abstract class AbstractPlugin implements Plugin {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected configureValidator(
-    settings: JsonObject | undefined
-  ): Promise<void> {
+  protected configurePlugin(settings: JsonObject | undefined): Promise<void> {
     return Promise.resolve();
   }
 
