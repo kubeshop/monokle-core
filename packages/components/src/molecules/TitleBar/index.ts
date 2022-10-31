@@ -1,2 +1,2 @@
-export { default } from "./TitleBar";
+export { default as TitleBar } from "./TitleBar";
 export type { TitleBarType } from "./types";
