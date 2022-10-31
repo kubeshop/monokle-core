@@ -1,5 +1,5 @@
 import { YAMLError } from "yaml";
-import { AbstractPlugin } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractPlugin.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
 import { Incremental, Resource } from "../../common/types.js";

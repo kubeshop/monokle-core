@@ -2,7 +2,7 @@ import Ajv, { ErrorObject, ValidateFunction } from "ajv";
 import { JsonObject } from "type-fest";
 import { Document, isCollection, ParsedNode } from "yaml";
 import { z } from "zod";
-import { AbstractPlugin } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractPlugin.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
 import { Incremental, Resource } from "../../common/types.js";
@@ -44,7 +44,7 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     );
   }
 
-  protected override async configureValidator(
+  protected override async configurePlugin(
     rawSettings: JsonObject = {}
   ): Promise<void> {
     this._settings = Settings.parse(rawSettings["kubernetes-schema"] ?? {});

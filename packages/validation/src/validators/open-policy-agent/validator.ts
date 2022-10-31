@@ -6,7 +6,7 @@ import get from "lodash/get.js";
 import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { z } from "zod";
-import { AbstractPlugin } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractPlugin.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import {
   Region,
@@ -62,7 +62,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
     );
   }
 
-  override async configureValidator(settings: JsonObject = {}): Promise<void> {
+  override async configurePlugin(settings: JsonObject = {}): Promise<void> {
     this._settings = Settings.parse(settings["open-policy-agent"] ?? {});
     const wasmSrc = this._settings.wasmSrc;
     const wasm = await this.wasmLoader.load(wasmSrc);
