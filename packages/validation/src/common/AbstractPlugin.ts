@@ -162,10 +162,6 @@ export abstract class AbstractPlugin implements Plugin {
     return Promise.resolve();
   }
 
-  async clear() {
-    this._previous = [];
-  }
-
   async validate(
     resources: Resource[],
     incremental?: Incremental
@@ -229,5 +225,13 @@ export abstract class AbstractPlugin implements Plugin {
     }
 
     return results;
+  }
+
+  async clear() {
+    this._previous = [];
+  }
+
+  async unload() {
+    return;
   }
 }
