@@ -32,11 +32,11 @@ it("should be abort properly", async () => {
     processRefs(RESOURCES, parser);
     const validating = validator.validate({ resources: RESOURCES });
 
-    validator.configureArgs({
+    validator.config = {
       plugins: {
         "kubernetes-schema": false,
       },
-    });
+    };
 
     await validating;
 
@@ -98,20 +98,18 @@ it("should be valid SARIF", async () => {
 
 function configureValidator(validator: MonokleValidator) {
   return validator.preload({
-    file: {
-      plugins: {
-        labels: true,
-        "yaml-syntax": true,
-        "resource-links": true,
-        "kubernetes-schema": true,
-        "open-policy-agent": true,
+    plugins: {
+      labels: true,
+      "yaml-syntax": true,
+      "resource-links": true,
+      "kubernetes-schema": true,
+      "open-policy-agent": true,
+    },
+    settings: {
+      "kubernetes-schema": {
+        schemaVersion: "1.24.2",
       },
-      settings: {
-        "kubernetes-schema": {
-          schemaVersion: "1.24.2",
-        },
-        debug: true,
-      },
+      debug: true,
     },
   });
 }

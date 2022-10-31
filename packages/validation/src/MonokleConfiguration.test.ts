@@ -14,24 +14,22 @@ it("should work with monokle.validation.yaml", async () => {
 
   // Step 2: Configure validator with monokle.validation.yaml
   await validator.preload({
-    file: {
-      // Responsible for validator construction
-      plugins: {
-        "open-policy-agent": true,
-        "yaml-syntax": true,
-        labels: false,
-        "kubernetes-schema": false,
-        "resource-links": false,
-      },
-      // Responsbility for rules
-      rules: {
-        KSV005: "warn",
-        "open-policy-agent/no-latest-image": "warn",
-      },
-      // Responsible for validator runtime behavior
-      settings: {
-        debug: true,
-      },
+    // Responsible for validator construction
+    plugins: {
+      "open-policy-agent": true,
+      "yaml-syntax": true,
+      labels: false,
+      "kubernetes-schema": false,
+      "resource-links": false,
+    },
+    // Responsbility for rules
+    rules: {
+      KSV005: "warn",
+      "open-policy-agent/no-latest-image": "warn",
+    },
+    // Responsible for validator runtime behavior
+    settings: {
+      debug: true,
     },
   });
 
@@ -56,56 +54,50 @@ it("should handle race conditions", async () => {
     const validator = createDefaultMonokleValidator();
 
     validator.preload({
-      args: {
-        plugins: {
-          "open-policy-agent": true,
-          "yaml-syntax": true,
-          labels: true,
-          "kubernetes-schema": true,
-          "resource-links": true,
-        },
-        rules: {
-          KSV005: false,
-          KSV013: true,
-        },
+      plugins: {
+        "open-policy-agent": true,
+        "yaml-syntax": true,
+        labels: true,
+        "kubernetes-schema": true,
+        "resource-links": true,
+      },
+      rules: {
+        KSV005: false,
+        KSV013: true,
       },
     });
 
     validator.preload({
-      args: {
-        plugins: {
-          "open-policy-agent": false,
-          "yaml-syntax": true,
-          labels: false,
-          "kubernetes-schema": false,
-          "resource-links": false,
-        },
-        rules: {
-          KSV005: false,
-          KSV013: true,
-        },
+      plugins: {
+        "open-policy-agent": false,
+        "yaml-syntax": true,
+        labels: false,
+        "kubernetes-schema": false,
+        "resource-links": false,
+      },
+      rules: {
+        KSV005: false,
+        KSV013: true,
       },
     });
 
     validator.preload({
-      file: {
-        // Responsible for validator construction
-        plugins: {
-          "open-policy-agent": true,
-          "yaml-syntax": false,
-          labels: false,
-          "kubernetes-schema": false,
-          "resource-links": false,
-        },
-        // Responsbility for rules
-        rules: {
-          KSV005: "warn",
-          "open-policy-agent/no-latest-image": "warn",
-        },
-        // Responsible for validator runtime behavior
-        settings: {
-          debug: true,
-        },
+      // Responsible for validator construction
+      plugins: {
+        "open-policy-agent": true,
+        "yaml-syntax": false,
+        labels: false,
+        "kubernetes-schema": false,
+        "resource-links": false,
+      },
+      // Responsbility for rules
+      rules: {
+        KSV005: "warn",
+        "open-policy-agent/no-latest-image": "warn",
+      },
+      // Responsible for validator runtime behavior
+      settings: {
+        debug: true,
       },
     });
 

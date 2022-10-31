@@ -1,10 +1,9 @@
 import clone from "lodash/clone.js";
 import isEqual from "lodash/isEqual.js";
-import merge from "lodash/merge.js";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
 import type { Incremental, Resource, Plugin } from "./common/types.js";
-import { Config } from "./config/parse.js";
+import { Config, PluginMap } from "./config/parse.js";
 import { nextTick, throwIfAborted } from "./utils/abort.js";
 import { isDefined } from "./utils/isDefined.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
@@ -19,23 +18,16 @@ export type PluginLoader = (name: string) => Promise<Plugin>;
 
 export function createMonokleValidator(
   loader: PluginLoader,
-  defaultConfig?: Config
+  fallback?: PluginMap
 ) {
-  return new MonokleValidator(loader, defaultConfig);
+  return new MonokleValidator(loader, fallback);
 }
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
   schemaLoader: SchemaLoader = new SchemaLoader()
 ) {
-  return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader), {
-    plugins: {
-      "open-policy-agent": true,
-      "resource-links": true,
-      "yaml-syntax": true,
-      "kubernetes-schema": true,
-    },
-  });
+  return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader));
 }
 
 export function createDefaultPluginLoader(
@@ -61,13 +53,30 @@ export function createDefaultPluginLoader(
   };
 }
 
+/**
+ * The plugins that will be loaded by default.
+ */
+const DEFAULT_PLUGIN_MAP = {
+  "open-policy-agent": true,
+  "resource-links": true,
+  "yaml-syntax": true,
+  "kubernetes-schema": true,
+};
+
 export class MonokleValidator {
-  #config: {
-    default: Config;
-    file?: Config;
-    args?: Config;
-    merged: Config;
-  };
+  /**
+   * The configuration of this validator.
+   */
+  #config?: Config;
+
+  /**
+   * The fallback configuration of this validator.
+   *
+   * This is here for sane defaults, but the moment you
+   * set configuration it's not taken into consideration
+   * to make it easier to reason about what you get.
+   */
+  #fallback: Config;
 
   #abortController: AbortController = new AbortController();
   #loading?: Promise<void>;
@@ -75,25 +84,25 @@ export class MonokleValidator {
   #previousPluginsInit?: Record<string, boolean>;
   #plugins: Plugin[] = [];
 
-  constructor(
-    loader: PluginLoader,
-    defaultConfig: Pick<Config, "plugins"> = {}
-  ) {
+  constructor(loader: PluginLoader, fallback: PluginMap = DEFAULT_PLUGIN_MAP) {
     this.#loader = loader;
-    this.#config = {
-      default: defaultConfig,
-      merged: defaultConfig,
-    };
+    this.#fallback = { plugins: fallback };
+    this.#config = this.#fallback;
   }
 
-  get config() {
-    return this.#config;
+  get config(): Config {
+    return this.#config ?? this.#fallback;
+  }
+
+  set config(value: Config | undefined) {
+    this.#config = value;
+    this.cancelLoad("reconfigured");
   }
 
   /**
    * Whether the rule exists in some plugin.
    *
-   * @rule Either the rule identifier or display name.
+   * @params - Either the rule identifier or display name.
    * @example "KSV013" or "open-policy-agent/no-latest-image"
    */
   hasRule(rule: string): boolean {
@@ -103,52 +112,47 @@ export class MonokleValidator {
   /**
    * Whether the rule is enabled in some plugin.
    *
-   * @rule Either the rule identifier or display name.
+   * @params rule - Either the rule identifier or display name.
    * @example "KSV013" or "open-policy-agent/no-latest-image"
    */
   isRuleEnabled(rule: string) {
     return this.#plugins.some((p) => p.isRuleEnabled(rule));
   }
 
+  /**
+   * Whether the plugin is loaded.
+   *
+   * @params name - The plugin name.
+   * @example "open-policy-agent"
+   */
   isPluginLoaded(name: string): boolean {
-    return this.#plugins.some((p) => p.name === name);
+    return this.#plugins.some((p) => p.metadata.name === name);
   }
 
-  getPlugins() {
+  /**
+   * The plugins that are loaded in this validator.
+   */
+  getPlugins(): Plugin[] {
     return this.#plugins;
   }
 
-  getPlugin(name: string) {
-    return this.#plugins.find((p) => p.name === name);
-  }
-
-  configureFile(config: Config | undefined) {
-    this.#config.file = config;
-    this.#config.merged = this.mergeConfiguration();
-    this.cancelLoad("configuration-file-updated");
-  }
-
-  configureArgs(config: Config | undefined) {
-    this.#config.args = config;
-    this.#config.merged = this.mergeConfiguration();
-    this.cancelLoad("args-updated");
-  }
-
-  private mergeConfiguration(): Config {
-    return merge(this.#config.default, this.#config.file, this.#config.args);
+  /**
+   * The plugin with the given name.
+   *
+   * @params name - The plugin name
+   */
+  getPlugin(name: string): Plugin | undefined {
+    return this.#plugins.find((p) => p.metadata.name === name);
   }
 
   /**
    * Eagerly load and configure the validation plugins.
    *
-   * @param config
+   * @param config - the new configuration of the validator.
    */
-  async preload(config: { file?: Config; args?: Config } = {}): Promise<void> {
-    if (config.file === undefined || typeof config.file === "object") {
-      this.configureFile(config.file);
-    }
-    if (config.args === undefined || typeof config.args === "object") {
-      this.configureArgs(config.args);
+  async preload(config?: Config): Promise<void> {
+    if (config) {
+      this.config = config;
     }
 
     return this.load();
@@ -173,7 +177,7 @@ export class MonokleValidator {
   }
 
   private async doLoad(signal: AbortSignal) {
-    const config = this.#config.merged;
+    const config = this.config;
     const previousPlugins = this.#previousPluginsInit;
 
     if (!isEqual(config.plugins, previousPlugins)) {
@@ -181,6 +185,7 @@ export class MonokleValidator {
       // That way the plugin and rule metadata becomes available.
       const pluginsConfig = config.plugins ?? {};
 
+      // Load new plugins
       for (const name of Object.keys(pluginsConfig)) {
         if (this.isPluginLoaded(name)) continue;
         const validator = await this.#loader(name);
@@ -190,7 +195,7 @@ export class MonokleValidator {
 
       // Toggle validators
       for (const validator of this.#plugins) {
-        const value = pluginsConfig[validator.name];
+        const value = pluginsConfig[validator.metadata.name];
         validator.enabled = Boolean(value);
       }
 
@@ -241,7 +246,7 @@ export class MonokleValidator {
       .map((run) => (run.status === "fulfilled" ? run.value : undefined))
       .filter(isDefined);
 
-    if (this.#config.merged.settings?.debug && allRuns.length !== runs.length) {
+    if (this.config.settings?.debug && allRuns.length !== runs.length) {
       const failedRuns = allRuns.filter((r) => r.status === "rejected");
       // eslint-disable-next-line no-console
       console.warn("skipped failed validators", failedRuns);
@@ -263,7 +268,6 @@ export class MonokleValidator {
 
   async unload(): Promise<void> {
     this.cancelLoad("unload");
-    this.configureFile(undefined);
-    this.configureArgs(undefined);
+    this.config = undefined;
   }
 }
