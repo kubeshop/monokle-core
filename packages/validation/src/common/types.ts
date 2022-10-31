@@ -193,4 +193,5 @@ export interface Plugin {
   ): Promise<ValidationRun>;
 
   clear(): Promise<void>;
+  unload(): Promise<void>;
 }

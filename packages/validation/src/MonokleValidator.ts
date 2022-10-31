@@ -1,3 +1,4 @@
+import { difference } from "lodash";
 import clone from "lodash/clone.js";
 import isEqual from "lodash/isEqual.js";
 import { ResourceParser } from "./common/resourceParser.js";
@@ -186,11 +187,25 @@ export class MonokleValidator {
       const pluginsConfig = config.plugins ?? {};
 
       // Load new plugins
-      for (const name of Object.keys(pluginsConfig)) {
-        if (this.isPluginLoaded(name)) continue;
-        const validator = await this.#loader(name);
+      const newPluginNames = Object.keys(pluginsConfig ?? {});
+
+      for (const pluginName of newPluginNames) {
+        if (this.isPluginLoaded(pluginName)) continue;
+        const validator = await this.#loader(pluginName);
         if (signal.aborted) return;
         this.#plugins.push(validator);
+      }
+
+      // Unload stale plugins
+      const previousPluginNames = Object.keys(this.#previousPluginsInit ?? {});
+      const stalePlugins = difference(previousPluginNames, newPluginNames);
+      for (const pluginName of stalePlugins) {
+        const plugin = this.getPlugin(pluginName);
+        if (!plugin) continue;
+        await plugin.unload();
+        this.#plugins = this.#plugins.filter(
+          (p) => p.metadata.name !== pluginName
+        );
       }
 
       // Toggle validators
