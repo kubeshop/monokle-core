@@ -25,7 +25,7 @@ export const buildItemInstances = (props: BuildItemInstancesProps): ItemInstance
       sectionId: sectionBlueprint.id,
       isSelected: Boolean(itemBuilder.props?.isSelected),
       isHighlighted: Boolean(itemBuilder.props?.isHighlighted),
-      isVisible: Boolean(itemBuilder.props?.isVisible),
+      isVisible: itemBuilder.props?.isVisible !== undefined ? Boolean(itemBuilder.props?.isVisible) : true,
       isDirty: Boolean(itemBuilder.props?.isDirty),
       isDisabled: Boolean(itemBuilder.props?.isDisabled),
       isChecked: Boolean(itemBuilder.props?.isChecked),
