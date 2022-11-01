@@ -23,3 +23,20 @@ FileTreeNavigator.registerSection("files", {
     },
   },
 });
+
+FileTreeNavigator.registerSection("files.random", {
+  build: {
+    label: "Random",
+  },
+  scope: () => {
+    return { items: ["abc", "qwe", "zxc"] };
+  },
+  items: {
+    build: (scope) => {
+      return scope.items.map((item: string) => ({
+        id: item,
+        label: item,
+      }));
+    },
+  },
+});
