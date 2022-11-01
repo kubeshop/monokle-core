@@ -45,7 +45,6 @@ export const createTreeNavigator = (props: {
   customization?: TreeNavigatorCustomization;
 }): TreeNavigator => {
   const { id, customization } = props;
-  console.log({ id, treeNavigatorMap });
   if (treeNavigatorMap[id]) {
     throw new Error("Another TreeNavigator with the same ID has already been setup.");
   }
@@ -126,16 +125,24 @@ export class TreeNavigator implements ITreeNavigator {
   }
 
   registerSection(id: string, sectionBuilder: SectionBuilder<any>) {
-    if (!id.includes(".")) {
-      this.#rootSectionIds.push(id);
-    }
-
-    // TODO: implement logic for registering subsections based on the id
     const sectionBlueprint: SectionBlueprint<any> = {
       ...sectionBuilder,
       id,
       childSectionIds: [],
     };
+
+    const parentSectionId = getParentSectionId(sectionBlueprint.id);
+    const parentSectionBlueprint = parentSectionId ? this.#sectionBlueprintMap[parentSectionId] : undefined;
+
+    const isRootSection = !id.includes(".") && !Boolean(parentSectionBlueprint);
+
+    if (isRootSection) {
+      this.#rootSectionIds.push(id);
+    } else if (parentSectionBlueprint) {
+      parentSectionBlueprint.childSectionIds.push(sectionBlueprint.id);
+    } else {
+      throw new Error(`Unable to register section with id ${sectionBlueprint.id} because the parent cannot be found.`);
+    }
 
     this.#sectionBlueprintMap[sectionBlueprint.id] = sectionBlueprint;
     this.#startSectionListener(sectionBlueprint);
@@ -148,4 +155,12 @@ export class TreeNavigator implements ITreeNavigator {
     delete this.#sectionBlueprintMap[sectionId];
     this.#stopSectionListener(sectionId);
   }
+}
+
+function getParentSectionId(sectionId: string) {
+  const parentId = sectionId.split(".").slice(0, -1).join(".");
+  if (!parentId.trim().length) {
+    return;
+  }
+  return parentId;
 }
