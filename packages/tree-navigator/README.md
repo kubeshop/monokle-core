@@ -44,21 +44,21 @@ export const treeNavigator = createTreeNavigator("Resources");
 
 // register a section
 treeNavigator.registerSection("sectionId" {
-	scope: (state) => state.main.resources,
-	build: {
-		label: "Some section
-	},
-	items: {
-		build: scope => scope.resources.map((resource) => {
-			return {
-				id: resource.id,
-				label: resource.name,
-				props: {
-					isSelected: resource.isSelected
-				}
-			}
-		}),
-	}
+  scope: (state) => state.main.resources,
+  build: {
+    label: "Some section
+  },
+  items: {
+    build: scope => scope.resources.map((resource) => {
+      return {
+        id: resource.id,
+		label: resource.name,
+		props: {
+		  isSelected: resource.isSelected
+		}
+	  }
+    }),
+  }
 });
 
 // register a subsection
@@ -71,10 +71,3 @@ treeNavigator.unregisterSection('id');
 <treeNavigator.Renderer />
 
 ```
-
-Possible refactors:
-- `SectionBlueprint` could be renamed to `TreeLevel` and refactored into a class
-- `ItemBlueprint` could be renamed to `TreeNode`
-- `SectionInstance` could be `TreeLevelInstance` and `ItemInstance` could be `TreeNodeInstance`
-
-
