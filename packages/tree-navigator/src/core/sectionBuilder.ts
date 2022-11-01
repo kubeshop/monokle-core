@@ -19,7 +19,8 @@ export const buildSectionInstance = (props: BuildSectionInstanceProps) => {
       ? sectionBlueprint.build(sectionScope, itemInstances)
       : sectionBlueprint.build;
 
-  const isSectionInitialized = Boolean(sectionBuildResult?.props?.isInitialized);
+  const isSectionInitialized =
+    sectionBuildResult?.props?.isInitialized !== undefined ? Boolean(sectionBuildResult?.props?.isInitialized) : true;
   const isSectionEmpty = Boolean(sectionBuildResult?.props?.isEmpty);
 
   const visibleItemIds = itemInstances.filter((i) => i.isVisible === true).map((i) => i.id);

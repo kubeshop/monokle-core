@@ -1,27 +1,25 @@
-import { createTreeNavigator, SectionBlueprint } from "@monokle/tree-navigator";
-import { Resource } from "../data/resources";
+import { createTreeNavigator } from "@monokle/tree-navigator";
 
 export const ResourceTreeNavigator = createTreeNavigator({ id: "ResourceNavigator" });
 
-const resourcesSection: SectionBlueprint<Resource, { resourceMap: Record<string, Resource> }> = {
-  id: "resources",
-  name: "Resources",
-  getScope: (state) => {
+ResourceTreeNavigator.registerSection("files", {
+  build: {
+    label: "Resources",
+  },
+  scope: (state) => {
     return {
       resourceMap: state.data.resourceMap,
     };
   },
-  rootSectionId: "files",
-  instanceBuilder: {
-    getRawItems: (scope) => {
-      return Object.values(scope.resourceMap);
+  items: {
+    build: (scope) => {
+      const resources = Object.values(scope.resourceMap);
+      return resources.map((resource: any) => {
+        return {
+          id: resource.filePath,
+          label: resource.name,
+        };
+      });
     },
   },
-  itemBlueprint: {
-    getInstanceId: (rawItem) => rawItem.filePath,
-    getName: (rawItem) => rawItem.name,
-  },
-};
-
-ResourceTreeNavigator.setRootSectionId("resources");
-ResourceTreeNavigator.registerSection(resourcesSection);
+});

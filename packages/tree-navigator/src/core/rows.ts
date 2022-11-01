@@ -118,6 +118,7 @@ export function makeNavigatorRows(
 ): TreeNavigatorRow[] {
   const rows: TreeNavigatorRow[] = [];
   const blueprint: SectionBlueprint<any> | undefined = treeNavigator.getSectionBlueprint(instance.id);
+
   if (!instance.isVisible || !blueprint) {
     return rows;
   }

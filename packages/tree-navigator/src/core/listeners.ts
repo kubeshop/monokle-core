@@ -56,7 +56,8 @@ export const createTreeNavigatorListener = (treeNavigator: ITreeNavigator) => {
         computeSectionVisibility(treeNavigator, sectionInstance, sectionInstanceMap, sectionBlueprint);
         computeSectionCheckable(sectionBlueprint, sectionInstance, sectionScope);
 
-        navigatorRows.push(...makeNavigatorRows(treeNavigator, sectionInstance, sectionInstanceMap, itemInstanceMap));
+        const rows = makeNavigatorRows(treeNavigator, sectionInstance, sectionInstanceMap, itemInstanceMap);
+        navigatorRows.push(...rows);
       });
 
       const rowIndexToScroll = getRowIndexToScroll({ rows: navigatorRows, itemInstanceMap });
