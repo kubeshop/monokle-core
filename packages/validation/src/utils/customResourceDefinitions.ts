@@ -1,5 +1,11 @@
-export function extractSchema(crd: any, versionName: string | undefined) {
-  const versions: any[] = crd?.spec?.versions || [];
+import { Resource } from "../common/types.js";
+
+export function extractSchema(crd: Resource, versionName: string | undefined) {
+  if (crd.kind !== "CustomResourceDefinition") {
+    return undefined;
+  }
+
+  const versions: any[] = crd.content?.spec?.versions || [];
   const version = versions.find((v: any) => v.name === versionName);
   const schema = JSON.parse(JSON.stringify(version?.schema?.openAPIV3Schema));
 
@@ -38,12 +44,14 @@ export function extractSchema(crd: any, versionName: string | undefined) {
 
 const crdVersionRegex = /(v)(\d*)(alpha|beta)?(\d*)?/;
 
-export function findDefaultVersion(crd: any) {
-  if (!crd?.spec?.versions) {
+export function findDefaultVersion(crd: Resource) {
+  if (!crd.content?.spec?.versions) {
     return undefined;
   }
 
-  const versionNames: string[] = crd.spec.versions.map((v: any) => v.name);
+  const versionNames: string[] = crd.content.spec.versions.map(
+    (v: any) => v.name
+  );
 
   versionNames.sort((a, b) => {
     const m1 = crdVersionRegex.exec(a);

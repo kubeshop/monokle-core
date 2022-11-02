@@ -5,14 +5,10 @@ import { z } from "zod";
 import { AbstractPlugin } from "../../common/AbstractPlugin.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult } from "../../common/sarif.js";
-import { Incremental, Resource } from "../../common/types.js";
+import { CustomSchema, Incremental, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
-import {
-  extractSchema,
-  findDefaultVersion,
-} from "./customResourceDefinitions.js";
 import { getResourceSchemaPrefix } from "./resourcePrefixMap.js";
 import { KUBERNETES_SCHEMA_RULES } from "./rules.js";
 import { SchemaLoader } from "./schemaLoader.js";
@@ -81,8 +77,6 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     resources: Resource[],
     incremental?: Incremental
   ): Promise<ValidationResult[]> {
-    this.preprocessCustomResourceDefinitions(resources);
-
     const results: ValidationResult[] = [];
     const dirtyResources = incremental
       ? resources.filter((r) => incremental.resourceIds.includes(r.id))
@@ -96,47 +90,33 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     return results;
   }
 
-  private preprocessCustomResourceDefinitions(resources: Resource[]) {
-    const crds = resources.filter((r) => r.kind === "CustomResourceDefinition");
-
-    for (const crd of crds) {
-      const spec = crd.content.spec;
-      const kind = spec?.names?.kind;
-      const kindVersion = findDefaultVersion(crd.content);
-
-      if (!kindVersion) {
-        continue;
-      }
-
-      const schema = extractSchema(crd.content, kindVersion);
-
-      if (!schema) {
-        continue;
-      }
-
-      this.addCustomSchema(kind, schema);
-    }
-  }
-
-  private addCustomSchema(kind: string, schema: any) {
-    const version = this._settings.schemaVersion;
-    if (!version) {
-      return;
-    }
-    const key = `${version}-${kind}`;
+  override registerCustomSchema({
+    kind,
+    apiVersion,
+    schema,
+  }: CustomSchema): void | Promise<void> {
+    const key = `${apiVersion}-${kind}`;
 
     if (this.schemaLoader.hasSchema(key)) {
       return;
     }
 
-    this.schemaLoader.addCustomSchema(key, schema);
+    this.schemaLoader.registerCustomSchema(key, schema);
     this.ajv.addSchema(schema, `#/definitions/${key}`);
+  }
+
+  unregisterCustomSchema(
+    schema: Omit<CustomSchema, "schema">
+  ): void | Promise<void> {
+    const key = `${schema.apiVersion}-${schema.kind}`;
+    this.schemaLoader.unregisterCustomSchema(key);
+    this.ajv.removeSchema(`#/definitions/${key}`);
   }
 
   private async validateResource(
     resource: Resource
   ): Promise<ValidationResult[]> {
-    const validate = await this.getResourceValidator(resource.kind);
+    const validate = await this.getResourceValidator(resource);
 
     if (!validate) {
       return [];
@@ -158,25 +138,15 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
    * @see https://stackoverflow.com/a/63909042
    */
   private async getResourceValidator(
-    kind: string
+    resource: Resource
   ): Promise<ValidateFunction | undefined> {
-    const prefix = getResourceSchemaPrefix(kind);
+    const prefix = getResourceSchemaPrefix(resource.kind);
+    const key = prefix
+      ? `${prefix}.${resource.kind}` // known resource
+      : `${resource.apiVersion}-${resource.kind}`; // custom resource
 
-    // could be custom resource
-    const version = this._settings.schemaVersion;
-    if (!prefix && version) {
-      const key = `${version}-${kind}`;
-      const validate = this.ajv.getSchema(`#/definitions/${key}`);
-      return validate;
-    }
-
-    if (!prefix) {
-      return undefined;
-    }
-
-    const keyRef = `#/definitions/${prefix}.${kind}`;
+    const keyRef = `#/definitions/${key}`;
     const validate = this.ajv.getSchema(keyRef);
-
     return validate;
   }
 
