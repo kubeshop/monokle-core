@@ -9,7 +9,7 @@ import {
 import { RefMapper } from "../mappers/index.js";
 import { getSiblingValue } from "./GetSiblings.js";
 import { LineCounter, parseDocument } from "yaml";
-import path from "path";
+import path from "../../utils/path.js";
 
 export function refMapperMatchesKind(refMapper: RefMapper, kind: string) {
   if (refMapper.target.kind.startsWith("$")) {

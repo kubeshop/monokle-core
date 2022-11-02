@@ -1,7 +1,7 @@
-import path from "path";
-import { isScalar, isSeq, Node, ParsedNode, Scalar, YAMLSeq } from "yaml";
+import path from "../../utils/path.js";
+import { isScalar, isSeq } from "yaml";
 import { NodeWrapper } from "../../common/NodeWrapper.js";
-import { ParsedResource, ResourceParser } from "../../common/resourceParser.js";
+import { ResourceParser } from "../../common/resourceParser.js";
 import { Resource, ResourceRef, ResourceRefType } from "../../common/types.js";
 import {
   KUSTOMIZATION_API_GROUP,

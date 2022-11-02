@@ -11,6 +11,10 @@
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
+  "exports": {
+    ".": "./lib/index.js",
+    "./custom": "./lib/custom.js"
+  },
   "files": [
     "lib"
   ],
@@ -45,6 +49,7 @@
   "dependencies": {
     "@open-policy-agent/opa-wasm": "1.8.0",
     "ajv": "6.12.6",
+    "change-case": "4.1.2",
     "isomorphic-fetch": "3.0.0",
     "lodash": "4.17.21",
     "tiny-invariant": "1.2.0",
