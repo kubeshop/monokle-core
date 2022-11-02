@@ -47,6 +47,8 @@ export function createLocations(
 
 function createFullyQualifiedName(resource: Resource) {
   return resource.namespace
-    ? `${resource.name}.${resource.namespace}.${resource.kind}@${resource.filePath}`
+    ? `${resource.name}.${resource.namespace}.${toLower(resource.kind)}@${
+        resource.filePath
+      }`
     : `${resource.name}.${toLower(resource.kind)}@${resource.filePath}`;
 }
