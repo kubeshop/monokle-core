@@ -1,0 +1,32 @@
+{
+  "name": "create-monokle-plugin",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "author": "Kubeshop",
+  "bin": {
+    "create-monokle": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template-*"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kubeshop/monokle-core.git",
+    "directory": "packages/create-monokle-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/kubeshop/monokle-core/issues"
+  },
+  "homepage": "https://github.com/kubeshop/monokle-core/tree/main/packages/create-monokle-plugin#readme",
+  "dependencies": {
+    "kolorist": "1.5.1",
+    "minimist": "1.2.6",
+    "prompts": "2.4.2"
+  }
+}
