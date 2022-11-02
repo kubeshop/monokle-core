@@ -14,6 +14,7 @@ import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
+import plugin from "./validators/labels/plugin.js";
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
@@ -54,7 +55,8 @@ export function createExtensibleMonokleValidator(
           );
           return new SimpleCustomValidator(customPlugin.default, parser);
         } catch (err) {
-          throw new Error("plugin_not_found");
+          const msg = err instanceof Error ? err.message : "unknown reason";
+          throw new Error(`plugin_not_found: ${msg}`);
         }
     }
   });
@@ -121,6 +123,7 @@ export class MonokleValidator {
   #loader: PluginLoader;
   #previousPluginsInit?: Record<string, boolean>;
   #plugins: Plugin[] = [];
+  #failedPlugins: string[] = [];
 
   constructor(loader: PluginLoader, fallback: PluginMap = DEFAULT_PLUGIN_MAP) {
     this.#loader = loader;
@@ -175,6 +178,13 @@ export class MonokleValidator {
   }
 
   /**
+   * The plugins that failed to load in this validator.
+   */
+  getFailedPlugins(): string[] {
+    return this.#failedPlugins;
+  }
+
+  /**
    * The plugin with the given name.
    *
    * @params name - The plugin name
@@ -217,6 +227,7 @@ export class MonokleValidator {
   private async doLoad(signal: AbortSignal) {
     const config = this.config;
     const previousPlugins = this.#previousPluginsInit;
+    this.#failedPlugins = [];
 
     if (!isEqual(config.plugins, previousPlugins)) {
       // All validators found in configuration are loaded.
@@ -228,9 +239,16 @@ export class MonokleValidator {
 
       for (const pluginName of newPluginNames) {
         if (this.isPluginLoaded(pluginName)) continue;
-        const validator = await this.#loader(pluginName);
-        if (signal.aborted) return;
-        this.#plugins.push(validator);
+        try {
+          const validator = await this.#loader(pluginName);
+          if (signal.aborted) return;
+          this.#plugins.push(validator);
+        } catch (err) {
+          this.#failedPlugins.push(pluginName);
+          if (config.settings?.["debug"]) {
+            console.error(err);
+          }
+        }
       }
 
       // Unload stale plugins
