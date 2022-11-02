@@ -45,6 +45,7 @@
   "dependencies": {
     "@open-policy-agent/opa-wasm": "1.8.0",
     "ajv": "8.11.0",
+    "change-case": "4.1.2",
     "isomorphic-fetch": "3.0.0",
     "lodash-es": "4.17.21",
     "tiny-invariant": "1.2.0",

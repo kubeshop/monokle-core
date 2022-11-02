@@ -24,6 +24,36 @@ export function createMonokleValidator(
   return new MonokleValidator(loader, fallback);
 }
 
+export function createExtensibleMonokleValidator(
+  parser: ResourceParser = new ResourceParser(),
+  schemaLoader: SchemaLoader = new SchemaLoader()
+) {
+  return new MonokleValidator(async (pluginName: string) => {
+    switch (pluginName) {
+      case "open-policy-agent":
+        const wasmLoader = new RemoteWasmLoader();
+        return new OpenPolicyAgentValidator(parser, wasmLoader);
+      case "resource-links":
+        return new ResourceLinksValidator();
+      case "yaml-syntax":
+        return new YamlValidator(parser);
+      case "labels":
+        const labelPlugin = await import("./validators/labels/plugin.js");
+        return new SimpleCustomValidator(labelPlugin.default, parser);
+      case "kubernetes-schema":
+        return new KubernetesSchemaValidator(parser, schemaLoader);
+      default:
+        // if (!pluginName.endsWith("")) {
+        //   throw new Error("validator_not_found");
+        // }
+        const customPlugin = await import(
+          "http://localhost:4111/plugin.js" as unknown as any
+        );
+        return new SimpleCustomValidator(customPlugin.default, parser);
+    }
+  });
+}
+
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
   schemaLoader: SchemaLoader = new SchemaLoader()

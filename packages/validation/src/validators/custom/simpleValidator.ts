@@ -1,27 +1,32 @@
-import omit from "lodash/omit.js";
+import { paramCase, sentenceCase } from "change-case";
 import { JsonObject } from "type-fest";
 import { Document, isNode, Node, ParsedNode } from "yaml";
-import { AbstractValidator } from "../../common/AbstractValidator.js";
+import { AbstractPlugin } from "../../common/AbstractPlugin.js";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult, ValidationRule } from "../../common/sarif.js";
-import { Incremental, Resource } from "../../common/types.js";
+import { Incremental, PluginMetadata, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
-import { ReportArgs, SimplePlugin } from "./config.js";
+import { PluginInit, ReportArgs, RuleInit } from "./config.js";
+
+type Runtime = {
+  validate: RuleInit["validate"];
+};
 
 /**
  * Validator for simple custom policies.
  */
-export class SimpleCustomValidator extends AbstractValidator {
+export class SimpleCustomValidator extends AbstractPlugin {
+  private _parser: ResourceParser;
   private _settings: any = {};
+  private _ruleRuntime: Record<string, Runtime>;
 
-  constructor(private plugin: SimplePlugin, private parser: ResourceParser) {
-    super(
-      plugin.name,
-      plugin.rules.map((r) => omit(r, "validate"))
-    );
+  constructor(plugin: PluginInit, parser: ResourceParser) {
+    super(toPluginMetadata(plugin), toSarifRules(plugin));
+    this._parser = parser;
+    this._ruleRuntime = toRuntime(plugin);
   }
 
-  protected override async configureValidator(
+  protected override async configurePlugin(
     rawSettings: JsonObject = {}
   ): Promise<void> {
     this._settings = rawSettings;
@@ -37,14 +42,14 @@ export class SimpleCustomValidator extends AbstractValidator {
       ? resources.filter((r) => incremental.resourceIds.includes(r.id))
       : resources;
 
-    console.log("debugging", this.plugin.rules.length);
-    for (const rule of this.plugin.rules) {
-      console.log("debugging", rule.id, this.isRuleEnabled(rule.id));
+    for (const rule of this.rules) {
       if (!this.isRuleEnabled(rule.id)) {
         continue;
       }
 
-      await rule.validate(
+      const { validate } = this._ruleRuntime[rule.id];
+
+      await validate(
         {
           resources: dirtyResources,
           allResources: resources,
@@ -52,7 +57,7 @@ export class SimpleCustomValidator extends AbstractValidator {
         },
         {
           parse: (resource) => {
-            return this.parser.parse(resource).parsedDoc;
+            return this._parser.parse(resource).parsedDoc;
           },
           report: (resource, args) => {
             const result = this.adaptToValidationResult(rule, resource, args);
@@ -71,12 +76,12 @@ export class SimpleCustomValidator extends AbstractValidator {
     resource: Resource,
     args: ReportArgs
   ): ValidationResult | undefined {
-    const { parsedDoc } = this.parser.parse(resource);
+    const { parsedDoc } = this._parser.parse(resource);
 
     const path = args.path.split(".");
     const node = determineClosestNodeForPath(parsedDoc, path);
     const region = node?.range
-      ? this.parser.parseErrorRegion(resource, node.range)
+      ? this._parser.parseErrorRegion(resource, node.range)
       : undefined;
 
     const locations = createLocations(resource, region);
@@ -120,4 +125,38 @@ function determineClosestNodeForPath(
 
   const node = resource.getIn(currentPath, true);
   return isNode(node) ? node : undefined;
+}
+
+function toPluginMetadata(plugin: PluginInit): PluginMetadata {
+  return {
+    ...plugin,
+    displayName: plugin.displayName ?? sentenceCase(plugin.name),
+    icon: plugin.icon ?? "k8s-schema",
+  };
+}
+
+function toSarifRules(plugin: PluginInit): ValidationRule[] {
+  return Object.entries(plugin.rules).map(([name, r]) => {
+    return {
+      id: r.id,
+      name: paramCase(name),
+      shortDescription: {
+        text: r.description,
+      },
+      fullDescription: {
+        text: r.fullDescription ?? r.description,
+      },
+      help: {
+        text: r.help ?? "No help available.",
+      },
+    };
+  });
+}
+
+function toRuntime(plugin: PluginInit): Record<string, Runtime> {
+  const entries = Object.entries(plugin.rules).map(([_, rule]) => {
+    return [rule.id, { validate: rule.validate }];
+  });
+
+  return Object.fromEntries(entries);
 }

@@ -1,7 +1,7 @@
 import { defineRule } from "../custom/config.js";
 
-export const noEmptyLabels = defineRule("CLB001", {
-  name: "no-empty-labels",
+export const noEmptyLabels = defineRule({
+  id: "CLB001",
   description: "Require labels as metadata.",
   help: "Add any label to the Kubernetes resource.",
   validate({ resources }, { report }) {
