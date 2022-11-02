@@ -3,7 +3,12 @@ import clone from "lodash/clone.js";
 import isEqual from "lodash/isEqual.js";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
-import type { Incremental, Resource, Plugin } from "./common/types.js";
+import type {
+  Incremental,
+  Resource,
+  Plugin,
+  CustomSchema,
+} from "./common/types.js";
 import { Config, PluginMap } from "./config/parse.js";
 import { nextTick, throwIfAborted } from "./utils/abort.js";
 import { isDefined } from "./utils/isDefined.js";
@@ -14,7 +19,10 @@ import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
-import plugin from "./validators/labels/plugin.js";
+import {
+  extractSchema,
+  findDefaultVersion,
+} from "./utils/customResourceDefinitions.js";
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
@@ -124,6 +132,7 @@ export class MonokleValidator {
   #previousPluginsInit?: Record<string, boolean>;
   #plugins: Plugin[] = [];
   #failedPlugins: string[] = [];
+  #customSchemas: Set<string> = new Set();
 
   constructor(loader: PluginLoader, fallback: PluginMap = DEFAULT_PLUGIN_MAP) {
     this.#loader = loader;
@@ -254,14 +263,7 @@ export class MonokleValidator {
       // Unload stale plugins
       const previousPluginNames = Object.keys(this.#previousPluginsInit ?? {});
       const stalePlugins = difference(previousPluginNames, newPluginNames);
-      for (const pluginName of stalePlugins) {
-        const plugin = this.getPlugin(pluginName);
-        if (!plugin) continue;
-        await plugin.unload();
-        this.#plugins = this.#plugins.filter(
-          (p) => p.metadata.name !== pluginName
-        );
-      }
+      this.doUnload(stalePlugins);
 
       // Toggle validators
       for (const validator of this.#plugins) {
@@ -281,6 +283,17 @@ export class MonokleValidator {
         })
       )
     );
+  }
+
+  private async doUnload(plugins: string[]) {
+    for (const pluginName of plugins) {
+      const plugin = this.getPlugin(pluginName);
+      if (!plugin) continue;
+      await plugin.unload();
+      this.#plugins = this.#plugins.filter(
+        (p) => p.metadata.name !== pluginName
+      );
+    }
   }
 
   /**
@@ -307,6 +320,8 @@ export class MonokleValidator {
     await nextTick();
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
+    this.preprocessCustomResourceDefinitions(resources);
+
     const allRuns = await Promise.allSettled(
       validators.map((v) => v.validate(resources, incremental))
     );
@@ -318,8 +333,7 @@ export class MonokleValidator {
 
     if (this.config.settings?.debug && allRuns.length !== runs.length) {
       const failedRuns = allRuns.filter((r) => r.status === "rejected");
-      // eslint-disable-next-line no-console
-      console.warn("skipped failed validators", failedRuns);
+      this.debug("skipped failed validators", failedRuns);
     }
 
     return {
@@ -329,6 +343,86 @@ export class MonokleValidator {
     };
   }
 
+  private preprocessCustomResourceDefinitions(resources: Resource[]) {
+    const crds = resources.filter((r) => r.kind === "CustomResourceDefinition");
+
+    for (const crd of crds) {
+      const spec = crd.content.spec;
+      const kind = spec?.names?.kind;
+      const apiVersion = findDefaultVersion(crd.content);
+
+      if (!apiVersion) {
+        continue;
+      }
+
+      const schema = extractSchema(crd.content, apiVersion);
+
+      if (!schema) {
+        continue;
+      }
+
+      this.registerCustomSchema({ kind, apiVersion, schema });
+    }
+  }
+
+  async registerCustomSchema(schema: CustomSchema) {
+    if (!this.isPluginLoaded("kubernetes-schema")) {
+      this.debug("Cannot register custom schema.", {
+        reason: "Kubernetes Schema plugin must be loaded.",
+      });
+      return;
+    }
+
+    const key = `${schema.apiVersion}-${schema.kind}`;
+    if (this.#customSchemas.has(key)) {
+      this.debug("Cannot register custom schema.", {
+        reason: "The schema is already registered.",
+      });
+      return;
+    }
+
+    // Let's put K8s schema first as it first adds the schema to the shared SchemaLoader.
+    const kubernetesSchemaPlugin = this.getPlugin("kubernetes-schema");
+    const otherPlugins = this.getPlugins().filter(
+      (p) => p.metadata.name !== "kubernetes-schema"
+    );
+
+    for (const plugin of [kubernetesSchemaPlugin, ...otherPlugins]) {
+      await plugin?.registerCustomSchema(schema);
+    }
+
+    this.#customSchemas.add(key);
+  }
+
+  async unregisterCustomSchema(schema: Omit<CustomSchema, "schema">) {
+    if (!this.isPluginLoaded("kubernetes-schema")) {
+      this.debug("Cannot unregister custom schema.", {
+        reason: "Kubernetes Schema plugin must be loaded.",
+      });
+      return;
+    }
+
+    const key = `${schema.apiVersion}-${schema.kind}`;
+    if (this.#customSchemas.has(key)) {
+      this.debug("Cannot register custom schema.", {
+        reason: "The schema is not registered.",
+      });
+      return;
+    }
+
+    // Let's put K8s schema first as it first removes the schema from the shared SchemaLoader.
+    const kubernetesSchemaPlugin = this.getPlugin("kubernetes-schema");
+    const otherPlugins = this.getPlugins().filter(
+      (p) => p.metadata.name !== "kubernetes-schema"
+    );
+
+    for (const plugin of [kubernetesSchemaPlugin, ...otherPlugins]) {
+      await plugin?.unregisterCustomSchema(schema);
+    }
+
+    this.#customSchemas.delete(key);
+  }
+
   /**
    * Clear the incremental caches.
    */
@@ -336,8 +430,24 @@ export class MonokleValidator {
     await Promise.all(this.#plugins.map((v) => v.clear()));
   }
 
+  /**
+   * Unloads the Monokle Validator so it can be used as new.
+   */
   async unload(): Promise<void> {
     this.cancelLoad("unload");
+    for (const schema of this.#customSchemas) {
+      const [apiVersion, kind] = schema.split("-");
+      await this.unregisterCustomSchema({ apiVersion, kind });
+    }
+
+    const pluginNames = this.getPlugins().map((p) => p.metadata.name);
+    await this.doUnload(pluginNames);
     this.config = undefined;
+    this.#failedPlugins = [];
+  }
+
+  private debug(msg: string, details?: any) {
+    if (!this.config.settings?.debug) return;
+    console.debug("[validation]", msg, details);
   }
 }

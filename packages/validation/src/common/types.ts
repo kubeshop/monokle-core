@@ -1,6 +1,7 @@
 import { JsonObject } from "type-fest";
 import { Scalar } from "yaml";
 import { RuleMap } from "../config/parse.js";
+import { ResourceSchema } from "../validators/kubernetes-schema/schemaLoader.js";
 import { ResourceParser } from "./resourceParser.js";
 import { ValidationPolicy, ValidationRule, ValidationRun } from "./sarif.js";
 
@@ -91,6 +92,12 @@ export interface RefPosition {
   endLine?: number;
   endColumn?: number;
 }
+
+export type CustomSchema = {
+  kind: string;
+  apiVersion: string;
+  schema: ResourceSchema;
+};
 
 /* * * * * * * * * * * * * * * * *
  * Types for validators
@@ -186,6 +193,11 @@ export interface Plugin {
   isRuleEnabled(rule: string): boolean;
 
   configure(config: { rules?: RuleMap; settings?: JsonObject }): Promise<void>;
+
+  registerCustomSchema(schema: CustomSchema): Promise<void> | void;
+  unregisterCustomSchema(
+    schema: Omit<CustomSchema, "schema">
+  ): Promise<void> | void;
 
   validate(
     resources: Resource[],

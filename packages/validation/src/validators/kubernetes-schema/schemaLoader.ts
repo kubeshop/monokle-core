@@ -67,8 +67,12 @@ export class SchemaLoader {
     }
   }
 
-  addCustomSchema(key: string, value: ResourceSchema) {
+  registerCustomSchema(key: string, value: ResourceSchema) {
     this.schemaCache.set(key, value);
+  }
+
+  unregisterCustomSchema(key: string) {
+    this.schemaCache.delete(key);
   }
 
   hasSchema(key: string) {

@@ -10,7 +10,13 @@ import {
   ValidationRuleConfig,
   ValidationRun,
 } from "./sarif.js";
-import { Incremental, Resource, Plugin, PluginMetadata } from "./types.js";
+import {
+  Incremental,
+  Resource,
+  Plugin,
+  PluginMetadata,
+  CustomSchema,
+} from "./types.js";
 
 export abstract class AbstractPlugin implements Plugin {
   public metadata: PluginMetadata;
@@ -160,6 +166,16 @@ export abstract class AbstractPlugin implements Plugin {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected configurePlugin(settings: JsonObject | undefined): Promise<void> {
     return Promise.resolve();
+  }
+
+  registerCustomSchema(schema: CustomSchema): void | Promise<void> {
+    return;
+  }
+
+  unregisterCustomSchema(
+    schema: Omit<CustomSchema, "schema">
+  ): void | Promise<void> {
+    return;
   }
 
   async validate(
