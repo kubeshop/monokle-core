@@ -1,4 +1,4 @@
-import { difference } from "lodash";
+import difference from "lodash/difference.js";
 import clone from "lodash/clone.js";
 import isEqual from "lodash/isEqual.js";
 import { ResourceParser } from "./common/resourceParser.js";
@@ -7,9 +7,9 @@ import type { Incremental, Resource, Plugin } from "./common/types.js";
 import { Config, PluginMap } from "./config/parse.js";
 import { nextTick, throwIfAborted } from "./utils/abort.js";
 import { isDefined } from "./utils/isDefined.js";
+import { SimpleCustomValidator } from "./validators/custom/simpleValidator.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
 import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
-import { LabelsValidator } from "./validators/labels/validator.js";
 import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
@@ -22,6 +22,42 @@ export function createMonokleValidator(
   fallback?: PluginMap
 ) {
   return new MonokleValidator(loader, fallback);
+}
+
+/**
+ * Creates a Monokle validator that can dynamically fetch custom plugins.
+ *
+ * @remark NodeJs does not yet support ESM HTTP URLs. Instead use `createExtensibleNodeMonokleValidator`.
+ */
+export function createExtensibleMonokleValidator(
+  parser: ResourceParser = new ResourceParser(),
+  schemaLoader: SchemaLoader = new SchemaLoader()
+) {
+  return new MonokleValidator(async (pluginName: string) => {
+    switch (pluginName) {
+      case "open-policy-agent":
+        const wasmLoader = new RemoteWasmLoader();
+        return new OpenPolicyAgentValidator(parser, wasmLoader);
+      case "resource-links":
+        return new ResourceLinksValidator();
+      case "yaml-syntax":
+        return new YamlValidator(parser);
+      case "labels":
+        const labelPlugin = await import("./validators/labels/plugin.js");
+        return new SimpleCustomValidator(labelPlugin.default, parser);
+      case "kubernetes-schema":
+        return new KubernetesSchemaValidator(parser, schemaLoader);
+      default:
+        try {
+          const customPlugin = await import(
+            "http://localhost:4111/plugin.js" as unknown as any
+          );
+          return new SimpleCustomValidator(customPlugin.default, parser);
+        } catch (err) {
+          throw new Error("plugin_not_found");
+        }
+    }
+  });
 }
 
 export function createDefaultMonokleValidator(
@@ -45,11 +81,12 @@ export function createDefaultPluginLoader(
       case "yaml-syntax":
         return new YamlValidator(parser);
       case "labels":
-        return new LabelsValidator(parser);
+        const labelPlugin = await import("./validators/labels/plugin.js");
+        return new SimpleCustomValidator(labelPlugin.default, parser);
       case "kubernetes-schema":
         return new KubernetesSchemaValidator(parser, schemaLoader);
       default:
-        throw new Error("validator_not_found");
+        throw new Error("plugin_not_found");
     }
   };
 }
