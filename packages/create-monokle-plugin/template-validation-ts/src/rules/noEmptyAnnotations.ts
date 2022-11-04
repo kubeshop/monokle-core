@@ -9,7 +9,7 @@ export const noEmptyAnnotations = defineRule({
       const annotations = Object.entries(
         resource.content.metadata?.annotations ?? {}
       );
-      const hasAnnotations = annotations.length > 0;
+      const hasAnnotations = annotations.length > 1;
 
       if (!hasAnnotations) {
         report(resource, { path: "metadata.annotations" });

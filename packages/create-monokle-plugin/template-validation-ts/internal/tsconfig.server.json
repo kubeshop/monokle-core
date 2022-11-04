@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": ".",
+    "lib": ["ESNext"],
+    "module": "CommonJS",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "pretty": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "removeComments": false,
+    "strict": true
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalResolver": true
+  },
+  "exclude": ["node_modules", "build"],
+  "include": ["./server.cts"]
+}
