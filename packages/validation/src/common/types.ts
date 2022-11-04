@@ -153,6 +153,11 @@ export type PluginMetadata = {
    * The website of this plugin.
    */
   learnMoreUrl?: string;
+
+  /**
+   * Whether the plugin is in development.
+   */
+  dev?: boolean;
 };
 
 export interface Plugin {

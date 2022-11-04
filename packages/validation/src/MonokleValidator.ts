@@ -23,6 +23,8 @@ import {
   extractSchema,
   findDefaultVersion,
 } from "./utils/customResourceDefinitions.js";
+import { DevCustomValidator } from "./validators/custom/devValidator.js";
+import { DEV_MODE_TOKEN } from "./validators/custom/constants.js";
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
@@ -56,16 +58,10 @@ export function createExtensibleMonokleValidator(
         return new SimpleCustomValidator(labelPlugin.default, parser);
       case "kubernetes-schema":
         return new KubernetesSchemaValidator(parser, schemaLoader);
+      case DEV_MODE_TOKEN:
+        return new DevCustomValidator(parser);
       default:
-        try {
-          const customPlugin = await import(
-            "http://localhost:4111/plugin.js" as unknown as any
-          );
-          return new SimpleCustomValidator(customPlugin.default, parser);
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : "unknown reason";
-          throw new Error(`plugin_not_found: ${msg}`);
-        }
+        throw new Error("plugin_not_found");
     }
   });
 }
