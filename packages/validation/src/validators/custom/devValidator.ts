@@ -142,7 +142,10 @@ export class DevCustomValidator implements Plugin {
       return Promise.resolve();
     }
     const entries = Object.entries(config.rules ?? {}).map(([key, value]) => {
-      return [key.replace(DEV_MODE_TOKEN, this._currentValidator!.name), value];
+      return [
+        key.replace(DEV_MODE_TOKEN, this._currentValidator!.metadata.name),
+        value,
+      ];
     });
     const rules = Object.fromEntries(entries);
     return this._currentValidator.configure({
