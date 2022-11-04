@@ -49,6 +49,6 @@ async function importWithDataUrl(url: string) {
   const encodedSource = buff.toString("base64");
   const dataUrl = `data:text/javascript;base64,${encodedSource}`;
 
-  const module = await import(dataUrl);
+  const module = await import(/* @vite-ignore */ dataUrl);
   return module;
 }

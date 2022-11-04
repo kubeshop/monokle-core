@@ -24,7 +24,7 @@ export abstract class AbstractPlugin implements Plugin {
 
   protected _enabled: boolean = true;
 
-  protected _rules: ValidationRule[];
+  protected _rules: ValidationRule[] = [];
   protected _ruleReverseLookup: Map<string, number> = new Map(); // Lookup index by rule identifier;
   protected _policyRuleReverseLookup: Map<string, number> = new Map(); // Lookup index by rule identifier;
   protected _ruleNameToIdLookup: Map<string, string> = new Map();
@@ -33,10 +33,16 @@ export abstract class AbstractPlugin implements Plugin {
 
   constructor(metadata: PluginMetadata, rules: ValidationRule[]) {
     this.metadata = metadata;
+    this.setRules(rules);
+  }
+
+  protected setRules(rules: ValidationRule[]) {
+    this._ruleReverseLookup.clear();
+    this._ruleNameToIdLookup.clear();
     this._rules = rules;
     rules.forEach((r, idx) => this._ruleReverseLookup.set(r.id, idx));
     rules.forEach((r) =>
-      this._ruleNameToIdLookup.set(`${metadata.name}/${r.name}`, r.id)
+      this._ruleNameToIdLookup.set(`${this.metadata.name}/${r.name}`, r.id)
     );
   }
 
