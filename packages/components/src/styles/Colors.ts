@@ -22,6 +22,7 @@ enum Colors {
   grey4 = "#303030", // gray, gray 4
   grey3b = "#293235",
   grey3 = "#262626", // gray, gray 3
+  grey2 = "#1D1D1D",
   grey1 = "#141414", // gray, gray 1
 
   coldGrey = "#31393C",
