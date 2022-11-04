@@ -84,10 +84,11 @@ export class DevCustomValidator implements Plugin {
     if (!this._currentValidator) {
       return DEFAULT_METADATA;
     }
-    const metadata = cloneDeep(this._currentValidator.metadata);
-    metadata.dev = true;
-    metadata.name = DEFAULT_METADATA.name;
-    return metadata;
+    return {
+      ...this._currentValidator.metadata,
+      dev: true,
+      name: DEFAULT_METADATA.name,
+    };
   }
 
   get rules(): ValidationRule<{}>[] {
