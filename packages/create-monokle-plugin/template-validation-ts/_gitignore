@@ -2,4 +2,5 @@
 build
 dist
 node_modules
-src/__generated__/**
+src/crds/__generated__/**
+internal/server.cjs

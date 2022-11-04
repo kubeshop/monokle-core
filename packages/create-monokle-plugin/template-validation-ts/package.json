@@ -1,31 +1,47 @@
 {
   "name": "monokle-custom-validator",
+  "description": "Validates your custom rules.",
+  "author": "your_name",
+  "license": "MIT",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/plugin.js",
   "type": "module",
+  "keywords": [
+    "monokle",
+    "monokle-plugin",
+    "custom-validation"
+  ],
   "scripts": {
-    "build": "tsc",
-    "publish": "npm run build && rollup --config rollup.config.js",
-    "preview": "serve -p 4111 --cors dist"
+    "postinstall": "npm run codegen",
+    "codegen": "node ./internal/typegen.js",
+    "dev": "ts-node --project ./internal/tsconfig.server.json ./internal/server.cts",
+    "build": "tsc && rollup --config ./internal/rollup.config.js",
+    "debug": "tsc && rollup --config ./internal/rollup-debug.config.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
     "@rollup/plugin-json": "5.0.1",
     "@rollup/plugin-node-resolve": "15.0.1",
+    "@rollup/plugin-typescript": "8.5.0",
+    "@types/connect": "3.4.35",
+    "@types/cors": "2.8.12",
+    "@types/klaw-sync": "6.0.1",
     "ajv": "8.11.0",
+    "connect": "3.7.0",
+    "cors": "2.8.5",
     "esbuild": "0.15.12",
     "fs-extra": "10.1.0",
     "json-schema-to-typescript": "11.0.2",
+    "klaw-sync": "6.0.0",
     "openapi-typescript": "5.4.1",
+    "picocolors": "1.0.0",
     "rollup": "3.2.3",
+    "rollup-plugin-terser": "7.0.2",
+    "ts-node": "10.9.1",
+    "tslib": "2.4.1",
     "typescript": "4.8.4",
     "yaml": "2.1.3"
   },
   "dependencies": {
-    "@monokle/validation": "0.5.9",
-    "rollup-plugin-terser": "7.0.2"
+    "@monokle/validation": "0.5.9"
   }
 }
