@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import PaneCloseIcon from "./PaneCloseIcon";
+import { PaneCloseIcon } from "./PaneCloseIcon";
 
 export default {
   title: "Atoms/PaneCloseIcon",

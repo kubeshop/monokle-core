@@ -8,7 +8,7 @@ export type PaneCloseIconType = {
   iconStyle?: React.CSSProperties;
 };
 
-const PaneCloseIcon: React.FC<PaneCloseIconType> = (props) => {
+export const PaneCloseIcon: React.FC<PaneCloseIconType> = (props) => {
   const { containerId = "pane-close", containerStyle = {}, iconStyle = {}, onClick } = props;
 
   return (
@@ -17,5 +17,3 @@ const PaneCloseIcon: React.FC<PaneCloseIconType> = (props) => {
     </S.PaneCloseIconContainer>
   );
 };
-
-export default PaneCloseIcon;
