@@ -25,9 +25,9 @@ export const AllRowsArgs: ResizableRowsPanelType = {
 };
 
 export const ClosableLeftColumnArgs: ResizableColumnsPanelType = {
-  left: <div style={{ background: "#002B7F", height: "100%", color: "#fff" }}>Left Panel</div>,
-  center: <div style={{ background: "#FCD116", height: "100%" }}>Center Panel</div>,
-  right: <div style={{ background: "#CE1126", height: "100%" }}>Right Panel</div>,
+  left: <div style={{ background: "#002B7F", height: "100%", color: "#fff", padding: 15 }}>Left Panel</div>,
+  center: <div style={{ background: "#FCD116", height: "100%", padding: 15 }}>Center Panel</div>,
+  right: <div style={{ background: "#CE1126", height: "100%", padding: 15 }}>Right Panel</div>,
   height: 500,
   width: 1500,
   layout: {
