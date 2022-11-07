@@ -22,7 +22,7 @@ export type ResizableColumnsPanelType = {
   leftClosable?: boolean;
   minPaneWidth?: number;
   width?: number;
-  onCloseLeftMenu?: () => void;
+  onCloseLeftPane?: () => void;
   onStopResize?: OnStopResize;
 };
 

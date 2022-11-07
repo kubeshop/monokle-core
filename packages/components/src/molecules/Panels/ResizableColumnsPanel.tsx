@@ -9,7 +9,7 @@ import { PaneCloseIcon } from "@/atoms";
 
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
   const { center, layout, left, right, height = "100%", width = "100%", onStopResize, minPaneWidth = 350 } = props;
-  const { leftClosable = false, onCloseLeftMenu = () => {} } = props;
+  const { leftClosable = false, onCloseLeftPane = () => {} } = props;
 
   const onStopResizeLeft = useCallback(makeOnStopResize("left", onStopResize), [onStopResize]);
   const onStopResizeCenter = useCallback(makeOnStopResize("center", onStopResize), [onStopResize]);
@@ -28,7 +28,7 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
             {left}
             {leftClosable && (
               <PaneCloseIcon
-                onClick={onCloseLeftMenu}
+                onClick={onCloseLeftPane}
                 containerStyle={{ position: "absolute", top: 20, right: -10, zIndex: 200 }}
               />
             )}
