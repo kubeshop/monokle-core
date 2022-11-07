@@ -6,17 +6,25 @@ import { DoubleLeftOutlined as RawDoubleLeftOutlined } from "@ant-design/icons";
 
 export type PaneCloseIconType = {
   onClick: () => void;
+  containerClassName?: string;
   containerId?: string;
   containerStyle?: React.CSSProperties;
+  iconClassName?: string;
   iconStyle?: React.CSSProperties;
 };
 
 export const PaneCloseIcon: React.FC<PaneCloseIconType> = (props) => {
   const { containerId = "pane-close", containerStyle = {}, iconStyle = {}, onClick } = props;
+  const { containerClassName = "", iconClassName = "" } = props;
 
   return (
-    <StyledPaneCloseIconContainer id={containerId} style={{ ...containerStyle }} onClick={onClick}>
-      <StyledDoubleLeftOutlined style={{ ...iconStyle }} />
+    <StyledPaneCloseIconContainer
+      className={containerClassName}
+      id={containerId}
+      style={{ ...containerStyle }}
+      onClick={onClick}
+    >
+      <StyledDoubleLeftOutlined className={iconClassName} style={{ ...iconStyle }} />
     </StyledPaneCloseIconContainer>
   );
 };

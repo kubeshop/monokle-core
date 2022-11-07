@@ -16,11 +16,13 @@ export type OnStopResize = (position: "left" | "center" | "right", flex: number)
 export type ResizableColumnsPanelType = {
   right: React.ReactNode;
   center?: React.ReactNode;
+  height?: number;
   layout?: ResizableColumnsPanelLayout;
   left?: React.ReactNode;
-  height?: number;
-  width?: number;
+  leftClosable?: boolean;
   minPaneWidth?: number;
+  width?: number;
+  onCloseLeftMenu?: () => void;
   onStopResize?: OnStopResize;
 };
 

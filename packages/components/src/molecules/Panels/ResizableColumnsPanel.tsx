@@ -5,9 +5,11 @@ import styled from "styled-components";
 import Colors from "@/styles/Colors";
 
 import { OnStopResize, ResizableColumnsPanelType } from "./types";
+import { PaneCloseIcon } from "@/atoms";
 
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
   const { center, layout, left, right, height = "100%", width = "100%", onStopResize, minPaneWidth = 350 } = props;
+  const { leftClosable = false, onCloseLeftMenu = () => {} } = props;
 
   const onStopResizeLeft = useCallback(makeOnStopResize("left", onStopResize), [onStopResize]);
   const onStopResizeCenter = useCallback(makeOnStopResize("center", onStopResize), [onStopResize]);
@@ -16,9 +18,22 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
   return (
     <ReflexContainer orientation="vertical" windowResizeAware style={{ height, width }}>
       {left && (
-        <ReflexElement minSize={minPaneWidth} onStopResize={onStopResizeLeft} flex={layout?.left}>
-          <StyledLeftPane>{left}</StyledLeftPane>
-        </ReflexElement>
+        <StyledLeftReflexElement
+          $leftClosable={leftClosable}
+          minSize={minPaneWidth}
+          onStopResize={onStopResizeLeft}
+          flex={layout?.left}
+        >
+          <StyledLeftPane $leftClosable={leftClosable}>
+            {left}
+            {leftClosable && (
+              <PaneCloseIcon
+                onClick={onCloseLeftMenu}
+                containerStyle={{ position: "absolute", top: 20, right: -10, zIndex: 200 }}
+              />
+            )}
+          </StyledLeftPane>
+        </StyledLeftReflexElement>
       )}
 
       {left && <ReflexSplitter propagate style={{ backgroundColor: Colors.grey10 }} />}
@@ -50,11 +65,27 @@ export default ResizableColumnsPanel;
 const StyledPane = styled.div`
   position: relative;
   height: 100%;
-  overflow-y: hidden;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
-const StyledLeftPane = styled(StyledPane)`
+const StyledLeftPane = styled(StyledPane)<{ $leftClosable: boolean }>`
   background-color: ${Colors.grey10};
+
+  ${({ $leftClosable }) => {
+    if ($leftClosable) {
+      return `position: static;`;
+    }
+  }}
+`;
+
+const StyledLeftReflexElement = styled(ReflexElement)<{ $leftClosable: boolean }>`
+  ${({ $leftClosable }) => {
+    if ($leftClosable) {
+      return `overflow: visible !important;`;
+    }
+  }}
 `;
 
 // Utils
