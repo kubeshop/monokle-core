@@ -1,19 +1,10 @@
-import Colors from "@/styles/Colors";
 import { useCallback } from "react";
 import { ReflexContainer, ReflexElement, ReflexSplitter, HandlerProps } from "react-reflex";
+import styled from "styled-components";
+
+import Colors from "@/styles/Colors";
 
 import { OnStopResize, ResizableColumnsPanelType } from "./types";
-import * as S from "./ResizableColumnsPanel.styled";
-
-const makeOnStopResize = (position: "left" | "center" | "right", onStopResize?: OnStopResize) => {
-  return (args: HandlerProps) => {
-    const flex = args.component.props.flex;
-
-    if (flex && onStopResize) {
-      onStopResize(position, flex);
-    }
-  };
-};
 
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
   const { center, layout, left, right, height = "100%", width = "100%", onStopResize, minPaneWidth = 350 } = props;
@@ -26,7 +17,7 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
     <ReflexContainer orientation="vertical" windowResizeAware style={{ height, width }}>
       {left && (
         <ReflexElement minSize={minPaneWidth} onStopResize={onStopResizeLeft} flex={layout?.left}>
-          <S.LeftPane>{left}</S.LeftPane>
+          <StyledLeftPane>{left}</StyledLeftPane>
         </ReflexElement>
       )}
 
@@ -39,17 +30,41 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
           onStopResize={onStopResizeCenter}
           flex={layout?.center}
         >
-          <S.Pane>{center}</S.Pane>
+          <StyledPane>{center}</StyledPane>
         </ReflexElement>
       )}
 
       {center && <ReflexSplitter propagate={Boolean(left)} />}
 
       <ReflexElement minSize={minPaneWidth} onStopResize={onStopResizeRight}>
-        <S.Pane>{right}</S.Pane>
+        <StyledPane>{right}</StyledPane>
       </ReflexElement>
     </ReflexContainer>
   );
 };
 
 export default ResizableColumnsPanel;
+
+// Styled Components
+
+const StyledPane = styled.div`
+  position: relative;
+  height: 100%;
+  overflow-y: hidden;
+`;
+
+const StyledLeftPane = styled(StyledPane)`
+  background-color: ${Colors.grey10};
+`;
+
+// Utils
+
+const makeOnStopResize = (position: "left" | "center" | "right", onStopResize?: OnStopResize) => {
+  return (args: HandlerProps) => {
+    const flex = args.component.props.flex;
+
+    if (flex && onStopResize) {
+      onStopResize(position, flex);
+    }
+  };
+};
