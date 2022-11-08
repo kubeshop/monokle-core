@@ -1,7 +1,7 @@
 {
   "name": "monokle-custom-validator",
-  "description": "Validates your custom rules.",
-  "author": "your_name",
+  "description": "Validates with custom rules.",
+  "author": "unknown",
   "license": "MIT",
   "version": "1.0.0",
   "main": "dist/plugin.js",

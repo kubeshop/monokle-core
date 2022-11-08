@@ -13,7 +13,7 @@ import { blue, red, reset, yellow } from "kolorist";
 const argv = minimist(process.argv.slice(2), { string: ["_"] });
 const cwd = process.cwd();
 
-const FRAMEWORKS = [
+const PLUGIN_TYPES = [
   {
     name: "validation",
     color: yellow,
@@ -27,7 +27,7 @@ const FRAMEWORKS = [
   },
 ];
 
-const TEMPLATES = FRAMEWORKS.map(
+const TEMPLATES = PLUGIN_TYPES.map(
   (f) => (f.variants && f.variants.map((v) => v.name)) || [f.name]
 ).reduce((a, b) => a.concat(b), []);
 
@@ -37,12 +37,17 @@ const renameFiles = {
 };
 
 async function init() {
+  const defaultTargetDir = "monokle-plugin";
   let targetDir = formatTargetDir(argv._[0]);
   let template = argv.template || argv.t;
+  let projectName;
 
-  const defaultTargetDir = "monokle-plugin";
+  const hasTemplateArg = template !== undefined;
+  const communityPath = path.join(cwd, ".community");
+  const isMonokleCommunityRepository = fs.existsSync(communityPath);
+
   const getProjectName = () =>
-    targetDir === "." ? path.basename(path.resolve()) : targetDir;
+    targetDir === "." ? path.basename(path.resolve()) : projectName;
 
   let result = {};
 
@@ -55,8 +60,57 @@ async function init() {
           message: reset("Project name:"),
           initial: defaultTargetDir,
           onState: (state) => {
+            projectName = state.value ?? defaultTargetDir;
             targetDir = formatTargetDir(state.value) || defaultTargetDir;
           },
+        },
+        {
+          type: () => (isValidPackageName(getProjectName()) ? null : "text"),
+          name: "packageName",
+          message: reset("Package name:"),
+          initial: () => toValidPackageName(getProjectName()),
+          validate: (dir) =>
+            isValidPackageName(dir) || "Invalid package.json name",
+        },
+        {
+          type: template && TEMPLATES.includes(template) ? null : "select",
+          name: "pluginType",
+          message:
+            typeof template === "string" && !TEMPLATES.includes(template)
+              ? reset(
+                  `"${template}" isn't a valid template. Please choose from below: `
+                )
+              : reset("Select a plugin type:"),
+          initial: 0,
+          choices: PLUGIN_TYPES.map((pluginTypes) => {
+            const pluginTypeColor = pluginTypes.color;
+            return {
+              title: pluginTypeColor(pluginTypes.name),
+              value: pluginTypes,
+            };
+          }),
+          onState: (state) => {
+            if (!isMonokleCommunityRepository) {
+              return;
+            }
+
+            targetDir = `${state.value.name}/${targetDir}`;
+          },
+        },
+        {
+          type: (pluginType) =>
+            pluginType && pluginType.variants ? "select" : null,
+          name: "variant",
+          message: reset("Select a variant:"),
+          // @ts-ignore
+          choices: (framework) =>
+            framework.variants.map((variant) => {
+              const variantColor = variant.color;
+              return {
+                title: variantColor(variant.name),
+                value: variant.name,
+              };
+            }),
         },
         {
           type: () =>
@@ -77,48 +131,8 @@ async function init() {
           },
           name: "overwriteChecker",
         },
-        {
-          type: () => (isValidPackageName(getProjectName()) ? null : "text"),
-          name: "packageName",
-          message: reset("Package name:"),
-          initial: () => toValidPackageName(getProjectName()),
-          validate: (dir) =>
-            isValidPackageName(dir) || "Invalid package.json name",
-        },
-        {
-          type: template && TEMPLATES.includes(template) ? null : "select",
-          name: "framework",
-          message:
-            typeof template === "string" && !TEMPLATES.includes(template)
-              ? reset(
-                  `"${template}" isn't a valid template. Please choose from below: `
-                )
-              : reset("Select a framework:"),
-          initial: 0,
-          choices: FRAMEWORKS.map((framework) => {
-            const frameworkColor = framework.color;
-            return {
-              title: frameworkColor(framework.name),
-              value: framework,
-            };
-          }),
-        },
-        {
-          type: (framework) =>
-            framework && framework.variants ? "select" : null,
-          name: "variant",
-          message: reset("Select a variant:"),
-          // @ts-ignore
-          choices: (framework) =>
-            framework.variants.map((variant) => {
-              const variantColor = variant.color;
-              return {
-                title: variantColor(variant.name),
-                value: variant.name,
-              };
-            }),
-        },
       ],
+
       {
         onCancel: () => {
           throw new Error(red("✖") + " Operation cancelled");
@@ -131,7 +145,13 @@ async function init() {
   }
 
   // user choice associated with prompts
-  const { framework, overwrite, packageName, variant } = result;
+  const { pluginType, overwrite, packageName, variant } = result;
+
+  if (hasTemplateArg && isMonokleCommunityRepository) {
+    if (template.startsWith("validation")) {
+      targetDir = `validation/${targetDir}`;
+    }
+  }
 
   const root = path.join(cwd, targetDir);
 
@@ -142,7 +162,7 @@ async function init() {
   }
 
   // determine template
-  template = variant || framework || template;
+  template = variant || pluginType || template;
 
   console.log(`\nScaffolding plugin in ${root}...`);
 
