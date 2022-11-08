@@ -1,8 +1,8 @@
-import cloneDeep from "lodash/cloneDeep.js";
 import { JsonObject } from "type-fest";
 import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationRule, ValidationRun } from "../../common/sarif.js";
 import {
+  CustomSchema,
   Incremental,
   Plugin,
   PluginMetadata,
@@ -178,6 +178,22 @@ export class DevCustomValidator implements Plugin {
       return Promise.resolve();
     }
     return this._currentValidator.clear();
+  }
+
+  registerCustomSchema(schema: CustomSchema): void | Promise<void> {
+    if (!this._currentValidator) {
+      return;
+    }
+    return this._currentValidator.registerCustomSchema(schema);
+  }
+
+  unregisterCustomSchema(
+    schema: Omit<CustomSchema, "schema">
+  ): void | Promise<void> {
+    if (!this._currentValidator) {
+      return;
+    }
+    return this._currentValidator.unregisterCustomSchema(schema);
   }
 
   unload(): Promise<void> {
