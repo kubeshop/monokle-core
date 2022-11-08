@@ -1,6 +1,6 @@
 {
   "name": "@monokle/validation",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Kubernetes resource validation",
   "author": "Kubeshop",
   "license": "MIT",
@@ -16,7 +16,7 @@
     "./custom": "./lib/custom.js"
   },
   "files": [
-    "lib"
+    "lib/**"
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
