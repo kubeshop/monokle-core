@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { AllColumnsArgs, WithoutLeftColumnArgs } from "./args";
+import { AllColumnsArgs, ClosableLeftColumnArgs, WithoutLeftColumnArgs } from "./args";
 import ResizableColumnsPanel from "./ResizableColumnsPanel";
 
 export default {
@@ -9,8 +9,11 @@ export default {
 
 const Template: ComponentStory<typeof ResizableColumnsPanel> = (args) => <ResizableColumnsPanel {...args} />;
 
-export const AllPanels = Template.bind({});
-AllPanels.args = AllColumnsArgs;
+export const AllColumns = Template.bind({});
+AllColumns.args = AllColumnsArgs;
 
-export const WithoutLeftPanel = Template.bind({});
-WithoutLeftPanel.args = WithoutLeftColumnArgs;
+export const WithoutLeftColumn = Template.bind({});
+WithoutLeftColumn.args = WithoutLeftColumnArgs;
+
+export const ClosableLeftColumn = Template.bind({});
+ClosableLeftColumn.args = ClosableLeftColumnArgs;
