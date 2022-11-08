@@ -6,6 +6,7 @@ import Colors from "@/styles/Colors";
 
 import { OnStopResize, ResizableColumnsPanelType } from "./types";
 import { PaneCloseIcon } from "@/atoms";
+import { LAYOUT } from "@/constants";
 
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
   const { center, layout, left, right, height = "100%", width = "100%", onStopResize, minPaneWidth = 350 } = props;
@@ -29,7 +30,7 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
             {leftClosable && (
               <PaneCloseIcon
                 onClick={onCloseLeftPane}
-                containerStyle={{ position: "absolute", top: 20, right: -10, zIndex: 200 }}
+                containerStyle={{ position: "absolute", top: 20, right: -10, zIndex: LAYOUT.zIndex.low }}
               />
             )}
           </StyledLeftPane>
