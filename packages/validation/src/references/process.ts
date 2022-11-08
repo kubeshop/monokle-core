@@ -30,7 +30,7 @@ export function processRefs(
   resources: Resource[],
   parser: ResourceParser,
   incremental?: Incremental
-) {
+): Resource[] {
   const filteredResources = filterResources(resources, incremental);
 
   doProcessRefs(resources, filteredResources, {
@@ -41,6 +41,7 @@ export function processRefs(
   // extract all unique file paths from resources
   const filePaths = new Set(resources.map((obj) => obj.filePath));
   processKustomizations(resources, filePaths, parser);
+  return resources
 }
 
 function filterResources(resources: Resource[], incremental?: Incremental) {
