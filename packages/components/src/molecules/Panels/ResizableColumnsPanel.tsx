@@ -9,8 +9,8 @@ import { PaneCloseIcon } from "@/atoms";
 import { LAYOUT } from "@/constants";
 
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
-  const { center, layout, left, right, height = "100%", width = "100%", onStopResize, minPaneWidth = 350 } = props;
-  const { leftClosable = false, onCloseLeftPane = () => {} } = props;
+  const { center, layout, left, right, height = "100%", width = "100%", minPaneWidth = 350 } = props;
+  const { leftClosable = false, onCloseLeftPane = () => {}, onStopResize = () => {} } = props;
 
   const onStopResizeLeft = useCallback(makeOnStopResize("left", onStopResize), [onStopResize]);
   const onStopResizeCenter = useCallback(makeOnStopResize("center", onStopResize), [onStopResize]);
@@ -91,11 +91,11 @@ const StyledLeftReflexElement = styled(ReflexElement)<{ $leftClosable: boolean }
 
 // Utils
 
-const makeOnStopResize = (position: "left" | "center" | "right", onStopResize?: OnStopResize) => {
+const makeOnStopResize = (position: "left" | "center" | "right", onStopResize: OnStopResize) => {
   return (args: HandlerProps) => {
     const flex = args.component.props.flex;
 
-    if (flex && onStopResize) {
+    if (flex) {
       onStopResize(position, flex);
     }
   };
