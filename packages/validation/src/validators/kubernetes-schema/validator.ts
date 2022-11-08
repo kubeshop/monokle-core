@@ -138,12 +138,14 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
    * @see https://stackoverflow.com/a/63909042
    */
   private async getResourceValidator(
-    resource: Resource
+    resourceOrResourceKind: Resource | Resource['kind']
   ): Promise<ValidateFunction | undefined> {
-    const prefix = getResourceSchemaPrefix(resource.kind);
+    const kind = typeof resourceOrResourceKind === 'string' ? resourceOrResourceKind : resourceOrResourceKind.kind
+
+    const prefix = getResourceSchemaPrefix(kind);
     const key = prefix
-      ? `${prefix}.${resource.kind}` // known resource
-      : `${resource.apiVersion}-${resource.kind}`; // custom resource
+      ? `${prefix}.${kind}` // known resource
+      : `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`; // custom resource
 
     const keyRef = `#/definitions/${key}`;
     const validate = this.ajv.getSchema(keyRef);
