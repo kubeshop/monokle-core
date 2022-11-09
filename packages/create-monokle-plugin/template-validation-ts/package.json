@@ -42,6 +42,6 @@
     "yaml": "2.1.3"
   },
   "dependencies": {
-    "@monokle/validation": "0.5.9"
+    "@monokle/validation": "0.7.1"
   }
 }
