@@ -10,7 +10,8 @@ import "isomorphic-fetch";
 import { noop } from "lodash";
 import { RESOURCES } from "./badResources.js";
 
-it("supports dynamic custom validators", async () => {
+// This will only work if the plugin is served.
+it.skip("supports dynamic custom validators", async () => {
   const parser = new ResourceParser();
 
   const validator = createMonokleValidator(async (pluginName) => {

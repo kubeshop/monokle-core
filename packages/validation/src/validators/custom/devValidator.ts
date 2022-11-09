@@ -17,7 +17,9 @@ const DEFAULT_METADATA: PluginMetadata = {
   name: DEV_MODE_TOKEN,
   displayName: "Developer mode",
   icon: "k8s-schema",
-  description: "Develop custom validators in minutes.",
+  learnMoreUrl: "https://github.com/kubeshop/monokle-community-plugins#readme",
+  description:
+    "Develop custom validators in minutes. Enable your plugin's development server to get started. HMR will show your latest code directly in the browser.",
   dev: true,
 };
 
@@ -197,6 +199,9 @@ export class DevCustomValidator implements Plugin {
   }
 
   unload(): Promise<void> {
+    this._source?.close();
+    this._handleReload = undefined;
+
     if (!this._currentValidator) {
       return Promise.resolve();
     }
