@@ -21,7 +21,7 @@ Skaffold <a href="https://github.com/features/actions">Monokle plugins</a> in se
   - [Create a TypeScript validation plugin](#create-a-typescript-validation-plugin)
 - [Acknowledgements](#acknowledgements)
 
-## Welcome to Create Monokle Plugins 
+## Welcome to Create Monokle Plugins
 
 Create Monokle Plugins skaffold your custom Monokle plugin in seconds. Use it to customize templates and validation.
 
@@ -32,13 +32,13 @@ Prerequisite: it's recommended to use NodeJs LTS or higher and NPM 7+.
 ### Interactive
 
 ```
-npm create monokle-plugin
+npm create monokle-plugin@latest
 ```
 
 ### Create a TypeScript validation plugin
 
 ```
-npm create monokle-plugin my-validator -- --template validation-ts
+npm create monokle-plugin@latest my-validator -- --template validation-ts
 ```
 
 ## Acknowledgements
