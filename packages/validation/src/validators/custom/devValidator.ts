@@ -70,10 +70,19 @@ export class DevCustomValidator implements Plugin {
           const validator = new SimpleCustomValidator(pluginInit, this.parser);
           this._currentValidator = validator;
           if (this._lastConfig) {
-            validator.configure(this._lastConfig).then(() => {
-              if (this._debug) console.log("[validator-dev] bundle loaded");
-              this._handleReload?.(bundle.hash);
-            });
+            validator
+              .configure(this._lastConfig)
+              .then(() => {
+                if (this._debug) console.log("[validator-dev] bundle loaded");
+                this._handleReload?.(bundle.hash);
+              })
+              .catch((err) => {
+                if (this._debug)
+                  console.log(
+                    "[validator-dev] bundle load failed",
+                    err instanceof Error ? err.message : "reason unknown"
+                  );
+              });
           } else {
             if (this._debug) console.log("[validator-dev] bundle loaded");
             this._handleReload?.(bundle.hash);
