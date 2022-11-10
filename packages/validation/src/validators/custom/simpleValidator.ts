@@ -131,7 +131,6 @@ function toPluginMetadata(plugin: PluginInit): PluginMetadata {
   return {
     ...plugin,
     displayName: plugin.displayName ?? sentenceCase(plugin.name),
-    icon: plugin.icon ?? "k8s-schema",
   };
 }
 

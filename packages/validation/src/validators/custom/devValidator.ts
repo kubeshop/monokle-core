@@ -16,7 +16,6 @@ const DEFAULT_METADATA: PluginMetadata = {
   id: "DEV",
   name: DEV_MODE_TOKEN,
   displayName: "Developer mode",
-  icon: "k8s-schema",
   learnMoreUrl: "https://github.com/kubeshop/monokle-community-plugins#readme",
   description:
     "Develop custom validators in minutes. Enable your plugin's development server to get started. HMR will show your latest code directly in the browser.",
@@ -35,6 +34,7 @@ export class DevCustomValidator implements Plugin {
     rules?: RuleMap | undefined;
     settings?: JsonObject | undefined;
   };
+  private _debug: boolean = false;
 
   constructor(private parser: ResourceParser) {
     this.hmr();
@@ -48,7 +48,9 @@ export class DevCustomValidator implements Plugin {
     this._source = new EventSource("http://localhost:33030/");
 
     this._source.onerror = (err) => {
-      console.error(err);
+      if (this._debug) {
+        console.log("[validator-dev] event source failed", err);
+      }
     };
 
     this._source.onmessage = (event) => {
@@ -56,6 +58,9 @@ export class DevCustomValidator implements Plugin {
         const bundle: { code: string; hash: string } = JSON.parse(event.data);
         if (this._currentHash === bundle.hash) {
           return;
+        }
+        if (this._debug) {
+          console.log("[validator-dev] bundle received", bundle.hash);
         }
         this._currentHash = bundle.hash;
         const encodedSource = btoa(bundle.code);
@@ -65,15 +70,22 @@ export class DevCustomValidator implements Plugin {
           const validator = new SimpleCustomValidator(pluginInit, this.parser);
           this._currentValidator = validator;
           if (this._lastConfig) {
-            validator
-              .configure(this._lastConfig)
-              .then(() => this._handleReload?.(bundle.hash));
+            validator.configure(this._lastConfig).then(() => {
+              if (this._debug) console.log("[validator-dev] bundle loaded");
+              this._handleReload?.(bundle.hash);
+            });
           } else {
+            if (this._debug) console.log("[validator-dev] bundle loaded");
             this._handleReload?.(bundle.hash);
           }
         });
       } catch (err) {
-        console.error(err);
+        if (this._debug) {
+          console.error(
+            "[validator-dev] bundle failure",
+            err instanceof Error ? err.message : "reason unknown"
+          );
+        }
       }
     };
   }
@@ -140,6 +152,7 @@ export class DevCustomValidator implements Plugin {
     rules?: RuleMap | undefined;
     settings?: JsonObject | undefined;
   }): Promise<void> {
+    this._debug = Boolean(config?.settings?.debug);
     if (!this._currentValidator) {
       this._lastConfig = config;
       return Promise.resolve();

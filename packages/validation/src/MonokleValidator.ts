@@ -61,7 +61,17 @@ export function createExtensibleMonokleValidator(
       case DEV_MODE_TOKEN:
         return new DevCustomValidator(parser);
       default:
-        throw new Error("plugin_not_found");
+        try {
+          const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
+          const customPlugin = await import(/* @vite-ignore */ url);
+          return new SimpleCustomValidator(customPlugin.default, parser);
+        } catch (err) {
+          throw new Error(
+            err instanceof Error
+              ? `plugin_not_found: ${err.message}`
+              : `plugin_not_found: ${String(err)}`
+          );
+        }
     }
   });
 }

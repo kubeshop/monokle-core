@@ -28,9 +28,8 @@ export function createExtensibleNodeMonokleValidator(
         return new KubernetesSchemaValidator(parser, schemaLoader);
       default:
         try {
-          const customPlugin = await importWithDataUrl(
-            "http://localhost:4111/plugin.js"
-          );
+          const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
+          const customPlugin = await importWithDataUrl(url);
           return new SimpleCustomValidator(customPlugin.default, parser);
         } catch (err) {
           throw new Error("plugin_not_found");
