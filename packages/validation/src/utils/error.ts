@@ -51,3 +51,12 @@ export abstract class ExtendableError extends Error {
     return (this._stack = stackLines.join("\n"));
   }
 }
+
+/**
+ * An error that indicates that the operation was aborted.
+ */
+export class PluginLoadError extends ExtendableError {
+  constructor(public plugin: string, message: string) {
+    super(message);
+  }
+}

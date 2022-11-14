@@ -42,7 +42,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
   static toolName = "open-policy-agent";
 
   private _settings!: Settings;
-  private validator!: LoadedPolicy;
+  private validator: LoadedPolicy | undefined;
 
   constructor(
     private resourceParser: ResourceParser,
@@ -54,7 +54,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
         name: "open-policy-agent",
         displayName: "Open Policy Agent",
         description:
-        "Open Policy Agent Policy-based control. Flexible, fine-grained control for administrators across the stack.",
+          "Open Policy Agent Policy-based control. Flexible, fine-grained control for administrators across the stack.",
         icon: "open-policy-agent",
         learnMoreUrl: "https://github.com/open-policy-agent/opa",
       },
@@ -63,6 +63,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
   }
 
   override async configurePlugin(settings: JsonObject = {}): Promise<void> {
+    if (this.validator) return;
     this._settings = Settings.parse(settings["open-policy-agent"] ?? {});
     const wasmSrc = this._settings.wasmSrc;
     const wasm = await this.wasmLoader.load(wasmSrc);
@@ -112,6 +113,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
   ): ValidationResult[] {
     const entrypoint = rule.properties?.entrypoint;
     invariant(entrypoint, "Validator's rule misconfigured");
+    invariant(this.validator, "Validator has not been configured properly");
     const evaluation = this.validator.evaluate(resource.content, entrypoint);
 
     const violations: PolicyError[] = evaluation[0]?.result ?? [];
