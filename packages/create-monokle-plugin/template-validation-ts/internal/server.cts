@@ -15,26 +15,21 @@ type Bundle = {
 
 main();
 
+let NEXT_CONNECTION_ID = 0;
+type ConnectionMap = Map<string, http.ServerResponse>;
+
 /**
  * Start a server with basic HMR capabilities and forward a bundle on filechanges.
  **/
 function main() {
-  let connected = false;
-
-  let lastResponse: http.ServerResponse<http.IncomingMessage> | undefined =
-    undefined;
+  let streams: ConnectionMap = new Map();
   let lastBundle: Bundle | undefined = undefined;
 
   const app = connect();
   app.use((req, res) => {
-    if (connected) {
-      console.log("warning - already connected");
-      res.writeHead(503);
-      res.end();
-      return;
-    }
+    const connectionId = String(NEXT_CONNECTION_ID++);
+    streams.set(connectionId, res);
 
-    lastResponse = res;
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       Connection: "keep-alive",
@@ -46,8 +41,8 @@ function main() {
     });
 
     req.socket.addListener("close", () => {
+      streams.delete(connectionId);
       res.end();
-      connected = false;
     });
 
     if (lastBundle) {
@@ -64,11 +59,13 @@ function main() {
   watch((bundle) => {
     lastBundle = bundle;
 
-    if (lastResponse && !lastResponse?.closed) {
-      const payload = serialize({
-        data: bundle,
-      });
-      lastResponse.write(payload);
+    const payload = serialize({
+      data: bundle,
+    });
+
+    for (const stream of streams.values()) {
+      if ((stream as any).closed) continue;
+      stream.write(payload);
     }
   });
 
