@@ -197,6 +197,12 @@ export interface Plugin {
    */
   isRuleEnabled(rule: string): boolean;
 
+  /**
+   * Configures the validator.
+   *
+   * @remark Configure should be idempotent. A validator can be invoked
+   * multiple times with unchanged settings because another validator changed.
+   */
   configure(config: { rules?: RuleMap; settings?: JsonObject }): Promise<void>;
 
   registerCustomSchema(schema: CustomSchema): Promise<void> | void;

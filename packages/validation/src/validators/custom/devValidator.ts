@@ -18,7 +18,7 @@ const DEFAULT_METADATA: PluginMetadata = {
   displayName: "Developer mode",
   learnMoreUrl: "https://github.com/kubeshop/monokle-community-plugins#readme",
   description:
-    "Develop custom validators in minutes. Enable your plugin's development server to get started. HMR will show your latest code directly in the browser.",
+    "Develop community plugins in minutes. Enable your plugin's development server to get started. HMR will show your latest code directly in the browser.",
   dev: true,
 };
 

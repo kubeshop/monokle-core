@@ -25,6 +25,8 @@ import {
 } from "./utils/customResourceDefinitions.js";
 import { DevCustomValidator } from "./validators/custom/devValidator.js";
 import { DEV_MODE_TOKEN } from "./validators/custom/constants.js";
+import { PluginLoadError } from "./utils/error.js";
+import invariant from "tiny-invariant";
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
@@ -248,28 +250,43 @@ export class MonokleValidator {
       // All validators found in configuration are loaded.
       // That way the plugin and rule metadata becomes available.
       const pluginsConfig = config.plugins ?? {};
-
-      // Load new plugins
       const newPluginNames = Object.keys(pluginsConfig ?? {});
-
-      for (const pluginName of newPluginNames) {
-        if (this.isPluginLoaded(pluginName)) continue;
-        try {
-          const validator = await this.#loader(pluginName);
-          if (signal.aborted) return;
-          this.#plugins.push(validator);
-        } catch (err) {
-          this.#failedPlugins.push(pluginName);
-          if (config.settings?.["debug"]) {
-            console.error(err);
-          }
-        }
-      }
 
       // Unload stale plugins
       const previousPluginNames = Object.keys(this.#previousPluginsInit ?? {});
       const stalePlugins = difference(previousPluginNames, newPluginNames);
       this.doUnload(stalePlugins);
+
+      // Load new plugins
+      const missingPlugins = newPluginNames.filter(
+        (p) => !this.isPluginLoaded(p)
+      );
+
+      const loading = await Promise.allSettled(
+        missingPlugins.map(async (p) => {
+          try {
+            const validator = await this.#loader(p);
+            return validator;
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : "reason unknown";
+            throw new PluginLoadError(p, msg);
+          }
+        })
+      );
+
+      if (signal.aborted) return;
+
+      loading.forEach((pluginPromise) => {
+        if (pluginPromise.status === "fulfilled") {
+          this.#plugins.push(pluginPromise.value);
+        } else {
+          invariant(pluginPromise.reason instanceof PluginLoadError);
+          this.#failedPlugins.push(pluginPromise.reason.name);
+          if (config.settings?.["debug"]) {
+            console.error(`[validator] ${pluginPromise.reason.message}`);
+          }
+        }
+      });
 
       // Toggle validators
       for (const validator of this.#plugins) {
