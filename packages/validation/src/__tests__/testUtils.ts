@@ -1,10 +1,10 @@
-import { Resource } from "../../lib";
 import { v5 } from "uuid";
 import { parse } from "path";
 import glob from "tiny-glob";
 import { readFile as readFileFromFs } from "fs/promises";
 import chunkArray from "lodash/chunk.js";
 import { LineCounter, parseAllDocuments, parseDocument } from "yaml";
+import { Resource } from "../common/types.js";
 
 export const KUSTOMIZATION_KIND = "Kustomization";
 export const KUSTOMIZATION_API_GROUP = "kustomize.config.k8s.io";
