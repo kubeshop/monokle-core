@@ -11,6 +11,7 @@ import { processRefs } from "../references/process.js";
 // Usage note: This library relies on fetch being on global scope!
 import "isomorphic-fetch";
 import { RESOURCES } from "./badResources.js";
+import { extractK8sResources, readDirectory } from "./testUtils";
 
 it("should be simple to configure", async () => {
   const parser = new ResourceParser();
@@ -21,8 +22,24 @@ it("should be simple to configure", async () => {
   const response = await validator.validate({ resources: RESOURCES });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toMatchInlineSnapshot("14");
+  expect(hasErrors).toMatchInlineSnapshot("13");
 });
+
+it("should support relative folder paths in kustomizations", async () => {
+
+  const files = await readDirectory('src/__tests__/resources/kustomize-with-relative-path-resources');
+  const resources = extractK8sResources(files);
+
+  const parser = new ResourceParser();
+  const validator = createDefaultMonokleValidator(parser);
+
+  processRefs(resources, parser);
+  const response = await validator.validate({ resources });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toBe(16);
+});
+
 
 it("should be abort properly", async () => {
   const parser = new ResourceParser();

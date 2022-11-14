@@ -12,7 +12,7 @@ import { LineCounter, parseDocument } from "yaml";
 import path from "../../utils/path.js";
 
 export function refMapperMatchesKind(refMapper: RefMapper, kind: string) {
-  if (refMapper.target.kind.startsWith("$")) {
+  if (kind && refMapper.target.kind.startsWith("$")) {
     return kind.match(refMapper.target.kind.substring(1)) !== null;
   }
 
@@ -100,7 +100,7 @@ export function isOptionalRef(
 // they are identified only by their name
 function isUntypedKustomizationFile(filePath = ''): boolean {
   const base = path.parse(filePath).base.toLowerCase();
-  return ['kustomization.yaml', 'kustomization.yml', 'Kustomization'].includes(
+  return ['kustomization.yaml', 'kustomization.yml', 'kustomization'].includes(
     base
   );
 }
@@ -118,7 +118,7 @@ export function findResourceById(id: string, resources: Resource[]) {
 }
 
 export function isFolderPath(filePath: string, files: Set<string>) {
-  return Object.keys(files).find(f => f.startsWith(filePath + path.sep)) !== undefined;
+  return Array.from( files ).find(f => f.startsWith(filePath + path.sep)) !== undefined;
 }
 
 export function findChildren(files: Set<string>, parentFile: string) {
