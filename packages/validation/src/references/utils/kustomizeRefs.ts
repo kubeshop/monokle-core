@@ -113,6 +113,7 @@ function processKustomizationResourceRef(
         refNode
       );
 
+      // no resources found in file? - create a fileref instead
       if( result.length === 0 ){
         createKustomizationFileRef(
           kustomization,
