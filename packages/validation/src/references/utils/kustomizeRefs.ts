@@ -84,13 +84,13 @@ function processKustomizationResourceRef(
   resources: Resource[],
   files: Set<string>
 ) {
-  let kustomizationPath = path.join(
+  let resourcePath = path.join(
     path.parse(kustomization.filePath).dir,
     refNode.nodeValue()
   );
 
-  if (files.has(kustomizationPath)) {
-    let children = findChildren(files, kustomizationPath);
+  if (files.has(resourcePath)) {
+    let children = findChildren(files, resourcePath);
     if (children.length > 0) {
       children
         .filter((childFileEntry) =>
@@ -106,19 +106,28 @@ function processKustomizationResourceRef(
         });
     } else {
       // resource is file -> check for contained resources
-      linkParentKustomization(
-        kustomizationPath,
+      let result = linkParentKustomization(
+        resourcePath,
         kustomization,
         resources,
         refNode
       );
+
+      if( result.length === 0 ){
+        createKustomizationFileRef(
+          kustomization,
+          refNode,
+          resourcePath,
+          files
+        );
+      }
     }
   } else {
     // resource is file or folder ref
     createKustomizationFileRef(
       kustomization,
       refNode,
-      kustomizationPath,
+      resourcePath,
       files
     );
   }

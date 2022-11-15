@@ -118,7 +118,10 @@ export function findResourceById(id: string, resources: Resource[]) {
 }
 
 export function isFolderPath(filePath: string, files: Set<string>) {
-  return Array.from( files ).find(f => f.startsWith(filePath + path.sep)) !== undefined;
+  if( !filePath.endsWith( path.sep )){
+    filePath += path.sep;
+  }
+  return Array.from( files ).find(f => f.startsWith(filePath)) !== undefined;
 }
 
 export function findChildren(files: Set<string>, parentFile: string) {
