@@ -2,14 +2,14 @@ import invariant from "tiny-invariant";
 import {
   ValidationResponse,
   ValidationResult,
-  ValidationRule,
+  RuleMetadata,
 } from "../common/sarif.js";
 import { getResourceId } from "./sarif.js";
 
 export function getRuleForResult(
   response: ValidationResponse,
   result: ValidationResult
-): ValidationRule {
+): RuleMetadata {
   const tool = result.rule.toolComponent.name;
   const run = response.runs.find((run) => run.tool.driver.name === tool);
   const ruleIndex = result.rule.index;

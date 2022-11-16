@@ -8,11 +8,7 @@ import { JsonObject } from "type-fest";
 import { z } from "zod";
 import { AbstractPlugin } from "../../common/AbstractPlugin.js";
 import { ResourceParser } from "../../common/resourceParser.js";
-import {
-  Region,
-  ValidationResult,
-  ValidationRule,
-} from "../../common/sarif.js";
+import { Region, ValidationResult, RuleMetadata } from "../../common/sarif.js";
 import { Incremental, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
@@ -100,7 +96,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
     const errors = enabledRules.flatMap((rule) => {
       return this.validatePolicyRule(
         resource,
-        rule as ValidationRule<OpaProperties>
+        rule as RuleMetadata<OpaProperties>
       );
     });
 
@@ -109,7 +105,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
 
   private validatePolicyRule(
     resource: Resource,
-    rule: ValidationRule<OpaProperties>
+    rule: RuleMetadata<OpaProperties>
   ): ValidationResult[] {
     const entrypoint = rule.properties?.entrypoint;
     invariant(entrypoint, "Validator's rule misconfigured");
@@ -126,7 +122,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
 
   private adaptToValidationResult(
     resource: Resource,
-    rule: ValidationRule<OpaProperties>,
+    rule: RuleMetadata<OpaProperties>,
     err: PolicyError
   ) {
     const regexMatch = err.msg?.match(/Container '([A-Za-z-]*)'/);

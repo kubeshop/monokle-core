@@ -3,11 +3,12 @@ import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { RuleMap } from "../config/parse.js";
 import { NOT_CONFIGURED_ERR_MSG } from "../constants.js";
+import { PluginMetadataWithConfig, RuleMetadataWithConfig } from "../types.js";
 import { getResourceId } from "../utils/sarif.js";
 import {
   ValidationResult,
-  ValidationRule,
-  ValidationRuleConfig,
+  RuleMetadata,
+  RuleConfig,
   ValidationRun,
 } from "./sarif.js";
 import {
@@ -19,35 +20,53 @@ import {
 } from "./types.js";
 
 export abstract class AbstractPlugin implements Plugin {
-  public metadata: PluginMetadata;
+  protected _metadata: PluginMetadata;
   public configured = false;
 
   protected _enabled: boolean = true;
 
-  protected _rules: ValidationRule[] = [];
+  protected _rules: RuleMetadata[] = [];
   protected _ruleReverseLookup: Map<string, number> = new Map(); // Lookup index by rule identifier;
   protected _policyRuleReverseLookup: Map<string, number> = new Map(); // Lookup index by rule identifier;
   protected _ruleNameToIdLookup: Map<string, string> = new Map();
-  protected _ruleConfig: Map<string, ValidationRuleConfig> = new Map();
+  protected _ruleConfig: Map<string, RuleConfig> = new Map();
   protected _previous: ValidationResult[] = [];
 
-  constructor(metadata: PluginMetadata, rules: ValidationRule[]) {
-    this.metadata = metadata;
+  constructor(metadata: PluginMetadata, rules: RuleMetadata[]) {
+    this._metadata = metadata;
     this.setRules(rules);
   }
 
-  protected setRules(rules: ValidationRule[]) {
+  protected setRules(rules: RuleMetadata[]) {
     this._ruleReverseLookup.clear();
     this._ruleNameToIdLookup.clear();
     this._rules = rules;
     rules.forEach((r, idx) => this._ruleReverseLookup.set(r.id, idx));
     rules.forEach((r) =>
-      this._ruleNameToIdLookup.set(`${this.metadata.name}/${r.name}`, r.id)
+      this._ruleNameToIdLookup.set(`${this._metadata.name}/${r.name}`, r.id)
     );
   }
 
+  get metadata(): PluginMetadataWithConfig {
+    return {
+      ...this._metadata,
+      configuration: {
+        enabled: this._enabled,
+      },
+    };
+  }
+
+  get rules(): RuleMetadataWithConfig[] {
+    return this._rules.map((rule) => {
+      return {
+        ...rule,
+        configuration: this.getRuleConfig(rule.id),
+      };
+    });
+  }
+
   get name(): string {
-    return this.metadata.name;
+    return this._metadata.name;
   }
 
   get enabled(): boolean {
@@ -56,10 +75,6 @@ export abstract class AbstractPlugin implements Plugin {
 
   set enabled(value: boolean) {
     this._enabled = value;
-  }
-
-  get rules(): ValidationRule[] {
-    return this._rules;
   }
 
   hasRule(rule: string): boolean {
@@ -214,7 +229,7 @@ export abstract class AbstractPlugin implements Plugin {
     incremental?: Incremental
   ): Promise<ValidationResult[]>;
 
-  protected getRuleConfig(ruleId: string): ValidationRuleConfig {
+  protected getRuleConfig(ruleId: string): RuleConfig {
     const ruleConfig = this._ruleConfig.get(ruleId);
     invariant(ruleConfig, `rule_config_not_found`);
     return ruleConfig;

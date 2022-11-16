@@ -3,7 +3,7 @@ import { JsonObject } from "type-fest";
 import { Document, isNode, Node, ParsedNode } from "yaml";
 import { AbstractPlugin } from "../../common/AbstractPlugin.js";
 import { ResourceParser } from "../../common/resourceParser.js";
-import { ValidationResult, ValidationRule } from "../../common/sarif.js";
+import { ValidationResult, RuleMetadata } from "../../common/sarif.js";
 import { Incremental, PluginMetadata, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { PluginInit, ReportArgs, RuleInit } from "./config.js";
@@ -72,7 +72,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
   }
 
   private adaptToValidationResult(
-    rule: ValidationRule,
+    rule: RuleMetadata,
     resource: Resource,
     args: ReportArgs
   ): ValidationResult | undefined {
@@ -134,7 +134,7 @@ function toPluginMetadata(plugin: PluginInit): PluginMetadata {
   };
 }
 
-function toSarifRules(plugin: PluginInit): ValidationRule[] {
+function toSarifRules(plugin: PluginInit): RuleMetadata[] {
   return Object.entries(plugin.rules).map(([name, r]) => {
     return {
       id: r.id,

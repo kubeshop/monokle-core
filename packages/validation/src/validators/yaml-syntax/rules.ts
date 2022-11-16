@@ -1,5 +1,5 @@
 import { ErrorCode } from "yaml";
-import { ValidationRule } from "../../common/sarif.js";
+import { RuleMetadata } from "../../common/sarif.js";
 import { NO_HELP_AVAILABLE } from "../../constants.js";
 
 /**
@@ -34,7 +34,7 @@ export const YAML_RULE_MAP: Record<ErrorCode | string, string> = {
   UNEXPECTED_TOKEN: "YML021",
 };
 
-export const YAML_RULES: ValidationRule[] = [
+export const YAML_RULES: RuleMetadata[] = [
   {
     id: "YML001",
     name: "alias-props",

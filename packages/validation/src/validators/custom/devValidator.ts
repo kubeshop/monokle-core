@@ -1,6 +1,6 @@
 import { JsonObject } from "type-fest";
 import { ResourceParser } from "../../common/resourceParser.js";
-import { ValidationRule, ValidationRun } from "../../common/sarif.js";
+import { ValidationRun } from "../../common/sarif.js";
 import {
   CustomSchema,
   Incremental,
@@ -9,6 +9,10 @@ import {
   Resource,
 } from "../../common/types.js";
 import { RuleMap } from "../../config/parse.js";
+import {
+  PluginMetadataWithConfig,
+  RuleMetadataWithConfig,
+} from "../../types.js";
 import { DEV_MODE_TOKEN } from "./constants.js";
 import { SimpleCustomValidator } from "./simpleValidator.js";
 
@@ -103,9 +107,9 @@ export class DevCustomValidator implements Plugin {
     return DEFAULT_METADATA.name;
   }
 
-  get metadata(): PluginMetadata {
+  get metadata(): PluginMetadataWithConfig {
     if (!this._currentValidator) {
-      return DEFAULT_METADATA;
+      return { ...DEFAULT_METADATA, configuration: { enabled: false } };
     }
     return {
       ...this._currentValidator.metadata,
@@ -114,7 +118,7 @@ export class DevCustomValidator implements Plugin {
     };
   }
 
-  get rules(): ValidationRule<{}>[] {
+  get rules(): RuleMetadataWithConfig[] {
     if (!this._currentValidator) {
       return [];
     }
