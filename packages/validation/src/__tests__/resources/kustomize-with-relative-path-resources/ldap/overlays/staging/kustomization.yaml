@@ -3,7 +3,3 @@ resources:
 patchesStrategicMerge:
  - deployment.yaml
 namePrefix: staging-
-configMapGenerator:
-- name: env-config
-  files:
-  - config.env

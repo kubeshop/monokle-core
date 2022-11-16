@@ -29,7 +29,11 @@ import { processKustomizations } from "./utils/kustomizeRefs.js";
 export function processRefs(
   resources: Resource[],
   parser: ResourceParser,
-  incremental?: Incremental
+  incremental?: Incremental,
+  // optional list of files that were processed to extract the specified resources, needed to resolve refs
+  // to files that don't contain any resources. If not specified the list of files will be extracted from
+  // specified resources instead.
+  files?: string[]
 ): Resource[] {
   const filteredResources = filterResources(resources, incremental);
 
@@ -38,8 +42,8 @@ export function processRefs(
     parser,
   });
 
-  // extract all unique file paths from resources
-  const filePaths = new Set(resources.map((obj) => obj.filePath));
+  // extract all unique file paths from resources if not specified
+  const filePaths = files ? new Set( files) : new Set(resources.map((obj) => obj.filePath));
   processKustomizations(resources, filePaths, parser);
   return resources
 }

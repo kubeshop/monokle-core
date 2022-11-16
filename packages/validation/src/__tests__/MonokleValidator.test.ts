@@ -33,7 +33,7 @@ it("should support relative folder paths in kustomizations", async () => {
   const parser = new ResourceParser();
   const validator = createDefaultMonokleValidator(parser);
 
-  processRefs(resources, parser);
+  processRefs(resources, parser, undefined, files.map( f => f.path));
   const response = await validator.validate({ resources });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
