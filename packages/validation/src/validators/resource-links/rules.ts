@@ -1,6 +1,6 @@
-import { ValidationRule } from "../../common/sarif.js";
+import { RuleMetadata } from "../../common/sarif.js";
 
-export const RESOURCE_LINK_RULES: ValidationRule[] = [
+export const RESOURCE_LINK_RULES: RuleMetadata[] = [
   {
     id: "LNK001",
     name: "no-missing-links",

@@ -52,7 +52,7 @@ export type ConfigurationArtifact = {
  */
 export type ValidationTool = {
   name: string;
-  rules: ValidationRule[];
+  rules: RuleMetadata[];
 };
 
 /**
@@ -61,7 +61,7 @@ export type ValidationTool = {
  * @see https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning#reportingdescriptor-object
  * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541274
  */
-export type ValidationRule<TProperties extends JsonObject = {}> = {
+export type RuleMetadata<TProperties extends JsonObject = {}> = {
   id: string;
   name: string;
   shortDescription: {
@@ -75,7 +75,7 @@ export type ValidationRule<TProperties extends JsonObject = {}> = {
     text: string;
     markdown?: string;
   };
-  defaultConfiguration?: ValidationRuleConfig;
+  defaultConfiguration?: RuleConfig;
 
   /**
    * Optional, custom properties
@@ -91,7 +91,7 @@ export type ValidationRule<TProperties extends JsonObject = {}> = {
  *
  * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541290
  */
-export type ValidationRuleConfig = {
+export type RuleConfig = {
   /**
    * Whether the rule is enabled.
    *
@@ -130,7 +130,7 @@ export type ValidationInvocation = {
 
 export type ValidationRuleConfigOverride = {
   description: RuleReference;
-  configuration: ValidationRuleConfig;
+  configuration: RuleConfig;
 };
 
 /**
@@ -147,7 +147,7 @@ export type ValidationPolicy = {
 
 export type ValidationPolicyRule = {
   id: string;
-  defaultConfiguration: ValidationRuleConfig;
+  defaultConfiguration: RuleConfig;
 };
 
 /**

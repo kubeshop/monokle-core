@@ -1,17 +1,31 @@
-import difference from "lodash/difference.js";
 import clone from "lodash/clone.js";
+import difference from "lodash/difference.js";
 import isEqual from "lodash/isEqual.js";
+import invariant from "tiny-invariant";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
 import type {
-  Incremental,
-  Resource,
-  Plugin,
   CustomSchema,
+  Incremental,
+  Plugin,
+  Resource,
 } from "./common/types.js";
 import { Config, PluginMap } from "./config/parse.js";
+import {
+  PluginMetadataWithConfig,
+  PluginName,
+  RuleMetadataWithConfig,
+  Validator,
+} from "./types.js";
 import { nextTick, throwIfAborted } from "./utils/abort.js";
+import {
+  extractSchema,
+  findDefaultVersion,
+} from "./utils/customResourceDefinitions.js";
+import { PluginLoadError } from "./utils/error.js";
 import { isDefined } from "./utils/isDefined.js";
+import { DEV_MODE_TOKEN } from "./validators/custom/constants.js";
+import { DevCustomValidator } from "./validators/custom/devValidator.js";
 import { SimpleCustomValidator } from "./validators/custom/simpleValidator.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
 import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
@@ -19,14 +33,6 @@ import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
-import {
-  extractSchema,
-  findDefaultVersion,
-} from "./utils/customResourceDefinitions.js";
-import { DevCustomValidator } from "./validators/custom/devValidator.js";
-import { DEV_MODE_TOKEN } from "./validators/custom/constants.js";
-import { PluginLoadError } from "./utils/error.js";
-import invariant from "tiny-invariant";
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
@@ -119,9 +125,9 @@ const DEFAULT_PLUGIN_MAP = {
   "kubernetes-schema": true,
 };
 
-export class MonokleValidator {
+export class MonokleValidator implements Validator {
   /**
-   * The configuration of this validator.
+   * The user configuration of this validator.
    */
   #config?: Config;
 
@@ -152,9 +158,14 @@ export class MonokleValidator {
     return this.#config ?? this.#fallback;
   }
 
-  set config(value: Config | undefined) {
-    this.#config = value;
-    this.cancelLoad("reconfigured");
+  get metadata(): Record<PluginName, PluginMetadataWithConfig> {
+    const entries = this.#plugins.map((p) => [p.metadata.name, p.metadata]);
+    return Object.fromEntries(entries);
+  }
+
+  get rules(): Record<PluginName, RuleMetadataWithConfig[]> {
+    const entries = this.#plugins.map((p) => [p.metadata.name, p.rules]);
+    return Object.fromEntries(entries);
   }
 
   /**
@@ -216,10 +227,7 @@ export class MonokleValidator {
    * @param config - the new configuration of the validator.
    */
   async preload(config?: Config): Promise<void> {
-    if (config) {
-      this.config = config;
-    }
-
+    this.#config = config;
     return this.load();
   }
 
@@ -465,7 +473,7 @@ export class MonokleValidator {
 
     const pluginNames = this.getPlugins().map((p) => p.metadata.name);
     await this.doUnload(pluginNames);
-    this.config = undefined;
+    this.#config = undefined;
     this.#failedPlugins = [];
   }
 

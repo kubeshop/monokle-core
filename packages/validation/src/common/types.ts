@@ -1,9 +1,10 @@
 import { JsonObject } from "type-fest";
 import { Scalar } from "yaml";
 import { RuleMap } from "../config/parse.js";
+import { PluginMetadataWithConfig, RuleMetadataWithConfig } from "../types.js";
 import { ResourceSchema } from "../validators/kubernetes-schema/schemaLoader.js";
 import { ResourceParser } from "./resourceParser.js";
-import { ValidationPolicy, ValidationRule, ValidationRun } from "./sarif.js";
+import { ValidationPolicy, RuleMetadata, ValidationRun } from "./sarif.js";
 
 /* * * * * * * * * * * * * * * * *
  * The common resource type
@@ -160,6 +161,13 @@ export type PluginMetadata = {
   dev?: boolean;
 };
 
+export type PluginConfig = {
+  /**
+   * Whether the plugin is enabled.
+   */
+  enabled?: boolean;
+};
+
 export interface Plugin {
   /**
    * The name of this plugin.
@@ -171,12 +179,12 @@ export interface Plugin {
   /**
    * The metadata of the plugin.
    */
-  get metadata(): PluginMetadata;
+  get metadata(): PluginMetadataWithConfig;
 
   /**
    * The rules of this plugin.
    */
-  get rules(): ValidationRule[];
+  get rules(): RuleMetadataWithConfig[];
 
   get enabled(): boolean;
   set enabled(value: boolean);

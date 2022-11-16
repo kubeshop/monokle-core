@@ -1,6 +1,6 @@
-import { ValidationRule } from "../../common/sarif.js";
+import { RuleMetadata } from "../../common/sarif.js";
 
-export const KUBERNETES_SCHEMA_RULES: ValidationRule[] = [
+export const KUBERNETES_SCHEMA_RULES: RuleMetadata[] = [
   {
     id: "K8S001",
     name: "schema-violated",
