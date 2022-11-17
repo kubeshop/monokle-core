@@ -2,7 +2,7 @@ import React from "react";
 
 export type ActivityType<ActivityName> = {
   component: JSX.Element;
-  name: ActivityName;
+  name: ActivityName | undefined;
   tooltip: string | JSX.Element;
   type: "fullscreen" | "panel";
   walkthrough?: JSX.Element;
