@@ -2,7 +2,7 @@ import React from "react";
 
 export type ActivityType<ActivityName> = {
   component: JSX.Element;
-  name: ActivityName | undefined;
+  name: ActivityName;
   tooltip: string | JSX.Element;
   type: "fullscreen" | "panel";
   walkthrough?: JSX.Element;
@@ -16,7 +16,7 @@ export type ActivityBarProps<ActivityName, ExtraActivityName = any> = {
   /**
    * Currently selected activity
    */
-  value: ActivityName;
+  value: ActivityName | undefined;
   /**
    * Activities that will be shown at the bottom of the bar
    */
