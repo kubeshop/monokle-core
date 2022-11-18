@@ -176,6 +176,15 @@ function extractPatches(
     });
 }
 
+// as specified by https://github.com/hashicorp/go-getter#url-format
+function isExternalResourceRef(refNode: NodeWrapper) {
+  const externalPrefixes : string[] = ["http://", "https://", "github.com/", "gitlab.com/",
+    "bitbucket.org/", "git::", "hg::", "s3::", "gcs::", "file:"];
+
+  let value = refNode.nodeValue().toLowerCase();
+  return externalPrefixes.findIndex( v => value.startsWith(v)) >= 0;
+}
+
 /**
  * Processes all kustomizations in resourceMap and establishes corresponding resourcerefs
  */
@@ -203,7 +212,7 @@ export function processKustomizations(
       }
 
       resourceNodes
-        .filter((refNode) => !refNode.nodeValue().startsWith("http"))
+        .filter((refNode) => !isExternalResourceRef(refNode))
         .forEach((refNode: NodeWrapper) => {
           processKustomizationResourceRef(
             kustomization,
