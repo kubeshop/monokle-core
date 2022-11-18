@@ -89,6 +89,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       help: {
         text: "Remove the SYS_ADMIN capability from 'containers[].securityContext.capabilities.add'.",
       },
+      defaultConfiguration: {
+        level: "error",
+      },
       properties: {
         "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV005/deny",
@@ -108,6 +111,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         "https://kubesec.io/basics/spec-volumes-hostpath-path-var-run-docker-sock/",
       help: {
         text: "Do not specify `/var/run/docker.sock` in spec.template.volumes.hostPath.path.",
+      },
+      defaultConfiguration: {
+        level: "error",
       },
       properties: {
         "security-severity": 8,
@@ -129,6 +135,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       help: {
         text: "Do not set 'spec.template.spec.hostIPC' to true.",
       },
+      defaultConfiguration: {
+        level: "error",
+      },
       properties: {
         "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV008/deny",
@@ -149,6 +158,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       help: {
         text: "Do not set 'spec.template.spec.hostNetwork' to true.",
       },
+      defaultConfiguration: {
+        level: "error",
+      },
       properties: {
         "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV009/deny",
@@ -168,6 +180,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
       help: {
         text: "Do not set 'spec.template.spec.hostPID' to true.",
+      },
+      defaultConfiguration: {
+        level: "error",
       },
       properties: {
         "security-severity": 8,
@@ -308,6 +323,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       help: {
         text: "Change 'containers[].securityContext.privileged' to false",
       },
+      defaultConfiguration: {
+        level: "error",
+      },
       properties: {
         "security-severity": 8,
         entrypoint: "appshield/kubernetes/KSV017/deny",
@@ -406,6 +424,9 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
       help: {
         text: "Do not set spec.containers[*].ports[*].hostPort and spec.initContainers[*].ports[*].hostPort.",
+      },
+      defaultConfiguration: {
+        level: "error",
       },
       properties: {
         "security-severity": 8,

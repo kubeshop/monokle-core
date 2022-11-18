@@ -129,7 +129,11 @@ function determineClosestNodeForPath(
 
 function toPluginMetadata(plugin: PluginInit): PluginMetadata {
   return {
-    ...plugin,
+    id: plugin.id,
+    name: plugin.name,
+    description: plugin.description,
+    icon: plugin.icon,
+    learnMoreUrl: plugin.learnMoreUrl,
     displayName: plugin.displayName ?? sentenceCase(plugin.name),
   };
 }
