@@ -2,7 +2,7 @@ export * from "./common/sarif.js";
 export * from "./common/types.js";
 export * from "./common/NodeWrapper.js";
 export * from "./references/index.js";
-
+export * from "./types.js";
 export * from "./utils/getRule.js";
 export * from "./utils/sarif.js";
 export * from "./config/index.js";

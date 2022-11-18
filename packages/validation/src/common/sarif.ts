@@ -122,7 +122,7 @@ export type RuleConfig = {
   parameters?: JsonObject;
 };
 
-export type RuleLevel = "warning" | "error" | "note" | "none";
+export type RuleLevel = "warning" | "error";
 
 export type ValidationInvocation = {
   ruleConfigurationOverrides: ValidationRuleConfigOverride;
