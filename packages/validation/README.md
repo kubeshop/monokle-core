@@ -1,35 +1,93 @@
-# Monokle validation
+<p align="center">
+  <img src="docs/images/large-icon-256.png" alt="Monokle Logo" width="128" height="128"/>
+</p>
 
-Flexible validation of Kubernetes resources.
+<p align="center">
+Extensible, static Kubernetes analysis</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/kubeshop/monokle-core/tree/main/packages/validation">
+    <img title="mit licence" src="https://img.shields.io/badge/License-MIT-yellow.svg"/>
+  </a>
+</p>
+
+## Welcome to Monokle Validation
+
+Monokle Validation is a TypeScript library to validate your Kubernetes resources.
+
+**Key features**
+
+- 🚀 Start in seconds with the user-friendly configuration.
+- ⚡️ Real-time validation through incremental runs.
+- ⚒ Extensible architecture with plugins.
+
+**Core plugins**
+
+- YAML Syntax validates that your manifests have correct YAML syntax.
+- Kubernetes Schema validates that your resources and CRDs are well-defined in the schema for their resource kind.
+- Resource links validates that reference to other Kubernetes resources are valid.
+- Open Policy agent validates security policies to reduce your attack surface.
+
+**Try the CLI now!**
+
+The Monokle CLI provides a convenient wrapper around this library. Use it to validate your resources in seconds.
+
+[Learn more](https://github.com/kubeshop/monokle-core/tree/update-readme/packages/cli#readme)
+
+```bash
+kustomize build . | monokle validate -
+```
+
+## Table of contents
+
+- [Welcome to Monokle Validation](#welcome-to-monokle-validation)
+- [Table of contents](#table-of-contents)
+- [Getting started](#getting-started)
+- [Configuration](#configuration)
+- [The validation response](#the-validation-response)
+- [Advanced usage](#advanced-usage)
+  - [Preloading](#preloading)
+  - [Incremental validation](#incremental-validation)
+  - [Community plugins](#community-plugins)
+  - [Building user interfaces](#building-user-interfaces)
+- [Caveats](#caveats)
 
 ## Getting started
 
-Start by installing the validator to your codebase:
+First install the validator:
 
 ```
 npm install @monokle/validation
 ```
 
-Afterwards you can use the validator with defaults as follows:
+Afterwards you can use it as follows:
 
 ```typescript
 const validator = createDefaultMonokleValidator();
 await validator.validate({ resources: RESOURCES });
 ```
 
-This will lazily load the plugins before validating and you don't have to worry about anything.
-You might want to customize the configuration. The validator supports three levels of configuration: 1) default, 2) configuration file, and 3) arguments. The former levels get overridden by the latter.
+Monokle is extensible and has a rich plugin system.
+You can configure and preload plugins as follows:
 
 ```typescript
 const validator = createDefaultMonokleValidator();
-validator.configureFile({ plugins: { "kubernetes-schema": false } });
-validator.configureArgs({ plugins: { "kubernetes-schema": true } });
-await validator.validate({ resources }); // kubernetes-schema is validated.
+
+await validator.preload({
+  plugins: {
+    "kubernetes-schema": true,
+  },
+});
+
+await validator.validate({ resources });
 ```
 
-## Configure
+## Configuration
 
-Monokle Validator's configuration is heavily inspired by ESLint.
+You can customize the rules and settings of the Monokle Validator through an intuitive object.
+
+[Learn more](https://github.com/kubeshop/monokle-core/blob/update-readme/packages/validation/docs/configuration.md)
 
 ```yaml
 plugins:
@@ -45,19 +103,70 @@ settings:
     schemaVersion: v1.24.2
 ```
 
-The configuration object is made up of these properties:
-
-- **plugins:** an object containing a name-value mapping of plugin names to booleans. The boolean indicates whether the plugin is enabled or disabled.
-- **rules:** an object containing the configured rules. The rule configuration indicates whether the rule is enabled or disabled and can customize it's log level.
-- **settings:** an object containing name-value pairs of information that should be available to all rules.
-
 ## The validation response
 
 The response uses [Static Analysis Results Interchange Format (SARIF)](https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html).
 
 SARIF is a format that provides interoperability between static analysis tools. This means that it decouples the tool that performs the analysis (@monokle/validation, Trivy, Snyk, etc) from the tool that displays the results (Monokle app, Visual Studio Code, GitHub, etc).
 
-You can learn more about it [here](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning).
+SARIF contains both metadata of the tool and the results of the validation. You can learn more about it [here](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning).
+
+**Example:**
+
+```json
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "resource-links",
+          "rules": [
+            {
+              "id": "LNK001",
+              "name": "no-missing-links",
+              "shortDescription": { "text": "Disallow missing links." },
+              "fullDescription": {
+                "text": "The resource has a reference and it cannot be found. This will likely cause problems during deployments."
+              },
+              "help": {
+                "text": "Check whether the referenced resource is missing or has a typo. The reference are often to labels or a names which depends on the property."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "LNK001",
+          "rule": {
+            "index": 0,
+            "toolComponent": { "name": "resource-links" }
+          },
+          "message": { "text": "Unsatisfied resource link." },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uriBaseId": "SRCROOT",
+                  "uri": "kustomize-happy-cms/overlays/local/ingress.yaml"
+                },
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 23,
+                  "endLine": 17,
+                  "endColumn": 27
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
 
 ## Advanced usage
 
@@ -65,81 +174,86 @@ You can learn more about it [here](https://docs.github.com/en/code-security/code
 
 The plugins have to be initialized which might require heavy operations such as fetching large JSON schemas, AJV compilation, WASM initialization and more.
 
-The `preload` API avoids a long first validation and is recommended in more interactive environments.
+The `preload` API avoids a long first validation and is recommended in more interactive environments. It is idempotent so you can call it as often as you want without continuously reinstantiating the plugins.
 
-Examples:
+Example:
 
 ```typescript
-// Default usage with preload
 const validator = createDefaultMonokleValidator();
 await validator.preload();
 await validator.validate({ resources: RESOURCES });
-
-// Custom usage with preload
-const validator = createDefaultMonokleValidator();
-validator.configureArgs(ARGS);
-validator.configureFile(FILE);
-await validator.preload();
-await validator.validate({ resources: RESOURCES });
-
-// Alternative custom usage with preload
-const validator = createDefaultMonokleValidator();
-await validator.preload({ file: FILE, args: ARGS );
-await validator.validate({ resources: RESOURCES });
 ```
 
-The preload API will be awaited by `validate` to always ensure latest configuration:
+### Incremental validation
+
+The `incremental` API gives snappy revalidation when editing resources in and want to give feedback in real-time.
+
+Example:
 
 ```typescript
 const validator = createDefaultMonokleValidator();
-validator.preload({ file: LATEST_FILE );
-await validator.validate({ resources: RESOURCES }); // ensures LATEST_FILE
-```
 
-The preload API will also abort an ongoing validation as it's likely stale:
+// Initial validation
+await validator.validate({
+  resources: RESOURCES,
+});
 
-```typescript
-const validator = createDefaultMonokleValidator();
-try {
-  await validator.validate({ resources: RESOURCES });
-} catch (err) {
-  if (err instanceof AbortError) {
-    console.log("aborted");
-  }
-}
-
-// In a different tick
-await validator.preload({ file: FILE, args: ARGS );
-
-// Expected output: "aborted"
-```
-
-### Custom plugins
-
-The `pluginLoader` API can be used to change the
-
-```typescript
-const validator = createMonokleValidator(async (name) => {
-  switch (name) {
-    case "custom-plugin":
-      return new CustomValidator();
-    default:
-      return createDefaultPluginLoader()(name);
-  }
-}, DEFAULT_CONFIG);
-
-validator.configureArgs({
-  plugins: {
-    "custom-plugin": true,
-  },
-  settings: {
-    "custom-plugin": {
-      "some-param": 42,
-    },
+// Fast revalidation
+await validator.validate({
+  resources: RESOURCES,
+  incremental: {
+    resourceIds: ["some-edited-resource-id"],
   },
 });
 
-await validator.validate({ resources });
+// Clear incremental caches.
+await validator.clear();
+```
+
+### Community plugins
+
+The Monokle Validator allows you to add custom plugins from [our community repository](https://github.com/kubeshop/monokle-community-plugins). All community plugins are thoroughly reviewed and we take care of loading the plugins for you.
+
+Example to load [annotations](https://github.com/kubeshop/monokle-community-plugins/tree/main/validation/annotations), a community plugin used for demonstrations:
+
+```typescript
+const validator = createExtensibleMonokleValidator();
+
+await validator.preload({
+  plugins: {
+    annotations: true,
+  },
+});
+
+await validator.validate({ resources: RESOURCES });
+```
+
+### Building user interfaces
+
+The validator exposes plugin or rule metadata and their configuration.
+
+This is great if you'd like to bulid a reactive UI around it.
+
+All metadata will be available after preloading the validator.
+This way even custom plugins that are downloaded lazily over HTTP have their rules available.
+
+```typescript
+const validator = createExtensibleMonokleValidator();
+
+await validator.preload({
+  plugins: {
+    annotations: true,
+  },
+});
+
+const { displayName, description, enabled } = validator.metadata.annotations;
+console.log(displayName, description, enabled);
+
+for (const { name, configuration } of validator.rules.annotations) {
+  console.log(" -", name, configuration.enabled, configuration.level);
+}
+
+await validator.validate({ resources: RESOURCES });
 ```
 
 ## Caveats
