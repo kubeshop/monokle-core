@@ -8,33 +8,28 @@
 <p align="center">
   <a href="https://monokle.io">Website</a> |
   <a href="https://kubeshop.github.io/monokle/">Documentation</a> |
-  <a href="https://discord.gg/uNuhy6GDyn">Discord</a> |
+  <a href="https://discord.gg/g3pP744AvN">Discord</a> |
   <a href="https://kubeshop.io/blog">Blog</a>
 </p>
 
-<p align="center">
-  Welcome to Monokle Core Design system - where you can find all components used in our applications.
-</p>
+## Welcome to Monokle core
 
-Read the [Feature Overview](https://kubeshop.github.io/monokle/features/) document or the [introductory blog-post](https://medium.com/kubeshop-i/hello-monokle-83ecb42f5d96) to get a quick intro and overview.
+Monokle core is a monorepository that contains shared packages between Monokle Desktop and Cloud. All packages are open-source and MIT licensed.
 
-## Installation
+## Overview of packages
 
-Monokle Core is available as an [npm package](https://www.npmjs.com/package/@kubeshop/monokle-core).
+UI related packages:
 
-**npm:**
+- @monokle/components: a shared design system.
+- @monokle/tree-navigator: React component to render trees with Redux.
 
-```sh
-npm install @monokle-core
-```
+Validation related packages:
 
-**yarn:**
-
-```sh
-yarn add @monokle-core
-```
+- [@monokle/validation](./packages/validation/README.md): An extensible validator for Kubernetes resources.
+- [@monokle/cli](./packages/cli/README.md): Validate your Kubernetes resources directly from your terminal.
+- [create-monokle-plugin](./packages/create-monokle-plugin/README.md): Bootstrap a custom plugin within seconds.
 
 ## Getting involved
 
-- Share ideas, suggestions, bug-reports or complaints on our [Discord server](https://discord.gg/uNuhy6GDyn).
+- Share ideas, suggestions, bug-reports or complaints on our [Discord server](https://discord.gg/g3pP744AvN).
 - Read about how to contribute [in our Documentation](https://kubeshop.github.io/monokle/contributing).
