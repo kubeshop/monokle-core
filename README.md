@@ -1,6 +1,8 @@
 <p align="center">
-  <img src="assets/MonokleLogoLight.svg#gh-light-mode-only" alt="Monokle Logo Light"/>
-  <img src="assets/MonokleLogoDark.svg#gh-dark-mode-only" alt="Monokle Logo Dark" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/MonokleLogoDark.svg">
+  <img alt="Monokle light logo" src="assets/MonokleLogoLight.svg">
+</picture>
 </p>
 
 <p align="center">
@@ -13,34 +15,6 @@
 <p align="center">
   Welcome to Monokle Core Design system - where you can find all components used in our applications.
 </p>
-
-<!-- <p align="center">
-  <a href="https://github.com/kubeshop/monokle/releases/latest">
-    <img src="https://img.shields.io/github/v/release/kubeshop/monokle" alt="Latest Release" />
-  </a>
-  <a href="https://github.com/kubeshop/monokle/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/kubeshop/monokle" alt="License" />
-  </a>
-  <a href="https://discord.gg/kMJxmuYTMu">
-    <img src="https://badgen.net/badge/icon/discord?icon=discord&label" alt="Discord" />
-  </a>
-  <a href="https://github.com/kubeshop/monokle/tags">
-    <img src="https://img.shields.io/github/workflow/status/kubeshop/monokle/monokle-build-nightly?label=nightly-build" alt="Nightly Build" />
-  </a>
-  <a href="https://snyk.io/test/github/kubeshop/monokle">
-    <img src="https://snyk.io/test/github/kubeshop/monokle/badge.svg" alt="Snyk" />
-  </a>
-</p> -->
-
-<!-- <p align="center">
-    <p align="center">
-        What is Monokle?
-    </p>
-  <a href="https://www.youtube.com/watch?v=wkFWg_S8eUA">
-    <img src="docs/img/monokle-intro-thumbnail.png" alt="Monokle Overview" />
-    <p align="center">Click on the image or this link to watch the "Intro to Monokle" short video (3 mins)</p>
-  </a>
-</p> -->
 
 Read the [Feature Overview](https://kubeshop.github.io/monokle/features/) document or the [introductory blog-post](https://medium.com/kubeshop-i/hello-monokle-83ecb42f5d96) to get a quick intro and overview.
 
