@@ -19,6 +19,12 @@ import {
   CustomSchema,
 } from "./types.js";
 
+const DEFAULT_RULE_CONFIG: RuleConfig = {
+  enabled: true,
+  level: "warning",
+  rank: -1,
+};
+
 export abstract class AbstractPlugin implements Plugin {
   protected _metadata: PluginMetadata;
   public configured = false;
@@ -153,7 +159,12 @@ export abstract class AbstractPlugin implements Plugin {
 
     // Set defaults
     for (const rule of this._rules) {
-      this._ruleConfig.set(rule.id, rule.defaultConfiguration ?? {});
+      const defaultConfig: RuleConfig = {
+        ...DEFAULT_RULE_CONFIG,
+        ...rule.defaultConfiguration,
+      };
+
+      this._ruleConfig.set(rule.id, defaultConfig);
     }
 
     // Set overrides
@@ -166,7 +177,7 @@ export abstract class AbstractPlugin implements Plugin {
         continue; // rule not found.
       }
 
-      const defaultConfig = this._rules[ruleIndex].defaultConfiguration;
+      const defaultConfig = this._ruleConfig.get(ruleId);
 
       this._ruleConfig.set(
         ruleId,
