@@ -2,7 +2,8 @@
   "name": "monokle-core",
   "private": false,
   "scripts": {
-    "build": "turbo run build"
+    "build": "turbo run build",
+    "release": "turbo run build && changeset publish"
   },
   "workspaces": [
     "packages/*"
