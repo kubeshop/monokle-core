@@ -33,3 +33,4 @@ Validation related packages:
 
 - Share ideas, suggestions, bug-reports or complaints on our [Discord server](https://discord.gg/g3pP744AvN).
 - Read about how to contribute [in our Documentation](https://kubeshop.github.io/monokle/contributing).
+- [Learn about the release process.](./CONTRIBUTING.md)
