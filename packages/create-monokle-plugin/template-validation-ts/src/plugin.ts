@@ -4,9 +4,9 @@ import { noExternalUrl } from "./rules/noExternalUrl.js";
 import { sealedSecrets } from "./rules/sealedSecrets.js";
 
 export default definePlugin({
-  id: "RCA",
-  name: "annotations",
-  description: "Validates your annotations",
+  id: "YCP",
+  name: "Your custom plugin",
+  description: "Welcome to your first plugin!",
   rules: {
     noEmptyAnnotations,
     sealedSecrets,
