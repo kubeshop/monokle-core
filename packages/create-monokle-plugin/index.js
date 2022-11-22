@@ -204,9 +204,9 @@ async function init() {
     console.log(`  cd ${path.relative(cwd, root)}`);
   }
   switch (pkgManager) {
-    case "npm":
-      console.log("  npm");
-      console.log("  npm dev");
+    case "yarn":
+      console.log("  yarn");
+      console.log("  yarn dev");
       break;
     default:
       console.log(`  ${pkgManager} install`);
