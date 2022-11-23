@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.9.1
+
+### Patch Changes
+
+- 62ca8ec: Fix type inference
+
 ## 0.9.0
 
 ### Minor Changes
