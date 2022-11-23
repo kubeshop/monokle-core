@@ -1,7 +1,7 @@
 import React from "react";
 
 export type TitleBarType = {
-  title: string;
+  title: React.ReactNode;
   actions?: React.ReactNode;
   description?: React.ReactNode;
   expandable?: boolean;
