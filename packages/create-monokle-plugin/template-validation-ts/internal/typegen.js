@@ -3,13 +3,22 @@ import { parseAllDocuments } from "yaml";
 import { compile } from "json-schema-to-typescript";
 import klaw from "klaw-sync";
 
-const CRD_DIR = "./src/crds";
+const CRD_DIR = "./src/schemas/crds";
 
-if (fse.existsSync(CRD_DIR)) {
+await generateKnownCoreResourceTypes();
+await generateCustomResourceTypes();
+
+async function generateCustomResourceTypes() {
+  if (!fse.existsSync(CRD_DIR)) {
+    return;
+  }
+
   const files = klaw(CRD_DIR, { nodir: true, depthLimit: 0 });
+
   for (const file of files) {
     const crds = await fse.readFile(file.path, "utf8");
     const docs = parseAllDocuments(crds);
+
     for (const doc of docs) {
       const resource = doc.toJS();
 
@@ -27,14 +36,62 @@ if (fse.existsSync(CRD_DIR)) {
       });
 
       const code = `${types}
-      
-    export function is${kind}(resource: unknown): resource is ${kind} {
-      return typeof resource === "object" && (resource as any)?.apiVersion === "${apiVersion}" && (resource as any)?.kind === "${kind}";
-    }
-    
-    `;
+  
+export function is${kind}(resource: unknown): resource is ${kind} {
+  return typeof resource === "object" && (resource as any)?.apiVersion === "${apiVersion}" && (resource as any)?.kind === "${kind}";
+}
 
-      await fse.outputFile(`src/crds/__generated__/${name}.ts`, code);
+`;
+
+      await fse.outputFile(`src/schemas/__generated__/${name}.ts`, code);
     }
+  }
+}
+
+async function generateKnownCoreResourceTypes() {
+  const KNOWN_KINDS = [
+    ["ClusterRole", "rbac/v1", "rbac.authorization.k8s.io/v1"],
+    ["ClusterRoleBinding", "rbac/v1", "rbac.authorization.k8s.io/v1"],
+    ["CronJob", "batch/v1", "batch/v1"],
+    ["ConfigMap", "core/v1", "v1"],
+    ["CustomResourceDefinition", "apiextensions/v1", "apiextensions.k8s.io/v1"],
+    ["DaemonSet", "apps/v1", "apps/v1"],
+    ["Deployment", "apps/v1", "apps/v1"],
+    ["Endpoints", "core/v1", "v1"],
+    ["EndpointSlice", "discovery/v1", "discovery.k8s.io/v1"],
+    ["HorizontalPodAutoscaler", "autoscaling/v2", "autoscaling/v2"],
+    ["Ingress", "networking/v1", "networking.k8s.io/v1"],
+    ["Job", "batch/v1", "batch/v1"],
+    ["LimitRange", "core/v1", "v1"],
+    ["Namespace", "core/v1", "v1"],
+    ["NetworkPolicy", "networking/v1", "networking.k8s.io/v1"],
+    ["PersistentVolume", "core/v1", "v1"],
+    ["PersistentVolumeClaim", "core/v1", "v1"],
+    ["Pod", "core/v1", "v1"],
+    ["ReplicaSet", "apps/v1", "apps/v1"],
+    ["ReplicationController", "core/v1", "v1"],
+    ["ResourceQuota", "core/v1", "v1"],
+    ["Role", "rbac/v1", "rbac.authorization.k8s.io/v1"],
+    ["RoleBinding", "rbac/v1", "rbac.authorization.k8s.io/v1"],
+    ["Secret", "core/v1", "v1"],
+    ["Service", "core/v1", "v1"],
+    ["ServiceAccount", "core/v1", "v1"],
+    ["StatefulSet", "apps/v1", "apps/v1"],
+    ["StorageClass", "storage/v1", "storage.k8s.io/v1"],
+    ["VolumeAttachment", "storage/v1", "storage.k8s.io/v1"],
+  ];
+
+  for (const [kind, importVersion, apiVersion] of KNOWN_KINDS) {
+    const code = `import type { ${kind} } from "kubernetes-types/${importVersion}.d.js";
+export type { ${kind} } from "kubernetes-types/${importVersion}.d.js";
+  
+export function is${kind}(resource: unknown): resource is ${kind} {
+  return typeof resource === "object" && (resource as any)?.apiVersion === "${apiVersion}" && (resource as any)?.kind === "${kind}";
+}
+
+`;
+
+    const name = `${kind.toLowerCase()}.${apiVersion.replace("/", ".")}`;
+    await fse.outputFile(`src/schemas/__generated__/${name}.ts`, code);
   }
 }

@@ -1,8 +1,13 @@
 import { defineRule } from "@monokle/validation/custom";
-import { isPrometheus } from "../crds/__generated__/prometheus.monitoring.coreos.com.v1.js";
+import { isPrometheus } from "../schemas/__generated__/prometheus.monitoring.coreos.com.v1.js";
 
+/**
+ * Example with a CRD.
+ *
+ * @remark use `npm run codegen` to build the types
+ */
 export const noExternalUrl = defineRule({
-  id: "YCP005",
+  id: 3,
   description: "Disallow external URLs for Prometheus instances.",
   help: "Remove the externalUrl.",
   validate({ resources }, { report }) {
