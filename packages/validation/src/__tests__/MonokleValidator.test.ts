@@ -66,7 +66,7 @@ it("should be flexible to configure", async () => {
   expect(hasErrors).toMatchInlineSnapshot("14");
 });
 
-it.only("should be valid SARIF", async () => {
+it("should be valid SARIF", async () => {
   const parser = new ResourceParser();
   const resources = RESOURCES;
 
