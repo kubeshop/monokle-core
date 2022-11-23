@@ -1,4 +1,5 @@
 import { paramCase, sentenceCase } from "change-case";
+import { keyBy } from "lodash";
 import { JsonObject } from "type-fest";
 import { Document, isNode, Node, ParsedNode } from "yaml";
 import { AbstractPlugin } from "../../common/AbstractPlugin.js";
@@ -6,11 +7,19 @@ import { ResourceParser } from "../../common/resourceParser.js";
 import { ValidationResult, RuleMetadata } from "../../common/sarif.js";
 import { Incremental, PluginMetadata, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
-import { PluginInit, ReportArgs, RuleInit } from "./config.js";
+import { isDefined } from "../../utils/isDefined.js";
+import {
+  PluginInit,
+  ReportArgs,
+  Resource as PlainResource,
+  RuleInit,
+} from "./config.js";
 
 type Runtime = {
   validate: RuleInit["validate"];
 };
+
+type PlainResourceWithId = PlainResource & { _id: string };
 
 /**
  * Validator for simple custom policies.
@@ -37,10 +46,14 @@ export class SimpleCustomValidator extends AbstractPlugin {
     incremental?: Incremental
   ): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
+    const resourceMap = keyBy(resources, (r) => r.id);
 
+    const clonedResources: PlainResourceWithId[] = resources.map((r) =>
+      JSON.parse(JSON.stringify({ ...r.content, _id: r.id }))
+    );
     const dirtyResources = incremental
-      ? resources.filter((r) => incremental.resourceIds.includes(r.id))
-      : resources;
+      ? clonedResources.filter((r) => incremental.resourceIds.includes(r._id))
+      : clonedResources;
 
     for (const rule of this.rules) {
       if (!this.isRuleEnabled(rule.id)) {
@@ -56,10 +69,12 @@ export class SimpleCustomValidator extends AbstractPlugin {
           settings: this._settings,
         },
         {
-          parse: (resource) => {
+          parse: (res) => {
+            const resource = resourceMap[(res as PlainResourceWithId)._id];
             return this._parser.parse(resource).parsedDoc;
           },
-          report: (resource, args) => {
+          report: (res, args) => {
+            const resource = resourceMap[(res as PlainResourceWithId)._id];
             const result = this.adaptToValidationResult(rule, resource, args);
             if (!result) return;
             results.push(result);
