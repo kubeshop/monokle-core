@@ -122,6 +122,13 @@ export type Resource = {
 
 export type RuleApi = {
   /**
+   * Returns all related resources of the given resource.
+   *
+   * @example a service's label selector relates to a deployment.
+   */
+  getRelated(resource: Resource): Resource[];
+
+  /**
    * Reports a problem.
    */
   report(resource: Resource, args: ReportArgs): void;

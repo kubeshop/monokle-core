@@ -79,6 +79,21 @@ export class SimpleCustomValidator extends AbstractPlugin {
             if (!result) return;
             results.push(result);
           },
+          getRelated: (res: PlainResource): PlainResource[] => {
+            const resource = resourceMap[(res as PlainResourceWithId)._id];
+            if (!resource) return [];
+            const relatedResources = (resource?.refs ?? [])
+              .map((ref) =>
+                ref.target?.type === "resource"
+                  ? ref.target.resourceId
+                  : undefined
+              )
+              .filter(isDefined)
+              .map((relatedId) => resourceMap[relatedId]);
+            return relatedResources.map((r) =>
+              JSON.parse(JSON.stringify({ ...r.content, _id: r.id }))
+            );
+          },
         }
       );
     }
