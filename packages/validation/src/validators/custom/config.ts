@@ -2,7 +2,7 @@ import type { Document, ParsedNode } from "yaml";
 
 export type PluginInit = {
   /**
-   * The identifier of this plugin.
+   * The prefix of the identifier of this plugin's rules.
    *
    * @invariant The length of this identifier must exactly be 3.
    * @example "CKV"
@@ -76,13 +76,12 @@ export type RuleContext = {
 
 export type RuleInit = {
   /**
-   * The identifier of this rule
+   * The postfix of the identifier of this rule.
    *
-   * @invariant The identifier must be unique.
-   * @invariant The identifier must be prefixed with your plugin's identifier.
-   * @example "CKV001"
+   * @invariant The identifier has a format like ABC001.
+   * @remark Monokle automatically creates that identifier from this number and the plugin's prefix.
    */
-  id: string;
+  id: number;
 
   /**
    * The short description of this rule.

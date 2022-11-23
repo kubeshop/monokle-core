@@ -171,7 +171,7 @@ function toPluginMetadata(plugin: PluginInit): PluginMetadata {
 function toSarifRules(plugin: PluginInit): RuleMetadata[] {
   return Object.entries(plugin.rules).map(([name, r]) => {
     return {
-      id: r.id,
+      id: toRuleId(plugin.id, r.id),
       name: paramCase(name),
       shortDescription: {
         text: r.description,
@@ -188,8 +188,12 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
 
 function toRuntime(plugin: PluginInit): Record<string, Runtime> {
   const entries = Object.entries(plugin.rules).map(([_, rule]) => {
-    return [rule.id, { validate: rule.validate }];
+    return [toRuleId(plugin.id, rule.id), { validate: rule.validate }];
   });
 
   return Object.fromEntries(entries);
+}
+
+function toRuleId(pluginId: string, ruleId: number) {
+  return `${pluginId}${ruleId.toString().padStart(3, "0")}`;
 }
