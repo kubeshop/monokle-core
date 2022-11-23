@@ -108,16 +108,13 @@ export type RuleInit = {
 
 /**
  * The Kubernetes resource.
+ * 
+ * @remark You can use 
  *
  * @remark you can generate helpers for your resources and CRDs. Learn more in the README.
  * @example `isDeployment(resource)` => resource.spec is fully typed.
  */
-export type Resource = {
-  apiVersion: string;
-  kind: string;
-  metadata?: any;
-  spec?: any;
-};
+export type Resource = any;
 
 export type RuleApi = {
   /**
@@ -147,6 +144,7 @@ export type ReportArgs = {
    *
    * @example "metadata.annotations" for an incorrect annotation.
    * @example "spec.template.spec.containers.0.image" for an incorrect image in the first container of a Deployment.
+   * @remark try to find a good value. If you cannot find any we recommend to use `kind`.
    */
   path: string;
 

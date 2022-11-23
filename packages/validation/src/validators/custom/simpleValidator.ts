@@ -176,9 +176,11 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
       shortDescription: {
         text: r.description,
       },
-      fullDescription: {
-        text: r.fullDescription ?? r.description,
-      },
+      fullDescription: r.fullDescription
+        ? {
+            text: r.fullDescription,
+          }
+        : undefined,
       help: {
         text: r.help ?? "No help available.",
       },
