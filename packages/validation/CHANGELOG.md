@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.9.0
+
+### Minor Changes
+
+- 77e9fe0: Improve custom plugins
+
 ## 0.8.1
 
 ### Patch Changes
