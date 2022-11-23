@@ -1,7 +1,7 @@
 import { definePlugin } from "@monokle/validation/custom";
 import { noEmptyAnnotations } from "./rules/noEmptyAnnotations.js";
 import { noExternalUrl } from "./rules/noExternalUrl.js";
-import { sealedSecrets } from "./rules/sealedSecrets.js";
+import { noPortMismatch } from "./rules/noPortMismatch.js";
 
 export default definePlugin({
   id: "YCP",
@@ -9,7 +9,7 @@ export default definePlugin({
   description: "Welcome to your first plugin!",
   rules: {
     noEmptyAnnotations,
-    sealedSecrets,
+    noPortMismatch,
     noExternalUrl,
   },
 });
