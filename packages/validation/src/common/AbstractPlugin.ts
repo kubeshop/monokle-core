@@ -228,7 +228,7 @@ export abstract class AbstractPlugin implements Plugin {
       tool: {
         driver: {
           name: this.name,
-          rules: this.rules,
+          rules: this._rules,
         },
       },
       results,

@@ -67,7 +67,7 @@ export type RuleMetadata<TProperties extends JsonObject = {}> = {
   shortDescription: {
     text: string;
   };
-  fullDescription: {
+  fullDescription?: {
     text: string;
   };
   helpUri?: string;
