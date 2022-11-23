@@ -25,6 +25,20 @@ it("should be simple to configure", async () => {
   expect(hasErrors).toMatchInlineSnapshot("13");
 });
 
+it("should fail if optional refs are not allowed", async () => {
+  const parser = new ResourceParser();
+
+  const validator = createDefaultMonokleValidator(parser);
+
+  processRefs(RESOURCES, parser);
+  await configureValidator(validator);
+  const response = await validator.validate({ resources: RESOURCES });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toMatchInlineSnapshot("14");
+});
+
+
 it("should support relative folder paths in kustomizations", async () => {
   const files = await readDirectory(
     "src/__tests__/resources/kustomize-with-relative-path-resources"
@@ -66,7 +80,7 @@ it("should be flexible to configure", async () => {
   expect(hasErrors).toMatchInlineSnapshot("14");
 });
 
-it.only("should be valid SARIF", async () => {
+it("should be valid SARIF", async () => {
   const parser = new ResourceParser();
   const resources = RESOURCES;
 
@@ -108,6 +122,9 @@ function configureValidator(validator: MonokleValidator) {
     settings: {
       "kubernetes-schema": {
         schemaVersion: "1.24.2",
+      },
+      "resource-links": {
+        "fail-missing-optional": true
       },
       debug: true,
     },

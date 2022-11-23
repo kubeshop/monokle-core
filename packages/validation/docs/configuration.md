@@ -186,13 +186,32 @@ settings:
 
 ### Resource Links
 
-Validates whether the comply with a JSON schema.
+Validates whether links/references between resources are valid - i.e. if the target
+object exists or not. 
 
-There are no settings for this plugin.
+This plugin has one setting to configure if missing optional links should be seen
+as failures or not - default is false.
 
 ```yaml
 plugins:
   resource-links: true
+settings:
+  resource-links:
+    fail-missing-optional: true
+```
+
+for example - the configMapKeyRef  below is set as optional. If the target
+configMap does not exist this would be ignored by the validator, unless the 
+above setting is used to override this behaviour.
+
+```yaml
+    env:
+      - name: SOME_VALUE
+        valueFrom:
+          configMapKeyRef:
+            name: some-configmap-name
+            key: some-key
+            optional: true
 ```
 
 **Rules**

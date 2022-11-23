@@ -1,14 +1,10 @@
 import { AbstractPlugin } from "../../common/AbstractPlugin.js";
-import { ValidationResult, Region } from "../../common/sarif.js";
-import {
-  Resource,
-  ResourceRef,
-  ResourceRefType,
-  ToolConfig,
-} from "../../common/types.js";
+import { Region, ValidationResult } from "../../common/sarif.js";
+import { Resource, ResourceRef, ResourceRefType, ToolConfig } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { RESOURCE_LINK_RULES } from "./rules.js";
+import { JsonObject } from "type-fest";
 
 export type ResourceLinksValidatorConfig = ToolConfig<"resource-links">;
 
@@ -18,6 +14,8 @@ export type ResourceLinksValidatorConfig = ToolConfig<"resource-links">;
  * @prerequisite you MUST run `processRefs` before calling the validator.
  */
 export class ResourceLinksValidator extends AbstractPlugin {
+  private failMissingOptional: boolean = false;
+
   constructor() {
     super(
       {
@@ -41,6 +39,12 @@ export class ResourceLinksValidator extends AbstractPlugin {
     return current;
   }
 
+  protected override async configurePlugin(
+    rawSettings: JsonObject = {}
+  ): Promise<void> {
+    this.failMissingOptional = Boolean(rawSettings["fail-missing-optional"]);
+  }
+
   async doValidate(resources: Resource[]): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
 
@@ -56,7 +60,8 @@ export class ResourceLinksValidator extends AbstractPlugin {
     resource: Resource
   ): Promise<ValidationResult[]> {
     const refs = resource.refs ?? [];
-    const unsatisfiedRefs = refs.filter(isUnsatisfied);
+    const unsatisfiedRefs = refs.filter( ref => ref.type === ResourceRefType.Unsatisfied &&
+      !( ref.target?.type === 'resource' && ref.target?.isOptional && !this.failMissingOptional ));
 
     const results = unsatisfiedRefs
       .map((ref) => this.adaptToValidationResult(resource, ref))
