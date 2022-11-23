@@ -1,5 +1,4 @@
 import type { Document, ParsedNode } from "yaml";
-import type { Resource } from "../../common/types.js";
 
 export type PluginInit = {
   /**
@@ -108,12 +107,48 @@ export type RuleInit = {
   validate(ctx: RuleContext, api: RuleApi): Promise<void> | void;
 };
 
+/**
+ * The Kubernetes resource.
+ *
+ * @remark you can generate helpers for your resources and CRDs. Learn more in the README.
+ * @example `isDeployment(resource)` => resource.spec is fully typed.
+ */
+export type Resource = {
+  apiVersion: string;
+  kind: string;
+  metadata?: any;
+  spec?: any;
+};
+
 export type RuleApi = {
+  /**
+   * Reports a problem.
+   */
   report(resource: Resource, args: ReportArgs): void;
+
+  /**
+   * Returns a parsed YAML instance of the resource.
+   *
+   * @remark this is for advanced use cases.
+   */
   parse(resource: Resource): Document.Parsed<ParsedNode>;
 };
 
-export type ReportArgs = { path: string; message?: string };
+export type ReportArgs = {
+  /**
+   * A path to the error.
+   * To navigate an array you can simply give the index as seen in the example.
+   *
+   * @example "metadata.annotations" for an incorrect annotation.
+   * @example "spec.template.spec.containers.0.image" for an incorrect image in the first container of a Deployment.
+   */
+  path: string;
+
+  /**
+   * A message which gives more context to the problem.
+   */
+  message?: string;
+};
 
 export function defineRule(init: RuleInit): RuleInit {
   return init;
