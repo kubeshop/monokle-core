@@ -189,20 +189,12 @@ settings:
 Validates whether links/references between resources are valid - i.e. if the target
 object exists or not. 
 
-This plugin has one setting to configure if missing optional links should be seen
-as failures or not - default is false.
+This plugin has two rules; one for standard link validation, and another
+for optional link validation (disabled by default)
 
-```yaml
-plugins:
-  resource-links: true
-settings:
-  resource-links:
-    fail-missing-optional: true
-```
-
-for example - the configMapKeyRef  below is set as optional. If the target
+For example - the configMapKeyRef below is set as optional; if the target
 configMap does not exist this would be ignored by the validator, unless the 
-above setting is used to override this behaviour.
+LNK002 rule is enabled.
 
 ```yaml
     env:
@@ -216,9 +208,10 @@ above setting is used to override this behaviour.
 
 **Rules**
 
-| id     | name                            | description             |
-| ------ | ------------------------------- | ----------------------- |
-| LNK001 | resource-links/no-missing-links | Disallow missing links. |
+| id     | name                                     | description                      |
+|--------|------------------------------------------|----------------------------------|
+| LNK001 | resource-links/no-missing-links          | Disallow missing links.          |
+| LNK002 | resource-links/no-missing-optional-links | Disallow missing optional links. |
 
 ### YAML Syntax
 

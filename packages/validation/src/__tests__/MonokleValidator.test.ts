@@ -31,11 +31,11 @@ it("should fail if optional refs are not allowed", async () => {
   const validator = createDefaultMonokleValidator(parser);
 
   processRefs(RESOURCES, parser);
-  await configureValidator(validator);
+  await configureOptionalResourceLinksValidator(validator);
   const response = await validator.validate({ resources: RESOURCES });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toMatchInlineSnapshot("14");
+  expect(hasErrors).toMatchInlineSnapshot("2");
 });
 
 
@@ -123,10 +123,18 @@ function configureValidator(validator: MonokleValidator) {
       "kubernetes-schema": {
         schemaVersion: "1.24.2",
       },
-      "resource-links": {
-        "fail-missing-optional": true
-      },
       debug: true,
     },
+  });
+}
+
+function configureOptionalResourceLinksValidator(validator: MonokleValidator) {
+  return validator.preload({
+    plugins: {
+      "resource-links": true,
+    },
+    rules: {
+      "resource-links/no-missing-optional-links": "warn"
+    }
   });
 }

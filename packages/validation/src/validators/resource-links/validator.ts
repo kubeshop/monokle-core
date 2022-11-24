@@ -4,7 +4,6 @@ import { Resource, ResourceRef, ResourceRefType, ToolConfig } from "../../common
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { RESOURCE_LINK_RULES } from "./rules.js";
-import { JsonObject } from "type-fest";
 
 export type ResourceLinksValidatorConfig = ToolConfig<"resource-links">;
 
@@ -14,17 +13,15 @@ export type ResourceLinksValidatorConfig = ToolConfig<"resource-links">;
  * @prerequisite you MUST run `processRefs` before calling the validator.
  */
 export class ResourceLinksValidator extends AbstractPlugin {
-  private failMissingOptional: boolean = false;
-
   constructor() {
     super(
       {
         id: "LNK",
         name: "resource-links",
         displayName: "Resource Links",
-        description: "Validates that references to other resources are valid.",
+        description: "Validates that links to other resources are valid.",
         icon: "resource-links",
-        learnMoreUrl: "https://kubeshop.github.io/monokle/resource-validation/",
+        learnMoreUrl: "https://kubeshop.github.io/monokle/resource-validation/"
       },
       RESOURCE_LINK_RULES
     );
@@ -37,12 +34,6 @@ export class ResourceLinksValidator extends AbstractPlugin {
     // Disable incremental validation for now,
     // editing a resource can fix other resources.
     return current;
-  }
-
-  protected override async configurePlugin(
-    rawSettings: JsonObject = {}
-  ): Promise<void> {
-    this.failMissingOptional = Boolean(rawSettings["fail-missing-optional"]);
   }
 
   async doValidate(resources: Resource[]): Promise<ValidationResult[]> {
@@ -60,8 +51,7 @@ export class ResourceLinksValidator extends AbstractPlugin {
     resource: Resource
   ): Promise<ValidationResult[]> {
     const refs = resource.refs ?? [];
-    const unsatisfiedRefs = refs.filter( ref => ref.type === ResourceRefType.Unsatisfied &&
-      !( ref.target?.type === 'resource' && ref.target?.isOptional && !this.failMissingOptional ));
+    const unsatisfiedRefs = refs.filter(ref => ref.type === ResourceRefType.Unsatisfied );
 
     const results = unsatisfiedRefs
       .map((ref) => this.adaptToValidationResult(resource, ref))
@@ -75,28 +65,37 @@ export class ResourceLinksValidator extends AbstractPlugin {
     const region: Region | undefined =
       pos?.endColumn && pos.endLine
         ? {
-            startLine: pos.line,
-            startColumn: pos.column,
-            endLine: pos.endLine,
-            endColumn: pos.endColumn,
-          }
+          startLine: pos.line,
+          startColumn: pos.column,
+          endLine: pos.endLine,
+          endColumn: pos.endColumn
+        }
         : pos
-        ? {
+          ? {
             startLine: pos.line,
             startColumn: pos.column,
             endLine: pos.line,
-            endColumn: pos.column + pos.length,
+            endColumn: pos.column + pos.length
           }
-        : undefined;
+          : undefined;
 
     const locations = createLocations(resource, region);
 
-    return this.createValidationResult("LNK001", {
-      message: {
-        text: "Unsatisfied resource link.",
-      },
-      locations,
-    });
+    if (ref.target?.type === "resource" && ref.target?.isOptional) {
+      return this.isRuleEnabled("LNK002") ? this.createValidationResult("LNK002", {
+        message: {
+          text: "Unsatisfied optional resource link."
+        },
+        locations
+      }) : undefined;
+    } else {
+      return this.isRuleEnabled("LNK001") ? this.createValidationResult("LNK001", {
+        message: {
+          text: "Unsatisfied resource link."
+        },
+        locations
+      }) : undefined;
+    }
   }
 }
 

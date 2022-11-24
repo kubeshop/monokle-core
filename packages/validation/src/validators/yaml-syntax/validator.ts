@@ -62,11 +62,11 @@ export class YamlValidator extends AbstractPlugin {
     const locations = createLocations(resource, region);
     const ruleId = YAML_RULE_MAP[err.code];
 
-    return this.createValidationResult(ruleId, {
+    return this.isRuleEnabled( ruleId ) ? this.createValidationResult(ruleId, {
       message: {
         text: err.message,
       },
       locations,
-    });
+    }) : undefined;
   }
 }
