@@ -1,5 +1,11 @@
 # create-monokle-plugin
 
+## 0.3.0
+
+### Minor Changes
+
+- ab4d567: Add template with toolkit and fix minor bug
+
 ## 0.2.0
 
 ### Minor Changes
