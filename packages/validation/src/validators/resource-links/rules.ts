@@ -14,4 +14,20 @@ export const RESOURCE_LINK_RULES: RuleMetadata[] = [
       text: "Check whether the referenced resource is missing or has a typo. The reference are often to labels or a names which depends on the property.",
     },
   },
+  {
+    id: "LNK002",
+    name: "no-missing-optional-links",
+    shortDescription: {
+      text: "Disallow missing optional links.",
+    },
+    fullDescription: {
+      text: "The resource has an optional reference and it cannot be found. This could cause problems during deployments.",
+    },
+    help: {
+      text: "Check whether the referenced resource is missing or has a typo. The reference are often to labels or a names which depends on the property.",
+    },
+    defaultConfiguration:{
+      enabled: false
+    }
+  },
 ];

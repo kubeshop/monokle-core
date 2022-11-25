@@ -25,6 +25,20 @@ it("should be simple to configure", async () => {
   expect(hasErrors).toMatchInlineSnapshot("13");
 });
 
+it("should fail if optional refs are not allowed", async () => {
+  const parser = new ResourceParser();
+
+  const validator = createDefaultMonokleValidator(parser);
+
+  processRefs(RESOURCES, parser);
+  await configureOptionalResourceLinksValidator(validator);
+  const response = await validator.validate({ resources: RESOURCES });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toMatchInlineSnapshot("2");
+});
+
+
 it("should support relative folder paths in kustomizations", async () => {
   const files = await readDirectory(
     "src/__tests__/resources/kustomize-with-relative-path-resources"
@@ -111,5 +125,16 @@ function configureValidator(validator: MonokleValidator) {
       },
       debug: true,
     },
+  });
+}
+
+function configureOptionalResourceLinksValidator(validator: MonokleValidator) {
+  return validator.preload({
+    plugins: {
+      "resource-links": true,
+    },
+    rules: {
+      "resource-links/no-missing-optional-links": "warn"
+    }
   });
 }
