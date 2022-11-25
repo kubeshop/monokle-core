@@ -1,4 +1,4 @@
-import { defineRule } from "@monokle/validation/custom";
+import { defineRule } from "@monokle/plugin-toolkit";
 import { isPrometheus } from "../schemas/__generated__/prometheus.monitoring.coreos.com.v1.js";
 
 /**

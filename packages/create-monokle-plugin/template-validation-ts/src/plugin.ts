@@ -1,4 +1,4 @@
-import { definePlugin } from "@monokle/validation/custom";
+import { definePlugin } from "@monokle/plugin-toolkit";
 import { noEmptyAnnotations } from "./rules/1-example.js";
 import { noAdminApi } from "./rules/3-exampleCrd.js";
 import { noPortMismatch } from "./rules/2-exampleRelated.js";

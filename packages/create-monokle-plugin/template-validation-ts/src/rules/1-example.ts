@@ -1,4 +1,4 @@
-import { defineRule } from "@monokle/validation/custom";
+import { defineRule } from "@monokle/plugin-toolkit";
 
 /**
  * A basic example.
