@@ -109,7 +109,7 @@ export type RuleInit = {
 /**
  * The Kubernetes resource.
  *
- * @remark Ue `npm run codegen` to generate types. Learn more in the README.
+ * @remark Use `npm run codegen` to generate types. Learn more in the README.
  * @example `isDeployment(resource)` => resource.spec is fully typed.
  */
 export type Resource = any;

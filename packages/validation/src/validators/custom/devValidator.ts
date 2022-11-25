@@ -74,8 +74,24 @@ export class DevCustomValidator implements Plugin {
           const validator = new SimpleCustomValidator(pluginInit, this.parser);
           this._currentValidator = validator;
           if (this._lastConfig) {
+            const entries = Object.entries(this._lastConfig.rules ?? {}).map(
+              ([key, value]) => {
+                return [
+                  key.replace(
+                    DEV_MODE_TOKEN,
+                    this._currentValidator!.metadata.name
+                  ),
+                  value,
+                ];
+              }
+            );
+            const rules = Object.fromEntries(entries);
+
             validator
-              .configure(this._lastConfig)
+              .configure({
+                rules,
+                settings: this._lastConfig.settings,
+              })
               .then(() => {
                 if (this._debug) console.log("[validator-dev] bundle loaded");
                 this._handleReload?.(bundle.hash);
@@ -166,8 +182,8 @@ export class DevCustomValidator implements Plugin {
     settings?: JsonObject | undefined;
   }): Promise<void> {
     this._debug = Boolean(config?.settings?.debug);
+    this._lastConfig = config;
     if (!this._currentValidator) {
-      this._lastConfig = config;
       return Promise.resolve();
     }
     const entries = Object.entries(config.rules ?? {}).map(([key, value]) => {

@@ -5,7 +5,7 @@ export const KUBERNETES_SCHEMA_RULES: RuleMetadata[] = [
     id: "K8S001",
     name: "schema-violated",
     shortDescription: {
-      text: "The resource is formated incorrectly.",
+      text: "The resource is formatted incorrectly.",
     },
     fullDescription: {
       text: "The resource is violating the schema violation. The Kubernetes API will not accept this resource.",
