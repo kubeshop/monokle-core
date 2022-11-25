@@ -14,6 +14,6 @@
     "debug": "monokle-plugin-toolkit build --debug"
   },
   "dependencies": {
-    "@monokle/plugin-toolkit": "0.1.0"
+    "@monokle/plugin-toolkit": "^0.1.0"
   }
 }
