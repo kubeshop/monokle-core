@@ -16,6 +16,5 @@
     "removeComments": false,
     "strict": true
   },
-  "exclude": ["node_modules", "build"],
   "include": ["src"]
 }
