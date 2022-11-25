@@ -180,9 +180,9 @@ settings:
 
 **Rules**
 
-| id     | name                              | description                           |
-| ------ | --------------------------------- | ------------------------------------- |
-| K8S001 | kubernetes-schema/schema-violated | The resource is formated incorrectly. |
+| id     | name                              | description                            |
+| ------ | --------------------------------- | -------------------------------------- |
+| K8S001 | kubernetes-schema/schema-violated | The resource is formatted incorrectly. |
 
 ### Resource Links
 
