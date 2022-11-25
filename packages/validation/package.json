@@ -6,14 +6,19 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "main": "lib/index.js",
   "source": "src/index.ts",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
   "exports": {
-    ".": "./lib/index.js",
-    "./custom": "./lib/custom.js"
+    ".": {
+      "types": "./lib/index.d.ts",
+      "module": "./lib/index.js"
+    },
+    "./custom": {
+      "types": "./lib/custom.d.ts",
+      "module": "./lib/custom.js"
+    }
   },
   "files": [
     "lib/**"
