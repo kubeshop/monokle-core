@@ -1,6 +1,6 @@
 {
   "name": "@monokle/plugin-toolkit",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Toolkit for custom plugins development.",
   "author": "Kubeshop",
   "license": "MIT",
