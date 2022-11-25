@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.10.1
+
+### Patch Changes
+
+- ab4d567: Add template with toolkit and fix minor bug
+
 ## 0.10.0
 
 ### Minor Changes
