@@ -15,7 +15,7 @@ import { isDefined } from "../../utils/isDefined.js";
 import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
 import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
-import { isKustomizationResource } from "../../references/utils/kustomizeRefs";
+import { isKustomizationResource } from "../../references/utils/kustomizeRefs.js";
 
 type Settings = z.infer<typeof Settings>;
 const Settings = z.object({
