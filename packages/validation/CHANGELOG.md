@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.10.2
+
+### Patch Changes
+
+- 59ad72e: fix cli build
+
 ## 0.10.1
 
 ### Patch Changes
