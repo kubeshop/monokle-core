@@ -1,6 +1,6 @@
 import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
 import { getOutgoingRefMappers } from "../mappers/index.js";
-import { refMapperMatchesKind } from "./helpers.js";
+import { refMapperMatchesKind } from "./refMatcher.js";
 
 const targetResourceKindCache = new Map<string, string[]>();
 
