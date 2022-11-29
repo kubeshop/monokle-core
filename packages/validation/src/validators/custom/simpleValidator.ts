@@ -1,5 +1,5 @@
 import { paramCase, sentenceCase } from "change-case";
-import { keyBy } from "lodash";
+import keyBy from "lodash/keyBy.js";
 import { JsonObject } from "type-fest";
 import { Document, isNode, Node, ParsedNode } from "yaml";
 import { AbstractPlugin } from "../../common/AbstractPlugin.js";
