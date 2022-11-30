@@ -29,7 +29,7 @@ Monokle Validation is a TypeScript library to validate your Kubernetes resources
 - Resource links validates that reference to other Kubernetes resources are valid.
 - Open Policy agent validates security policies to reduce your attack surface.
 
-**Try the CLI now!**
+**Try the CLI or Monokle Cloud now!**
 
 The Monokle CLI provides a convenient wrapper around this library. Use it to validate your resources in seconds.
 
