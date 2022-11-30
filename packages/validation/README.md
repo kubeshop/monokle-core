@@ -39,7 +39,7 @@ The Monokle CLI provides a convenient wrapper around this library. Use it to val
 kustomize build . | monokle validate -
 ```
 
-Or [visit Monokle Cloud](https://app.monokle.com) to try this validation library directly from your browser.
+Or [visit Monokle Cloud](https://app.monokle.com): a free web application where you can explore this validation library directly on public GitHub repositories.
 
 ## Table of contents
 
