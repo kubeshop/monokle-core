@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.10.3
+
+### Patch Changes
+
+- 3b72cf9: Fix getRelated in kustomizations
+
 ## 0.10.2
 
 ### Patch Changes
