@@ -1,4 +1,5 @@
 import { paramCase, sentenceCase } from "change-case";
+import { result } from "lodash";
 import keyBy from "lodash/keyBy.js";
 import { JsonObject } from "type-fest";
 import { Document, isNode, Node, ParsedNode } from "yaml";
@@ -62,40 +63,52 @@ export class SimpleCustomValidator extends AbstractPlugin {
 
       const { validate } = this._ruleRuntime[rule.id];
 
-      await validate(
-        {
-          resources: dirtyResources,
-          allResources: resources,
-          settings: this._settings,
-        },
-        {
-          parse: (res) => {
-            const resource = resourceMap[(res as PlainResourceWithId)._id];
-            return this._parser.parse(resource).parsedDoc;
+      try {
+        await validate(
+          {
+            resources: dirtyResources,
+            allResources: resources,
+            settings: this._settings,
           },
-          report: (res, args) => {
-            const resource = resourceMap[(res as PlainResourceWithId)._id];
-            const result = this.adaptToValidationResult(rule, resource, args);
-            if (!result) return;
-            results.push(result);
-          },
-          getRelated: (res: PlainResource): PlainResource[] => {
-            const resource = resourceMap[(res as PlainResourceWithId)._id];
-            if (!resource) return [];
-            const relatedResources = (resource?.refs ?? [])
-              .map((ref) =>
-                ref.target?.type === "resource"
-                  ? ref.target.resourceId
-                  : undefined
-              )
-              .filter(isDefined)
-              .map((relatedId) => resourceMap[relatedId]);
-            return relatedResources.map((r) =>
-              JSON.parse(JSON.stringify({ ...r.content, _id: r.id }))
-            );
-          },
+          {
+            parse: (res) => {
+              const resource = resourceMap[(res as PlainResourceWithId)._id];
+              return this._parser.parse(resource).parsedDoc;
+            },
+            report: (res, args) => {
+              const resource = resourceMap[(res as PlainResourceWithId)._id];
+              const result = this.adaptToValidationResult(rule, resource, args);
+              if (!result) return;
+              results.push(result);
+            },
+            getRelated: (res: PlainResource): PlainResource[] => {
+              const resource = resourceMap[(res as PlainResourceWithId)._id];
+
+              if (!resource) return [];
+
+              const relatedResources = (resource?.refs ?? [])
+                .map((ref) =>
+                  ref.target?.type === "resource"
+                    ? ref.target.resourceId
+                    : undefined
+                )
+                .filter(isDefined)
+                .map((relatedId) => resourceMap[relatedId])
+                .filter(isDefined);
+
+              const result = relatedResources.map((r) => {
+                return JSON.parse(JSON.stringify({ ...r.content, _id: r.id }));
+              });
+
+              return result;
+            },
+          }
+        );
+      } catch (err) {
+        if (this._settings.debug) {
+          console.error("rule_failed", { rule: rule.name, error: err });
         }
-      );
+      }
     }
 
     return results;
