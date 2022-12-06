@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.0.19
+
+### Patch Changes
+
+- 72847bb: Hide description of title bar if expandable but not opened
+
 ## 0.0.18
 
 ### Patch Changes
