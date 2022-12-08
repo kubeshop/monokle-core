@@ -15,4 +15,13 @@ for <a href="">developer experience</a>
 
 ## Welcome to Monokle CLI
 
-Monokle plugin toolkit is an internal package for development tools used during custom plugin development.
+Monokle plugin toolkit is an internal package for development of custom validation plugins. It is
+used in the package.json scripts created by the [create-monokle-plugin](../create-monokle-plugin) scaffolding 
+tool to provide the following commands:
+
+- `build` : Builds a plugin for distribution
+- `dev` : Starts a Monokle plugin development server to be used with Monokle Clouds development mode for plugins
+- `codegen` : Generates types for known Kubernetes kinds and CRDs (from a `src/schemas/crds` folder)
+
+Head over to the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repository to 
+learn more about custom validation plugins.
