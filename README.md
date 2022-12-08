@@ -12,22 +12,26 @@
   <a href="https://kubeshop.io/blog">Blog</a>
 </p>
 
-## Welcome to Monokle core
+## Welcome to Monokle Core
 
-Monokle core is a monorepository that contains shared packages between Monokle Desktop and Cloud. All packages are open-source and MIT licensed.
+Monokle core is a monorepository that contains shared packages between Monokle Desktop and Cloud. 
+All packages are open-source and MIT licensed.
 
-## Overview of packages
+## Validation Packages
 
-UI related packages:
+Monokle uses a common set of libraries for validation Kubernetes resources across its CLI, Desktop and Cloud tooling.
+
+- [@monokle/validation](./packages/validation): An extensible validator for Kubernetes resources.
+- [@monokle/cli](./packages/cli): A CLI to validate your Kubernetes resources directly from your terminal.
+- [create-monokle-plugin](./packages/create-monokle-plugin): Bootstrap a custom plugin within seconds.
+
+Please go to the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo for information
+on how to create and share your own validators.
+
+## UI related packages:
 
 - @monokle/components: a shared design system.
 - @monokle/tree-navigator: React component to render trees with Redux.
-
-Validation related packages:
-
-- [@monokle/validation](./packages/validation/README.md): An extensible validator for Kubernetes resources.
-- [@monokle/cli](./packages/cli/README.md): Validate your Kubernetes resources directly from your terminal.
-- [create-monokle-plugin](./packages/create-monokle-plugin/README.md): Bootstrap a custom plugin within seconds.
 
 ## Getting involved
 
