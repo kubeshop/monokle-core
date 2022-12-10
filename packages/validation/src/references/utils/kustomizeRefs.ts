@@ -5,14 +5,14 @@ import { ResourceParser } from "../../common/resourceParser.js";
 import { Resource, ResourceRef, ResourceRefType } from "../../common/types.js";
 import {
   KUSTOMIZATION_API_GROUP,
-  KUSTOMIZATION_KIND,
+  KUSTOMIZATION_KIND
 } from "../../constants.js";
 import { linkResources } from "./createResourceRef.js";
 import {
   findChildren,
   findResourceById,
   getResourcesForPath,
-  isFolderPath,
+  isFolderPath
 } from "./helpers.js";
 
 /**
@@ -114,7 +114,7 @@ function processKustomizationResourceRef(
       );
 
       // no resources found in file? - create a fileref instead
-      if( result.length === 0 ){
+      if (result.length === 0) {
         createKustomizationFileRef(
           kustomization,
           refNode,
@@ -148,29 +148,25 @@ function extractPatches(
   let strategicMergePatches = getScalarNodes(kustomization, patchPath, parser);
   strategicMergePatches
     .filter((refNode) => refNode.node.type === "PLAIN")
+    .filter(refNode => !isExternalResourceRef(refNode))
     .forEach((refNode: NodeWrapper) => {
       let targetPath = path.join(
         path.parse(kustomization.filePath).dir,
         refNode.nodeValue()
       );
-      if (files.has(targetPath)) {
-        let linkedResources = linkParentKustomization(
-          targetPath,
-          kustomization,
-          resources,
-          refNode
-        );
-        if (linkedResources.length > 0) {
-          linkedResources.forEach((resource) => {
-            if (!resource.name.startsWith("Patch:")) {
-              resource.name = `Patch: ${resource.name}`;
-            }
-          });
-        } else {
-          createKustomizationFileRef(kustomization, refNode, targetPath, files);
-        }
+      let linkedResources = linkParentKustomization(
+        targetPath,
+        kustomization,
+        resources,
+        refNode
+      );
+      if (linkedResources.length > 0) {
+        linkedResources.forEach((resource) => {
+          if (!resource.name.startsWith("Patch:")) {
+            resource.name = `Patch: ${resource.name}`;
+          }
+        });
       } else {
-        // this will create an unsatisfied file ref
         createKustomizationFileRef(kustomization, refNode, targetPath, files);
       }
     });
@@ -178,11 +174,11 @@ function extractPatches(
 
 // as specified by https://github.com/hashicorp/go-getter#url-format
 function isExternalResourceRef(refNode: NodeWrapper) {
-  const externalPrefixes : string[] = ["http://", "https://", "github.com/", "gitlab.com/",
+  const externalPrefixes: string[] = ["http://", "https://", "github.com/", "gitlab.com/",
     "bitbucket.org/", "git::", "hg::", "s3::", "gcs::", "file:"];
 
   let value = refNode.nodeValue().toLowerCase();
-  return externalPrefixes.findIndex( v => value.startsWith(v)) >= 0;
+  return externalPrefixes.findIndex(v => value.startsWith(v)) >= 0;
 }
 
 /**
@@ -308,8 +304,8 @@ function createKustomizationFileRef(
       type: "file",
       filePath: isFolder
         ? `${filePath + path.sep}kustomization.yaml`
-        : filePath,
-    },
+        : filePath
+    }
   };
 
   resource.refs.push(ref);
