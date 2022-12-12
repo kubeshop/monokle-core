@@ -1,20 +1,10 @@
 <p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/MonokleLogoDark.svg">
-  <img alt="Monokle light logo" src="assets/MonokleLogoLight.svg">
-</picture>
+  <img src="packages/validation/docs/images/large-icon-256.png" alt="Monokle Logo" width="128" height="128"/>
 </p>
 
-<p align="center">
-  <a href="https://monokle.io">Website</a> |
-  <a href="https://kubeshop.github.io/monokle/">Documentation</a> |
-  <a href="https://discord.gg/g3pP744AvN">Discord</a> |
-  <a href="https://kubeshop.io/blog">Blog</a>
-</p>
+# Welcome to Monokle Core
 
-## Welcome to Monokle Core
-
-Monokle core is a monorepository that contains shared packages between Monokle Desktop and Cloud. 
+Monokle core is a monorepository that contains shared packages between [Monokle Desktop](https://github.com/kubeshop/monokle) and [Monokle Cloud](https://app.monokle.com). 
 All packages are open-source and MIT licensed.
 
 ## Validation Packages
