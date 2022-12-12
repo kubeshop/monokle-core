@@ -1,7 +1,8 @@
-import { definePlugin } from "@monokle/validation/custom";
-import { noEmptyAnnotations } from "./rules/noEmptyAnnotations.js";
-import { noExternalUrl } from "./rules/noExternalUrl.js";
-import { noPortMismatch } from "./rules/noPortMismatch.js";
+import { definePlugin } from "@monokle/plugin-toolkit";
+import { noEmptyAnnotations } from "./rules/1-example.js";
+import { noAdminApi } from "./rules/3-exampleCrd.js";
+import { noPortMismatch } from "./rules/2-exampleRelated.js";
+import { noLatestImage } from "./rules/4-examplePod.js";
 
 export default definePlugin({
   id: "YCP",
@@ -10,6 +11,7 @@ export default definePlugin({
   rules: {
     noEmptyAnnotations,
     noPortMismatch,
-    noExternalUrl,
+    noAdminApi,
+    noLatestImage,
   },
 });

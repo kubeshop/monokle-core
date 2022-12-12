@@ -180,26 +180,38 @@ settings:
 
 **Rules**
 
-| id     | name                              | description                           |
-| ------ | --------------------------------- | ------------------------------------- |
-| K8S001 | kubernetes-schema/schema-violated | The resource is formated incorrectly. |
+| id     | name                              | description                            |
+| ------ | --------------------------------- | -------------------------------------- |
+| K8S001 | kubernetes-schema/schema-violated | The resource is formatted incorrectly. |
 
 ### Resource Links
 
-Validates whether the comply with a JSON schema.
+Validates whether links/references between resources are valid - i.e. if the target
+object exists or not. 
 
-There are no settings for this plugin.
+This plugin has two rules; one for standard link validation, and another
+for optional link validation (disabled by default)
+
+For example - the configMapKeyRef below is set as optional; if the target
+configMap does not exist this would be ignored by the validator, unless the 
+LNK002 rule is enabled.
 
 ```yaml
-plugins:
-  resource-links: true
+    env:
+      - name: SOME_VALUE
+        valueFrom:
+          configMapKeyRef:
+            name: some-configmap-name
+            key: some-key
+            optional: true
 ```
 
 **Rules**
 
-| id     | name                            | description             |
-| ------ | ------------------------------- | ----------------------- |
-| LNK001 | resource-links/no-missing-links | Disallow missing links. |
+| id     | name                                     | description                      |
+|--------|------------------------------------------|----------------------------------|
+| LNK001 | resource-links/no-missing-links          | Disallow missing links.          |
+| LNK002 | resource-links/no-missing-optional-links | Disallow missing optional links. |
 
 ### YAML Syntax
 

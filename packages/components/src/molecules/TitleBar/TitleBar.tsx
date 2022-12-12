@@ -16,7 +16,9 @@ const TitleBar: React.FC<TitleBarType> = (props) => {
         <S.ActionsContainer>{actions}</S.ActionsContainer>
       </S.HeaderContainer>
 
-      {description && <S.DescriptionContainer $type={type}>{description}</S.DescriptionContainer>}
+      {description && (!expandable || (expandable && isOpen)) && (
+        <S.DescriptionContainer $type={type}>{description}</S.DescriptionContainer>
+      )}
     </>
   );
 };

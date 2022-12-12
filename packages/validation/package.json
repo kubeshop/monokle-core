@@ -1,6 +1,6 @@
 {
   "name": "@monokle/validation",
-  "version": "0.9.1",
+  "version": "0.10.3",
   "description": "Kubernetes resource validation",
   "author": "Kubeshop",
   "license": "MIT",
@@ -12,8 +12,15 @@
   "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
   "exports": {
-    ".": "./lib/index.js",
-    "./custom": "./lib/custom.js"
+    ".": {
+      "types": "./lib/index.d.ts",
+      "module": "./lib/index.js",
+      "default": "./lib/index.js"
+    },
+    "./custom": {
+      "types": "./lib/custom.d.ts",
+      "module": "./lib/custom.js"
+    }
   },
   "files": [
     "lib/**"

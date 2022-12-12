@@ -1,4 +1,4 @@
-import { defineRule } from "@monokle/validation/custom";
+import { defineRule } from "@monokle/plugin-toolkit";
 import { isDeployment } from "../schemas/__generated__/deployment.apps.v1.js";
 import { isService } from "../schemas/__generated__/service.v1.js";
 

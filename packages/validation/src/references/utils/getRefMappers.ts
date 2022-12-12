@@ -1,6 +1,6 @@
 import { Resource } from "../../common/types.js";
 import { getOutgoingRefMappers, OUTGOING_MAPPERS, RefMapper } from "../mappers/index.js";
-import { refMapperMatchesKind } from "./helpers.js";
+import { refMapperMatchesKind } from "./refMatcher.js";
 
 const refMapperCache = new Map<string, RefMapper[]>();
 const incomingRefMappersCache = new Map<string, RefMapper[]>();

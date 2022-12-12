@@ -1,5 +1,33 @@
 # @monokle/validation
 
+## 0.10.3
+
+### Patch Changes
+
+- 3b72cf9: Fix getRelated in kustomizations
+
+## 0.10.2
+
+### Patch Changes
+
+- 59ad72e: fix cli build
+
+## 0.10.1
+
+### Patch Changes
+
+- ab4d567: Add template with toolkit and fix minor bug
+
+## 0.10.0
+
+### Minor Changes
+
+- 521529e: Improved resource-links validator to support optional links + bug-fixes in YAML and OPA validators
+
+### Patch Changes
+
+- 034573b: Add monokle-plugin-toolkit
+
 ## 0.9.1
 
 ### Patch Changes

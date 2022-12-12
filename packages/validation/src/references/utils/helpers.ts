@@ -11,13 +11,6 @@ import { getSiblingValue } from "./GetSiblings.js";
 import { LineCounter, parseDocument } from "yaml";
 import path from "../../utils/path.js";
 
-export function refMapperMatchesKind(refMapper: RefMapper, kind: string) {
-  if (kind && refMapper.target.kind.startsWith("$")) {
-    return kind.match(refMapper.target.kind.substring(1)) !== null;
-  }
-
-  return refMapper.target.kind === kind;
-}
 
 export function isIncomingRef(refType: ResourceRefType) {
   return refType === ResourceRefType.Incoming;

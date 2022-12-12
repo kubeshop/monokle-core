@@ -1,19 +1,15 @@
-import readline from "node:readline";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
 import connect from "connect";
 import crypto from "node:crypto";
 import http from "node:http";
-import { watch as watchRollup } from "rollup";
-import { terser } from "rollup-plugin-terser";
+import readline from "node:readline";
 import pc from "picocolors";
+import { watch as watchRollup } from "rollup";
+import { DIST_CONFIG } from "./rollupConfig.cjs";
 
 type Bundle = {
   code: string;
   hash: string;
 };
-
-main();
 
 let NEXT_CONNECTION_ID = 0;
 type ConnectionMap = Map<string, http.ServerResponse>;
@@ -21,7 +17,7 @@ type ConnectionMap = Map<string, http.ServerResponse>;
 /**
  * Start a server with basic HMR capabilities and forward a bundle on filechanges.
  **/
-function main() {
+export function startDevServer() {
   let streams: ConnectionMap = new Map();
   let lastBundle: Bundle | undefined = undefined;
 
@@ -76,30 +72,12 @@ function main() {
  * Build a in-memory bundle which is rebuild on file changes.
  **/
 function watch(onBundle: (bundle: Bundle) => void) {
-  const minify = false;
+  const [rollupConfig, outputConfig] = DIST_CONFIG;
   const watcher = watchRollup({
-    input: "src/plugin.ts",
-    plugins: [typescript(), nodeResolve(), ...(minify ? [terser()] : [])],
-    output: [
-      {
-        file: "dist/plugin.js",
-        format: "esm",
-      },
-    ],
+    ...rollupConfig,
+    output: [outputConfig],
     watch: {
       skipWrite: true,
-    },
-    onwarn(warning, defaultHandler) {
-      const ignoreCodes = ["TS7006", "TS7031"];
-      const knownErrors = ["Cannot find module '@monokle/validation/custom'"];
-      const skip =
-        ignoreCodes.some((c) => warning.pluginCode === c) ||
-        knownErrors.some((e) => warning.message.includes(e));
-
-      if (skip) {
-        return;
-      }
-      defaultHandler(warning);
     },
   });
 
@@ -168,7 +146,7 @@ function serialize(event: ServerSentEvent): string {
 
 function printStartMessage() {
   clearScreen();
-  console.log(pc.green("Monokle dev server (alpha)"));
+  console.log(pc.green("Monokle dev server (beta)"));
   console.log();
   console.log(
     "You can now develop and preview your rules in real-time within Monokle Cloud."

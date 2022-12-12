@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "build",
+    "outDir": "dist/cli",
     "lib": ["ES2020"],
-    "module": "NodeNext",
+    "module": "CommonJS",
     "target": "es2022",
     "moduleResolution": "NodeNext",
     "allowSyntheticDefaultImports": true,
@@ -11,9 +10,9 @@
     "forceConsistentCasingInFileNames": true,
     "pretty": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
     "removeComments": true,
-    "sourceMap": false,
     "strict": true
-  }
+  },
+  "include": ["src/cli/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,33 +1,27 @@
 <p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/MonokleLogoDark.svg">
-  <img alt="Monokle light logo" src="assets/MonokleLogoLight.svg">
-</picture>
+  <img src="packages/validation/docs/images/large-icon-256.png" alt="Monokle Logo" width="128" height="128"/>
 </p>
 
-<p align="center">
-  <a href="https://monokle.io">Website</a> |
-  <a href="https://kubeshop.github.io/monokle/">Documentation</a> |
-  <a href="https://discord.gg/g3pP744AvN">Discord</a> |
-  <a href="https://kubeshop.io/blog">Blog</a>
-</p>
+# Welcome to Monokle Core
 
-## Welcome to Monokle core
+Monokle core is a monorepository that contains shared packages between [Monokle Desktop](https://github.com/kubeshop/monokle) and [Monokle Cloud](https://app.monokle.com). 
+All packages are open-source and MIT licensed.
 
-Monokle core is a monorepository that contains shared packages between Monokle Desktop and Cloud. All packages are open-source and MIT licensed.
+## Validation Packages
 
-## Overview of packages
+Monokle uses a common set of libraries for validation Kubernetes resources across its CLI, Desktop and Cloud tooling.
 
-UI related packages:
+- [@monokle/validation](./packages/validation): An extensible validator for Kubernetes resources.
+- [@monokle/cli](./packages/cli): A CLI to validate your Kubernetes resources directly from your terminal.
+- [create-monokle-plugin](./packages/create-monokle-plugin): Bootstrap a custom plugin within seconds.
+
+Please go to the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo for information
+on how to create and share your own validators.
+
+## UI related packages:
 
 - @monokle/components: a shared design system.
 - @monokle/tree-navigator: React component to render trees with Redux.
-
-Validation related packages:
-
-- [@monokle/validation](./packages/validation/README.md): An extensible validator for Kubernetes resources.
-- [@monokle/cli](./packages/cli/README.md): Validate your Kubernetes resources directly from your terminal.
-- [create-monokle-plugin](./packages/create-monokle-plugin/README.md): Bootstrap a custom plugin within seconds.
 
 ## Getting involved
 

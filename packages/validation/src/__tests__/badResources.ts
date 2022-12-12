@@ -4,7 +4,33 @@ export const BAD_DEPLOYMENT: Resource = {
   fileId: "vanilla-panda-blog/deployment.yaml",
   filePath: "vanilla-panda-blog/deployment.yaml",
   fileOffset: 0,
-  text: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: panda-blog\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: panda-blog\n  template:\n    metadata:\n      labels:\n        app: panda-blog\n    spec:\n      containers:\n        - name: panda-blog\n          image: panda-blog:latest\n          ports:\n            - name: 20\n              containerPort: 8080\n",
+  text: "apiVersion: apps/v1\n" +
+    "kind: Deployment\n" +
+    "metadata:\n" +
+    "  name: panda-blog\n" +
+    "spec:\n" +
+    "  replicas: 1\n" +
+    "  selector:\n" +
+    "    matchLabels:\n" +
+    "      app: panda-blog\n" +
+    "  template:\n" +
+    "    metadata:\n" +
+    "      labels:\n" +
+    "        app: panda-blog\n" +
+    "    spec:\n" +
+    "      containers:\n" +
+    "        - name: panda-blog\n" +
+    "          image: panda-blog:latest\n" +
+    "          ports:\n" +
+    "            - name: 20\n" +
+    "              containerPort: 8080\n" +
+    "          env:\n" +
+    "            - name: SOME_VALUE\n" +
+    "              valueFrom:\n" +
+    "                configMapKeyRef:\n" +
+    "                  name: some-configmap-name\n" +
+    "                  key: some-key\n" +
+    "                  optional: true\n",
   name: "panda-blog",
   id: "31fc266e-be6e-527a-8292-469fe956c0d6",
   apiVersion: "apps/v1",
@@ -13,20 +39,20 @@ export const BAD_DEPLOYMENT: Resource = {
     apiVersion: "apps/v1",
     kind: "Deployment",
     metadata: {
-      name: "panda-blog",
+      name: "panda-blog"
     },
     spec: {
       replicas: 1,
       selector: {
         matchLabels: {
-          app: "panda-blog",
-        },
+          app: "panda-blog"
+        }
       },
       template: {
         metadata: {
           labels: {
-            app: "panda-blog",
-          },
+            app: "panda-blog"
+          }
         },
         spec: {
           containers: [
@@ -36,15 +62,27 @@ export const BAD_DEPLOYMENT: Resource = {
               ports: [
                 {
                   name: 20, // kubernetes-schema error
-                  containerPort: 8080,
-                },
+                  containerPort: 8080
+                }
               ],
-            },
-          ],
-        },
-      },
-    },
-  },
+              env: [
+                {
+                  name: "SOME_VALUE",
+                  valueFrom: {
+                    configMapKeyRef: {
+                      name: "some-configmap-name",
+                      key: "some-key",
+                      optional: true
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
 };
 
 export const BAD_SERVICE: Resource = {
@@ -62,23 +100,23 @@ export const BAD_SERVICE: Resource = {
     metadata: {
       name: "panda-blog",
       labels: {
-        "monokle.io/demo": "vanilla-panda-blog",
-      },
+        "monokle.io/demo": "vanilla-panda-blog"
+      }
     },
     spec: {
       selector: {
-        app: "panda-boom",
+        app: "panda-boom"
       },
       ports: [
         {
           name: "http-web",
           protocol: "TCP",
           port: 80,
-          targetPort: 8080,
-        },
-      ],
-    },
-  },
+          targetPort: 8080
+        }
+      ]
+    }
+  }
 };
 
 export const RESOURCES = [BAD_DEPLOYMENT, BAD_SERVICE];

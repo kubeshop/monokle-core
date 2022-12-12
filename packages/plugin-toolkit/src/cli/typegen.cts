@@ -3,17 +3,25 @@ import { parseAllDocuments } from "yaml";
 import { compile } from "json-schema-to-typescript";
 import klaw from "klaw-sync";
 
-const CRD_DIR = "./src/schemas/crds";
+export type CodegenArgs = {
+  outDir?: string;
+  crdDir?: string;
+};
 
-await generateKnownCoreResourceTypes();
-await generateCustomResourceTypes();
+export async function codegen({
+  outDir = "./src/schemas/__generated__",
+  crdDir = "./src/schemas/crds",
+}: CodegenArgs = {}) {
+  await generateKnownCoreResourceTypes(outDir);
+  await generateCustomResourceTypes(outDir, crdDir);
+}
 
-async function generateCustomResourceTypes() {
-  if (!fse.existsSync(CRD_DIR)) {
+async function generateCustomResourceTypes(outDir: string, crdDir: string) {
+  if (!fse.existsSync(crdDir)) {
     return;
   }
 
-  const files = klaw(CRD_DIR, { nodir: true, depthLimit: 0 });
+  const files = klaw(crdDir, { nodir: true, depthLimit: 0 });
 
   for (const file of files) {
     const crds = await fse.readFile(file.path, "utf8");
@@ -43,12 +51,12 @@ export function is${kind}(resource: unknown): resource is ${kind} {
 
 `;
 
-      await fse.outputFile(`src/schemas/__generated__/${name}.ts`, code);
+      await fse.outputFile(`${outDir}/${name}.ts`, code);
     }
   }
 }
 
-async function generateKnownCoreResourceTypes() {
+async function generateKnownCoreResourceTypes(outDir: string) {
   const KNOWN_KINDS = [
     ["ClusterRole", "rbac/v1", "rbac.authorization.k8s.io/v1"],
     ["ClusterRoleBinding", "rbac/v1", "rbac.authorization.k8s.io/v1"],
@@ -92,6 +100,6 @@ export function is${kind}(resource: unknown): resource is ${kind} {
 `;
 
     const name = `${kind.toLowerCase()}.${apiVersion.replace("/", ".")}`;
-    await fse.outputFile(`src/schemas/__generated__/${name}.ts`, code);
+    await fse.outputFile(`${outDir}/${name}.ts`, code);
   }
 }
