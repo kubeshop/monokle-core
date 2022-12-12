@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/kubeshop/monokle-core/issues"
   },
-  "homepage": "https://github.com/kubeshop/monokle-core/tree/main/packages/create-monokle-plugin#readme",
+  "homepage": "https://github.com/kubeshop/monokle-core/tree/main/packages/create-monokle-plugin",
   "dependencies": {
     "kolorist": "1.5.1",
     "minimist": "1.2.6",

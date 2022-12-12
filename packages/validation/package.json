@@ -38,12 +38,13 @@
   "keywords": [
     "monokle",
     "kubernetes",
-    "validation"
+    "validation",
+    "yaml"
   ],
   "bugs": {
     "url": "https://github.com/kubeshop/monokle-core/issues"
   },
-  "homepage": "https://github.com/kubeshop/monokle-core#readme",
+  "homepage": "https://github.com/kubeshop/monokle-core/tree/main/packages/validation",
   "devDependencies": {
     "@types/isomorphic-fetch": "0.0.36",
     "@types/lodash": "4.14.185",
