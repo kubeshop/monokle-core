@@ -3,17 +3,12 @@
 </p>
 
 <p align="center">
-<a href="https://github.com/features/actions">Monokle toolkit</a>
-for <a href="">developer experience</a>
-</p>
-
-<p align="center">
   <a href="https://github.com/kubeshop/monokle-core/tree/main/packages/validation">
     <img title="mit licence" src="https://img.shields.io/badge/License-MIT-yellow.svg"/>
   </a>
 </p>
 
-## Welcome to Monokle CLI
+## Welcome to Monokle Plugin Toolkit
 
 Monokle plugin toolkit is an internal package for development of custom validation plugins. It is
 used in the package.json scripts created by the [create-monokle-plugin](../create-monokle-plugin) scaffolding 
