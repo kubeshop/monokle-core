@@ -3,28 +3,23 @@
 </p>
 
 <p align="center">
-Skaffold <a href="https://github.com/features/actions">Monokle plugins</a> in seconds
-</p>
-
-<p align="center">
   <a href="https://github.com/kubeshop/monokle-core/tree/main/packages/validation">
     <img title="mit licence" src="https://img.shields.io/badge/License-MIT-yellow.svg"/>
   </a>
 </p>
 
-## Table of content
-
-- [Table of content](#table-of-content)
-- [Welcome to Create Monokle Plugins](#welcome-to-create-monokle-plugins)
-- [Usage](#usage)
-  - [Interactive](#interactive)
-  - [Create a TypeScript validation plugin](#create-a-typescript-validation-plugin)
-- [Acknowledgements](#acknowledgements)
-
-## Welcome to Create Monokle Plugins
+# Welcome to Create Monokle Plugin
 
 Use this library to scaffold your custom Monokle validation plugin in seconds - which can then 
 be used locally or contributed to our [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repository. 
+
+## Table of contents
+
+- [Usage](#usage)
+  - [Interactive](#interactive)
+  - [Create a TypeScript validation plugin](#create-a-typescript-validation-plugin)
+  - [Example](#example)
+- [Acknowledgements](#acknowledgements)
 
 ## Usage
 
