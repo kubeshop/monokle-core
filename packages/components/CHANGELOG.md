@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.0.20
+
+### Patch Changes
+
+- 4b53c6a: Add the TitleBarCount component
+
 ## 0.0.19
 
 ### Patch Changes
