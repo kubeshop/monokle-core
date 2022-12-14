@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.0.21
+
+### Patch Changes
+
+- 780c678: export the title bar count component
+
 ## 0.0.20
 
 ### Patch Changes
