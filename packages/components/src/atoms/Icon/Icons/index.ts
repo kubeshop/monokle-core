@@ -1,3 +1,4 @@
+export { default as ClusterDashboard } from "./ClusterDashboard";
 export { default as Collapse } from "./Collapse";
 export { default as Compare } from "./Compare";
 export { default as Explorer } from "./Explorer";
