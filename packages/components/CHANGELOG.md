@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.0.22
+
+### Patch Changes
+
+- 25f99b6: Add cluster dashboard icon
+
 ## 0.0.21
 
 ### Patch Changes
