@@ -7,6 +7,7 @@ import { IconNames } from "./types";
 import Colors from "@/styles/Colors";
 
 import {
+  ClusterDashboard,
   Collapse,
   Compare,
   Git,
@@ -42,6 +43,7 @@ type IconProps = {
 };
 
 const icons: Record<IconNames, React.ComponentType<any>> = {
+  "cluster-dashboard": ClusterDashboard,
   collapse: Collapse,
   compare: Compare,
   error: ExclamationCircleOutlined,
