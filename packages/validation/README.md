@@ -267,7 +267,7 @@ for (const { name, configuration } of validator.rules.annotations) {
 
 await validator.validate({ resources: RESOURCES });
 ```
-
+****
 ## Caveats
 
 - Use `processRefs` before validating with a _resource-links_ validator. It creates a graph between resources and sees if links between them are present or missing.

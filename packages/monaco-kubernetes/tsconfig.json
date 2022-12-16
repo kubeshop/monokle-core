@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "downlevelIteration": true,
+    "lib": ["dom", "dom.iterable", "es2017"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "es6",
+    "types": []
+  }
+}
