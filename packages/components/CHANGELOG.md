@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.0.23
+
+### Patch Changes
+
+- 78a92fa: add isVisible property for activity bar item
+
 ## 0.0.22
 
 ### Patch Changes
