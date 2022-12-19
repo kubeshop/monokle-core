@@ -15,9 +15,10 @@ export function ActivityBarItem<ActivityName, ExtraActivityName>(
   const { activity, isActivityBarActive, isSelected, onChange } = props;
 
   const badge = activity.useBadge();
+  const isVisible = activity.isVisible ? activity.isVisible() : true;
 
   return (
-    <S.ItemBox $isActive={isActivityBarActive} $isSelected={isSelected}>
+    <S.ItemBox $isActive={isActivityBarActive} $isSelected={isSelected} $isVisible={isVisible}>
       <Tooltip title={activity.tooltip} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
         <S.Button $isSelected={isSelected} onClick={() => onChange(activity.name)}>
           <S.Badge count={badge?.count ?? 0} color={Colors.blue6} size={badge?.size} dot={badge?.dot ?? false}>
