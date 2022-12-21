@@ -42,8 +42,7 @@ or use any existing community validators as [described below](#using-community-p
 
 ## Validate from the CLI or Monokle Cloud 
 
-The [Monokle CLI](https://github.com/kubeshop/monokle-core/tree/main/packages/cli) provides a convenient 
-wrapper around this library. Use it to validate your resources in seconds:
+The [Monokle CLI](../cli) provides a convenient wrapper around this library. Use it to validate your resources in seconds:
 
 ```bash
 kustomize build . | monokle validate -
