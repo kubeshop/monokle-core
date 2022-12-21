@@ -42,10 +42,10 @@ Now you're all set to implement your [Custom Plugin](../validation/docs/custom-p
 npm create monokle-plugin@latest my-validator -- --template validation-ts
 ```
 
-### Example
+### Sharing plugins
 
-Head over to the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo for an 
-example on how to get started with your own plugin.
+Head over to the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo to see existing
+community plugins and learn how you can create and share your own.
 
 ## Acknowledgements
 
