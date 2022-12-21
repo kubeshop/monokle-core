@@ -16,53 +16,53 @@ Extensible, static Kubernetes analysis</a>
 
 Monokle Validation is a TypeScript library to validate your Kubernetes resources.
 
-**Key features**
+### Key features
 
 - 🚀 Start in seconds with the user-friendly configuration.
 - ⚡️ Real-time validation through incremental runs.
 - ⚒ Extensible architecture with plugins.
 
-**Core plugins**
+### Core plugins
 
 - YAML Syntax validates that your manifests have correct YAML syntax.
 - Kubernetes Schema validates that your resources and CRDs are well-defined in the schema for their resource kind.
 - Resource links validates that reference to other Kubernetes resources are valid.
 - Open Policy agent validates security policies to reduce your attack surface.
 
-**Community Plugins**
+Learn more about each Core Plugin in the [Core Plugins Documentation](docs/core-plugins.md) 
+
+### Community Plugins
 
 Check out our [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo for 
 plugins contributed by our community, and details on how to create your own.
 
-**Try the CLI or Monokle Cloud now!**
+### Try the CLI or Monokle Cloud now!
 
-The [Monokle CLI](https://github.com/kubeshop/monokle-core/tree/update-readme/packages/cli) provides a convenient 
+The [Monokle CLI](https://github.com/kubeshop/monokle-core/tree/main/packages/cli) provides a convenient 
 wrapper around this library. Use it to validate your resources in seconds:
 
 ```bash
 kustomize build . | monokle validate -
 ```
 
-Or [visit Monokle Cloud](https://app.monokle.com); a free web application where you can apply this validation 
+Or visit [Monokle Cloud](https://app.monokle.com); a free web application where you can apply this validation 
 library directly on public GitHub repositories.
 
 ## Table of contents
 
-- [Welcome to Monokle Validation](#welcome-to-monokle-validation)
-- [Table of contents](#table-of-contents)
 - [Getting started](#getting-started)
 - [Configuration](#configuration)
 - [The validation response](#the-validation-response)
 - [Advanced usage](#advanced-usage)
   - [Preloading](#preloading)
   - [Incremental validation](#incremental-validation)
-  - [Community plugins](#community-plugins)
+  - [Community plugins](#using-community-plugins)
   - [Building user interfaces](#building-user-interfaces)
 - [Caveats](#caveats)
 
 ## Getting started
 
-First install the validator:
+First install the validator with npm:
 
 ```
 npm install @monokle/validation
@@ -75,8 +75,8 @@ const validator = createDefaultMonokleValidator();
 await validator.validate({ resources: RESOURCES });
 ```
 
-Monokle is extensible and has a rich plugin system.
-You can configure and preload plugins as follows:
+The Monokle validator is extensible and has a rich plugin system. You can configure and preload 
+plugins as follows:
 
 ```typescript
 const validator = createDefaultMonokleValidator();
@@ -94,8 +94,6 @@ await validator.validate({ resources });
 
 You can customize the rules and settings of the Monokle Validator through an intuitive object.
 
-[Learn more](https://github.com/kubeshop/monokle-core/blob/update-readme/packages/validation/docs/configuration.md)
-
 ```yaml
 plugins:
   yaml-syntax: true
@@ -109,6 +107,8 @@ settings:
   kubernetes-schema:
     schemaVersion: v1.24.2
 ```
+
+[Learn more](https://github.com/kubeshop/monokle-core/blob/main/packages/validation/docs/configuration.md)
 
 ## The validation response
 
@@ -179,9 +179,11 @@ SARIF contains both metadata of the tool and the results of the validation. You 
 
 ### Preloading
 
-The plugins have to be initialized which might require heavy operations such as fetching large JSON schemas, AJV compilation, WASM initialization and more.
+Each validation plugin has to be initialized which might require heavy operations such as fetching large 
+JSON schemas, AJV compilation, WASM initialization and more.
 
-The `preload` API avoids a long first validation and is recommended in more interactive environments. It is idempotent so you can call it as often as you want without continuously reinstantiating the plugins.
+The `preload` API avoids a long first validation and is recommended in more interactive environments. 
+It is idempotent so you can call it as often as you want without continuously reinstantiating the plugins.
 
 Example:
 
@@ -217,7 +219,7 @@ await validator.validate({
 await validator.clear();
 ```
 
-### Community plugins
+### Using Community plugins
 
 The Monokle Validator allows you to add custom plugins from [our community repository](https://github.com/kubeshop/monokle-community-plugins). All community plugins are thoroughly reviewed and we take care of loading the plugins for you.
 

@@ -1,5 +1,6 @@
 # dependencies
 node_modules
+__generated__
 /.pnp
 .idea
 .pnp.js

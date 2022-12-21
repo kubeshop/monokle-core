@@ -1,0 +1,19 @@
+{
+  "name": "monokle-custom-validator",
+  "author": "unknown",
+  "description": "Validates with custom rules.",
+  "license": "MIT",
+  "version": "1.0.0",
+  "main": "dist/plugin.js",
+  "type": "module",
+  "scripts": {
+    "postinstall": "npm run codegen",
+    "codegen": "monokle-plugin-toolkit codegen",
+    "dev": "monokle-plugin-toolkit dev",
+    "build": "monokle-plugin-toolkit build",
+    "debug": "monokle-plugin-toolkit build --debug"
+  },
+  "dependencies": {
+    "@monokle/plugin-toolkit": "^0.1.0"
+  }
+}
