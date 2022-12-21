@@ -4,16 +4,14 @@ Monokle Validation plugins can currently be written in typescript and scaffolded
 [create-monokle-plugin](../create-monokle-plugin) library. 
 
 - [Getting Started](#getting-started)
+- Documentation
+  - [Plugin Metadata](plugin-metadata.md) describes the metadata a plugin needs to expose
+  - [Rule Implementation](rule-implementation.md) shows how to implement rules
 - Tips & Tricks
   - [Local Development with Monokle Cloud](#local-development-with-monokle-cloud)
   - [Generate Resources & Typeguards](#generate-resources--typeguards)
   - [Packaging](#packaging)
   - [Sharing & Distribution](#sharing-and-distribution)
-
-Also have a look at
-- [Plugin Metadata](plugin-metadata.md) to learn more about the metadata a plugin needs to expose
-- [Plugin Examples](plugin-examples.md) to see a bunch of examples
-- [Rule Implementation](rule-implementation.md) to learn how to implement rules
 
 ## Getting Started
 
