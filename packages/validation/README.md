@@ -12,17 +12,17 @@ Extensible, static Kubernetes analysis</a>
   </a>
 </p>
 
-## Welcome to Monokle Validation
+# Welcome to Monokle Validation
 
 Monokle Validation is a TypeScript library to validate your Kubernetes resources.
 
-### Key features
+## Key features
 
-- 🚀 Start in seconds with the user-friendly configuration.
+- 🚀 Start in seconds with the user-friendly configuration and powerful core plugins.
 - ⚡️ Real-time validation through incremental runs.
-- ⚒ Extensible architecture with plugins.
+- ⚒ Extensible architecture with custom plugins.
 
-### Core plugins
+## Core plugins
 
 - YAML Syntax validates that your manifests have correct YAML syntax.
 - Kubernetes Schema validates that your resources and CRDs are well-defined in the schema for their resource kind.
@@ -31,12 +31,16 @@ Monokle Validation is a TypeScript library to validate your Kubernetes resources
 
 Learn more about each Core Plugin in the [Core Plugins Documentation](docs/core-plugins.md) 
 
-### Community Plugins
+## Custom Plugins
 
-Check out our [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo for 
-plugins contributed by our community, and details on how to create your own.
+Easily create your own validators in typescript - [Read More](docs/custom-plugins.md) 
 
-### Try the CLI or Monokle Cloud now!
+## Community Plugins
+
+Share your custom validators in the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo, 
+or use any existing community validators as [described below](#using-community-plugins).
+
+## Validate from the CLI or Monokle Cloud 
 
 The [Monokle CLI](https://github.com/kubeshop/monokle-core/tree/main/packages/cli) provides a convenient 
 wrapper around this library. Use it to validate your resources in seconds:
