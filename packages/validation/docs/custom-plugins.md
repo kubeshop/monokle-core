@@ -13,6 +13,7 @@ Monokle Validation plugins can currently be written in typescript and scaffolded
 Also have a look at
 - [Plugin Metadata](plugin-metadata.md) to learn more about the metadata a plugin needs to expose
 - [Plugin Examples](plugin-examples.md) to see a bunch of examples
+- [Rule Implementation](rule-implementation.md) to learn how to implement rules
 
 ## Getting Started
 
@@ -21,7 +22,7 @@ Follow these steps to get going with a custom plugin:
 1. Use [create-monokle-plugin](../../create-monokle-plugin) to scaffold your plugin
 2. Update the generated `src/plugin.ts` file with correct metadata - [read more](plugin-metadata.md)
 3. Optionally add any CRDs that you might want to validate to the `src/schemas` folder and generate corresponding objects - [see below](#generate-resources--typeguards)
-4. Implement your rule(s) in the generated `src/rules` folder and make sure to add them to the `definePlugin` call in the generated`src/plugin.ts` file
+4. [Implement your rule(s)](rule-implementation.md) in the generated `src/rules` folder and make sure to add them to the `definePlugin` call in the generated`src/plugin.ts` file
 5. Optionally use Monokle Cloud to test your plugin ([see below](#local-development-with-monokle-cloud))
 6. Package and/or share your plugin in our [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repository.
 
