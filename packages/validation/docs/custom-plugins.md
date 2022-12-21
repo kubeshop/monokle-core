@@ -79,7 +79,11 @@ To package your plugin into a single `plugin.js` file, run
 npm run build
 ```
 
-which will create a `dist/plugin.js` file in your repo.
+which will create a `dist/plugin.js` file in your repo. 
+
+Put this file in a `.monokle-plugins` folder below the cwd of where you are running the validator/CLI, rename it to
+`<plugin-name>-plugin.js` and it will be discovered and configurable as described 
+under [plugin configuration](configuration.md)
 
 ### Sharing and Distribution
 
