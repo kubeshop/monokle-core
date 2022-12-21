@@ -1,7 +1,7 @@
 # Custom Rule Implementation
 
-Apart from providing rule metadata as described in [plugin metadata](plugin-metadata.md) each rule
-needs to implement a `validate` method that is called for each resource to be validated. This method 
+Apart from providing rule metadata as described in [plugin metadata](plugin-metadata.md), each rule
+needs to implement a `validate` method that will be called for each resource to be validated. This method 
 takes two arguments:
 
 - a `RuleContext` object that provides metadata for the resource(s) to be validated
@@ -9,7 +9,27 @@ takes two arguments:
 
 These are both defined in [config.ts](../src/validators/custom/config.ts).
 
-Let's have a look at these in more detail.
+For example, the below validate call extracts the `resources` and `report` properties from the provided arguments and then
+iterates each resource, checking the `metadata` property for annotations and reporting an error if none found.
+
+```typescript
+validate({ resources }, { report }){
+  resources.forEach((resource) => {
+    // get annotations of resource
+    const annotations = Object.entries(resource.metadata?.annotations ?? {});
+    
+    // were there any?
+    const hasAnnotations = annotations.length > 0;
+
+    if (!hasAnnotations) {
+      // report error for this resource
+      report(resource, { path: "metadata.annotations" });
+    }
+  });
+}
+```
+
+Let's have a look at the provided arguments in more detail.
 
 ## RuleContext
 
@@ -85,25 +105,3 @@ Use this method to report a problem with the resource(s) being validated. Report
 ### `parse(resource: Resource): Document.Parsed<ParsedNode>`
 
 Returns an internally cached parsed YAML instance of the resource, this is for advanced use cases for now.
-  
-## Example
-
-The below validate call extracts the `resources` and `report` properties from the provided arguments and then 
-iterates each resource, checking the `metadata` property for annotations and reporting an error if none found.
-
-```typescript
-validate({ resources }, { report }){
-  resources.forEach((resource) => {
-    // get annotations of resource
-    const annotations = Object.entries(resource.metadata?.annotations ?? {});
-    
-    // were there any?
-    const hasAnnotations = annotations.length > 0;
-
-    if (!hasAnnotations) {
-      // report error for this resource
-      report(resource, { path: "metadata.annotations" });
-    }
-  });
-}
-```
