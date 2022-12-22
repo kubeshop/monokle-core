@@ -33,8 +33,6 @@ import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
-import * as fs from "fs";
-import path from "path";
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
@@ -72,7 +70,9 @@ export function createExtensibleMonokleValidator(
         return new DevCustomValidator(parser);
       default:
         try {
-          return await loadExternalPlugin( pluginName, parser );
+          const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
+          const customPlugin = await import(/* @vite-ignore */ url);
+          return new SimpleCustomValidator(customPlugin.default, parser);
         } catch (err) {
           throw new Error(
             err instanceof Error
@@ -114,33 +114,6 @@ export function createDefaultPluginLoader(
     }
   };
 }
-
-export async function loadExternalPlugin(pluginName: string, parser: ResourceParser) {
-  const filePath = path.join(process.cwd(), ".monokle-plugins", `${pluginName}-plugin.js`);
-  if (fs.existsSync(filePath)) {
-    const customPlugin = await import(/* @vite-ignore */ filePath );
-    return new SimpleCustomValidator(customPlugin.default, parser);
-  } else {
-    const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
-    const customPlugin = await importWithDataUrl(url);
-    return new SimpleCustomValidator(customPlugin.default, parser);
-  }
-}
-
-
-async function importWithDataUrl(url: string) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Error fetching ${url}: ${response.statusText}`);
-  }
-  const source = await response.text();
-  const buff = Buffer.from(source);
-  const encodedSource = buff.toString("base64");
-  const dataUrl = `data:text/javascript;base64,${encodedSource}`;
-
-  return await import(/* @vite-ignore */ dataUrl);
-}
-
 
 /**
  * The plugins that will be loaded by default.
