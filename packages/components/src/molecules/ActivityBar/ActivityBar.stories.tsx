@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { ActivityBar } from "./ActivityBar";
-import { ExtraActivityBarArgs, MainActivityBarArgs } from "./args";
+import { ExtraActivityBarArgs, HiddenOptionsActivityBarArgs, MainActivityBarArgs } from "./args";
 
 export default {
   title: "Molecules/ActivityBar",
@@ -14,3 +14,6 @@ MainActivityBar.args = MainActivityBarArgs;
 
 export const ExtraActivityBar = Template.bind({});
 ExtraActivityBar.args = ExtraActivityBarArgs;
+
+export const HiddenOptionsActivityBar = Template.bind({});
+HiddenOptionsActivityBar.args = HiddenOptionsActivityBarArgs;

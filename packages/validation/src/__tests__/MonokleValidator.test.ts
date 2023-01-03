@@ -1,7 +1,6 @@
 import Ajv from "ajv";
 import { expect, it } from "vitest";
 import { ResourceParser } from "../common/resourceParser.js";
-import { Resource } from "../common/types.js";
 import {
   createDefaultMonokleValidator,
   MonokleValidator,
@@ -38,10 +37,9 @@ it("should fail if optional refs are not allowed", async () => {
   expect(hasErrors).toMatchInlineSnapshot("2");
 });
 
-
-it("should support relative folder paths in kustomizations", async () => {
+async function processResourcesInFolder(path: string) {
   const files = await readDirectory(
-    "src/__tests__/resources/kustomize-with-relative-path-resources"
+    path
   );
   const resources = extractK8sResources(files);
 
@@ -55,6 +53,18 @@ it("should support relative folder paths in kustomizations", async () => {
     files.map((f) => f.path)
   );
   const response = await validator.validate({ resources });
+  return {response,resources};
+}
+
+it("should allow external patch refs and find relative patches that are not resources", async () => {
+  const {response} = await processResourcesInFolder("src/__tests__/resources/kustomize-with-relative-patch");
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toBe(0);
+});
+
+it("should support relative folder paths in kustomizations", async () => {
+  const {response} = await processResourcesInFolder("src/__tests__/resources/kustomize-with-relative-path-resources");
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
   expect(hasErrors).toBe(16);

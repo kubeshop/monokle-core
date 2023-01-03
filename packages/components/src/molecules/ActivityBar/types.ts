@@ -8,6 +8,7 @@ export type ActivityType<ActivityName> = {
   walkthrough?: JSX.Element;
   icon: (selected: boolean) => JSX.Element;
   useBadge: () => { count: number; dot?: boolean; size?: "small" | "default" } | undefined;
+  isVisible?: () => boolean;
 };
 
 export type ActivityBarProps<ActivityName, ExtraActivityName = any> = {

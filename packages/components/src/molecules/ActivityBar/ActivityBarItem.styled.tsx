@@ -9,10 +9,10 @@ interface GetColorParams {
   isHighlighted?: boolean;
 }
 
-export const ItemBox = styled.div<{ $isActive: boolean; $isSelected: boolean }>`
+export const ItemBox = styled.div<{ $isActive: boolean; $isSelected: boolean; $isVisible: boolean }>`
   background-color: ${({ $isSelected, $isActive }) =>
     $isSelected ? Colors.grey10 : $isActive ? Colors.blackPure : Colors.grey10};
-  display: flex;
+  display: ${({ $isVisible }) => ($isVisible ? "flex" : "none")};
   align-items: center;
   justify-content: center;
   width: 50px;
