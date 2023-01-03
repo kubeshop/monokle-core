@@ -30,11 +30,6 @@ settings:
   - [Enable/disable a plugin](#enabledisable-a-plugin)
   - [Enable/disable a rule](#enabledisable-a-rule)
   - [Configure the settings of a plugin](#configure-the-settings-of-a-plugin)
-- [Core plugins](#core-plugins)
-  - [Open Policy Agent](#open-policy-agent)
-  - [Kubernetes Schema](#kubernetes-schema)
-  - [Resource Links](#resource-links)
-  - [YAML Syntax](#yaml-syntax)
 
 ## Usage
 
