@@ -7,7 +7,7 @@ import { isPrometheus } from "../schemas/__generated__/prometheus.monitoring.cor
  * @remark use `npm run codegen` to build the types
  */
 export const noAdminApi = defineRule({
-  id: 3,
+  id: 1,
   description: "Disallow the admin API for Prometheus instances.",
   help: "Do not set enabledAdminAPI to true.",
   validate({ resources }, { report }) {

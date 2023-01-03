@@ -12,7 +12,8 @@
 
 Monokle CLI is a command-line interface for static analysis of Kubernetes resources.
 
-Use it to prevent misconfigurations within Kustomize, Helm or default Kubernetes resources. The output is available as a SARIF file which you can upload to GitHub CodeScan.
+Use it to prevent misconfigurations within Kustomize, Helm or default Kubernetes resources. The output is available as a SARIF file 
+which you can upload to GitHub CodeScan.
 
 Monokle CLI includes built-in validators for
 - YAML Syntax
@@ -100,8 +101,7 @@ You can use `--help` to access help information directly from the CLI.
 The Monokle CLI looks for a Monokle Validation configuration file 
 at `./monokle.validation.yaml`. You can change this by using the `--config` flag.
 
-All rules are enabled by default and are  
-described in the [Monokle Validation configuration][monokle-validation-docs] documentation.
+All rules are enabled by default and are described in the [Monokle Validation configuration][monokle-validation-docs] documentation.
 
 **Example**
 
@@ -123,7 +123,7 @@ settings:
 
 ### Custom validators
 
-It is easy to extend the Monokle CLI with custom validators that can be shared with others using
+It is easy to extend the Monokle CLI with [custom validators](../validation/docs/custom-plugins.md) that can be shared with others using
 our [Monokle Community Plugins][monokle-community-plugins] repository. 
 
 ## GitHub Action

@@ -1,7 +1,7 @@
 import { defineRule } from "@monokle/plugin-toolkit";
 
 /**
- * A basic example.
+ * A basic example that checks if a resource has annotations
  */
 export const noEmptyAnnotations = defineRule({
   id: 1,

@@ -128,7 +128,7 @@ export type RuleApi = {
   report(resource: Resource, args: ReportArgs): void;
 
   /**
-   * Returns a parsed YAML instance of the resource.
+   * Returns an internally cached parsed YAML instance of the resource.
    *
    * @remark this is for advanced use cases.
    */

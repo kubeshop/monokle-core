@@ -13,8 +13,14 @@ export async function readConfig(
     return undefined;
   }
 
-  const data = await fsp.readFile(path, "utf8");
-  const content = YAML.parse(data);
-  const config = parseConfig(content as JsonObject);
-  return config;
+  try {
+    const data = await fsp.readFile(path, "utf8");
+    const content = YAML.parse(data);
+    const config = parseConfig(content as JsonObject);
+    return config;
+  }
+  catch( err ){
+    console.error( "Failed to read configuration from " + path);
+    return undefined;
+  }
 }

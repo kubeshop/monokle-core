@@ -21,10 +21,23 @@ const PLUGIN_TYPES = [
       {
         name: "validation-ts",
         display: "TypeScript",
+        description: "Validation plugin written in Typescript",
         color: blue,
-      },
-    ],
-  },
+        templates: [
+          {
+            name: "basic",
+            description: "A sample typescript plugin with a single sample rule",
+            path: "validation-ts/basic-template"
+          },
+          {
+            name: "with-custom-crd",
+            description: "A sample typescript plugin using a custom resource definition (CRD)",
+            path: "validation-ts/crd-template"
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 const TEMPLATES = PLUGIN_TYPES.map(
@@ -33,21 +46,21 @@ const TEMPLATES = PLUGIN_TYPES.map(
 
 const renameFiles = {
   _gitignore: ".gitignore",
-  _npmrc: ".npmrc",
+  _npmrc: ".npmrc"
 };
 
 async function init() {
   const defaultTargetDir = "monokle-plugin";
   let targetDir = formatTargetDir(argv._[0]);
   let template = argv.template || argv.t;
-  let projectName;
+  let pluginName;
 
   const hasTemplateArg = template !== undefined;
   const communityPath = path.join(cwd, ".community");
   const isMonokleCommunityRepository = fs.existsSync(communityPath);
 
   const getProjectName = () =>
-    targetDir === "." ? path.basename(path.resolve()) : projectName;
+    targetDir === "." ? path.basename(path.resolve()) : pluginName;
 
   let result = {};
 
@@ -56,13 +69,13 @@ async function init() {
       [
         {
           type: targetDir ? null : "text",
-          name: "projectName",
-          message: reset("Project name:"),
+          name: "pluginName",
+          message: reset("Plugin name:"),
           initial: defaultTargetDir,
           onState: (state) => {
-            projectName = state.value ?? defaultTargetDir;
+            pluginName = state.value ?? defaultTargetDir;
             targetDir = formatTargetDir(state.value) || defaultTargetDir;
-          },
+          }
         },
         {
           type: () => (isValidPackageName(getProjectName()) ? null : "text"),
@@ -70,7 +83,7 @@ async function init() {
           message: reset("Package name:"),
           initial: () => toValidPackageName(getProjectName()),
           validate: (dir) =>
-            isValidPackageName(dir) || "Invalid package.json name",
+            isValidPackageName(dir) || "Invalid package.json name"
         },
         {
           type: template && TEMPLATES.includes(template) ? null : "select",
@@ -78,15 +91,15 @@ async function init() {
           message:
             typeof template === "string" && !TEMPLATES.includes(template)
               ? reset(
-                  `"${template}" isn't a valid template. Please choose from below: `
-                )
+                `"${template}" isn't a valid template. Please choose from below: `
+              )
               : reset("Select a plugin type:"),
           initial: 0,
           choices: PLUGIN_TYPES.map((pluginTypes) => {
             const pluginTypeColor = pluginTypes.color;
             return {
               title: pluginTypeColor(pluginTypes.name),
-              value: pluginTypes,
+              value: pluginTypes
             };
           }),
           onState: (state) => {
@@ -95,7 +108,7 @@ async function init() {
             }
 
             targetDir = `${state.value.name}/${targetDir}`;
-          },
+          }
         },
         {
           type: (pluginType) =>
@@ -103,14 +116,32 @@ async function init() {
           name: "variant",
           message: reset("Select a variant:"),
           // @ts-ignore
-          choices: (framework) =>
-            framework.variants.map((variant) => {
+          choices: (pluginType) =>
+            pluginType.variants.map((variant) => {
               const variantColor = variant.color;
               return {
                 title: variantColor(variant.name),
-                value: variant.name,
+                description: variant.description,
+                value: variant.name
               };
-            }),
+            })
+        },
+        {
+          type: (variant, values) => {
+            return values.pluginType && variant &&
+              values.pluginType.variants.find(elm => elm.name === variant) ? "select" : null;
+          },
+          name: "variantTemplate",
+          message: reset("Select a template:"),
+          // @ts-ignore
+          choices: (variant, values) =>
+            values.pluginType.variants.find(elm => elm.name === variant)?.templates.map(template => {
+              return {
+                title: template.name,
+                description: template.description,
+                value: template.path
+              };
+            })
         },
         {
           type: () =>
@@ -120,7 +151,7 @@ async function init() {
             (targetDir === "."
               ? "Current directory"
               : `Target directory "${targetDir}"`) +
-            ` is not empty. Remove existing files and continue?`,
+            ` is not empty. Remove existing files and continue?`
         },
         {
           type: (_, { overwrite } = {}) => {
@@ -129,14 +160,14 @@ async function init() {
             }
             return null;
           },
-          name: "overwriteChecker",
-        },
+          name: "overwriteChecker"
+        }
       ],
 
       {
         onCancel: () => {
           throw new Error(red("✖") + " Operation cancelled");
-        },
+        }
       }
     );
   } catch (cancelled) {
@@ -145,7 +176,7 @@ async function init() {
   }
 
   // user choice associated with prompts
-  const { pluginType, overwrite, packageName, variant } = result;
+  const { pluginType, overwrite, packageName, variant, variantTemplate } = result;
 
   if (hasTemplateArg && isMonokleCommunityRepository) {
     if (template.startsWith("validation")) {
@@ -162,14 +193,14 @@ async function init() {
   }
 
   // determine template
-  template = variant || pluginType || template;
+  template = variantTemplate ? path.join( "templates", variantTemplate ) : variant || pluginType || template;
 
   console.log(`\nScaffolding plugin in ${root}...`);
 
   const templateDir = path.resolve(
     fileURLToPath(import.meta.url),
     "..",
-    `template-${template}`
+    template
   );
 
   const write = (file, content) => {
@@ -296,7 +327,7 @@ function pkgFromUserAgent(userAgent) {
   const pkgSpecArr = pkgSpec.split("/");
   return {
     name: pkgSpecArr[0],
-    version: pkgSpecArr[1],
+    version: pkgSpecArr[1]
   };
 }
 
