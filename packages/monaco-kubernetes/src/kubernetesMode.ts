@@ -3,6 +3,7 @@ import { registerMarkerDataProvider } from "monaco-marker-data-provider";
 import { createWorkerManager } from "monaco-worker-manager";
 
 import { languageId } from "./constants.js";
+import { LanguageSettingsContainer } from "./index.js";
 import { CreateData, KubernetesWorker } from "./kubernetes.worker.js";
 import {
   createCodeActionProvider,
@@ -47,46 +48,57 @@ const richEditConfiguration: monaco.languages.LanguageConfiguration = {
   ],
 };
 
-export function setupMode(): void {
-  const worker = createWorkerManager<KubernetesWorker, CreateData>(monaco, {
+export function setupMode(settings: LanguageSettingsContainer): void {
+  const wm = createWorkerManager<KubernetesWorker, CreateData>(monaco, {
     label: "yaml",
     moduleId: "monaco-kubernetes/kubernetes.worker",
-    createData: {},
+    createData: settings.get(),
   });
 
   monaco.languages.registerCompletionItemProvider(
     languageId,
-    createCompletionItemProvider(worker.getWorker)
+    createCompletionItemProvider(wm.getWorker)
   );
   monaco.languages.registerHoverProvider(
     languageId,
-    createHoverProvider(worker.getWorker)
+    createHoverProvider(wm.getWorker)
   );
   monaco.languages.registerDefinitionProvider(
     languageId,
-    createDefinitionProvider(worker.getWorker)
+    createDefinitionProvider(wm.getWorker)
   );
   monaco.languages.registerDocumentSymbolProvider(
     languageId,
-    createDocumentSymbolProvider(worker.getWorker)
+    createDocumentSymbolProvider(wm.getWorker)
   );
   monaco.languages.registerDocumentFormattingEditProvider(
     languageId,
-    createDocumentFormattingEditProvider(worker.getWorker)
+    createDocumentFormattingEditProvider(wm.getWorker)
   );
   monaco.languages.registerLinkProvider(
     languageId,
-    createLinkProvider(worker.getWorker)
+    createLinkProvider(wm.getWorker)
   );
   monaco.languages.registerCodeActionProvider(
     languageId,
-    createCodeActionProvider(worker.getWorker)
+    createCodeActionProvider(wm.getWorker)
   );
   monaco.languages.setLanguageConfiguration(languageId, richEditConfiguration);
 
-  registerMarkerDataProvider(
+  let markerDataProvider = registerMarkerDataProvider(
     monaco,
     languageId,
-    createMarkerDataProvider(worker.getWorker)
+    createMarkerDataProvider(wm.getWorker)
   );
+
+  settings.onChange(async (newSettings) => {
+    const worker = await wm.getWorker();
+    await worker.reconfigure(newSettings);
+    markerDataProvider.dispose();
+    markerDataProvider = registerMarkerDataProvider(
+      monaco,
+      languageId,
+      createMarkerDataProvider(wm.getWorker)
+    );
+  });
 }

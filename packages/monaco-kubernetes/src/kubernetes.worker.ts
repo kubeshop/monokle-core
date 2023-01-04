@@ -19,13 +19,15 @@ import {
 } from "yaml-language-server/lib/esm/languageservice/yamlLanguageService.js";
 
 import { languageId } from "./constants.js";
+import type { LanguageSettings } from "./index.js";
 import { loadSchema } from "./schemas/loadSchema.js";
-import { ValidationLanguageSettings } from "./validation/types.js";
 import { MonokleService } from "./validation/validationService.js";
 
-export type CreateData = ValidationLanguageSettings;
+export type CreateData = LanguageSettings;
 
 export interface KubernetesWorker {
+  reconfigure(newSettings: LanguageSettings): void;
+
   doValidation: (uri: string) => Diagnostic[];
 
   doComplete: (uri: string, position: Position) => CompletionList;
@@ -49,29 +51,12 @@ export interface KubernetesWorker {
   ) => CodeAction[];
 }
 
-initialize<KubernetesWorker, CreateData>((ctx) => {
+initialize<KubernetesWorker, CreateData>((ctx, settings) => {
   const parser = new ResourceParser();
   const loader = new SchemaLoader();
   const validator = new MonokleService(parser, loader);
 
-  validator.configure({
-    validation: {
-      plugins: {
-        "open-policy-agent": true,
-        "resource-links": true,
-        "yaml-syntax": true,
-        "kubernetes-schema": true,
-        argo: true,
-      },
-      settings: {
-        debug: true,
-        "open-policy-agent": {
-          wasmSrc:
-            "https://plugins.monokle.com/validation/open-policy-agent/trivy.wasm",
-        },
-      },
-    },
-  });
+  validator.configure(settings);
 
   const languageService = getLanguageService(
     async (uri: string): Promise<string> => {
@@ -178,7 +163,12 @@ initialize<KubernetesWorker, CreateData>((ctx) => {
   };
 
   return {
+    reconfigure(newSettings) {
+      return validator.configure(newSettings);
+    },
+
     doValidation(uri) {
+      console.log("worker.doValidation", uri);
       validator.sync(getAllTextDocuments());
       const document = getTextDocument(uri);
 
