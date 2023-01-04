@@ -18,11 +18,15 @@ function format(message: string, args: string[]): string {
     ? message
     : message.replace(/{(\d+)}/g, (match, rest: number[]) => {
         const [index] = rest;
-        return typeof args[index] === 'undefined' ? match : args[index];
+        return typeof args[index] === "undefined" ? match : args[index];
       });
 }
 
-function localize(key: LocalizeInfo | string, message: string, ...args: string[]): string {
+function localize(
+  key: LocalizeInfo | string,
+  message: string,
+  ...args: string[]
+): string {
   return format(message, args);
 }
 

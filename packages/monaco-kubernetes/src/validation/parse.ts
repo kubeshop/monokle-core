@@ -1,8 +1,8 @@
-import { Resource } from '@monokle/validation';
-import { LineCounter, parseAllDocuments, parseDocument } from 'yaml';
+import { Resource } from "@monokle/validation";
+import { LineCounter, parseAllDocuments, parseDocument } from "yaml";
 
-export const KUSTOMIZATION_KIND = 'Kustomization';
-export const KUSTOMIZATION_API_GROUP = 'kustomize.config.k8s.io';
+export const KUSTOMIZATION_KIND = "Kustomization";
+export const KUSTOMIZATION_API_GROUP = "kustomize.config.k8s.io";
 
 export type File = {
   id: string;
@@ -39,7 +39,12 @@ export function extractK8sResources(files: File[]): Resource[] {
 
       if (isKubernetesLike(content)) {
         const name = createResourceName(file.path, content, content.kind);
-        const id = createResourceId(file.id, content.kind, name, content.metadata?.namespace);
+        const id = createResourceId(
+          file.id,
+          content.kind,
+          name,
+          content.metadata?.namespace
+        );
         const namespace = extractNamespace(content);
         const resource = {
           ...resourceBase,
@@ -49,7 +54,11 @@ export function extractK8sResources(files: File[]): Resource[] {
         };
 
         resources.push(resource);
-      } else if (content && isUntypedKustomizationFile(file.path) && documents.length === 1) {
+      } else if (
+        content &&
+        isUntypedKustomizationFile(file.path) &&
+        documents.length === 1
+      ) {
         const name = createResourceName(file.path, content, KUSTOMIZATION_KIND);
         const id = createResourceId(file.id, name, KUSTOMIZATION_KIND);
         const resource = {
@@ -83,17 +92,21 @@ type KubernetesLike = {
 };
 
 function isKubernetesLike(content: any): content is KubernetesLike {
-  return content && typeof content.apiVersion === 'string' && typeof content.kind === 'string';
+  return (
+    content &&
+    typeof content.apiVersion === "string" &&
+    typeof content.kind === "string"
+  );
 }
 
 // Some (older) kustomization yamls don't contain kind/group properties to identify them as such
 // they are identified only by their name
-function isUntypedKustomizationFile(filePath = ''): boolean {
+function isUntypedKustomizationFile(filePath = ""): boolean {
   return /kustomization*.yaml/.test(filePath.toLowerCase().trim());
 }
 
 export function isYamlFile(file: File): boolean {
-  return file.path.endsWith('.yml') || file.path.endsWith('.yaml');
+  return file.path.endsWith(".yml") || file.path.endsWith(".yaml");
 }
 export function parseYamlDocument(text: string, lineCounter?: LineCounter) {
   return parseDocument(text, { lineCounter, uniqueKeys: false, strict: false });
@@ -114,22 +127,26 @@ export function parseAllYamlDocuments(text: string, lineCounter?: LineCounter) {
 function extractNamespace(content: any): string | undefined {
   const namespace = content.metadata?.namespace;
 
-  return namespace && typeof namespace === 'string' ? namespace : undefined;
+  return namespace && typeof namespace === "string" ? namespace : undefined;
 }
 
 export const createResourceId = (
   fileId: string,
   name: string,
   kind: string,
-  namespace?: string | null,
+  namespace?: string | null
 ): string => {
-  return murmurHash(`${fileId}${kind}${name}${namespace || ''}`);
+  return murmurHash(`${fileId}${kind}${name}${namespace || ""}`);
 };
 
-export function createResourceName(filePath: string, content: any, kind: string): string {
+export function createResourceName(
+  filePath: string,
+  content: any,
+  kind: string
+): string {
   try {
     //  metadata name
-    return typeof content.metadata.name === 'string'
+    return typeof content.metadata.name === "string"
       ? content.metadata.name.trim()
       : JSON.stringify(content.metadata.name).trim();
   } catch (error) {
@@ -138,8 +155,13 @@ export function createResourceName(filePath: string, content: any, kind: string)
   }
 }
 
-export function getResourcesForPath(filePath: string, resources: Resource[] | undefined) {
-  return resources ? resources.filter((resource) => resource.filePath === filePath) : [];
+export function getResourcesForPath(
+  filePath: string,
+  resources: Resource[] | undefined
+) {
+  return resources
+    ? resources.filter((resource) => resource.filePath === filePath)
+    : [];
 }
 
 /**
@@ -150,8 +172,11 @@ export function getResourcesForPath(filePath: string, resources: Resource[] | un
  * @see https://en.wikipedia.org/wiki/MurmurHash
  * @see https://github.com/perezd/node-murmurhash
  */
-export function murmurHash(key: string | Uint8Array, seed: number = 1337): string {
-  if (typeof key === 'string') key = new TextEncoder().encode(key);
+export function murmurHash(
+  key: string | Uint8Array,
+  seed: number = 1337
+): string {
+  if (typeof key === "string") key = new TextEncoder().encode(key);
 
   const remainder = key.length & 3;
   const bytes = key.length - remainder;
@@ -170,13 +195,16 @@ export function murmurHash(key: string | Uint8Array, seed: number = 1337): strin
       ((key[++i] & 0xff) << 24);
     ++i;
 
-    k1 = ((k1 & 0xffff) * c1 + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
+    k1 =
+      ((k1 & 0xffff) * c1 + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
     k1 = (k1 << 15) | (k1 >>> 17);
-    k1 = ((k1 & 0xffff) * c2 + ((((k1 >>> 16) * c2) & 0xffff) << 16)) & 0xffffffff;
+    k1 =
+      ((k1 & 0xffff) * c2 + ((((k1 >>> 16) * c2) & 0xffff) << 16)) & 0xffffffff;
 
     h1 ^= k1;
     h1 = (h1 << 13) | (h1 >>> 19);
-    h1b = ((h1 & 0xffff) * 5 + ((((h1 >>> 16) * 5) & 0xffff) << 16)) & 0xffffffff;
+    h1b =
+      ((h1 & 0xffff) * 5 + ((((h1 >>> 16) * 5) & 0xffff) << 16)) & 0xffffffff;
     h1 = (h1b & 0xffff) + 0x6b64 + ((((h1b >>> 16) + 0xe654) & 0xffff) << 16);
   }
 
@@ -190,18 +218,28 @@ export function murmurHash(key: string | Uint8Array, seed: number = 1337): strin
     case 1:
       k1 ^= key[i] & 0xff;
 
-      k1 = ((k1 & 0xffff) * c1 + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
+      k1 =
+        ((k1 & 0xffff) * c1 + ((((k1 >>> 16) * c1) & 0xffff) << 16)) &
+        0xffffffff;
       k1 = (k1 << 15) | (k1 >>> 17);
-      k1 = ((k1 & 0xffff) * c2 + ((((k1 >>> 16) * c2) & 0xffff) << 16)) & 0xffffffff;
+      k1 =
+        ((k1 & 0xffff) * c2 + ((((k1 >>> 16) * c2) & 0xffff) << 16)) &
+        0xffffffff;
       h1 ^= k1;
   }
 
   h1 ^= key.length;
 
   h1 ^= h1 >>> 16;
-  h1 = ((h1 & 0xffff) * 0x85ebca6b + ((((h1 >>> 16) * 0x85ebca6b) & 0xffff) << 16)) & 0xffffffff;
+  h1 =
+    ((h1 & 0xffff) * 0x85ebca6b +
+      ((((h1 >>> 16) * 0x85ebca6b) & 0xffff) << 16)) &
+    0xffffffff;
   h1 ^= h1 >>> 13;
-  h1 = ((h1 & 0xffff) * 0xc2b2ae35 + ((((h1 >>> 16) * 0xc2b2ae35) & 0xffff) << 16)) & 0xffffffff;
+  h1 =
+    ((h1 & 0xffff) * 0xc2b2ae35 +
+      ((((h1 >>> 16) * 0xc2b2ae35) & 0xffff) << 16)) &
+    0xffffffff;
   h1 ^= h1 >>> 16;
 
   const r = h1 >>> 0;
