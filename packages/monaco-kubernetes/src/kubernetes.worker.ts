@@ -108,6 +108,8 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
     hover: true,
     validate: false,
     yamlVersion: "1.2",
+    customTags: [],
+    schemas: [],
   });
 
   languageService.registerCustomSchemaProvider((uri) => {
