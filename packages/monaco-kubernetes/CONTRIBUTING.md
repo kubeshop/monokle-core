@@ -23,7 +23,7 @@ npx json-bump package.json && npm run build && npm publish --registry http://loc
 This will force install the latest version of the library.
 
 ```
-npm add monaco-monokle@latest --registry http://localhost:4873
+npm add monaco-kubernetes@latest --registry http://localhost:4873
 ```
 
 Now stop `npm run dev` and start it again will rebundle it. You will notice the app load and reboot with a black screen which is Vite's bundler kicking in to process the worker that got reloaded.
@@ -33,7 +33,7 @@ Now stop `npm run dev` and start it again will rebundle it. You will notice the 
 WARNING uses `yarn` and not `npm
 
 ```
-yarn add monaco-monokle@latest --registry http://localhost:4873
+yarn add monaco-kubernetes@latest --registry http://localhost:4873
 ```
 
 Now stop `npm run dev` and start it again will rebundle it. You will notice the app load and reboot with a black screen which is Vite's bundler kicking in to process the worker that got reloaded.

@@ -1,6 +1,6 @@
 {
   "name": "monaco-kubernetes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Monokle's Kubernetes plugin for the Monaco Editor.",
   "scripts": {
     "build": "node build.js"
@@ -12,6 +12,18 @@
   ],
   "author": "Kubeshop",
   "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "module": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./worker": {
+      "module": "./dist/kubernetes.worker.js",
+      "default": "./dist/kubernetes.worker.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/kubeshop/monokle-core"

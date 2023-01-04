@@ -1,6 +1,6 @@
-import { ResourceParser, SchemaLoader } from '@monokle/validation';
-import { initialize } from 'monaco-worker-manager/worker';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import { ResourceParser, SchemaLoader } from "@monokle/validation";
+import { initialize } from "monaco-worker-manager/worker";
+import { TextDocument } from "vscode-languageserver-textdocument";
 import {
   CodeAction,
   CompletionList,
@@ -12,21 +12,18 @@ import {
   Position,
   Range,
   TextEdit,
-} from 'vscode-languageserver-types';
+} from "vscode-languageserver-types";
 import {
   CustomFormatterOptions,
   getLanguageService,
-  LanguageSettings,
-} from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
+} from "yaml-language-server/lib/esm/languageservice/yamlLanguageService.js";
 
-import { languageId } from './constants.js';
-import { loadSchema } from './schemas/loadSchema.js';
-import { MonokleService } from './validation/validationService.js';
+import { languageId } from "./constants.js";
+import { loadSchema } from "./schemas/loadSchema.js";
+import { ValidationLanguageSettings } from "./validation/types.js";
+import { MonokleService } from "./validation/validationService.js";
 
-export interface CreateData {
-  languageSettings: LanguageSettings;
-  enableSchemaRequest: boolean;
-}
+export type CreateData = ValidationLanguageSettings;
 
 export interface KubernetesWorker {
   doValidation: (uri: string) => Diagnostic[];
@@ -45,10 +42,14 @@ export interface KubernetesWorker {
 
   findLinks: (uri: string) => DocumentLink[];
 
-  getCodeAction: (uri: string, range: Range, diagnostics: Diagnostic[]) => CodeAction[];
+  getCodeAction: (
+    uri: string,
+    range: Range,
+    diagnostics: Diagnostic[]
+  ) => CodeAction[];
 }
 
-initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
+initialize<KubernetesWorker, CreateData>((ctx) => {
   const parser = new ResourceParser();
   const loader = new SchemaLoader();
   const validator = new MonokleService(parser, loader);
@@ -56,16 +57,17 @@ initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
   validator.configure({
     validation: {
       plugins: {
-        'open-policy-agent': true,
-        'resource-links': true,
-        'yaml-syntax': true,
-        'kubernetes-schema': true,
+        "open-policy-agent": true,
+        "resource-links": true,
+        "yaml-syntax": true,
+        "kubernetes-schema": true,
         argo: true,
       },
       settings: {
         debug: true,
-        'open-policy-agent': {
-          wasmSrc: 'https://plugins.monokle.com/validation/open-policy-agent/trivy.wasm',
+        "open-policy-agent": {
+          wasmSrc:
+            "https://plugins.monokle.com/validation/open-policy-agent/trivy.wasm",
         },
       },
     },
@@ -73,10 +75,10 @@ initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
 
   const languageService = getLanguageService(
     async (uri: string): Promise<string> => {
-      console.log('getSchemaContent - schema URI:', uri);
-      if (!uri.startsWith('kubernetes://')) {
+      console.log("getSchemaContent - schema URI:", uri);
+      if (!uri.startsWith("kubernetes://")) {
         const response = await fetch(uri);
-        console.log('schema requested', { uri });
+        console.log("schema requested", { uri });
         if (response.ok) {
           return response.text();
         }
@@ -85,7 +87,7 @@ initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
 
       // Parse magic URI
       // example: ['io.k8s.api.apps.v1.Deployment'];
-      const schemaIds = uri.replace(/^kubernetes:\/\//, '').split('+');
+      const schemaIds = uri.replace(/^kubernetes:\/\//, "").split("+");
 
       // Load schema
       // loader.getResourceSchema(schemaIds[0]) // Continue here: rework schema loader to accept ids as above.
@@ -111,13 +113,20 @@ initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
     null,
     null,
     null,
-    null,
+    null
   );
 
-  languageService.configure({ ...languageSettings, completion: true });
+  languageService.configure({
+    isKubernetes: true,
+    format: true,
+    completion: true,
+    hover: true,
+    validate: false,
+    yamlVersion: "1.2",
+  });
 
   languageService.registerCustomSchemaProvider((uri) => {
-    console.log('getSchemaUri - model URI:', uri);
+    console.log("getSchemaUri - model URI:", uri);
     // Fetch model
     const model = getTextDocument(uri);
 
@@ -129,13 +138,13 @@ initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
 
     // HACK: use ResourceParser to do this properly!
     const content = model.getText();
-    if (content.includes('kind: Deployment')) {
-      return Promise.resolve('kubernetes://io.k8s.api.apps.v1.Deployment');
-    } else if (content.includes('kind: Application')) {
-      return Promise.resolve('kubernetes://io.argoproj.v1alpha1.Application');
+    if (content.includes("kind: Deployment")) {
+      return Promise.resolve("kubernetes://io.k8s.api.apps.v1.Deployment");
+    } else if (content.includes("kind: Application")) {
+      return Promise.resolve("kubernetes://io.argoproj.v1alpha1.Application");
     } else {
       // fallback
-      return Promise.resolve('kubernetes://io.k8s.api.apps.v1.Deployment');
+      return Promise.resolve("kubernetes://io.k8s.api.apps.v1.Deployment");
     }
   });
 
@@ -143,7 +152,12 @@ initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
     const models = ctx.getMirrorModels();
     for (const model of models) {
       if (String(model.uri) === uri) {
-        return TextDocument.create(uri, languageId, model.version, model.getValue());
+        return TextDocument.create(
+          uri,
+          languageId,
+          model.version,
+          model.getValue()
+        );
       }
     }
   };
@@ -156,7 +170,7 @@ initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
         String(model.uri),
         languageId,
         model.version,
-        model.getValue(),
+        model.getValue()
       );
       documents.push(document);
     }
@@ -177,15 +191,21 @@ initialize<KubernetesWorker, CreateData>((ctx, { languageSettings }) => {
 
     doComplete(uri, position) {
       const document = getTextDocument(uri);
-      return languageService.doComplete(document, position, languageSettings.isKubernetes);
+      return languageService.doComplete(document, position, true);
     },
 
     doDefinition(uri, position) {
       validator.sync(getAllTextDocuments());
       const document = getTextDocument(uri);
-      const monacoLinks = validator.doDefinition(document, { position, textDocument: { uri } });
+      const monacoLinks = validator.doDefinition(document, {
+        position,
+        textDocument: { uri },
+      });
       const yamlLinks =
-        languageService.doDefinition(document, { position, textDocument: { uri } }) ?? [];
+        languageService.doDefinition(document, {
+          position,
+          textDocument: { uri },
+        }) ?? [];
       return [...monacoLinks, ...yamlLinks];
     },
 
