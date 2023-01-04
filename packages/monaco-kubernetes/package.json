@@ -1,6 +1,6 @@
 {
   "name": "monaco-kubernetes",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Monokle's Kubernetes plugin for the Monaco Editor.",
   "scripts": {
     "build": "node build.js"

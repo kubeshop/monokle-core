@@ -20,13 +20,11 @@ export const SETTINGS = createLanguageSettingsContainer({
   validation: {
     plugins: {
       "open-policy-agent": true,
-      "resource-links": true,
       "yaml-syntax": true,
       "kubernetes-schema": true,
       argo: true,
     },
     settings: {
-      debug: true,
       "open-policy-agent": {
         wasmSrc:
           "https://plugins.monokle.com/validation/open-policy-agent/trivy.wasm",
