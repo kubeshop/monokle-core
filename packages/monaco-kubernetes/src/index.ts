@@ -1,50 +1,39 @@
-import { Emitter, languages } from "monaco-editor/esm/vs/editor/editor.api.js";
-import { DiagnosticsOptions, LanguageServiceDefaults } from "monaco-yaml";
-
+import {
+  Emitter,
+  IEvent,
+  languages,
+} from "monaco-editor/esm/vs/editor/editor.api.js";
 import { languageId } from "./constants.js";
 import { setupMode } from "./kubernetesMode.js";
+import type { ValidationLanguageSettings } from "./validation/types.js";
 
-// --- YAML configuration and defaults ---------
+export type LanguageSettings = ValidationLanguageSettings;
 
-const diagnosticDefault: DiagnosticsOptions = {
-  completion: true,
-  customTags: [],
-  enableSchemaRequest: false,
-  format: true,
-  isKubernetes: false,
-  hover: true,
-  schemas: [],
-  validate: true,
-  yamlVersion: "1.2",
-};
-
-export function createLanguageServiceDefaults(
-  initialDiagnosticsOptions: DiagnosticsOptions
-): LanguageServiceDefaults {
-  const onDidChange = new Emitter<LanguageServiceDefaults>();
-  let diagnosticsOptions = initialDiagnosticsOptions;
-
-  const languageServiceDefaults: LanguageServiceDefaults = {
-    get onDidChange() {
-      return onDidChange.event;
-    },
-
-    get diagnosticsOptions() {
-      return diagnosticsOptions;
-    },
-
-    setDiagnosticsOptions(options) {
-      diagnosticsOptions = { ...diagnosticDefault, ...options };
-      onDidChange.fire(languageServiceDefaults);
-    },
-  };
-
-  return languageServiceDefaults;
+/**
+ * Configure monaco-kubernetes
+ */
+export function configure(settings: LanguageSettings = {}): void {
+  SETTINGS.set(settings);
 }
 
-export const yamlDefaults = createLanguageServiceDefaults(diagnosticDefault);
-
-// --- Registration to monaco editor ---
+export const SETTINGS = createLanguageSettingsContainer({
+  validation: {
+    plugins: {
+      "open-policy-agent": true,
+      "resource-links": true,
+      "yaml-syntax": true,
+      "kubernetes-schema": true,
+      argo: true,
+    },
+    settings: {
+      debug: true,
+      "open-policy-agent": {
+        wasmSrc:
+          "https://plugins.monokle.com/validation/open-policy-agent/trivy.wasm",
+      },
+    },
+  },
+});
 
 languages.register({
   id: languageId,
@@ -54,14 +43,29 @@ languages.register({
 });
 
 languages.onLanguage("yaml", () => {
-  setupMode(yamlDefaults);
+  setupMode(SETTINGS);
 });
 
-/**
- * Configure `monaco-yaml` diagnostics options.
- *
- * @param options The options to set.
- */
-export function setDiagnosticsOptions(options: DiagnosticsOptions = {}): void {
-  yamlDefaults.setDiagnosticsOptions(options);
+export type LanguageSettingsContainer = {
+  get(): LanguageSettings;
+  set(settings: LanguageSettings): void;
+  onChange: IEvent<LanguageSettings>;
+};
+
+function createLanguageSettingsContainer(
+  defaultSettings: LanguageSettings
+): LanguageSettingsContainer {
+  let settings = defaultSettings;
+  const emitter = new Emitter<LanguageSettings>();
+
+  return {
+    get() {
+      return settings;
+    },
+    set(newSettings) {
+      settings = newSettings;
+      emitter.fire(settings);
+    },
+    onChange: emitter.event,
+  };
 }

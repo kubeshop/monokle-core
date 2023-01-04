@@ -67,8 +67,8 @@ export class MonokleService implements MonokleLanguageService {
     processRefs(resources, this._parser);
   }
 
-  configure(settings: ValidationLanguageSettings): void {
-    this._validator.preload(settings.validation);
+  configure(settings: ValidationLanguageSettings): Promise<void> {
+    return this._validator.preload(settings.validation);
   }
 
   async doValidation(document: TextDocument): Promise<Diagnostic[]> {
