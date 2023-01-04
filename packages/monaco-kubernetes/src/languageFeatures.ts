@@ -7,14 +7,14 @@ import {
   Position,
   Range,
   Uri,
-} from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { MarkerDataProvider } from 'monaco-marker-data-provider';
-import { WorkerGetter } from 'monaco-worker-manager';
-import * as ls from 'vscode-languageserver-types';
-import { CustomFormatterOptions } from 'yaml-language-server/lib/esm/languageservice/yamlLanguageService.js';
+} from "monaco-editor/esm/vs/editor/editor.api.js";
+import { MarkerDataProvider } from "monaco-marker-data-provider";
+import { WorkerGetter } from "monaco-worker-manager";
+import * as ls from "vscode-languageserver-types";
+import { CustomFormatterOptions } from "yaml-language-server/lib/esm/languageservice/yamlLanguageService.js";
 
-import { languageId } from './constants.js';
-import { KubernetesWorker } from './kubernetes.worker.js';
+import { languageId } from "./constants.js";
+import { KubernetesWorker } from "./kubernetes.worker.js";
 
 export type WorkerAccessor = WorkerGetter<KubernetesWorker>;
 
@@ -59,7 +59,9 @@ function toDiagnostics(diag: ls.Diagnostic): editor.IMarkerData {
   };
 }
 
-export function createMarkerDataProvider(getWorker: WorkerAccessor): MarkerDataProvider {
+export function createMarkerDataProvider(
+  getWorker: WorkerAccessor
+): MarkerDataProvider {
   return {
     owner: languageId,
     async provideMarkerData(model) {
@@ -93,13 +95,16 @@ function toRange(range: ls.Range): Range {
     range.start.line + 1,
     range.start.character + 1,
     range.end.line + 1,
-    range.end.character + 1,
+    range.end.character + 1
   );
 }
 
 function fromRange(range: IRange): ls.Range {
   return {
-    start: { line: range.startLineNumber - 1, character: range.startColumn - 1 },
+    start: {
+      line: range.startLineNumber - 1,
+      character: range.startColumn - 1,
+    },
     end: { line: range.endLineNumber - 1, character: range.endColumn - 1 },
   };
 }
@@ -108,12 +113,14 @@ function fromMarkerData(marker: editor.IMarkerData): ls.Diagnostic {
   return {
     message: marker.message,
     range: fromRange(marker),
-    code: typeof marker.code === 'object' ? marker.code.value : marker.code,
+    code: typeof marker.code === "object" ? marker.code.value : marker.code,
     source: marker.source,
   };
 }
 
-function toCompletionItemKind(kind: ls.CompletionItemKind): languages.CompletionItemKind {
+function toCompletionItemKind(
+  kind: ls.CompletionItemKind
+): languages.CompletionItemKind {
   const mItemKind = languages.CompletionItemKind;
 
   switch (kind) {
@@ -169,16 +176,19 @@ function toTextEdit(textEdit: ls.TextEdit): editor.ISingleEditOperation {
 }
 
 export function createCompletionItemProvider(
-  getWorker: WorkerAccessor,
+  getWorker: WorkerAccessor
 ): languages.CompletionItemProvider {
   return {
-    triggerCharacters: [' ', ':'],
+    triggerCharacters: [" ", ":"],
 
     async provideCompletionItems(model, position) {
       const resource = model.uri;
 
       const worker = await getWorker(resource);
-      const info = await worker.doComplete(String(resource), fromPosition(position));
+      const info = await worker.doComplete(
+        String(resource),
+        fromPosition(position)
+      );
       if (!info) {
         return;
       }
@@ -188,7 +198,7 @@ export function createCompletionItemProvider(
         position.lineNumber,
         wordInfo.startColumn,
         position.lineNumber,
-        wordInfo.endColumn,
+        wordInfo.endColumn
       );
 
       const items = info.items.map((entry) => {
@@ -204,7 +214,9 @@ export function createCompletionItemProvider(
         };
         if (entry.textEdit) {
           item.range = toRange(
-            'range' in entry.textEdit ? entry.textEdit.range : entry.textEdit.replace,
+            "range" in entry.textEdit
+              ? entry.textEdit.range
+              : entry.textEdit.replace
           );
           item.insertText = entry.textEdit.newText;
         }
@@ -212,7 +224,8 @@ export function createCompletionItemProvider(
           item.additionalTextEdits = entry.additionalTextEdits.map(toTextEdit);
         }
         if (entry.insertTextFormat === ls.InsertTextFormat.Snippet) {
-          item.insertTextRules = languages.CompletionItemInsertTextRule.InsertAsSnippet;
+          item.insertTextRules =
+            languages.CompletionItemInsertTextRule.InsertAsSnippet;
         }
         return item;
       });
@@ -236,13 +249,18 @@ function toLocationLink(locationLink: ls.LocationLink): languages.LocationLink {
   };
 }
 
-export function createDefinitionProvider(getWorker: WorkerAccessor): languages.DefinitionProvider {
+export function createDefinitionProvider(
+  getWorker: WorkerAccessor
+): languages.DefinitionProvider {
   return {
     async provideDefinition(model, position) {
       const resource = model.uri;
 
       const worker = await getWorker(resource);
-      const definitions = await worker.doDefinition(String(resource), fromPosition(position));
+      const definitions = await worker.doDefinition(
+        String(resource),
+        fromPosition(position)
+      );
 
       return definitions?.map(toLocationLink);
     },
@@ -251,13 +269,18 @@ export function createDefinitionProvider(getWorker: WorkerAccessor): languages.D
 
 // --- hover ------
 
-export function createHoverProvider(getWorker: WorkerAccessor): languages.HoverProvider {
+export function createHoverProvider(
+  getWorker: WorkerAccessor
+): languages.HoverProvider {
   return {
     async provideHover(model, position) {
       const resource = model.uri;
 
       const worker = await getWorker(resource);
-      const info = await worker.doHover(String(resource), fromPosition(position));
+      const info = await worker.doHover(
+        String(resource),
+        fromPosition(position)
+      );
       if (!info) {
         return;
       }
@@ -318,7 +341,7 @@ function toSymbolKind(kind: ls.SymbolKind): languages.SymbolKind {
 
 function toDocumentSymbol(item: ls.DocumentSymbol): languages.DocumentSymbol {
   return {
-    detail: item.detail || '',
+    detail: item.detail || "",
     range: toRange(item.range),
     name: item.name,
     kind: toSymbolKind(item.kind),
@@ -329,7 +352,7 @@ function toDocumentSymbol(item: ls.DocumentSymbol): languages.DocumentSymbol {
 }
 
 export function createDocumentSymbolProvider(
-  getWorker: WorkerAccessor,
+  getWorker: WorkerAccessor
 ): languages.DocumentSymbolProvider {
   return {
     async provideDocumentSymbols(model) {
@@ -346,7 +369,7 @@ export function createDocumentSymbolProvider(
 }
 
 function fromFormattingOptions(
-  options: languages.FormattingOptions,
+  options: languages.FormattingOptions
 ): CustomFormatterOptions & ls.FormattingOptions {
   return {
     tabSize: options.tabSize,
@@ -356,14 +379,17 @@ function fromFormattingOptions(
 }
 
 export function createDocumentFormattingEditProvider(
-  getWorker: WorkerAccessor,
+  getWorker: WorkerAccessor
 ): languages.DocumentFormattingEditProvider {
   return {
     async provideDocumentFormattingEdits(model, options) {
       const resource = model.uri;
 
       const worker = await getWorker(resource);
-      const edits = await worker.format(String(resource), fromFormattingOptions(options));
+      const edits = await worker.format(
+        String(resource),
+        fromFormattingOptions(options)
+      );
       if (!edits || edits.length === 0) {
         return;
       }
@@ -380,7 +406,9 @@ function toLink(link: ls.DocumentLink): languages.ILink {
   };
 }
 
-export function createLinkProvider(getWorker: WorkerAccessor): languages.LinkProvider {
+export function createLinkProvider(
+  getWorker: WorkerAccessor
+): languages.LinkProvider {
   return {
     async provideLinks(model) {
       const resource = model.uri;
@@ -426,7 +454,9 @@ function toCodeAction(codeAction: ls.CodeAction): languages.CodeAction {
   };
 }
 
-export function createCodeActionProvider(getWorker: WorkerAccessor): languages.CodeActionProvider {
+export function createCodeActionProvider(
+  getWorker: WorkerAccessor
+): languages.CodeActionProvider {
   return {
     async provideCodeActions(model, range, context) {
       const resource = model.uri;
@@ -435,7 +465,7 @@ export function createCodeActionProvider(getWorker: WorkerAccessor): languages.C
       const codeActions = await worker.getCodeAction(
         String(resource),
         fromRange(range),
-        context.markers.map(fromMarkerData),
+        context.markers.map(fromMarkerData)
       );
       return {
         actions: codeActions.map(toCodeAction),

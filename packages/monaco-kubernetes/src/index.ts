@@ -1,8 +1,8 @@
-import { Emitter, languages } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { DiagnosticsOptions, LanguageServiceDefaults } from 'monaco-yaml';
+import { Emitter, languages } from "monaco-editor/esm/vs/editor/editor.api.js";
+import { DiagnosticsOptions, LanguageServiceDefaults } from "monaco-yaml";
 
-import { languageId } from './constants.js';
-import { setupMode } from './kubernetesMode.js';
+import { languageId } from "./constants.js";
+import { setupMode } from "./kubernetesMode.js";
 
 // --- YAML configuration and defaults ---------
 
@@ -15,11 +15,11 @@ const diagnosticDefault: DiagnosticsOptions = {
   hover: true,
   schemas: [],
   validate: true,
-  yamlVersion: '1.2',
+  yamlVersion: "1.2",
 };
 
 export function createLanguageServiceDefaults(
-  initialDiagnosticsOptions: DiagnosticsOptions,
+  initialDiagnosticsOptions: DiagnosticsOptions
 ): LanguageServiceDefaults {
   const onDidChange = new Emitter<LanguageServiceDefaults>();
   let diagnosticsOptions = initialDiagnosticsOptions;
@@ -48,12 +48,12 @@ export const yamlDefaults = createLanguageServiceDefaults(diagnosticDefault);
 
 languages.register({
   id: languageId,
-  extensions: ['.yaml', '.yml'],
-  aliases: ['YAML', 'yaml', 'YML', 'yml'],
-  mimetypes: ['application/x-yaml'],
+  extensions: [".yaml", ".yml"],
+  aliases: ["YAML", "yaml", "YML", "yml"],
+  mimetypes: ["application/x-yaml"],
 });
 
-languages.onLanguage('yaml', () => {
+languages.onLanguage("yaml", () => {
   setupMode(yamlDefaults);
 });
 

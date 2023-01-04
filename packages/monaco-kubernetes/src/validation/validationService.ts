@@ -12,20 +12,20 @@ import {
   SchemaLoader,
   SimpleCustomValidator,
   YamlValidator,
-} from '@monokle/validation';
-import { DefinitionParams } from 'vscode-languageserver-protocol';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+} from "@monokle/validation";
+import { DefinitionParams } from "vscode-languageserver-protocol";
+import { TextDocument } from "vscode-languageserver-textdocument";
 import {
   Diagnostic,
   DiagnosticSeverity,
   LocationLink,
   Position,
   Range,
-} from 'vscode-languageserver-types';
-import { ARGO_PLUGIN } from './argo.plugin.js';
+} from "vscode-languageserver-types";
+import { ARGO_PLUGIN } from "./argo.plugin.js";
 
-import { extractK8sResources, File } from './parse.js';
-import { MonokleLanguageService, ValidationLanguageSettings } from './types.js';
+import { extractK8sResources, File } from "./parse.js";
+import { MonokleLanguageService, ValidationLanguageSettings } from "./types.js";
 
 export class MonokleService implements MonokleLanguageService {
   private _parser: ResourceParser;
@@ -37,26 +37,30 @@ export class MonokleService implements MonokleLanguageService {
     this._parser = parser;
     this._validator = new MonokleValidator(async (pluginName: string) => {
       switch (pluginName) {
-        case 'open-policy-agent':
+        case "open-policy-agent":
           const wasmLoader = new RemoteWasmLoader();
           return new OpenPolicyAgentValidator(parser, wasmLoader);
-        case 'resource-links':
+        case "resource-links":
           return new ResourceLinksValidator();
-        case 'yaml-syntax':
+        case "yaml-syntax":
           return new YamlValidator(parser);
-        case 'kubernetes-schema':
+        case "kubernetes-schema":
           return new KubernetesSchemaValidator(parser, loader);
-        case 'argo':
+        case "argo":
           return new SimpleCustomValidator(ARGO_PLUGIN, parser);
         default:
-          throw new Error('plugin_not_found');
+          throw new Error("plugin_not_found");
       }
     });
   }
 
   sync(documents: TextDocument[]): void {
     const files: File[] = documents.map((document) => {
-      return { id: document.uri, path: document.uri, content: document.getText() };
+      return {
+        id: document.uri,
+        path: document.uri,
+        content: document.getText(),
+      };
     });
     const resources = extractK8sResources(files);
     this._resources = resources;
@@ -96,7 +100,9 @@ export class MonokleService implements MonokleLanguageService {
             },
           };
           const severity =
-            result.level === 'error' ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+            result.level === "error"
+              ? DiagnosticSeverity.Error
+              : DiagnosticSeverity.Warning;
 
           return Diagnostic.create(range, result.message.text, severity);
         });
@@ -106,18 +112,23 @@ export class MonokleService implements MonokleLanguageService {
     return diagnostics;
   }
 
-  doDefinition(document: TextDocument, params: DefinitionParams): LocationLink[] {
+  doDefinition(
+    document: TextDocument,
+    params: DefinitionParams
+  ): LocationLink[] {
     const position: Position = {
       character: params.position.character,
       line: params.position.line + 1, // There is an odd off by one error in all positions..
     };
     const resource = this._resources.find((r) => r.fileId === document.uri);
-    const refs = resource.refs.filter((ref) => includesPosition(ref.position, position));
+    const refs = resource.refs.filter((ref) =>
+      includesPosition(ref.position, position)
+    );
     const links = [];
     console.log(document.uri, position.line, resource.refs);
 
     for (const ref of refs) {
-      if (ref.position && ref.target.type === 'resource') {
+      if (ref.position && ref.target.type === "resource") {
         const resourceId = ref.target.resourceId;
         const resource = this._resources.find((r) => r.id === resourceId);
         const targetUri = resource.fileId;
@@ -154,11 +165,14 @@ function createTargetRange(position: RefPosition) {
   if (position.endLine === undefined) {
     return Range.create(
       { line: position.line - 1, character: position.column - 1 },
-      { line: position.line - 1, character: position.column - 1 + position.length },
+      {
+        line: position.line - 1,
+        character: position.column - 1 + position.length,
+      }
     );
   }
   return Range.create(
     { line: position.line - 1, character: position.column - 1 },
-    { line: position.endLine - 1, character: position.endColumn - 1 },
+    { line: position.endLine - 1, character: position.endColumn - 1 }
   );
 }
