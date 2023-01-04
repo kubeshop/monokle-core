@@ -1,30 +1,32 @@
 const CONFIGMAP_NAMES: string[] = [
-  'argocd-cm',
-  'argocd-cmd-params-cm',
-  'argocd-rbac-cm',
-  'argocd-tls-certs-cm',
-  'argocd-ssh-known-hosts-cm',
+  "argocd-cm",
+  "argocd-cmd-params-cm",
+  "argocd-rbac-cm",
+  "argocd-tls-certs-cm",
+  "argocd-ssh-known-hosts-cm",
 ];
 
 export const ARGO_PLUGIN = {
-  id: 'ARGOCD',
-  name: 'argo',
-  displayName: 'ArgoCD Validation plugin',
-  description: 'Validation rules related to ArgoCD',
+  id: "ARGOCD",
+  name: "argo",
+  displayName: "ArgoCD Validation plugin",
+  description: "Validation rules related to ArgoCD",
   rules: {
     argoConfigMaps: {
       id: 1,
-      description: 'Check that ArgoCD ConfigMaps have required label',
-      help: 'Add app.kubernetes.io/part-of: argocd label to this ConfigMap for ArgoCD to use it',
+      description: "Check that ArgoCD ConfigMaps have required label",
+      help: "Add app.kubernetes.io/part-of: argocd label to this ConfigMap for ArgoCD to use it",
       validate({ resources }, { report }) {
         resources
           .filter((resource) => isConfigMap(resource))
-          .filter((resource) => CONFIGMAP_NAMES.includes(resource.metadata?.name))
+          .filter((resource) =>
+            CONFIGMAP_NAMES.includes(resource.metadata?.name)
+          )
           .forEach((resource) => {
             const labels = resource.metadata?.labels ?? {};
 
-            if (labels['app.kubernetes.io/part-of'] !== 'argocd') {
-              report(resource, { path: 'metadata.labels' });
+            if (labels["app.kubernetes.io/part-of"] !== "argocd") {
+              report(resource, { path: "metadata.labels" });
             }
           });
       },
@@ -38,9 +40,8 @@ export const ARGO_PLUGIN = {
           const hasName = app.spec.destination.name !== undefined;
           const hasServer = app.spec.destination.server !== undefined;
           const isValid = (!hasName && hasServer) || (hasName && !hasServer);
-          console.log('test', app, hasName, hasServer, 'valid?', isValid);
           if (isValid) return;
-          report(app, { path: 'spec.destination' });
+          report(app, { path: "spec.destination" });
         });
       },
     },
@@ -49,17 +50,17 @@ export const ARGO_PLUGIN = {
 
 function isConfigMap(resource: unknown): resource is ConfigMap {
   return (
-    typeof resource === 'object' &&
-    (resource as any)?.apiVersion === 'v1' &&
-    (resource as any)?.kind === 'ConfigMap'
+    typeof resource === "object" &&
+    (resource as any)?.apiVersion === "v1" &&
+    (resource as any)?.kind === "ConfigMap"
   );
 }
 
 function isApplication(resource: unknown): resource is Application {
   return (
-    typeof resource === 'object' &&
-    (resource as any)?.apiVersion === 'argoproj.io/v1alpha1' &&
-    (resource as any)?.kind === 'Application'
+    typeof resource === "object" &&
+    (resource as any)?.apiVersion === "argoproj.io/v1alpha1" &&
+    (resource as any)?.kind === "Application"
   );
 }
 
@@ -1878,7 +1879,7 @@ export interface ConfigMap {
   /**
    * APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
    */
-  apiVersion?: 'v1';
+  apiVersion?: "v1";
   /**
    * BinaryData contains the binary data. Each key must consist of alphanumeric characters, '-', '_' or '.'. BinaryData can contain byte sequences that are not in the UTF-8 range. The keys stored in BinaryData must not overlap with the ones in the Data field, this is enforced during validation process. Using this field will require 1.10+ apiserver and kubelet.
    */
@@ -1898,7 +1899,7 @@ export interface ConfigMap {
   /**
    * Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
    */
-  kind?: 'ConfigMap';
+  kind?: "ConfigMap";
   /**
    * Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
    */
