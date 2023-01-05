@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "declaration": true,
+    "declaration": false,
     "forceConsistentCasingInFileNames": true,
     "downlevelIteration": true,
     "lib": ["dom", "dom.iterable", "es2017"],
