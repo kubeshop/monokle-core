@@ -40,13 +40,13 @@ to import/use in your validators.
 Example usage for code generated for the prometheus CRD:
 
 ```typescript
+import { isPrometheus } from "../schemas/__generated__/prometheus.monitoring.coreos.com.v1.js";
+
 defineRule({
   validate({ resources } {
-    resources
-      .filter(r => isPrometheus(r.content))
-      .forEach(prometheus => {
-        prometheus.content.spec; // this is now a fully typed object.
-      })
+    resources.filter(isPrometheus).forEach(prometheus => {
+      prometheus.content.spec; // this is now a fully typed object.
+    })
   }
 })
 ```
