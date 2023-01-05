@@ -1,15 +1,14 @@
 # Welcome to Create Monokle Plugin
 
-Use this library to scaffold your custom Monokle validation plugin in seconds - which can then 
-be used locally or contributed to our [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repository. 
+Use this library to scaffold your custom Monokle validation plugin in seconds. Once implemented the plugin can be used locally or contributed to our [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repository. 
 
 Read more about custom plugins in the [Custom Validator documentation](../validation/docs/custom-plugins.md)
 
-## Usage
+## Usage 
 
-Prerequisite: it's recommended to use NodeJs LTS or higher and NPM 7+.
+This plugin can either be run interactively or with cli arguments.
 
-### Interactive
+### Interactive mode
 
 Running in interactive mode:
 
@@ -36,10 +35,31 @@ Done. Now run:
 
 Now you're all set to implement your [Custom Plugin](../validation/docs/custom-plugins.md)
 
-### Create a TypeScript validation plugin
+**Generated Folder Structure**
+
+For typescript plugins, the generated plugin will contain the following files/folders (somewhat depending on the selected template)
 
 ```
-npm create monokle-plugin@latest my-validator -- --template validation-ts
+/src
+   /rules       -> contains sample rules
+   /schemas
+      /crds     -> contains sample CRDs
+   plugin.ts    -> defines the plugin
+.gitignore
+package.json
+README.md     
+tsconfig.json
+```
+
+Check the [templates/validation-ts](templates/validation-ts) folder in this repo to see the actual templates used 
+to generate the above.
+
+### Imperative mode 
+
+Use the below syntax to provide all arguments upfront 
+
+```
+npm create monokle-plugin@latest my-validator -- --template validation-ts 
 ```
 
 ### Sharing plugins
