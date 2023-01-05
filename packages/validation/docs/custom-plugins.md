@@ -45,7 +45,7 @@ import { isPrometheus } from "../schemas/__generated__/prometheus.monitoring.cor
 defineRule({
   validate({ resources } {
     resources.filter(isPrometheus).forEach(prometheus => {
-      prometheus.content.spec; // this is now a fully typed object.
+      prometheus.spec; // this is now a fully typed object.
     })
   }
 })
