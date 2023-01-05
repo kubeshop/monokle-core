@@ -54,6 +54,10 @@ export class MonokleService implements MonokleLanguageService {
     });
   }
 
+  getResource(uri: string) {
+    return this._resources.find((r) => r.filePath === uri);
+  }
+
   sync(documents: TextDocument[]): void {
     const files: File[] = documents.map((document) => {
       return {
@@ -125,7 +129,6 @@ export class MonokleService implements MonokleLanguageService {
       includesPosition(ref.position, position)
     );
     const links = [];
-    console.log(document.uri, position.line, resource.refs);
 
     for (const ref of refs) {
       if (ref.position && ref.target.type === "resource") {
