@@ -24,12 +24,6 @@ export const SETTINGS = createLanguageSettingsContainer({
       "kubernetes-schema": true,
       argo: true,
     },
-    settings: {
-      "open-policy-agent": {
-        wasmSrc:
-          "https://plugins.monokle.com/validation/open-policy-agent/trivy.wasm",
-      },
-    },
   },
 });
 
