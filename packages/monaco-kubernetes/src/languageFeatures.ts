@@ -15,12 +15,13 @@ import { CustomFormatterOptions } from "yaml-language-server/lib/esm/languageser
 
 import { languageId } from "./constants.js";
 import { KubernetesWorker } from "./kubernetes.worker.js";
+import { isDefined } from "./utils/typeHelpers.js";
 
 export type WorkerAccessor = WorkerGetter<KubernetesWorker>;
 
 // --- diagnostics --- ---
 
-function toSeverity(lsSeverity: ls.DiagnosticSeverity): MarkerSeverity {
+function toSeverity(lsSeverity?: ls.DiagnosticSeverity): MarkerSeverity {
   switch (lsSeverity) {
     case ls.DiagnosticSeverity.Error:
       return MarkerSeverity.Error;
@@ -35,13 +36,14 @@ function toSeverity(lsSeverity: ls.DiagnosticSeverity): MarkerSeverity {
   }
 }
 
-function toMarkerDataTag(tag: ls.DiagnosticTag): MarkerTag {
+function toMarkerDataTag(tag?: ls.DiagnosticTag): MarkerTag | undefined {
   switch (tag) {
     case ls.DiagnosticTag.Deprecated:
       return MarkerTag.Deprecated;
     case ls.DiagnosticTag.Unnecessary:
       return MarkerTag.Unnecessary;
     default:
+      return undefined;
   }
 }
 
@@ -55,7 +57,7 @@ function toDiagnostics(diag: ls.Diagnostic): editor.IMarkerData {
     message: diag.message,
     code: String(diag.code),
     source: diag.source,
-    tags: diag.tags?.map(toMarkerDataTag),
+    tags: diag.tags?.map(toMarkerDataTag).filter(isDefined),
   };
 }
 
@@ -81,16 +83,10 @@ export function createMarkerDataProvider(
 // --- completion ------
 
 function fromPosition(position: Position): ls.Position {
-  if (!position) {
-    return;
-  }
   return { character: position.column - 1, line: position.lineNumber - 1 };
 }
 
 function toRange(range: ls.Range): Range {
-  if (!range) {
-    return;
-  }
   return new Range(
     range.start.line + 1,
     range.start.character + 1,
@@ -119,7 +115,7 @@ function fromMarkerData(marker: editor.IMarkerData): ls.Diagnostic {
 }
 
 function toCompletionItemKind(
-  kind: ls.CompletionItemKind
+  kind?: ls.CompletionItemKind
 ): languages.CompletionItemKind {
   const mItemKind = languages.CompletionItemKind;
 
@@ -165,12 +161,12 @@ function toCompletionItemKind(
   }
 }
 
-function toTextEdit(textEdit: ls.TextEdit): editor.ISingleEditOperation {
-  if (!textEdit) {
-    return;
-  }
+function toTextEdit(textEdit: ls.TextEdit): languages.TextEdit | undefined {
+  if (!textEdit) return undefined;
+  const range = toRange(textEdit.range);
+  if (!range) return undefined;
   return {
-    range: toRange(textEdit.range),
+    range,
     text: textEdit.newText,
   };
 }
@@ -221,7 +217,9 @@ export function createCompletionItemProvider(
           item.insertText = entry.textEdit.newText;
         }
         if (entry.additionalTextEdits) {
-          item.additionalTextEdits = entry.additionalTextEdits.map(toTextEdit);
+          item.additionalTextEdits = entry.additionalTextEdits
+            .map(toTextEdit)
+            .filter(isDefined);
         }
         if (entry.insertTextFormat === ls.InsertTextFormat.Snippet) {
           item.insertTextRules =
@@ -241,8 +239,12 @@ export function createCompletionItemProvider(
 // --- definition ------
 
 function toLocationLink(locationLink: ls.LocationLink): languages.LocationLink {
+  const originSelectionRange = locationLink.originSelectionRange
+    ? toRange(locationLink.originSelectionRange)
+    : undefined;
+
   return {
-    originSelectionRange: toRange(locationLink.originSelectionRange),
+    originSelectionRange,
     range: toRange(locationLink.targetRange),
     targetSelectionRange: toRange(locationLink.targetSelectionRange),
     uri: Uri.parse(locationLink.targetUri),
@@ -284,8 +286,9 @@ export function createHoverProvider(
       if (!info) {
         return;
       }
+      const range = info.range ? toRange(info.range) : undefined;
       return {
-        range: toRange(info.range),
+        range,
         contents: [{ value: (info.contents as ls.MarkupContent).value }],
       };
     },
@@ -346,7 +349,7 @@ function toDocumentSymbol(item: ls.DocumentSymbol): languages.DocumentSymbol {
     name: item.name,
     kind: toSymbolKind(item.kind),
     selectionRange: toRange(item.selectionRange),
-    children: item.children.map(toDocumentSymbol),
+    children: item.children?.map(toDocumentSymbol),
     tags: [],
   };
 }
@@ -371,11 +374,7 @@ export function createDocumentSymbolProvider(
 function fromFormattingOptions(
   options: languages.FormattingOptions
 ): CustomFormatterOptions & ls.FormattingOptions {
-  return {
-    tabSize: options.tabSize,
-    insertSpaces: options.insertSpaces,
-    ...options,
-  };
+  return options as unknown as CustomFormatterOptions & ls.FormattingOptions;
 }
 
 export function createDocumentFormattingEditProvider(
@@ -391,9 +390,9 @@ export function createDocumentFormattingEditProvider(
         fromFormattingOptions(options)
       );
       if (!edits || edits.length === 0) {
-        return;
+        return [];
       }
-      return edits.map(toTextEdit);
+      return edits.map(toTextEdit).filter(isDefined);
     },
   };
 }
@@ -423,10 +422,10 @@ export function createLinkProvider(
   };
 }
 
-function toWorkspaceEdit(edit: ls.WorkspaceEdit): languages.WorkspaceEdit {
+function toWorkspaceEdit(edit?: ls.WorkspaceEdit): languages.WorkspaceEdit {
   const edits: languages.WorkspaceTextEdit[] = [];
 
-  for (const [uri, textEdits] of Object.entries(edit.changes)) {
+  for (const [uri, textEdits] of Object.entries(edit?.changes ?? {})) {
     for (const textEdit of textEdits) {
       edits.push({
         resource: Uri.parse(uri),
@@ -446,7 +445,7 @@ function toWorkspaceEdit(edit: ls.WorkspaceEdit): languages.WorkspaceEdit {
 function toCodeAction(codeAction: ls.CodeAction): languages.CodeAction {
   return {
     title: codeAction.title,
-    diagnostics: codeAction.diagnostics.map(toDiagnostics),
+    diagnostics: codeAction.diagnostics?.map(toDiagnostics),
     disabled: codeAction.disabled?.reason,
     edit: toWorkspaceEdit(codeAction.edit),
     kind: codeAction.kind,

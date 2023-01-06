@@ -72,11 +72,13 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
       }
 
       const version =
-        settings.validation.settings["kubernetes-schema"]?.["schemaVersion"] ??
-        DEFAULT_SCHEMA_VERSION;
+        settings.validation?.settings?.["kubernetes-schema"]?.[
+          "schemaVersion"
+        ] ?? DEFAULT_SCHEMA_VERSION;
 
-      const { schema } = await loader.getResourceSchema(version, resource);
-      const schemaString = JSON.stringify(schema);
+      const schema = await loader.getResourceSchema(version, resource);
+      if (!schema) throw new Error(`Schema not found for ${uri}`);
+      const schemaString = JSON.stringify(schema.schema);
       return schemaString;
     },
     null,
@@ -108,7 +110,7 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
     return Promise.resolve(uri);
   });
 
-  const getTextDocument = (uri: string): TextDocument => {
+  const getTextDocument = (uri: string): TextDocument | undefined => {
     const models = ctx.getMirrorModels();
     for (const model of models) {
       if (String(model.uri) === uri) {
@@ -120,6 +122,7 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
         );
       }
     }
+    return undefined;
   };
 
   const getAllTextDocuments = (): TextDocument[] => {
@@ -155,12 +158,14 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
 
     doComplete(uri, position) {
       const document = getTextDocument(uri);
+      if (!document) return { isIncomplete: false, items: [] };
       return languageService.doComplete(document, position, true);
     },
 
     doDefinition(uri, position) {
       validator.sync(getAllTextDocuments());
       const document = getTextDocument(uri);
+      if (!document) return [];
       const monacoLinks = validator.doDefinition(document, {
         position,
         textDocument: { uri },
@@ -175,11 +180,13 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
 
     doHover(uri, position) {
       const document = getTextDocument(uri);
+      if (!document) return undefined;
       return languageService.doHover(document, position);
     },
 
     format(uri, options) {
       const document = getTextDocument(uri);
+      if (!document) return [];
       return languageService.doFormat(document, options);
     },
 
@@ -189,16 +196,19 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
 
     findDocumentSymbols(uri) {
       const document = getTextDocument(uri);
+      if (!document) return [];
       return languageService.findDocumentSymbols2(document, {});
     },
 
     findLinks(uri) {
       const document = getTextDocument(uri);
+      if (!document) return [];
       return languageService.findLinks(document);
     },
 
     getCodeAction(uri, range, diagnostics) {
       const document = getTextDocument(uri);
+      if (!document) return [];
       return languageService.getCodeAction(document, {
         range,
         textDocument: { uri },
