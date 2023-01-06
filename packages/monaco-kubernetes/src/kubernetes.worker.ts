@@ -1,7 +1,8 @@
 import { ResourceParser, SchemaLoader } from "@monokle/validation";
 import { initialize } from "monaco-worker-manager/worker";
+import type { Connection } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import {
+import type {
   CodeAction,
   CompletionList,
   Diagnostic,
@@ -13,10 +14,12 @@ import {
   Range,
   TextEdit,
 } from "vscode-languageserver-types";
-import {
+import type {
   CustomFormatterOptions,
-  getLanguageService,
+  WorkspaceContextService,
 } from "yaml-language-server/lib/esm/languageservice/yamlLanguageService.js";
+import type { SettingsState } from "yaml-language-server/lib/esm/yamlSettings.js";
+import { getLanguageService } from "yaml-language-server/lib/esm/languageservice/yamlLanguageService.js";
 
 import { languageId } from "./constants.js";
 import type { LanguageSettings } from "./index.js";
@@ -36,7 +39,7 @@ export interface KubernetesWorker {
 
   doDefinition: (uri: string, position: Position) => LocationLink[];
 
-  doHover: (uri: string, position: Position) => Hover;
+  doHover: (uri: string, position: Position) => Hover | null | undefined;
 
   format: (uri: string, options: CustomFormatterOptions) => TextEdit[];
 
@@ -82,10 +85,12 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
       const schemaString = JSON.stringify(schema.schema);
       return schemaString;
     },
-    null,
-    null,
+    // These are not expected to be null but it works in
+    // monac-yaml so we can leave this until we run into errors.
+    null as unknown as WorkspaceContextService,
+    null as unknown as Connection,
     createTelemetry({ mock: !settings.telemetry }),
-    null
+    null as unknown as SettingsState
   );
 
   languageService.configure({
@@ -147,14 +152,18 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
     },
 
     doValidation(uri) {
-      validator.sync(getAllTextDocuments());
-      const document = getTextDocument(uri);
+      try {
+        validator.sync(getAllTextDocuments());
+        const document = getTextDocument(uri);
 
-      if (document) {
-        return validator.doValidation(document);
+        if (document) {
+          return validator.doValidation(document);
+        }
+
+        return [];
+      } catch (err) {
+        return [];
       }
-
-      return [];
     },
 
     doComplete(uri, position) {
@@ -210,11 +219,13 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
     getCodeAction(uri, range, diagnostics) {
       const document = getTextDocument(uri);
       if (!document) return [];
-      return languageService.getCodeAction(document, {
-        range,
-        textDocument: { uri },
-        context: { diagnostics },
-      });
+      return (
+        languageService.getCodeAction(document, {
+          range,
+          textDocument: { uri },
+          context: { diagnostics },
+        }) ?? []
+      );
     },
   };
 });
