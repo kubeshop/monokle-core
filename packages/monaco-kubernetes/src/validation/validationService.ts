@@ -22,6 +22,7 @@ import {
   Position,
   Range,
 } from "vscode-languageserver-types";
+import { isDefined } from "../utils/typeHelpers.js";
 import { ARGO_PLUGIN } from "./argo.plugin.js";
 
 import { extractK8sResources, File } from "./parse.js";
@@ -76,44 +77,50 @@ export class MonokleService implements MonokleLanguageService {
   }
 
   async doValidation(document: TextDocument): Promise<Diagnostic[]> {
-    const resources = this._resources;
-    const response = await this._validator.validate({ resources });
+    try {
+      const resources = this._resources;
+      const response = await this._validator.validate({ resources });
 
-    const diagnostics: Diagnostic[] = response.runs
-      .flatMap((run) => {
-        return run.results.map((result) => {
-          const location = getFileLocation(result);
-          if (location.physicalLocation.artifactLocation.uri !== document.uri) {
-            return;
-          }
+      const diagnostics: Diagnostic[] = response.runs
+        .flatMap((run) => {
+          return run.results.map((result) => {
+            const location = getFileLocation(result);
+            if (
+              location.physicalLocation?.artifactLocation.uri !== document.uri
+            ) {
+              return;
+            }
 
-          const region = location.physicalLocation.region;
-          if (!region) return;
+            const region = location.physicalLocation.region;
+            if (!region) return;
 
-          // For some reason Monaco YAML does a +1 to all of these values.
-          // To be investigated what goes wrong in yaml-language-server.
-          // See src/languageFeatures.ts:48
-          const range: Range = {
-            start: {
-              line: region.startLine - 1,
-              character: region.startColumn - 1,
-            },
-            end: {
-              line: region.endLine - 1,
-              character: region.endColumn - 1,
-            },
-          };
-          const severity =
-            result.level === "error"
-              ? DiagnosticSeverity.Error
-              : DiagnosticSeverity.Warning;
+            // For some reason Monaco YAML does a +1 to all of these values.
+            // To be investigated why this happens. See src/languageFeatures.ts:48
+            const range: Range = {
+              start: {
+                line: region.startLine - 1,
+                character: region.startColumn - 1,
+              },
+              end: {
+                line: region.endLine - 1,
+                character: region.endColumn - 1,
+              },
+            };
+            const severity =
+              result.level === "error"
+                ? DiagnosticSeverity.Error
+                : DiagnosticSeverity.Warning;
 
-          return Diagnostic.create(range, result.message.text, severity);
-        });
-      })
-      .filter((x) => x !== undefined);
+            return Diagnostic.create(range, result.message.text, severity);
+          });
+        })
+        .filter(isDefined);
 
-    return diagnostics;
+      return diagnostics;
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return [];
+      throw err;
+    }
   }
 
   doDefinition(
@@ -125,15 +132,17 @@ export class MonokleService implements MonokleLanguageService {
       line: params.position.line + 1, // There is an odd off by one error in all positions..
     };
     const resource = this._resources.find((r) => r.fileId === document.uri);
-    const refs = resource.refs.filter((ref) =>
-      includesPosition(ref.position, position)
-    );
+    const refs =
+      resource?.refs?.filter((ref) =>
+        includesPosition(ref.position, position)
+      ) ?? [];
     const links = [];
 
     for (const ref of refs) {
-      if (ref.position && ref.target.type === "resource") {
+      if (ref.position && ref.target?.type === "resource") {
         const resourceId = ref.target.resourceId;
         const resource = this._resources.find((r) => r.id === resourceId);
+        if (!resource) continue;
         const targetUri = resource.fileId;
         const targetRange = createTargetRange(ref.position);
 
@@ -159,13 +168,14 @@ function includesPosition(range: RefPosition | undefined, position: Position) {
     return true;
   } else {
     if (position.line > range.endLine) return false;
-    if (position.character > range.endColumn) return false;
+    if (isDefined(range.endColumn) && position.character > range.endColumn)
+      return false;
     return true;
   }
 }
 
 function createTargetRange(position: RefPosition) {
-  if (position.endLine === undefined) {
+  if (position.endLine === undefined || position.endColumn === undefined) {
     return Range.create(
       { line: position.line - 1, character: position.column - 1 },
       {
