@@ -20,6 +20,7 @@ import {
 
 import { languageId } from "./constants.js";
 import type { LanguageSettings } from "./index.js";
+import { createTelemetry } from "./utils/telemetry.js";
 import { MonokleService } from "./validation/validationService.js";
 
 const DEFAULT_SCHEMA_VERSION = "1.26.0";
@@ -83,7 +84,7 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
     },
     null,
     null,
-    null,
+    createTelemetry({ mock: !settings.telemetry }),
     null
   );
 

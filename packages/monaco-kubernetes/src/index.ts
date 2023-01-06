@@ -7,7 +7,9 @@ import { languageId } from "./constants.js";
 import { setupMode } from "./kubernetesMode.js";
 import type { ValidationLanguageSettings } from "./validation/types.js";
 
-export type LanguageSettings = ValidationLanguageSettings;
+export type LanguageSettings = ValidationLanguageSettings & {
+  telemetry?: boolean;
+};
 
 /**
  * Configure monaco-kubernetes

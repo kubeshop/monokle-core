@@ -11,4 +11,5 @@ export function configure(settings?: LanguageSettings): void;
 
 type LanguageSettings = {
   validation?: Config;
+  telemetry?: boolean;
 };
