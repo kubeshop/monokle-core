@@ -3,9 +3,10 @@ import {
   IEvent,
   languages,
 } from "monaco-editor/esm/vs/editor/editor.api.js";
-import { languageId } from "./constants.js";
+import { LANGUAGE_ID } from "./constants.js";
 import { setupMode } from "./kubernetesMode.js";
 import type { ValidationLanguageSettings } from "./validation/types.js";
+import { YAML_MONARCH } from "./yamlLanguage.js";
 
 export type LanguageSettings = ValidationLanguageSettings & {
   telemetry?: boolean;
@@ -30,13 +31,19 @@ export const SETTINGS = createLanguageSettingsContainer({
 });
 
 languages.register({
-  id: languageId,
+  id: LANGUAGE_ID,
   extensions: [".yaml", ".yml"],
-  aliases: ["YAML", "yaml", "YML", "yml"],
-  mimetypes: ["application/x-yaml"],
+  aliases: ["k8s", "kube"],
+  mimetypes: ["application/x-kubernetes"],
 });
 
-languages.onLanguage("yaml", () => {
+languages.registerTokensProviderFactory(LANGUAGE_ID, {
+  create() {
+    return YAML_MONARCH;
+  },
+});
+
+languages.onLanguage("kubernetes", () => {
   setupMode(SETTINGS);
 });
 
