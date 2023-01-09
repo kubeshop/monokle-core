@@ -13,7 +13,7 @@ import { WorkerGetter } from "monaco-worker-manager";
 import * as ls from "vscode-languageserver-types";
 import { CustomFormatterOptions } from "yaml-language-server/lib/esm/languageservice/yamlLanguageService.js";
 
-import { languageId } from "./constants.js";
+import { LANGUAGE_ID } from "./constants.js";
 import { KubernetesWorker } from "./kubernetes.worker.js";
 import { isDefined } from "./utils/typeHelpers.js";
 
@@ -65,7 +65,7 @@ export function createMarkerDataProvider(
   getWorker: WorkerAccessor
 ): MarkerDataProvider {
   return {
-    owner: languageId,
+    owner: LANGUAGE_ID,
     async provideMarkerData(model) {
       const worker = await getWorker(model.uri);
       const diagnostics = await worker.doValidation(String(model.uri));

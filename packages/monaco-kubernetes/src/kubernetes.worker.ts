@@ -21,7 +21,7 @@ import type {
 import type { SettingsState } from "yaml-language-server/lib/esm/yamlSettings.js";
 import { getLanguageService } from "yaml-language-server/lib/esm/languageservice/yamlLanguageService.js";
 
-import { languageId } from "./constants.js";
+import { LANGUAGE_ID } from "./constants.js";
 import type { LanguageSettings } from "./index.js";
 import { createTelemetry } from "./utils/telemetry.js";
 import { MonokleService } from "./validation/validationService.js";
@@ -122,7 +122,7 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
       if (String(model.uri) === uri) {
         return TextDocument.create(
           uri,
-          languageId,
+          LANGUAGE_ID,
           model.version,
           model.getValue()
         );
@@ -137,7 +137,7 @@ initialize<KubernetesWorker, CreateData>((ctx, settings) => {
     for (const model of models) {
       const document = TextDocument.create(
         String(model.uri),
-        languageId,
+        LANGUAGE_ID,
         model.version,
         model.getValue()
       );
