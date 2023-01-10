@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.0.25
+
+### Patch Changes
+
+- c77ee3f: Export all-projects icon
+
 ## 0.0.24
 
 ### Patch Changes
