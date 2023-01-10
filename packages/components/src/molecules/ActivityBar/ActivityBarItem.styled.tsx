@@ -39,7 +39,7 @@ export const Badge = styled(RawBadge)`
     min-width: 12px;
     height: 12px;
     font-size: 8px;
-    line-height: 11px;
+    line-height: 12px;
     box-shadow: none;
   }
 `;
