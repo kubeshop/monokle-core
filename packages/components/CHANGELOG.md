@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.0.26
+
+### Patch Changes
+
+- d505a35: Fix line-height for small badge so that number is vertically aligned
+
 ## 0.0.25
 
 ### Patch Changes
