@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.0.24
+
+### Patch Changes
+
+- f3fdda2: Add AllProjects icon
+
 ## 0.0.23
 
 ### Patch Changes
