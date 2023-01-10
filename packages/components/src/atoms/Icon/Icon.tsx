@@ -7,6 +7,7 @@ import { IconNames } from "./types";
 import Colors from "@/styles/Colors";
 
 import {
+  AllProjects,
   ClusterDashboard,
   Collapse,
   Compare,
@@ -43,6 +44,7 @@ type IconProps = {
 };
 
 const icons: Record<IconNames, React.ComponentType<any>> = {
+  "all-projects": AllProjects,
   "cluster-dashboard": ClusterDashboard,
   collapse: Collapse,
   compare: Compare,

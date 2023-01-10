@@ -1,4 +1,5 @@
 export type IconNames =
+  | "all-projects"
   | "cluster-dashboard"
   | "compare"
   | "explorer"
