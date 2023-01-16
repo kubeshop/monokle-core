@@ -60,7 +60,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
                 const rule = rules.find((r) => r.id === result.ruleId);
 
                 return (
-                  <ResultLine>
+                  <ResultLine className="collapse-item">
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       {iconMap[result.rule.toolComponent.name]}
                       {rule && severityMap(rule.properties?.["security-severity"] ?? 1)}
@@ -117,10 +117,10 @@ const MainContainer = styled.div<{ $height?: number }>`
 
 const ResultLine = styled.div`
   color: ${Colors.whitePure};
-  margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 16px;
+  padding: 8px 16px 8px 40px;
 
   & .anticon {
     color: ${Colors.grey8};
@@ -143,5 +143,16 @@ const ValidationsCollapse = styled(Collapse)`
     &:first-child {
       padding-top: 0px;
     }
+  }
+
+  & .collapse-item {
+    &:hover {
+      cursor: pointer;
+      background-color: rgba(141, 207, 248, 0.15);
+    }
+  }
+
+  & .ant-collapse-content-box {
+    padding: 12px 0px;
   }
 `;
