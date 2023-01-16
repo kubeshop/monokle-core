@@ -24,4 +24,6 @@ export type IconNames =
   | "resource-links"
   | "k8s-schema"
   | "search"
-  | "terminal";
+  | "terminal"
+  | "validation-opa"
+  | "validation-k8s-schema";

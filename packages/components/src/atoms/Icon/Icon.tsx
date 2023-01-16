@@ -30,8 +30,10 @@ import {
   Shortcuts,
   Terminal,
   Validation,
+  ValidationOPA,
   Warning,
   YAMLSyntax,
+  ValidationK8sSchema,
 } from "./Icons";
 
 type IconProps = {
@@ -68,6 +70,8 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   shortcuts: Shortcuts,
   terminal: Terminal,
   validation: Validation,
+  "validation-opa": ValidationOPA,
+  "validation-k8s-schema": ValidationK8sSchema,
   warning: Warning,
   "yaml-syntax": YAMLSyntax,
 };

@@ -1,6 +1,7 @@
-import { ValidationResult } from "@monokle/validation";
+import { RuleMetadata, ValidationResult } from "@monokle/validation";
 
 export type ValidationOverviewType = {
+  rules: RuleMetadata<{ entrypoint: string; path: string }>[];
   validationResults: ValidationResult[];
   containerStyle?: React.CSSProperties;
   height?: number;

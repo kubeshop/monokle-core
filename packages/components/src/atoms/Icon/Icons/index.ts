@@ -20,6 +20,8 @@ export { default as SeverityMedium } from "./SeverityMedium";
 export { default as Shortcuts } from "./Shortcuts";
 export { default as Terminal } from "./Terminal";
 export { default as Validation } from "./Validation";
+export { default as ValidationK8sSchema } from "./ValidationK8sSchema";
+export { default as ValidationOPA } from "./ValidationOPA";
 export { default as Warning } from "./Warning";
 export { default as YAMLSyntax } from "./YAMLSyntax";
 export { default as Search } from "./Search";

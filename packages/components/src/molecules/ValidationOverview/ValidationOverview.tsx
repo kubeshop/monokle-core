@@ -1,4 +1,4 @@
-import { SearchInput } from "@/atoms";
+import { Icon, SearchInput } from "@/atoms";
 import Colors from "@/styles/Colors";
 import { FilterOutlined } from "@ant-design/icons";
 import { ValidationResult } from "@monokle/validation";
@@ -8,8 +8,23 @@ import styled from "styled-components";
 import { ValidationOverviewType } from "./types";
 import { selectProblemsByFilePaths } from "./utils";
 
+const iconMap: Record<string, JSX.Element> = {
+  "kubernetes-schema": <Icon name="validation-k8s-schema" />,
+  "open-policy-agent": <Icon name="validation-opa" />,
+};
+
+const severityMap = (severity: number) => {
+  if (severity < 4) {
+    return <Icon name="severity-low" style={{ color: Colors.green7 }} />;
+  } else if (severity < 7) {
+    return <Icon name="severity-medium" style={{ color: Colors.red7 }} />;
+  } else {
+    return <Icon name="severity-high" style={{ color: Colors.red7 }} />;
+  }
+};
+
 export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
-  const { containerStyle = {}, height, validationResults } = props;
+  const { containerStyle = {}, height, rules, validationResults } = props;
 
   const [problems, setProblems] = useState<{ [k: string]: ValidationResult[] }>({});
 
@@ -19,6 +34,8 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
     const problems = selectProblemsByFilePaths(validationResults, "all");
     setProblems(problems);
   }, []);
+
+  console.log(problems);
 
   return (
     <MainContainer style={containerStyle} $height={height}>
@@ -39,37 +56,26 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
               }
               key={filePath}
             >
-              {results.map((result) => (
-                <ResultLine>
-                  <ErrorRow>
-                    {
-                      result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
-                        ?.physicalLocation?.region?.startLine
-                    }
-                  </ErrorRow>
-                  {result.message.text}
-                </ResultLine>
-              ))}
-            </Collapse.Panel>
-            <Collapse.Panel
-              header={
-                <>
-                  {filePath} <ResultsCount>{results.length}</ResultsCount>
-                </>
-              }
-              key={filePath}
-            >
-              {results.map((result) => (
-                <ResultLine>
-                  <ErrorRow>
-                    {
-                      result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
-                        ?.physicalLocation?.region?.startLine
-                    }
-                  </ErrorRow>
-                  {result.message.text}
-                </ResultLine>
-              ))}
+              {results.map((result) => {
+                const rule = rules.find((r) => r.id === result.ruleId);
+
+                return (
+                  <ResultLine>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {iconMap[result.rule.toolComponent.name]}
+                      {rule && severityMap(rule.properties?.["security-severity"] ?? 1)}
+                    </div>
+
+                    <ErrorRow>
+                      {
+                        result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
+                          ?.physicalLocation?.region?.startLine
+                      }
+                    </ErrorRow>
+                    {result.message.text}
+                  </ResultLine>
+                );
+              })}
             </Collapse.Panel>
           </>
         ))}
@@ -115,6 +121,10 @@ const ResultLine = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+
+  & .anticon {
+    color: ${Colors.grey8};
+  }
 `;
 
 const ResultsCount = styled.span`
@@ -125,7 +135,7 @@ const ResultsCount = styled.span`
 const ValidationsCollapse = styled(Collapse)`
   height: calc(100% - 48px);
   overflow-y: auto;
-  margin-top: 16px;
+  margin-top: 24px;
 
   & .ant-collapse-header {
     color: ${Colors.grey8} !important;
@@ -133,9 +143,5 @@ const ValidationsCollapse = styled(Collapse)`
     &:first-child {
       padding-top: 0px;
     }
-  }
-
-  & .ant-collapse-content-box {
-    padding-bottom: 4px !important;
   }
 `;
