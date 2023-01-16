@@ -13,18 +13,19 @@ const iconMap: Record<string, JSX.Element> = {
   "open-policy-agent": <Icon name="validation-opa" />,
 };
 
-const severityMap = (severity: number) => {
+const severityMap = (severity: number, isSelected: boolean) => {
   if (severity < 4) {
-    return <Icon name="severity-low" style={{ color: Colors.green7 }} />;
+    return <Icon name="severity-low" style={{ color: isSelected ? Colors.grey1 : Colors.green7 }} />;
   } else if (severity < 7) {
-    return <Icon name="severity-medium" style={{ color: Colors.red7 }} />;
+    return <Icon name="severity-medium" style={{ color: isSelected ? Colors.grey1 : Colors.red7 }} />;
   } else {
-    return <Icon name="severity-high" style={{ color: Colors.red7 }} />;
+    return <Icon name="severity-high" style={{ color: isSelected ? Colors.grey1 : Colors.red7 }} />;
   }
 };
 
 export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
-  const { containerStyle = {}, height, rules, validationResults } = props;
+  const { containerStyle = {}, height, rules, validationResults, selectedError } = props;
+  const { onErrorSelect } = props;
 
   const [problems, setProblems] = useState<{ [k: string]: ValidationResult[] }>({});
 
@@ -47,37 +48,47 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
       <ValidationsCollapse defaultActiveKey={Object.keys(problems)} ghost>
         {Object.entries(problems).map(([filePath, results]) => (
-          <>
-            <Collapse.Panel
-              header={
-                <>
-                  {filePath} <ResultsCount>{results.length}</ResultsCount>
-                </>
-              }
-              key={filePath}
-            >
-              {results.map((result) => {
-                const rule = rules.find((r) => r.id === result.ruleId);
+          <Collapse.Panel
+            header={
+              <>
+                {filePath} <ResultsCount>{results.length}</ResultsCount>
+              </>
+            }
+            key={filePath}
+          >
+            {results.map((result) => {
+              const rule = rules.find((r) => r.id === result.ruleId);
+              const isFoundInFile = selectedError?.locations.find(
+                (loc) => loc.physicalLocation?.artifactLocation.uri === filePath
+              );
+              const isSelected = Boolean(isFoundInFile && rule?.id === selectedError?.ruleId);
 
-                return (
-                  <ResultLine className="collapse-item">
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      {iconMap[result.rule.toolComponent.name]}
-                      {rule && severityMap(rule.properties?.["security-severity"] ?? 1)}
-                    </div>
+              return (
+                <ResultLine
+                  $isSelected={isSelected}
+                  className="collapse-item"
+                  onClick={() => {
+                    if (onErrorSelect) {
+                      onErrorSelect(result);
+                    }
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    {iconMap[result.rule.toolComponent.name]}
+                    {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
+                  </div>
 
-                    <ErrorRow>
-                      {
-                        result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
-                          ?.physicalLocation?.region?.startLine
-                      }
-                    </ErrorRow>
-                    {result.message.text}
-                  </ResultLine>
-                );
-              })}
-            </Collapse.Panel>
-          </>
+                  <ErrorRow $isSelected={isSelected}>
+                    {
+                      result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
+                        ?.physicalLocation?.region?.startLine
+                    }
+                  </ErrorRow>
+                  {result.message.text}
+                </ResultLine>
+              );
+            })}
+          </Collapse.Panel>
         ))}
       </ValidationsCollapse>
     </MainContainer>
@@ -93,8 +104,9 @@ const ActionsContainer = styled.div`
   padding: 0 16px;
 `;
 
-const ErrorRow = styled.div`
-  color: ${Colors.grey8};
+const ErrorRow = styled.div<{ $isSelected: boolean }>`
+  color: ${({ $isSelected }) => ($isSelected ? Colors.grey1 : Colors.grey8)};
+  font-weight: 400;
 `;
 
 const FiltersButton = styled(Button)`
@@ -115,15 +127,23 @@ const MainContainer = styled.div<{ $height?: number }>`
   width: 100%;
 `;
 
-const ResultLine = styled.div`
-  color: ${Colors.whitePure};
+const ResultLine = styled.div<{ $isSelected: boolean }>`
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 8px 16px 8px 40px;
+  font-weight: ${({ $isSelected }) => ($isSelected ? "700" : "400")};
+  color: ${({ $isSelected }) => ($isSelected ? Colors.grey1 : Colors.whitePure)};
+  background-color: ${({ $isSelected }) => ($isSelected ? Colors.blue9 : "transparent")};
+  transition: all 0.15s ease-in;
 
   & .anticon {
-    color: ${Colors.grey8};
+    color: ${({ $isSelected }) => ($isSelected ? Colors.grey1 : Colors.grey8)};
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ $isSelected }) => ($isSelected ? Colors.blue8 : "rgba(141, 207, 248, 0.15)")};
   }
 `;
 
@@ -145,14 +165,7 @@ const ValidationsCollapse = styled(Collapse)`
     }
   }
 
-  & .collapse-item {
-    &:hover {
-      cursor: pointer;
-      background-color: rgba(141, 207, 248, 0.15);
-    }
-  }
-
   & .ant-collapse-content-box {
-    padding: 12px 0px;
+    padding: 10px 0px 20px 0px !important;
   }
 `;

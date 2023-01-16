@@ -5,4 +5,6 @@ export type ValidationOverviewType = {
   validationResults: ValidationResult[];
   containerStyle?: React.CSSProperties;
   height?: number;
+  selectedError?: ValidationResult;
+  onErrorSelect?: (error: ValidationResult) => void;
 };
