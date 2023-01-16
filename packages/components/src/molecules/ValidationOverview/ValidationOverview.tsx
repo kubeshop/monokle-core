@@ -123,8 +123,16 @@ const ResultsCount = styled.span`
 `;
 
 const ValidationsCollapse = styled(Collapse)`
+  height: calc(100% - 48px);
+  overflow-y: auto;
+  margin-top: 16px;
+
   & .ant-collapse-header {
     color: ${Colors.grey8} !important;
+
+    &:first-child {
+      padding-top: 0px;
+    }
   }
 
   & .ant-collapse-content-box {
