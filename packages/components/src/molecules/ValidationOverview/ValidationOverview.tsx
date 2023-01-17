@@ -511,52 +511,59 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
       </ActionsContainer>
 
       {Object.keys(filteredProblems).length ? (
-        <ValidationsCollapse defaultActiveKey={Object.keys(filteredProblems)} ghost>
-          {Object.entries(filteredProblems).map(([filePath, results]) => (
-            <Collapse.Panel
-              header={
-                <>
-                  {filePath} <ResultsCount>{results.length}</ResultsCount>
-                </>
-              }
-              key={filePath}
-            >
-              {results.map((result) => {
-                const rule = rules.find((r) => r.id === result.ruleId);
-                const isFoundInFile = selectedError?.locations.find(
-                  (loc) => loc.physicalLocation?.artifactLocation.uri === filePath
-                );
-                const isSelected = Boolean(isFoundInFile && rule?.id === selectedError?.ruleId);
+        <>
+          <ValidationsCollapse defaultActiveKey={Object.keys(filteredProblems)} ghost>
+            {Object.entries(filteredProblems).map(([filePath, results]) => (
+              <Collapse.Panel
+                header={
+                  <>
+                    {filePath} <ResultsCount>{results.length}</ResultsCount>
+                  </>
+                }
+                key={filePath}
+              >
+                {results.map((result) => {
+                  const rule = rules.find((r) => r.id === result.ruleId);
+                  const isFoundInFile = selectedError?.locations.find(
+                    (loc) => loc.physicalLocation?.artifactLocation.uri === filePath
+                  );
+                  const isSelected = Boolean(isFoundInFile && rule?.id === selectedError?.ruleId);
 
-                return (
-                  <ResultLine
-                    key={result.ruleId}
-                    $isSelected={isSelected}
-                    className="collapse-item"
-                    onClick={() => {
-                      if (onErrorSelect) {
-                        onErrorSelect(result);
-                      }
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      {iconMap[result.rule.toolComponent.name]}
-                      {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
-                    </div>
+                  return (
+                    <ResultLine
+                      key={result.ruleId}
+                      $isSelected={isSelected}
+                      className="collapse-item"
+                      onClick={() => {
+                        if (onErrorSelect) {
+                          onErrorSelect(result);
+                        }
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        {iconMap[result.rule.toolComponent.name]}
+                        {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
+                      </div>
 
-                    <ErrorRow $isSelected={isSelected}>
-                      {
-                        result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
-                          ?.physicalLocation?.region?.startLine
-                      }
-                    </ErrorRow>
-                    {result.message.text}
-                  </ResultLine>
-                );
-              })}
-            </Collapse.Panel>
-          ))}
-        </ValidationsCollapse>
+                      <ErrorRow $isSelected={isSelected}>
+                        {
+                          result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
+                            ?.physicalLocation?.region?.startLine
+                        }
+                      </ErrorRow>
+                      {result.message.text}
+                    </ResultLine>
+                  );
+                })}
+              </Collapse.Panel>
+            ))}
+          </ValidationsCollapse>
+          {showNewErrors && (
+            <ActionsContainer>
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+            </ActionsContainer>
+          )}
+        </>
       ) : (
         <NoErrorsMessage>No errors found.</NoErrorsMessage>
       )}
@@ -653,6 +660,7 @@ const ResultsCount = styled.span`
 `;
 
 const ShowNewErrorsButton = styled.span`
+  width: max-content;
   padding: 1px 0px;
   color: ${Colors.blue7};
   margin-left: 6px;
@@ -665,7 +673,7 @@ const ShowNewErrorsButton = styled.span`
 `;
 
 const ValidationsCollapse = styled(Collapse)`
-  height: calc(100% - 48px);
+  max-height: calc(100% - 48px);
   overflow-y: auto;
   margin-top: 24px;
 
