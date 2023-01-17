@@ -46,3 +46,13 @@ export const extractNewProblems = (previousProblems: ProblemsType, currentProble
 
   return { newProblems, resultsCounter };
 };
+
+export const filterBySearchValue = (problems: ProblemsType, searchValue: string) => {
+  if (!searchValue) {
+    return problems;
+  }
+
+  return Object.fromEntries(
+    Object.entries(problems).filter(([filePath, _]) => filePath.toLowerCase().includes(searchValue.toLowerCase()))
+  );
+};

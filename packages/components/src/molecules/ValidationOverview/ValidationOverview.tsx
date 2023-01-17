@@ -5,7 +5,7 @@ import { Button, Collapse } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ProblemsType, ValidationOverviewType } from "./types";
-import { extractNewProblems, selectProblemsByFilePaths } from "./utils";
+import { extractNewProblems, filterBySearchValue, selectProblemsByFilePaths } from "./utils";
 
 let baseProblems: ProblemsType = {
   "vanilla-panda-blog/deployment.yaml": [
@@ -443,11 +443,10 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   });
   const [problems, setProblems] = useState<ProblemsType>({});
   const [searchValue, setSearchValue] = useState("");
+  const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
   useEffect(() => {
-    // const errors = selectProblemsByFilePaths(validationResults, "error");
-    // const warnings = selectProblemsByFilePaths(validationResults, "warning");
     const currentProblems = selectProblemsByFilePaths(validationResults, "all");
 
     if (Object.keys(baseProblems).length) {
@@ -460,16 +459,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   }, [validationResults]);
 
   useEffect(() => {
-    if (!searchValue) {
-      setFilteredProblems(problems);
-      return;
-    }
-
-    setFilteredProblems(
-      Object.fromEntries(
-        Object.entries(problems).filter(([filePath, _]) => filePath.toLowerCase().includes(searchValue.toLowerCase()))
-      )
-    );
+    setFilteredProblems(filterBySearchValue(problems, searchValue));
   }, [searchValue, problems]);
 
   useEffect(() => {
@@ -477,6 +467,18 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
       setShowNewErrorsMessage(true);
     }
   }, [newProblems]);
+
+  useEffect(() => {
+    let showingProblems: ProblemsType = {};
+
+    if (showNewErrors) {
+      showingProblems = newProblems.data;
+    } else {
+      showingProblems = problems;
+    }
+
+    setFilteredProblems(filterBySearchValue(showingProblems, searchValue));
+  }, [showNewErrors, searchValue]);
 
   return (
     <MainContainer style={containerStyle} $height={height}>
@@ -493,60 +495,71 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
       <ActionsContainer $secondary>
         {Object.keys(newProblems).length && showNewErrorsMessage && (
-          <NewErrorsMessage>
-            {newErrorsIntroducedType ? newErrorsTextMap[newErrorsIntroducedType] : ""}{" "}
-            <b>{newProblems.resultsCount} errors</b> introduced.{" "}
-            <ShowNewErrorsButton>Show only those</ShowNewErrorsButton>
-            <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
-          </NewErrorsMessage>
+          <>
+            {showNewErrors ? (
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+            ) : (
+              <NewErrorsMessage>
+                {newErrorsIntroducedType ? newErrorsTextMap[newErrorsIntroducedType] : ""}{" "}
+                <b>{newProblems.resultsCount} errors</b> introduced.{" "}
+                <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
+                <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
+              </NewErrorsMessage>
+            )}
+          </>
         )}
       </ActionsContainer>
 
-      <ValidationsCollapse defaultActiveKey={Object.keys(problems)} ghost>
-        {Object.entries(filteredProblems).map(([filePath, results]) => (
-          <Collapse.Panel
-            header={
-              <>
-                {filePath} <ResultsCount>{results.length}</ResultsCount>
-              </>
-            }
-            key={filePath}
-          >
-            {results.map((result) => {
-              const rule = rules.find((r) => r.id === result.ruleId);
-              const isFoundInFile = selectedError?.locations.find(
-                (loc) => loc.physicalLocation?.artifactLocation.uri === filePath
-              );
-              const isSelected = Boolean(isFoundInFile && rule?.id === selectedError?.ruleId);
+      {Object.keys(filteredProblems).length ? (
+        <ValidationsCollapse defaultActiveKey={Object.keys(filteredProblems)} ghost>
+          {Object.entries(filteredProblems).map(([filePath, results]) => (
+            <Collapse.Panel
+              header={
+                <>
+                  {filePath} <ResultsCount>{results.length}</ResultsCount>
+                </>
+              }
+              key={filePath}
+            >
+              {results.map((result) => {
+                const rule = rules.find((r) => r.id === result.ruleId);
+                const isFoundInFile = selectedError?.locations.find(
+                  (loc) => loc.physicalLocation?.artifactLocation.uri === filePath
+                );
+                const isSelected = Boolean(isFoundInFile && rule?.id === selectedError?.ruleId);
 
-              return (
-                <ResultLine
-                  $isSelected={isSelected}
-                  className="collapse-item"
-                  onClick={() => {
-                    if (onErrorSelect) {
-                      onErrorSelect(result);
-                    }
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    {iconMap[result.rule.toolComponent.name]}
-                    {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
-                  </div>
+                return (
+                  <ResultLine
+                    key={result.ruleId}
+                    $isSelected={isSelected}
+                    className="collapse-item"
+                    onClick={() => {
+                      if (onErrorSelect) {
+                        onErrorSelect(result);
+                      }
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {iconMap[result.rule.toolComponent.name]}
+                      {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
+                    </div>
 
-                  <ErrorRow $isSelected={isSelected}>
-                    {
-                      result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
-                        ?.physicalLocation?.region?.startLine
-                    }
-                  </ErrorRow>
-                  {result.message.text}
-                </ResultLine>
-              );
-            })}
-          </Collapse.Panel>
-        ))}
-      </ValidationsCollapse>
+                    <ErrorRow $isSelected={isSelected}>
+                      {
+                        result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
+                          ?.physicalLocation?.region?.startLine
+                      }
+                    </ErrorRow>
+                    {result.message.text}
+                  </ResultLine>
+                );
+              })}
+            </Collapse.Panel>
+          ))}
+        </ValidationsCollapse>
+      ) : (
+        <NoErrorsMessage>No errors found.</NoErrorsMessage>
+      )}
     </MainContainer>
   );
 };
@@ -608,6 +621,12 @@ const NewErrorsMessage = styled.div`
   color: ${Colors.red7};
 `;
 
+const NoErrorsMessage = styled.div`
+  color: ${Colors.grey9};
+  padding: 16px;
+  font-weight: 700;
+`;
+
 const ResultLine = styled.div<{ $isSelected: boolean }>`
   display: flex;
   align-items: center;
@@ -634,6 +653,7 @@ const ResultsCount = styled.span`
 `;
 
 const ShowNewErrorsButton = styled.span`
+  padding: 1px 0px;
   color: ${Colors.blue7};
   margin-left: 6px;
   cursor: pointer;
