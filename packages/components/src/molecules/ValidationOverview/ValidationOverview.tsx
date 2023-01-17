@@ -27,7 +27,9 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   const { containerStyle = {}, height, rules, validationResults, selectedError } = props;
   const { onErrorSelect } = props;
 
+  const [filteredProblems, setFilteredProblems] = useState<{ [k: string]: ValidationResult[] }>({});
   const [problems, setProblems] = useState<{ [k: string]: ValidationResult[] }>({});
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     // const errors = selectProblemsByFilePaths(validationResults, "error");
@@ -36,18 +38,34 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
     setProblems(problems);
   }, []);
 
-  console.log(problems);
+  useEffect(() => {
+    if (!searchValue) {
+      setFilteredProblems(problems);
+      return;
+    }
+
+    setFilteredProblems(
+      Object.fromEntries(
+        Object.entries(problems).filter(([filePath, _]) => filePath.toLowerCase().includes(searchValue.toLowerCase()))
+      )
+    );
+  }, [searchValue]);
 
   return (
     <MainContainer style={containerStyle} $height={height}>
       <ActionsContainer>
-        <SearchInput />
+        <SearchInput
+          value={searchValue}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+          }}
+        />
 
         <FiltersButton icon={<FilterOutlined />} />
       </ActionsContainer>
 
       <ValidationsCollapse defaultActiveKey={Object.keys(problems)} ghost>
-        {Object.entries(problems).map(([filePath, results]) => (
+        {Object.entries(filteredProblems).map(([filePath, results]) => (
           <Collapse.Panel
             header={
               <>
