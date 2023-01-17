@@ -5,6 +5,11 @@ export type ValidationOverviewType = {
   validationResults: ValidationResult[];
   containerStyle?: React.CSSProperties;
   height?: number;
+  newErrorsIntroducedType?: "k8s-schema" | "rule";
   selectedError?: ValidationResult;
   onErrorSelect?: (error: ValidationResult) => void;
+};
+
+export type ProblemsType = {
+  [k: string]: ValidationResult[];
 };

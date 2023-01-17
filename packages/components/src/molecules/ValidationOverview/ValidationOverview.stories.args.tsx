@@ -5,6 +5,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
   onErrorSelect: (error) => {
     console.log("Error:", error);
   },
+  newErrorsIntroducedType: "k8s-schema",
   selectedError: {
     ruleId: "KSV001",
     rule: {
