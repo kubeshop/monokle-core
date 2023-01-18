@@ -31,7 +31,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   });
   const [problems, setProblems] = useState<ProblemsType>({});
   const [searchValue, setSearchValue] = useState("");
-  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>("show-by-rule");
+  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>("show-by-file");
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
