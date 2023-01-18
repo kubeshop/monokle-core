@@ -1,3 +1,4 @@
+import Colors from "@/styles/Colors";
 import { ValidationResult } from "@monokle/validation";
 import styled from "styled-components";
 import { iconMap, severityMap } from "./constants";
@@ -22,7 +23,7 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = (props) => {
           {iconMap[toolComponentName]}
           {severityMap(severity, false)}
         </div>
-        {ruleId} <ResultsCount>{results.length}</ResultsCount>
+        <RuleId>{ruleId}</RuleId> <ResultsCount>{results.length}</ResultsCount>
       </Container>
     );
   }
@@ -42,4 +43,8 @@ const Container = styled.div`
 const ResultsCount = styled.span`
   font-weight: 700;
   margin-left: 6px;
+`;
+
+const RuleId = styled.div`
+  color: ${Colors.whitePure};
 `;

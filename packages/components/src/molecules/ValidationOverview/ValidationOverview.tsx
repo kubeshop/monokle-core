@@ -1,7 +1,7 @@
-import { Icon, SearchInput } from "@/atoms";
+import { SearchInput } from "@/atoms";
 import Colors from "@/styles/Colors";
 import { CloseOutlined, FilterOutlined } from "@ant-design/icons";
-import { getRuleForResult } from "@monokle/validation";
+import { getFileLocation, getRuleForResult } from "@monokle/validation";
 import { Button, Collapse, Select } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -10,6 +10,7 @@ import { ProblemsType, ShowByFilterOptionType, ValidationOverviewType } from "./
 import {
   extractNewProblems,
   filterBySearchValue,
+  isProblemSelected,
   selectProblemsByFilePath,
   selectProblemsByResource,
   selectProblemsByRule,
@@ -49,8 +50,6 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
     () => validationResponse.runs.flatMap((r) => r.results) ?? [],
     [validationResponse]
   );
-
-  console.log(validationResponse.runs[0].tool.driver.rules);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -155,14 +154,14 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
               >
                 {results.map((result) => {
                   const rule = getRuleForResult(validationResponse, result);
-                  const isFoundInFile = selectedError?.locations.find(
-                    (loc) => loc.physicalLocation?.artifactLocation.uri === id
-                  );
-                  const isSelected = Boolean(isFoundInFile && rule?.id === selectedError?.ruleId);
+                  const isSelected = selectedError
+                    ? isProblemSelected(selectedError, result, showByFilterValue)
+                    : false;
 
                   return (
                     <ResultLine
                       key={result.ruleId}
+                      $secondary={showByFilterValue === "show-by-rule"}
                       $isSelected={isSelected}
                       className="collapse-item"
                       onClick={() => {
@@ -174,15 +173,20 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
                         }
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        {iconMap[result.rule.toolComponent.name]}
-                        {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
-                      </div>
-
-                      <ErrorRow $isSelected={isSelected}>
-                        {result.locations[0].physicalLocation?.region?.startLine}
-                      </ErrorRow>
-                      {result.message.text}
+                      {showByFilterValue === "show-by-rule" ? (
+                        getFileLocation(result).physicalLocation?.artifactLocation.uri
+                      ) : (
+                        <>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            {iconMap[result.rule.toolComponent.name]}
+                            {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
+                          </div>
+                          <ErrorStartLine $isSelected={isSelected}>
+                            {result.locations[0].physicalLocation?.region?.startLine}
+                          </ErrorStartLine>
+                          {result.message.text}
+                        </>
+                      )}
                     </ResultLine>
                   );
                 })}
@@ -230,7 +234,7 @@ const CloseIcon = styled(CloseOutlined)`
   }
 `;
 
-const ErrorRow = styled.div<{ $isSelected: boolean }>`
+const ErrorStartLine = styled.div<{ $isSelected: boolean }>`
   color: ${({ $isSelected }) => ($isSelected ? Colors.grey1 : Colors.grey8)};
   font-weight: 400;
 `;
@@ -266,13 +270,14 @@ const NoErrorsMessage = styled.div`
   font-weight: 700;
 `;
 
-const ResultLine = styled.div<{ $isSelected: boolean }>`
+const ResultLine = styled.div<{ $isSelected: boolean; $secondary: boolean }>`
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 8px 16px 8px 40px;
   font-weight: ${({ $isSelected }) => ($isSelected ? "700" : "400")};
-  color: ${({ $isSelected }) => ($isSelected ? Colors.grey1 : Colors.whitePure)};
+  color: ${({ $isSelected, $secondary }) =>
+    $isSelected ? Colors.grey1 : $secondary ? Colors.grey8 : Colors.whitePure};
   background-color: ${({ $isSelected }) => ($isSelected ? Colors.blue9 : "transparent")};
   transition: all 0.15s ease-in;
 
@@ -284,11 +289,6 @@ const ResultLine = styled.div<{ $isSelected: boolean }>`
     cursor: pointer;
     background-color: ${({ $isSelected }) => ($isSelected ? Colors.blue8 : "rgba(141, 207, 248, 0.15)")};
   }
-`;
-
-const ResultsCount = styled.span`
-  font-weight: 700;
-  margin-left: 6px;
 `;
 
 const ShowByFilter = styled(Select)`

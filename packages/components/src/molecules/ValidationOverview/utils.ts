@@ -4,8 +4,9 @@ import {
   getResourceLocation,
   getRuleForResult,
   ValidationResponse,
+  getFileLocation,
 } from "@monokle/validation";
-import { ProblemsType } from "./types";
+import { ProblemsType, ShowByFilterOptionType } from "./types";
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -18,8 +19,6 @@ export const selectProblemsByRule = (
     if (level && level !== "all" && (problem.level ?? "warning") !== level) {
       continue;
     }
-
-    console.log(problem);
 
     const filePath = getFileId(problem);
 
@@ -77,7 +76,7 @@ export const selectProblemsByResource = (problems: ValidationResult[], level: "w
       continue;
     }
 
-    const resourceName = getResourceLocation(problem).logicalLocations?.[0]?.name;
+    const resourceName = getResourceName(problem);
 
     if (resourceName === undefined) {
       continue;
@@ -129,3 +128,30 @@ export const getRuleInfo = (key: string) => {
   const [ruleId, toolComponentName, severity] = key.split("__");
   return { ruleId, severity: parseInt(severity), toolComponentName };
 };
+
+export const isProblemSelected = (
+  selectedProblem: ValidationResult,
+  currentProblem: ValidationResult,
+  type: ShowByFilterOptionType
+) => {
+  const selectedFileLocation = getFileLocation(selectedProblem).physicalLocation?.artifactLocation.uri;
+  const currentFileLocation = getFileLocation(currentProblem).physicalLocation?.artifactLocation.uri;
+
+  if (selectedProblem.ruleId !== currentProblem.ruleId) {
+    return false;
+  }
+
+  if (type === "show-by-file" || type === "show-by-rule") {
+    if (selectedFileLocation === currentFileLocation) {
+      return true;
+    }
+  } else if (type === "show-by-resource") {
+    if (getResourceName(selectedProblem) === getResourceName(currentProblem)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+export const getResourceName = (problem: ValidationResult) => getResourceLocation(problem).logicalLocations?.[0]?.name;
