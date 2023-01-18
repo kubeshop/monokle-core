@@ -1,8 +1,8 @@
 import { Icon, SearchInput } from "@/atoms";
 import Colors from "@/styles/Colors";
 import { CloseOutlined, FilterOutlined } from "@ant-design/icons";
-import { Button, Collapse } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Collapse, Select } from "antd";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { ProblemsType, ValidationOverviewType } from "./types";
 import { extractNewProblems, filterBySearchValue, selectProblemsByFilePaths } from "./utils";
@@ -29,9 +29,15 @@ const severityMap = (severity: number, isSelected: boolean) => {
   }
 };
 
+const showByFilterOptions = [
+  { value: "show-by-file", label: "Show by file" },
+  { value: "show-by-resource", label: "Show by resource" },
+  { value: "show-by-rule", label: "Show by rule" },
+];
+
 export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
-  const { containerStyle = {}, height, rules, validationResults, selectedError, newErrorsIntroducedType } = props;
-  const { onErrorSelect } = props;
+  const { containerClassName = "", containerStyle = {}, height, rules, validationResults, selectedError } = props;
+  const { newErrorsIntroducedType, onErrorSelect } = props;
 
   const [filteredProblems, setFilteredProblems] = useState<ProblemsType>({});
   const [newProblems, setNewProblems] = useState<{ data: ProblemsType; resultsCount: number }>({
@@ -40,6 +46,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   });
   const [problems, setProblems] = useState<ProblemsType>({});
   const [searchValue, setSearchValue] = useState("");
+  const [showByFilterValue, setShowByFilterValue] = useState("show-by-file");
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
@@ -78,7 +85,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   }, [showNewErrors, searchValue]);
 
   return (
-    <MainContainer style={containerStyle} $height={height}>
+    <MainContainer style={containerStyle} $height={height} className={containerClassName}>
       <ActionsContainer>
         <SearchInput
           value={searchValue}
@@ -91,7 +98,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
       </ActionsContainer>
 
       <ActionsContainer $secondary>
-        {Object.keys(newProblems.data).length && showNewErrorsMessage && (
+        {Object.keys(newProblems.data).length && showNewErrorsMessage ? (
           <>
             {showNewErrors ? (
               <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
@@ -104,7 +111,17 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
               </NewErrorsMessage>
             )}
           </>
+        ) : (
+          <div />
         )}
+
+        <ShowByFilter
+          value={showByFilterValue}
+          dropdownMatchSelectWidth={false}
+          bordered={false}
+          options={showByFilterOptions}
+          onSelect={(value: any) => setShowByFilterValue(value)}
+        />
       </ActionsContainer>
 
       {Object.keys(filteredProblems).length ? (
@@ -172,13 +189,13 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
 const ActionsContainer = styled.div<{ $secondary?: boolean }>`
   display: grid;
-  grid-template-columns: ${({ $secondary }) => ($secondary ? "max-content 1fr" : "1fr max-content")};
+  grid-template-columns: ${({ $secondary }) => ($secondary ? "max-content max-content" : "1fr max-content")};
   grid-gap: 16px;
   padding: 0 16px;
 
   ${({ $secondary }) => {
     if ($secondary) {
-      return "margin-top: 16px;";
+      return "margin-top: 16px; justify-content: space-between; align-items: center;";
     }
   }}
 `;
@@ -256,6 +273,18 @@ const ResultsCount = styled.span`
   margin-left: 6px;
 `;
 
+const ShowByFilter = styled(Select)`
+  margin-right: -10px;
+
+  & .ant-select-arrow {
+    color: ${Colors.blue7};
+  }
+
+  & .ant-select-selection-item {
+    color: ${Colors.blue7} !important;
+  }
+`;
+
 const ShowNewErrorsButton = styled.span`
   width: max-content;
   padding: 1px 0px;
@@ -276,6 +305,7 @@ const ValidationsCollapse = styled(Collapse)`
 
   & .ant-collapse-header {
     color: ${Colors.grey8} !important;
+    width: max-content;
 
     &:first-child {
       padding-top: 0px;
