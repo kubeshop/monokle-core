@@ -1,7 +1,7 @@
-import { ValidationResult, getFileId } from "@monokle/validation";
+import { ValidationResult, getFileId, getResourceId, getResourceLocation } from "@monokle/validation";
 import { ProblemsType } from "./types";
 
-export const selectProblemsByFilePaths = (problems: ValidationResult[], level: "warning" | "error" | "all") => {
+export const selectProblemsByFilePath = (problems: ValidationResult[], level: "warning" | "error" | "all") => {
   const problemsByFile: Map<string, ValidationResult[]> = new Map();
 
   for (const problem of problems) {
@@ -23,6 +23,30 @@ export const selectProblemsByFilePaths = (problems: ValidationResult[], level: "
   }
 
   return Object.fromEntries(problemsByFile);
+};
+
+export const selectProblemsByResource = (problems: ValidationResult[], level: "warning" | "error" | "all") => {
+  const problemsByResources: Map<string, ValidationResult[]> = new Map();
+
+  for (const problem of problems) {
+    if (level && level !== "all" && (problem.level ?? "warning") !== level) {
+      continue;
+    }
+
+    const resourceName = getResourceLocation(problem).logicalLocations?.[0]?.name;
+
+    if (resourceName === undefined) {
+      continue;
+    }
+
+    if (!problemsByResources.has(resourceName)) {
+      problemsByResources.set(resourceName, []);
+    }
+
+    problemsByResources.get(resourceName)?.push(problem);
+  }
+
+  return Object.fromEntries(problemsByResources);
 };
 
 export const extractNewProblems = (previousProblems: ProblemsType, currentProblems: ProblemsType) => {

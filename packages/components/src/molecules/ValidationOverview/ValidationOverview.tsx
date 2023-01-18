@@ -2,10 +2,10 @@ import { Icon, SearchInput } from "@/atoms";
 import Colors from "@/styles/Colors";
 import { CloseOutlined, FilterOutlined } from "@ant-design/icons";
 import { Button, Collapse, Select } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { ProblemsType, ValidationOverviewType } from "./types";
-import { extractNewProblems, filterBySearchValue, selectProblemsByFilePaths } from "./utils";
+import { ProblemsType, ShowByFilterOptionType, ValidationOverviewType } from "./types";
+import { extractNewProblems, filterBySearchValue, selectProblemsByFilePath, selectProblemsByResource } from "./utils";
 
 let baseProblems: ProblemsType = {};
 
@@ -46,25 +46,10 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   });
   const [problems, setProblems] = useState<ProblemsType>({});
   const [searchValue, setSearchValue] = useState("");
-  const [showByFilterValue, setShowByFilterValue] = useState("show-by-file");
+  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>("show-by-file");
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
-
-  useEffect(() => {
-    const currentProblems = selectProblemsByFilePaths(validationResults, "all");
-
-    if (Object.keys(baseProblems).length) {
-      const foundNewProblems = extractNewProblems(baseProblems, currentProblems);
-      setNewProblems({ data: foundNewProblems.newProblems, resultsCount: foundNewProblems.resultsCounter });
-    }
-
-    baseProblems = { ...currentProblems };
-    setProblems(currentProblems);
-  }, [validationResults]);
-
-  useEffect(() => {
-    setFilteredProblems(filterBySearchValue(problems, searchValue));
-  }, [searchValue, problems]);
+  const [activeKeys, setActiveKeys] = useState<string[]>([]);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -81,8 +66,35 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
       showingProblems = problems;
     }
 
-    setFilteredProblems(filterBySearchValue(showingProblems, searchValue));
-  }, [showNewErrors, searchValue]);
+    const currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
+
+    setFilteredProblems(currentFilteredProblems);
+    setActiveKeys(Object.keys(currentFilteredProblems));
+  }, [newProblems, problems, showNewErrors, searchValue]);
+
+  useEffect(() => {
+    if (searchValue) {
+      setSearchValue("");
+    }
+
+    let currentProblems: ProblemsType = {};
+
+    if (showByFilterValue === "show-by-resource") {
+      currentProblems = selectProblemsByResource(validationResults, "all");
+    } else if (showByFilterValue === "show-by-file") {
+      currentProblems = selectProblemsByFilePath(validationResults, "all");
+    }
+
+    if (Object.keys(baseProblems).length) {
+      const foundNewProblems = extractNewProblems(baseProblems, currentProblems);
+      setNewProblems({ data: foundNewProblems.newProblems, resultsCount: foundNewProblems.resultsCounter });
+    }
+
+    baseProblems = { ...currentProblems };
+    setProblems(currentProblems);
+  }, [showByFilterValue, validationResults]);
+
+  useEffect(() => {}, [filteredProblems]);
 
   return (
     <MainContainer style={containerStyle} $height={height} className={containerClassName}>
@@ -126,20 +138,26 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
       {Object.keys(filteredProblems).length ? (
         <>
-          <ValidationsCollapse defaultActiveKey={Object.keys(filteredProblems)} ghost>
-            {Object.entries(filteredProblems).map(([filePath, results]) => (
+          <ValidationsCollapse
+            activeKey={activeKeys}
+            ghost
+            onChange={(keys) => {
+              setActiveKeys(typeof keys === "string" ? [keys] : keys);
+            }}
+          >
+            {Object.entries(filteredProblems).map(([id, results]) => (
               <Collapse.Panel
                 header={
                   <>
-                    {filePath} <ResultsCount>{results.length}</ResultsCount>
+                    {id} <ResultsCount>{results.length}</ResultsCount>
                   </>
                 }
-                key={filePath}
+                key={id}
               >
                 {results.map((result) => {
                   const rule = rules.find((r) => r.id === result.ruleId);
                   const isFoundInFile = selectedError?.locations.find(
-                    (loc) => loc.physicalLocation?.artifactLocation.uri === filePath
+                    (loc) => loc.physicalLocation?.artifactLocation.uri === id
                   );
                   const isSelected = Boolean(isFoundInFile && rule?.id === selectedError?.ruleId);
 
@@ -150,7 +168,10 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
                       className="collapse-item"
                       onClick={() => {
                         if (onErrorSelect) {
-                          onErrorSelect(result);
+                          onErrorSelect({
+                            error: result,
+                            selectedFrom: showByFilterValue === "show-by-resource" ? "resource" : "file",
+                          });
                         }
                       }}
                     >
@@ -161,7 +182,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
                       <ErrorRow $isSelected={isSelected}>
                         {
-                          result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === filePath)
+                          result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === id)
                             ?.physicalLocation?.region?.startLine
                         }
                       </ErrorRow>
