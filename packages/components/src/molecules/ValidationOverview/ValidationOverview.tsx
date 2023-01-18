@@ -5,7 +5,7 @@ import { getFileLocation, getRuleForResult } from "@monokle/validation";
 import { Button, Collapse, Select } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { iconMap, severityMap } from "./constants";
+import { iconMap, newErrorsTextMap, severityMap, showByFilterOptions } from "./constants";
 import { ProblemsType, ShowByFilterOptionType, ValidationOverviewType } from "./types";
 import {
   extractNewProblems,
@@ -18,17 +18,6 @@ import {
 import { ValidationCollapsePanelHeader } from "./ValidationCollapsePanelHeader";
 
 let baseProblems: ProblemsType = {};
-
-const newErrorsTextMap = {
-  "k8s-schema": "K8s Schema changed.",
-  rule: "Rule changed.",
-};
-
-const showByFilterOptions = [
-  { value: "show-by-file", label: "Show by file" },
-  { value: "show-by-resource", label: "Show by resource" },
-  { value: "show-by-rule", label: "Show by rule" },
-];
 
 export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   const { containerClassName = "", containerStyle = {}, height, selectedError, validationResponse } = props;

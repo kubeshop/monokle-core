@@ -28,9 +28,9 @@ export const selectProblemsByRule = (
 
     const rule = getRuleForResult(validationResponse, problem);
     // Since the rules metadata doesn't contain also the corresponding tool component,
-    // the id created is of form {ruleId}__{toolComponentName}__{ruleSecuritySeverity}
+    // the id created is of form {ruleDescription}__{toolComponentName}__{ruleSecuritySeverity}
     // in order to be used for showing icons in the header directly for each collapsible panel
-    const currentRule = `${problem.ruleId}__${problem.rule.toolComponent.name}__${
+    const currentRule = `${rule.shortDescription.text}__${problem.rule.toolComponent.name}__${
       rule.properties?.["security-severity"] ?? 1
     }`;
 
@@ -125,8 +125,8 @@ export const filterBySearchValue = (problems: ProblemsType, searchValue: string)
 };
 
 export const getRuleInfo = (key: string) => {
-  const [ruleId, toolComponentName, severity] = key.split("__");
-  return { ruleId, severity: parseInt(severity), toolComponentName };
+  const [ruleDescription, toolComponentName, severity] = key.split("__");
+  return { ruleDescription, severity: parseInt(severity), toolComponentName };
 };
 
 export const isProblemSelected = (

@@ -15,7 +15,7 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = (props) => {
   const { id, results, showByFilterValue } = props;
 
   if (showByFilterValue === "show-by-rule") {
-    const { ruleId, severity, toolComponentName } = getRuleInfo(id);
+    const { ruleDescription, severity, toolComponentName } = getRuleInfo(id);
 
     return (
       <Container>
@@ -23,7 +23,7 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = (props) => {
           {iconMap[toolComponentName]}
           {severityMap(severity, false)}
         </div>
-        <RuleId>{ruleId}</RuleId> <ResultsCount>{results.length}</ResultsCount>
+        <RuleId>{ruleDescription}</RuleId> <ResultsCount>{results.length}</ResultsCount>
       </Container>
     );
   }
