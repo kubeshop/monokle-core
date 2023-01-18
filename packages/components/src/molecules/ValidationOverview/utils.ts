@@ -1,5 +1,49 @@
-import { ValidationResult, getFileId, getResourceId, getResourceLocation } from "@monokle/validation";
+import {
+  ValidationResult,
+  getFileId,
+  getResourceLocation,
+  getRuleForResult,
+  ValidationResponse,
+} from "@monokle/validation";
 import { ProblemsType } from "./types";
+
+export const selectProblemsByRule = (
+  validationResponse: ValidationResponse,
+  problems: ValidationResult[],
+  level: "warning" | "error" | "all"
+) => {
+  const problemsByRule: Map<string, ValidationResult[]> = new Map();
+
+  for (const problem of problems) {
+    if (level && level !== "all" && (problem.level ?? "warning") !== level) {
+      continue;
+    }
+
+    console.log(problem);
+
+    const filePath = getFileId(problem);
+
+    if (filePath === undefined) {
+      continue;
+    }
+
+    const rule = getRuleForResult(validationResponse, problem);
+    // Since the rules metadata doesn't contain also the corresponding tool component,
+    // the id created is of form {ruleId}__{toolComponentName}__{ruleSecuritySeverity}
+    // in order to be used for showing icons in the header directly for each collapsible panel
+    const currentRule = `${problem.ruleId}__${problem.rule.toolComponent.name}__${
+      rule.properties?.["security-severity"] ?? 1
+    }`;
+
+    if (!problemsByRule.has(currentRule)) {
+      problemsByRule.set(currentRule, []);
+    }
+
+    problemsByRule.get(currentRule)?.push(problem);
+  }
+
+  return Object.fromEntries(problemsByRule);
+};
 
 export const selectProblemsByFilePath = (problems: ValidationResult[], level: "warning" | "error" | "all") => {
   const problemsByFile: Map<string, ValidationResult[]> = new Map();
@@ -79,4 +123,9 @@ export const filterBySearchValue = (problems: ProblemsType, searchValue: string)
   return Object.fromEntries(
     Object.entries(problems).filter(([filePath, _]) => filePath.toLowerCase().includes(searchValue.toLowerCase()))
   );
+};
+
+export const getRuleInfo = (key: string) => {
+  const [ruleId, toolComponentName, severity] = key.split("__");
+  return { ruleId, severity: parseInt(severity), toolComponentName };
 };

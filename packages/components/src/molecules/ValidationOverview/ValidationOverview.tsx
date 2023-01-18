@@ -1,32 +1,26 @@
 import { Icon, SearchInput } from "@/atoms";
 import Colors from "@/styles/Colors";
 import { CloseOutlined, FilterOutlined } from "@ant-design/icons";
+import { getRuleForResult } from "@monokle/validation";
 import { Button, Collapse, Select } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
+import { iconMap, severityMap } from "./constants";
 import { ProblemsType, ShowByFilterOptionType, ValidationOverviewType } from "./types";
-import { extractNewProblems, filterBySearchValue, selectProblemsByFilePath, selectProblemsByResource } from "./utils";
+import {
+  extractNewProblems,
+  filterBySearchValue,
+  selectProblemsByFilePath,
+  selectProblemsByResource,
+  selectProblemsByRule,
+} from "./utils";
+import { ValidationCollapsePanelHeader } from "./ValidationCollapsePanelHeader";
 
 let baseProblems: ProblemsType = {};
-
-const iconMap: Record<string, JSX.Element> = {
-  "kubernetes-schema": <Icon name="validation-k8s-schema" />,
-  "open-policy-agent": <Icon name="validation-opa" />,
-};
 
 const newErrorsTextMap = {
   "k8s-schema": "K8s Schema changed.",
   rule: "Rule changed.",
-};
-
-const severityMap = (severity: number, isSelected: boolean) => {
-  if (severity < 4) {
-    return <Icon name="severity-low" style={{ color: isSelected ? Colors.grey1 : Colors.green7 }} />;
-  } else if (severity < 7) {
-    return <Icon name="severity-medium" style={{ color: isSelected ? Colors.grey1 : Colors.red7 }} />;
-  } else {
-    return <Icon name="severity-high" style={{ color: isSelected ? Colors.grey1 : Colors.red7 }} />;
-  }
 };
 
 const showByFilterOptions = [
@@ -36,9 +30,10 @@ const showByFilterOptions = [
 ];
 
 export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
-  const { containerClassName = "", containerStyle = {}, height, rules, validationResults, selectedError } = props;
+  const { containerClassName = "", containerStyle = {}, height, selectedError, validationResponse } = props;
   const { newErrorsIntroducedType, onErrorSelect } = props;
 
+  const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [filteredProblems, setFilteredProblems] = useState<ProblemsType>({});
   const [newProblems, setNewProblems] = useState<{ data: ProblemsType; resultsCount: number }>({
     data: {},
@@ -46,10 +41,16 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   });
   const [problems, setProblems] = useState<ProblemsType>({});
   const [searchValue, setSearchValue] = useState("");
-  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>("show-by-file");
+  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>("show-by-rule");
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
-  const [activeKeys, setActiveKeys] = useState<string[]>([]);
+
+  const validationResults = useMemo(
+    () => validationResponse.runs.flatMap((r) => r.results) ?? [],
+    [validationResponse]
+  );
+
+  console.log(validationResponse.runs[0].tool.driver.rules);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -83,6 +84,8 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
       currentProblems = selectProblemsByResource(validationResults, "error");
     } else if (showByFilterValue === "show-by-file") {
       currentProblems = selectProblemsByFilePath(validationResults, "error");
+    } else if (showByFilterValue === "show-by-rule") {
+      currentProblems = selectProblemsByRule(validationResponse, validationResults, "error");
     }
 
     if (Object.keys(baseProblems).length) {
@@ -93,8 +96,6 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
     baseProblems = { ...currentProblems };
     setProblems(currentProblems);
   }, [showByFilterValue, validationResults]);
-
-  useEffect(() => {}, [filteredProblems]);
 
   return (
     <MainContainer style={containerStyle} $height={height} className={containerClassName}>
@@ -148,14 +149,12 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
             {Object.entries(filteredProblems).map(([id, results]) => (
               <Collapse.Panel
                 header={
-                  <>
-                    {id} <ResultsCount>{results.length}</ResultsCount>
-                  </>
+                  <ValidationCollapsePanelHeader id={id} results={results} showByFilterValue={showByFilterValue} />
                 }
                 key={id}
               >
                 {results.map((result) => {
-                  const rule = rules.find((r) => r.id === result.ruleId);
+                  const rule = getRuleForResult(validationResponse, result);
                   const isFoundInFile = selectedError?.locations.find(
                     (loc) => loc.physicalLocation?.artifactLocation.uri === id
                   );
@@ -181,10 +180,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
                       </div>
 
                       <ErrorRow $isSelected={isSelected}>
-                        {
-                          result.locations.find((loc) => loc.physicalLocation?.artifactLocation.uri === id)
-                            ?.physicalLocation?.region?.startLine
-                        }
+                        {result.locations[0].physicalLocation?.region?.startLine}
                       </ErrorRow>
                       {result.message.text}
                     </ResultLine>
@@ -193,6 +189,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
               </Collapse.Panel>
             ))}
           </ValidationsCollapse>
+
           {showNewErrors && (
             <ActionsContainer>
               <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
@@ -320,7 +317,7 @@ const ShowNewErrorsButton = styled.span`
 `;
 
 const ValidationsCollapse = styled(Collapse)`
-  max-height: calc(100% - 48px);
+  max-height: calc(100% - 100px);
   overflow-y: auto;
   margin-top: 24px;
 
