@@ -80,9 +80,9 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
     let currentProblems: ProblemsType = {};
 
     if (showByFilterValue === "show-by-resource") {
-      currentProblems = selectProblemsByResource(validationResults, "all");
+      currentProblems = selectProblemsByResource(validationResults, "error");
     } else if (showByFilterValue === "show-by-file") {
-      currentProblems = selectProblemsByFilePath(validationResults, "all");
+      currentProblems = selectProblemsByFilePath(validationResults, "error");
     }
 
     if (Object.keys(baseProblems).length) {

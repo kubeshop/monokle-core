@@ -14,7 +14,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
         name: "open-policy-agent",
       },
     },
-    level: "warning",
+    level: "error",
     message: {
       text: 'Disallow the process from elevating its privileges on container "panda-blog".',
     },
@@ -65,7 +65,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Disallow the process from elevating its privileges on container "panda-blog".',
       },
@@ -115,7 +115,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Require default capabilities to be dropped on container "panda-blog".',
       },
@@ -165,7 +165,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Require the CPU to be limited on container "panda-blog".',
       },
@@ -215,7 +215,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Requires the container to runs as non root user on container "panda-blog".',
       },
@@ -265,7 +265,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Disallow images with the latest tag on container "panda-blog".',
       },
@@ -315,7 +315,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Require a read-only root file system on container "panda-blog".',
       },
@@ -365,7 +365,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Require the CPU to be requested on container "panda-blog".',
       },
@@ -415,7 +415,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Require the memory to be requested on container "panda-blog".',
       },
@@ -465,7 +465,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           name: "open-policy-agent",
         },
       },
-      level: "warning",
+      level: "error",
       message: {
         text: 'Require the memory to be limited on container "panda-blog".',
       },
