@@ -1,0 +1,9 @@
+.idea
+.git
+build
+dist
+.husky
+node_modules
+
+src/redux/services/validation.test.ts
+electron/main.ts
