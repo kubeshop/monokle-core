@@ -14,4 +14,6 @@ export type ProblemsType = {
   [k: string]: ValidationResult[];
 };
 
+export type NewProblemsType = { data: ProblemsType; resultsCount: number };
+
 export type ShowByFilterOptionType = "show-by-file" | "show-by-resource" | "show-by-rule";

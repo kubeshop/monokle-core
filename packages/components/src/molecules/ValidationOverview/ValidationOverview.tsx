@@ -3,42 +3,27 @@ import Colors from "@/styles/Colors";
 import { CloseOutlined, FilterOutlined } from "@ant-design/icons";
 import { getRuleForResult } from "@monokle/validation";
 import { Button, Collapse, Select } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CollapseItemRow } from "./CollapseItemRow";
 import { newErrorsTextMap, showByFilterOptions } from "./constants";
-import { ProblemsType, ShowByFilterOptionType, ValidationOverviewType } from "./types";
-import {
-  extractNewProblems,
-  filterBySearchValue,
-  selectProblemsByFilePath,
-  selectProblemsByResource,
-  selectProblemsByRule,
-} from "./utils";
-import { ValidationCollapsePanelHeader } from "./ValidationCollapsePanelHeader";
+import { useGetCurrentAndNewProblems, useGetFilteredProblems } from "./hooks";
+import { ShowByFilterOptionType, ValidationOverviewType } from "./types";
 
-let baseProblems: ProblemsType = {};
+import { ValidationCollapsePanelHeader } from "./ValidationCollapsePanelHeader";
 
 export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   const { containerClassName = "", containerStyle = {}, height, selectedError, validationResponse } = props;
   const { newErrorsIntroducedType, onErrorSelect } = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
-  const [filteredProblems, setFilteredProblems] = useState<ProblemsType>({});
-  const [newProblems, setNewProblems] = useState<{ data: ProblemsType; resultsCount: number }>({
-    data: {},
-    resultsCount: 0,
-  });
-  const [problems, setProblems] = useState<ProblemsType>({});
   const [searchValue, setSearchValue] = useState("");
   const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>("show-by-file");
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
-  const validationResults = useMemo(
-    () => validationResponse.runs.flatMap((r) => r.results) ?? [],
-    [validationResponse]
-  );
+  const { newProblems, problems } = useGetCurrentAndNewProblems(showByFilterValue, validationResponse);
+  const filteredProblems = useGetFilteredProblems(problems, newProblems, showNewErrors, searchValue);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -47,43 +32,14 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
   }, [newProblems]);
 
   useEffect(() => {
-    let showingProblems: ProblemsType = {};
-
-    if (showNewErrors) {
-      showingProblems = newProblems.data;
-    } else {
-      showingProblems = problems;
-    }
-
-    const currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
-
-    setFilteredProblems(currentFilteredProblems);
-    setActiveKeys(Object.keys(currentFilteredProblems));
-  }, [newProblems, problems, showNewErrors, searchValue]);
+    setActiveKeys(Object.keys(filteredProblems));
+  }, [filteredProblems]);
 
   useEffect(() => {
     if (searchValue) {
       setSearchValue("");
     }
-
-    let currentProblems: ProblemsType = {};
-
-    if (showByFilterValue === "show-by-resource") {
-      currentProblems = selectProblemsByResource(validationResults, "error");
-    } else if (showByFilterValue === "show-by-file") {
-      currentProblems = selectProblemsByFilePath(validationResults, "error");
-    } else if (showByFilterValue === "show-by-rule") {
-      currentProblems = selectProblemsByRule(validationResponse, validationResults, "error");
-    }
-
-    if (Object.keys(baseProblems).length) {
-      const foundNewProblems = extractNewProblems(baseProblems, currentProblems);
-      setNewProblems({ data: foundNewProblems.newProblems, resultsCount: foundNewProblems.resultsCounter });
-    }
-
-    baseProblems = { ...currentProblems };
-    setProblems(currentProblems);
-  }, [showByFilterValue, validationResults]);
+  }, [problems]);
 
   return (
     <MainContainer style={containerStyle} $height={height} className={containerClassName}>
@@ -146,11 +102,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
                   return (
                     <CollapseItemRow
-                      key={
-                        showByFilterValue === "show-by-rule"
-                          ? result.locations[0].physicalLocation?.artifactLocation.uri
-                          : result.ruleId
-                      }
+                      key={result.ruleId}
                       result={result}
                       rule={rule}
                       showByFilterValue={showByFilterValue}
