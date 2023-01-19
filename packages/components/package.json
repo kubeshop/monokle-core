@@ -27,7 +27,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "storybook": "(cd ../validation && npm run build) && start-storybook -p 6006",
+    "storybook": "(cd ../validation && npm run build) && ( cd ../components && start-storybook -p 6006)",
     "build-storybook": "build-storybook",
     "test": "echo \"No tests\""
   },
