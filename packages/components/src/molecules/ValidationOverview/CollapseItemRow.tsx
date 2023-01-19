@@ -2,9 +2,9 @@ import Colors from "@/styles/Colors";
 import { getFileLocation, RuleMetadata, ValidationResult } from "@monokle/validation";
 import { useMemo } from "react";
 import styled from "styled-components";
-import { iconMap, severityMap } from "./constants";
+import { iconMap } from "./constants";
 import { ShowByFilterOptionType } from "./types";
-import { isProblemSelected } from "./utils";
+import { isProblemSelected, renderSeverityIcon } from "./utils";
 
 type IProps = {
   result: ValidationResult;
@@ -30,7 +30,7 @@ export const CollapseItemRow: React.FC<IProps> = (props) => {
         <>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             {iconMap[result.rule.toolComponent.name]}
-            {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
+            {rule && renderSeverityIcon(rule.properties?.["security-severity"] ?? 1, isSelected)}
           </div>
           <ErrorStartLine $isSelected={isSelected}>
             {result.locations[0].physicalLocation?.region?.startLine}

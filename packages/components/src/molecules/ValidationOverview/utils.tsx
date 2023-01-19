@@ -1,3 +1,5 @@
+import { Icon } from "@/atoms";
+import Colors from "@/styles/Colors";
 import {
   ValidationResult,
   getFileId,
@@ -27,9 +29,9 @@ export const selectProblemsByRule = (
     }
 
     const rule = getRuleForResult(validationResponse, problem);
-    // Since the rules metadata doesn't contain also the corresponding tool component,
-    // the id created is of form {ruleDescription}__{toolComponentName}__{ruleSecuritySeverity}
-    // in order to be used for showing icons in the header directly for each collapsible panel
+    // The following code creates an ID for each rule in the form of "{ruleDescription}__{toolComponentName}__{ruleSecuritySeverity}".
+    // This is to ensure that each collapsible panel in the header can have the corresponding icon displayed directly.
+    // The reason for this format is that the metadata for the rules does not include the associated tool component.
     const currentRule = `${rule.shortDescription.text}__${problem.rule.toolComponent.name}__${
       rule.properties?.["security-severity"] ?? 1
     }`;
@@ -155,3 +157,13 @@ export const isProblemSelected = (
 };
 
 export const getResourceName = (problem: ValidationResult) => getResourceLocation(problem).logicalLocations?.[0]?.name;
+
+export const renderSeverityIcon = (severity: number, isSelected: boolean) => {
+  if (severity < 4) {
+    return <Icon name="severity-low" style={{ color: isSelected ? Colors.grey1 : Colors.green7 }} />;
+  } else if (severity < 7) {
+    return <Icon name="severity-medium" style={{ color: isSelected ? Colors.grey1 : Colors.red7 }} />;
+  } else {
+    return <Icon name="severity-high" style={{ color: isSelected ? Colors.grey1 : Colors.red7 }} />;
+  }
+};

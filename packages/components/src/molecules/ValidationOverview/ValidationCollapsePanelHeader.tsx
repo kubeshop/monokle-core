@@ -1,9 +1,9 @@
 import Colors from "@/styles/Colors";
 import { ValidationResult } from "@monokle/validation";
 import styled from "styled-components";
-import { iconMap, severityMap } from "./constants";
+import { iconMap } from "./constants";
 import { ShowByFilterOptionType } from "./types";
-import { getRuleInfo } from "./utils";
+import { getRuleInfo, renderSeverityIcon } from "./utils";
 
 type IProps = {
   id: string;
@@ -21,7 +21,7 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = (props) => {
       <Container>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           {iconMap[toolComponentName]}
-          {severityMap(severity, false)}
+          {renderSeverityIcon(severity, false)}
         </div>
         <RuleId>{ruleDescription}</RuleId> <ResultsCount>{results.length}</ResultsCount>
       </Container>
