@@ -1,5 +1,12 @@
 # @monokle/components
 
+## 0.1.0
+
+### Minor Changes
+
+- b2cd3e8: added LearnPage component
+- 52e7401: add prettier configs
+
 ## 0.0.26
 
 ### Patch Changes
