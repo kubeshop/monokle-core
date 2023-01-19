@@ -1,16 +1,16 @@
 import { SearchInput } from "@/atoms";
 import Colors from "@/styles/Colors";
 import { CloseOutlined, FilterOutlined } from "@ant-design/icons";
-import { getFileLocation, getRuleForResult } from "@monokle/validation";
+import { getRuleForResult } from "@monokle/validation";
 import { Button, Collapse, Select } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { iconMap, newErrorsTextMap, severityMap, showByFilterOptions } from "./constants";
+import { CollapseItemRow } from "./CollapseItemRow";
+import { newErrorsTextMap, showByFilterOptions } from "./constants";
 import { ProblemsType, ShowByFilterOptionType, ValidationOverviewType } from "./types";
 import {
   extractNewProblems,
   filterBySearchValue,
-  isProblemSelected,
   selectProblemsByFilePath,
   selectProblemsByResource,
   selectProblemsByRule,
@@ -143,16 +143,18 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
               >
                 {results.map((result) => {
                   const rule = getRuleForResult(validationResponse, result);
-                  const isSelected = selectedError
-                    ? isProblemSelected(selectedError, result, showByFilterValue)
-                    : false;
 
                   return (
-                    <ResultLine
-                      key={result.ruleId}
-                      $secondary={showByFilterValue === "show-by-rule"}
-                      $isSelected={isSelected}
-                      className="collapse-item"
+                    <CollapseItemRow
+                      key={
+                        showByFilterValue === "show-by-rule"
+                          ? result.locations[0].physicalLocation?.artifactLocation.uri
+                          : result.ruleId
+                      }
+                      result={result}
+                      rule={rule}
+                      showByFilterValue={showByFilterValue}
+                      selectedError={selectedError}
                       onClick={() => {
                         if (onErrorSelect) {
                           onErrorSelect({
@@ -161,22 +163,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
                           });
                         }
                       }}
-                    >
-                      {showByFilterValue === "show-by-rule" ? (
-                        getFileLocation(result).physicalLocation?.artifactLocation.uri
-                      ) : (
-                        <>
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                            {iconMap[result.rule.toolComponent.name]}
-                            {rule && severityMap(rule.properties?.["security-severity"] ?? 1, isSelected)}
-                          </div>
-                          <ErrorStartLine $isSelected={isSelected}>
-                            {result.locations[0].physicalLocation?.region?.startLine}
-                          </ErrorStartLine>
-                          {result.message.text}
-                        </>
-                      )}
-                    </ResultLine>
+                    />
                   );
                 })}
               </Collapse.Panel>
@@ -223,11 +210,6 @@ const CloseIcon = styled(CloseOutlined)`
   }
 `;
 
-const ErrorStartLine = styled.div<{ $isSelected: boolean }>`
-  color: ${({ $isSelected }) => ($isSelected ? Colors.grey1 : Colors.grey8)};
-  font-weight: 400;
-`;
-
 const FiltersButton = styled(Button)`
   background-color: rgba(255, 255, 255, 0.1);
   border: none;
@@ -257,27 +239,6 @@ const NoErrorsMessage = styled.div`
   color: ${Colors.grey9};
   padding: 16px;
   font-weight: 700;
-`;
-
-const ResultLine = styled.div<{ $isSelected: boolean; $secondary: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 8px 16px 8px 40px;
-  font-weight: ${({ $isSelected }) => ($isSelected ? "700" : "400")};
-  color: ${({ $isSelected, $secondary }) =>
-    $isSelected ? Colors.grey1 : $secondary ? Colors.grey8 : Colors.whitePure};
-  background-color: ${({ $isSelected }) => ($isSelected ? Colors.blue9 : "transparent")};
-  transition: all 0.15s ease-in;
-
-  & .anticon {
-    color: ${({ $isSelected }) => ($isSelected ? Colors.grey1 : Colors.grey8)};
-  }
-
-  &:hover {
-    cursor: pointer;
-    background-color: ${({ $isSelected }) => ($isSelected ? Colors.blue8 : "rgba(141, 207, 248, 0.15)")};
-  }
 `;
 
 const ShowByFilter = styled(Select)`
