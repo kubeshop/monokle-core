@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.1.1
+
+### Patch Changes
+
+- 4df3dae: Remove helpful resources that are no longer needed
+
 ## 0.1.0
 
 ### Minor Changes
