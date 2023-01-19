@@ -1,4 +1,4 @@
-import { RuleMetadata, ValidationResponse, ValidationResult } from "@monokle/validation";
+import { ValidationResponse, ValidationResult } from "@monokle/validation";
 
 export type ValidationOverviewType = {
   validationResponse: ValidationResponse;
