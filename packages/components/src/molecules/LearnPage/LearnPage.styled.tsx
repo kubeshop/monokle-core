@@ -2,7 +2,7 @@ import {CloudUploadOutlined as RawCloudUploadOutlined} from '@ant-design/icons';
 
 import styled from 'styled-components';
 
-import Colors from '@/styles/Colors';
+import {Colors} from '@/styles/Colors';
 import {Device} from '@/styles/Device';
 
 export const CloudUploadOutlined = styled(RawCloudUploadOutlined)`

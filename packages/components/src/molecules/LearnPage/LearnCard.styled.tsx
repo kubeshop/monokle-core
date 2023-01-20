@@ -2,7 +2,7 @@ import {Button as RawButton} from 'antd';
 
 import styled from 'styled-components';
 
-import Colors from '@/styles/Colors';
+import {Colors} from '@/styles/Colors';
 import {AnimationDurations} from '@/styles/Animations';
 
 export const Button = styled(RawButton)`

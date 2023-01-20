@@ -1,5 +1,5 @@
-import Colors from "@/styles/Colors";
-import styled from "styled-components";
+import {Colors} from '@/styles/Colors';
+import styled from 'styled-components';
 
 const BarPanel = styled.div`
   width: 8px;

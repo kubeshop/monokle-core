@@ -1,5 +1,23 @@
 # @monokle/components
 
+## 0.2.3
+
+### Patch Changes
+
+- 73ad79a: Fix errors
+
+## 0.2.2
+
+### Patch Changes
+
+- 07210c7: Add CRDs icon
+
+## 0.2.1
+
+### Patch Changes
+
+- d96a2f0: Add missing icons
+
 ## 0.2.0
 
 ### Minor Changes

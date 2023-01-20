@@ -1,8 +1,9 @@
-import Colors from "@/styles/Colors";
-import styled from "styled-components";
+import {Colors} from '@/styles/Colors';
+import styled from 'styled-components';
 
-export const BarBox = styled.div<{ $isActive: boolean }>`
-  background-color: ${({ $isActive: activitySelected }) => (activitySelected ? Colors.blackPure : Colors.grey10)};
+export const BarBox = styled.div<{$isActive: boolean}>`
+  background-color: ${({$isActive: activitySelected}) =>
+    activitySelected ? Colors.blackPure : Colors.grey10};
   height: 100%;
   width: 50px;
   display: flex;

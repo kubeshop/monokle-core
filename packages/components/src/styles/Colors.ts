@@ -1,4 +1,4 @@
-enum Colors {
+export enum Colors {
   // Greys
   grey4000 = '#1F1F1F',
   grey3000 = '#191F21',
@@ -127,5 +127,3 @@ export enum FontColors {
   afford = Colors.greenOkay,
   warning = Colors.yellowWarning,
 }
-
-export default Colors;

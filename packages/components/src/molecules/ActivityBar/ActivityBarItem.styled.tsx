@@ -1,7 +1,7 @@
-import Colors from "@/styles/Colors";
-import styled from "styled-components";
+import {Colors} from '@/styles/Colors';
+import styled from 'styled-components';
 
-import { Badge as RawBadge, Button as RawButton } from "antd";
+import {Badge as RawBadge, Button as RawButton} from 'antd';
 
 interface GetColorParams {
   isSelected: boolean;
@@ -9,10 +9,14 @@ interface GetColorParams {
   isHighlighted?: boolean;
 }
 
-export const ItemBox = styled.div<{ $isActive: boolean; $isSelected: boolean; $isVisible: boolean }>`
-  background-color: ${({ $isSelected, $isActive }) =>
+export const ItemBox = styled.div<{
+  $isActive: boolean;
+  $isSelected: boolean;
+  $isVisible: boolean;
+}>`
+  background-color: ${({$isSelected, $isActive}) =>
     $isSelected ? Colors.grey10 : $isActive ? Colors.blackPure : Colors.grey10};
-  display: ${({ $isVisible }) => ($isVisible ? "flex" : "none")};
+  display: ${({$isVisible}) => ($isVisible ? 'flex' : 'none')};
   align-items: center;
   justify-content: center;
   width: 50px;
@@ -44,13 +48,20 @@ export const Badge = styled(RawBadge)`
   }
 `;
 
-const getButtonBackground = ({ isSelected }: GetColorParams): string =>
-  isSelected ? Colors.highlightBlue : "rgba(51, 60, 63, 0.5)";
+const getButtonBackground = ({isSelected}: GetColorParams): string =>
+  isSelected ? Colors.highlightBlue : 'rgba(51, 60, 63, 0.5)';
 
-const getButtonForeground = ({ isSelected, isHighlighted }: GetColorParams): string =>
-  isSelected ? Colors.highlightCyan : isHighlighted ? Colors.highlightBlue : "currentColor";
+const getButtonForeground = ({
+  isSelected,
+  isHighlighted,
+}: GetColorParams): string =>
+  isSelected
+    ? Colors.highlightCyan
+    : isHighlighted
+    ? Colors.highlightBlue
+    : 'currentColor';
 
-export const Button = styled(RawButton)<{ $isSelected: boolean }>`
+export const Button = styled(RawButton)<{$isSelected: boolean}>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,18 +78,18 @@ export const Button = styled(RawButton)<{ $isSelected: boolean }>`
     transition: color 500ms linear;
   }
 
-  ${({ $isSelected: isSelected }) => `
-      background: ${getButtonBackground({ isSelected })};
+  ${({$isSelected: isSelected}) => `
+      background: ${getButtonBackground({isSelected})};
 
       .anticon > svg {
-        color: ${getButtonForeground({ isSelected, isHighlighted: false })};
+        color: ${getButtonForeground({isSelected, isHighlighted: false})};
       }
 
       &:hover, &:focus {
-        background: ${getButtonBackground({ isSelected })};
+        background: ${getButtonBackground({isSelected})};
         
         .anticon > svg {
-          color: ${getButtonForeground({ isSelected, isHighlighted: true })};
+          color: ${getButtonForeground({isSelected, isHighlighted: true})};
         }
       }
     `}

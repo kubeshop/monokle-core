@@ -1,17 +1,18 @@
-import React, { useMemo } from "react";
+import React, {useMemo} from 'react';
 
-import AntdIcon, { ExclamationCircleOutlined } from "@ant-design/icons";
+import AntdIcon, {ExclamationCircleOutlined} from '@ant-design/icons';
 
-import { IconNames } from "./types";
-
-import Colors from "@/styles/Colors";
+import {IconNames} from './types';
 
 import {
   AllProjects,
   ClusterDashboard,
   Collapse,
   Compare,
+  CRDs,
   Git,
+  GitOps,
+  GitRepository,
   Explorer,
   Helm,
   Images,
@@ -28,13 +29,15 @@ import {
   SeverityLow,
   SeverityMedium,
   Shortcuts,
+  SplitView,
   Terminal,
   Validation,
   ValidationOPA,
   Warning,
   YAMLSyntax,
   ValidationK8sSchema,
-} from "./Icons";
+} from './Icons';
+import {Colors} from '@/styles/Colors';
 
 type IconProps = {
   name: IconNames;
@@ -46,38 +49,42 @@ type IconProps = {
 };
 
 const icons: Record<IconNames, React.ComponentType<any>> = {
-  "all-projects": AllProjects,
-  "cluster-dashboard": ClusterDashboard,
+  'all-projects': AllProjects,
+  'cluster-dashboard': ClusterDashboard,
   collapse: Collapse,
   compare: Compare,
+  crds: CRDs,
   error: ExclamationCircleOutlined,
   explorer: Explorer,
-  "git-ops": Git,
+  git: Git,
+  'git-ops': GitOps,
+  'git-repository': GitRepository,
   helm: Helm,
   images: Images,
   incomingRefs: IncomingRefs,
-  "k8s-schema": K8sSchema,
+  'k8s-schema': K8sSchema,
   kubernetes: Kubernetes,
   kustomize: Kustomize,
-  "opa-status": OPAStatus,
-  "open-policy-agent": OpenPolicyAgent,
+  'opa-status': OPAStatus,
+  'open-policy-agent': OpenPolicyAgent,
   outgoingRefs: OutgoingRefs,
-  "resource-links": ResourceLinks,
+  'resource-links': ResourceLinks,
   search: Search,
-  "severity-high": SeverityHigh,
-  "severity-low": SeverityLow,
-  "severity-medium": SeverityMedium,
+  'severity-high': SeverityHigh,
+  'severity-low': SeverityLow,
+  'severity-medium': SeverityMedium,
   shortcuts: Shortcuts,
+  'split-view': SplitView,
   terminal: Terminal,
   validation: Validation,
-  "validation-opa": ValidationOPA,
-  "validation-k8s-schema": ValidationK8sSchema,
+  'validation-opa': ValidationOPA,
+  'validation-k8s-schema': ValidationK8sSchema,
   warning: Warning,
-  "yaml-syntax": YAMLSyntax,
+  'yaml-syntax': YAMLSyntax,
 };
 
-export const Icon: React.FC<IconProps> = (props) => {
-  const { name, style, color, onMouseEnter, onMouseLeave, className } = props;
+const Icon: React.FC<IconProps> = props => {
+  const {name, style, color, onMouseEnter, onMouseLeave, className} = props;
 
   const finalStyle: React.CSSProperties = useMemo(() => {
     const customStyle = style || {};
@@ -91,7 +98,6 @@ export const Icon: React.FC<IconProps> = (props) => {
   return (
     <AntdIcon
       className={className}
-      // @ts-ignore */
       component={icons[name]}
       style={finalStyle}
       onMouseEnter={onMouseEnter}
@@ -99,3 +105,5 @@ export const Icon: React.FC<IconProps> = (props) => {
     />
   );
 };
+
+export default Icon;

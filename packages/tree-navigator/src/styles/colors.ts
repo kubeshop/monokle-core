@@ -1,4 +1,4 @@
-enum Colors {
+export enum Colors {
   grey700 = "#93989C",
   grey7 = "#7D7D7D",
   blue10 = "#B7E3FA",
@@ -18,5 +18,3 @@ enum Colors {
 export enum FontColors {
   grey = Colors.grey700,
 }
-
-export default Colors;
