@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.2.1
+
+### Patch Changes
+
+- d96a2f0: Add missing icons
+
 ## 0.2.0
 
 ### Minor Changes
