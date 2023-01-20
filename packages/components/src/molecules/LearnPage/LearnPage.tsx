@@ -1,18 +1,13 @@
 import {CheckOutlined, UnorderedListOutlined} from '@ant-design/icons';
 
 import {Icon} from '@/atoms/Icon';
-import {HelpTopic, LearnTopic} from './types';
 
 import HelpfulResourceCard from './HelpfulResourceCard';
 import LearnCard from './LearnCard';
 import * as S from './LearnPage.styled';
+import {LearnPageType} from './types';
 
-interface IProps {
-  onLearnCardClick: (topic: LearnTopic) => void;
-  onHelpfulResourceCardClick: (topic: HelpTopic) => void;
-}
-
-const LearnPage: React.FC<IProps> = ({
+const LearnPage: React.FC<LearnPageType> = ({
   onLearnCardClick,
   onHelpfulResourceCardClick,
 }) => {
