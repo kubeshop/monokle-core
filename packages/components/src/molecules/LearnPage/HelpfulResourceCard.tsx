@@ -1,12 +1,7 @@
 import * as S from './HelpfulResourceCard.styled';
+import {HelpfulResourceCardType} from './types';
 
-type IProps = {
-  description: string;
-  title: string;
-  onClick: () => void;
-};
-
-const HelpfulResourceCard: React.FC<IProps> = props => {
+const HelpfulResourceCard: React.FC<HelpfulResourceCardType> = props => {
   const {description, title, onClick} = props;
 
   return (

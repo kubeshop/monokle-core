@@ -1,3 +1,21 @@
-export type HelpTopic = 'documentation' | 'video-tutorial' | 'discord';
+export type HelpTopicType = 'documentation' | 'video-tutorial' | 'discord';
 
-export type LearnTopic = 'explore' | 'edit' | 'validate' | 'publish';
+export type LearnTopicType = 'explore' | 'edit' | 'validate' | 'publish';
+
+export type HelpfulResourceCardType = {
+  description: string;
+  title: string;
+  onClick: () => void;
+};
+
+export type LearnCardType = {
+  description: string;
+  icon: JSX.Element;
+  title: string;
+  onClick: () => void;
+};
+
+export type LearnPageType = {
+  onLearnCardClick: (topic: LearnTopicType) => void;
+  onHelpfulResourceCardClick: (topic: HelpTopicType) => void;
+};

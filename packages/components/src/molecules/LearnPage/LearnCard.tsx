@@ -1,14 +1,8 @@
 import React from 'react';
 import * as S from './LearnCard.styled';
+import {LearnCardType} from './types';
 
-type IProps = {
-  description: string;
-  icon: JSX.Element;
-  title: string;
-  onClick: () => void;
-};
-
-const LearnCard: React.FC<IProps> = props => {
+const LearnCard: React.FC<LearnCardType> = props => {
   const {description, icon, title, onClick} = props;
 
   const onKeyDown = (event: React.KeyboardEvent) => {
