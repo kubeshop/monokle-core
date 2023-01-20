@@ -1,29 +1,44 @@
-import { SearchInput } from "@/atoms";
-import Colors from "@/styles/Colors";
-import { CloseOutlined, FilterOutlined } from "@ant-design/icons";
-import { getRuleForResult } from "@monokle/validation";
-import { Button, Collapse, Select } from "antd";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import { CollapseItemRow } from "./CollapseItemRow";
-import { newErrorsTextMap, showByFilterOptions } from "./constants";
-import { useGetCurrentAndNewProblems, useGetFilteredProblems } from "./hooks";
-import { ShowByFilterOptionType, ValidationOverviewType } from "./types";
+import {SearchInput} from '@/atoms';
+import {Colors} from '@/styles/Colors';
+import {CloseOutlined, FilterOutlined} from '@ant-design/icons';
+import {getRuleForResult} from '@monokle/validation';
+import {Button, Collapse, Select} from 'antd';
+import {useEffect, useState} from 'react';
+import styled from 'styled-components';
+import {CollapseItemRow} from './CollapseItemRow';
+import {newErrorsTextMap, showByFilterOptions} from './constants';
+import {useGetCurrentAndNewProblems, useGetFilteredProblems} from './hooks';
+import {ShowByFilterOptionType, ValidationOverviewType} from './types';
 
-import { ValidationCollapsePanelHeader } from "./ValidationCollapsePanelHeader";
+import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 
-export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
-  const { containerClassName = "", containerStyle = {}, height, selectedError, validationResponse } = props;
-  const { newErrorsIntroducedType, onErrorSelect } = props;
+export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
+  const {
+    containerClassName = '',
+    containerStyle = {},
+    height,
+    selectedError,
+    validationResponse,
+  } = props;
+  const {newErrorsIntroducedType, onErrorSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
-  const [searchValue, setSearchValue] = useState("");
-  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>("show-by-file");
+  const [searchValue, setSearchValue] = useState('');
+  const [showByFilterValue, setShowByFilterValue] =
+    useState<ShowByFilterOptionType>('show-by-file');
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
-  const { newProblems, problems } = useGetCurrentAndNewProblems(showByFilterValue, validationResponse);
-  const filteredProblems = useGetFilteredProblems(problems, newProblems, showNewErrors, searchValue);
+  const {newProblems, problems} = useGetCurrentAndNewProblems(
+    showByFilterValue,
+    validationResponse
+  );
+  const filteredProblems = useGetFilteredProblems(
+    problems,
+    newProblems,
+    showNewErrors,
+    searchValue
+  );
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -37,16 +52,20 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
   useEffect(() => {
     if (searchValue) {
-      setSearchValue("");
+      setSearchValue('');
     }
   }, [problems]);
 
   return (
-    <MainContainer style={containerStyle} $height={height} className={containerClassName}>
+    <MainContainer
+      style={containerStyle}
+      $height={height}
+      className={containerClassName}
+    >
       <ActionsContainer>
         <SearchInput
           value={searchValue}
-          onChange={(e) => {
+          onChange={e => {
             setSearchValue(e.target.value);
           }}
         />
@@ -58,12 +77,18 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
         {Object.keys(newProblems.data).length && showNewErrorsMessage ? (
           <>
             {showNewErrors ? (
-              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>
+                Show all
+              </ShowNewErrorsButton>
             ) : (
               <NewErrorsMessage>
-                {newErrorsIntroducedType ? newErrorsTextMap[newErrorsIntroducedType] : ""}{" "}
-                <b>{newProblems.resultsCount} errors</b> introduced.{" "}
-                <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
+                {newErrorsIntroducedType
+                  ? newErrorsTextMap[newErrorsIntroducedType]
+                  : ''}{' '}
+                <b>{newProblems.resultsCount} errors</b> introduced.{' '}
+                <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>
+                  Show only those
+                </ShowNewErrorsButton>
                 <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
               </NewErrorsMessage>
             )}
@@ -86,18 +111,22 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
           <ValidationsCollapse
             activeKey={activeKeys}
             ghost
-            onChange={(keys) => {
-              setActiveKeys(typeof keys === "string" ? [keys] : keys);
+            onChange={keys => {
+              setActiveKeys(typeof keys === 'string' ? [keys] : keys);
             }}
           >
             {Object.entries(filteredProblems).map(([id, results]) => (
               <Collapse.Panel
                 header={
-                  <ValidationCollapsePanelHeader id={id} results={results} showByFilterValue={showByFilterValue} />
+                  <ValidationCollapsePanelHeader
+                    id={id}
+                    results={results}
+                    showByFilterValue={showByFilterValue}
+                  />
                 }
                 key={id}
               >
-                {results.map((result) => {
+                {results.map(result => {
                   const rule = getRuleForResult(validationResponse, result);
 
                   return (
@@ -111,7 +140,10 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
                         if (onErrorSelect) {
                           onErrorSelect({
                             error: result,
-                            selectedFrom: showByFilterValue === "show-by-resource" ? "resource" : "file",
+                            selectedFrom:
+                              showByFilterValue === 'show-by-resource'
+                                ? 'resource'
+                                : 'file',
                           });
                         }
                       }}
@@ -124,7 +156,9 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
           {showNewErrors && (
             <ActionsContainer>
-              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>
+                Show all
+              </ShowNewErrorsButton>
             </ActionsContainer>
           )}
         </>
@@ -137,15 +171,16 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = (props) => {
 
 // Styled components
 
-const ActionsContainer = styled.div<{ $secondary?: boolean }>`
+const ActionsContainer = styled.div<{$secondary?: boolean}>`
   display: grid;
-  grid-template-columns: ${({ $secondary }) => ($secondary ? "max-content max-content" : "1fr max-content")};
+  grid-template-columns: ${({$secondary}) =>
+    $secondary ? 'max-content max-content' : '1fr max-content'};
   grid-gap: 16px;
   padding: 0 16px;
 
-  ${({ $secondary }) => {
+  ${({$secondary}) => {
     if ($secondary) {
-      return "margin-top: 16px; justify-content: space-between; align-items: center;";
+      return 'margin-top: 16px; justify-content: space-between; align-items: center;';
     }
   }}
 `;
@@ -174,9 +209,9 @@ const FiltersButton = styled(Button)`
   }
 `;
 
-const MainContainer = styled.div<{ $height?: number }>`
+const MainContainer = styled.div<{$height?: number}>`
   background-color: #191f21;
-  height: ${({ $height }) => ($height ? `${$height}px` : "100%")};
+  height: ${({$height}) => ($height ? `${$height}px` : '100%')};
   width: 100%;
 `;
 

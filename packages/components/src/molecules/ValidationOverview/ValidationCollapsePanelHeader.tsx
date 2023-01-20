@@ -1,9 +1,9 @@
-import Colors from "@/styles/Colors";
-import { ValidationResult } from "@monokle/validation";
-import styled from "styled-components";
-import { iconMap } from "./constants";
-import { ShowByFilterOptionType } from "./types";
-import { getRuleInfo, renderSeverityIcon } from "./utils";
+import {Colors} from '@/styles/Colors';
+import {ValidationResult} from '@monokle/validation';
+import styled from 'styled-components';
+import {iconMap} from './constants';
+import {ShowByFilterOptionType} from './types';
+import {getRuleInfo, renderSeverityIcon} from './utils';
 
 type IProps = {
   id: string;
@@ -11,19 +11,20 @@ type IProps = {
   showByFilterValue: ShowByFilterOptionType;
 };
 
-export const ValidationCollapsePanelHeader: React.FC<IProps> = (props) => {
-  const { id, results, showByFilterValue } = props;
+export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
+  const {id, results, showByFilterValue} = props;
 
-  if (showByFilterValue === "show-by-rule") {
-    const { ruleDescription, severity, toolComponentName } = getRuleInfo(id);
+  if (showByFilterValue === 'show-by-rule') {
+    const {ruleDescription, severity, toolComponentName} = getRuleInfo(id);
 
     return (
       <Container>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
           {iconMap[toolComponentName]}
           {renderSeverityIcon(severity, false)}
         </div>
-        <RuleId>{ruleDescription}</RuleId> <ResultsCount>{results.length}</ResultsCount>
+        <RuleId>{ruleDescription}</RuleId>{' '}
+        <ResultsCount>{results.length}</ResultsCount>
       </Container>
     );
   }

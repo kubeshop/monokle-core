@@ -1,5 +1,5 @@
-import { Icon } from "@/atoms";
-import Colors from "@/styles/Colors";
+import {Icon} from '@/atoms';
+import {Colors} from '@/styles/Colors';
 import {
   ValidationResult,
   getFileId,
@@ -7,18 +7,18 @@ import {
   getRuleForResult,
   ValidationResponse,
   getFileLocation,
-} from "@monokle/validation";
-import { ProblemsType, ShowByFilterOptionType } from "./types";
+} from '@monokle/validation';
+import {ProblemsType, ShowByFilterOptionType} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
   problems: ValidationResult[],
-  level: "warning" | "error" | "all"
+  level: 'warning' | 'error' | 'all'
 ) => {
   const problemsByRule: Map<string, ValidationResult[]> = new Map();
 
   for (const problem of problems) {
-    if (level && level !== "all" && (problem.level ?? "warning") !== level) {
+    if (level && level !== 'all' && (problem.level ?? 'warning') !== level) {
       continue;
     }
 
@@ -32,9 +32,9 @@ export const selectProblemsByRule = (
     // The following code creates an ID for each rule in the form of "{ruleDescription}__{toolComponentName}__{ruleSecuritySeverity}".
     // This is to ensure that each collapsible panel in the header can have the corresponding icon displayed directly.
     // The reason for this format is that the metadata for the rules does not include the associated tool component.
-    const currentRule = `${rule.shortDescription.text}__${problem.rule.toolComponent.name}__${
-      rule.properties?.["security-severity"] ?? 1
-    }`;
+    const currentRule = `${rule.shortDescription.text}__${
+      problem.rule.toolComponent.name
+    }__${rule.properties?.['security-severity'] ?? 1}`;
 
     if (!problemsByRule.has(currentRule)) {
       problemsByRule.set(currentRule, []);
@@ -46,11 +46,14 @@ export const selectProblemsByRule = (
   return Object.fromEntries(problemsByRule);
 };
 
-export const selectProblemsByFilePath = (problems: ValidationResult[], level: "warning" | "error" | "all") => {
+export const selectProblemsByFilePath = (
+  problems: ValidationResult[],
+  level: 'warning' | 'error' | 'all'
+) => {
   const problemsByFile: Map<string, ValidationResult[]> = new Map();
 
   for (const problem of problems) {
-    if (level && level !== "all" && (problem.level ?? "warning") !== level) {
+    if (level && level !== 'all' && (problem.level ?? 'warning') !== level) {
       continue;
     }
 
@@ -70,11 +73,14 @@ export const selectProblemsByFilePath = (problems: ValidationResult[], level: "w
   return Object.fromEntries(problemsByFile);
 };
 
-export const selectProblemsByResource = (problems: ValidationResult[], level: "warning" | "error" | "all") => {
+export const selectProblemsByResource = (
+  problems: ValidationResult[],
+  level: 'warning' | 'error' | 'all'
+) => {
   const problemsByResources: Map<string, ValidationResult[]> = new Map();
 
   for (const problem of problems) {
-    if (level && level !== "all" && (problem.level ?? "warning") !== level) {
+    if (level && level !== 'all' && (problem.level ?? 'warning') !== level) {
       continue;
     }
 
@@ -94,15 +100,21 @@ export const selectProblemsByResource = (problems: ValidationResult[], level: "w
   return Object.fromEntries(problemsByResources);
 };
 
-export const extractNewProblems = (previousProblems: ProblemsType, currentProblems: ProblemsType) => {
+export const extractNewProblems = (
+  previousProblems: ProblemsType,
+  currentProblems: ProblemsType
+) => {
   let newProblems: ProblemsType = {};
   let resultsCounter = 0;
 
   Object.entries(currentProblems).forEach(([filePath, results]) => {
-    results.forEach((result) => {
+    results.forEach(result => {
       const comparingResults = previousProblems[filePath];
 
-      if (comparingResults?.length && !comparingResults.find((r) => r.ruleId === result.ruleId)) {
+      if (
+        comparingResults?.length &&
+        !comparingResults.find(r => r.ruleId === result.ruleId)
+      ) {
         if (!newProblems[filePath]) {
           newProblems[filePath] = [];
         }
@@ -113,22 +125,27 @@ export const extractNewProblems = (previousProblems: ProblemsType, currentProble
     });
   });
 
-  return { newProblems, resultsCounter };
+  return {newProblems, resultsCounter};
 };
 
-export const filterBySearchValue = (problems: ProblemsType, searchValue: string) => {
+export const filterBySearchValue = (
+  problems: ProblemsType,
+  searchValue: string
+) => {
   if (!searchValue) {
     return problems;
   }
 
   return Object.fromEntries(
-    Object.entries(problems).filter(([filePath, _]) => filePath.toLowerCase().includes(searchValue.toLowerCase()))
+    Object.entries(problems).filter(([filePath, _]) =>
+      filePath.toLowerCase().includes(searchValue.toLowerCase())
+    )
   );
 };
 
 export const getRuleInfo = (key: string) => {
-  const [ruleDescription, toolComponentName, severity] = key.split("__");
-  return { ruleDescription, severity: parseInt(severity), toolComponentName };
+  const [ruleDescription, toolComponentName, severity] = key.split('__');
+  return {ruleDescription, severity: parseInt(severity), toolComponentName};
 };
 
 export const isProblemSelected = (
@@ -136,18 +153,20 @@ export const isProblemSelected = (
   currentProblem: ValidationResult,
   type: ShowByFilterOptionType
 ) => {
-  const selectedFileLocation = getFileLocation(selectedProblem).physicalLocation?.artifactLocation.uri;
-  const currentFileLocation = getFileLocation(currentProblem).physicalLocation?.artifactLocation.uri;
+  const selectedFileLocation =
+    getFileLocation(selectedProblem).physicalLocation?.artifactLocation.uri;
+  const currentFileLocation =
+    getFileLocation(currentProblem).physicalLocation?.artifactLocation.uri;
 
   if (selectedProblem.ruleId !== currentProblem.ruleId) {
     return false;
   }
 
-  if (type === "show-by-file" || type === "show-by-rule") {
+  if (type === 'show-by-file' || type === 'show-by-rule') {
     if (selectedFileLocation === currentFileLocation) {
       return true;
     }
-  } else if (type === "show-by-resource") {
+  } else if (type === 'show-by-resource') {
     if (getResourceName(selectedProblem) === getResourceName(currentProblem)) {
       return true;
     }
@@ -156,14 +175,30 @@ export const isProblemSelected = (
   return false;
 };
 
-export const getResourceName = (problem: ValidationResult) => getResourceLocation(problem).logicalLocations?.[0]?.name;
+export const getResourceName = (problem: ValidationResult) =>
+  getResourceLocation(problem).logicalLocations?.[0]?.name;
 
 export const renderSeverityIcon = (severity: number, isSelected: boolean) => {
   if (severity < 4) {
-    return <Icon name="severity-low" style={{ color: isSelected ? Colors.grey1 : Colors.green7 }} />;
+    return (
+      <Icon
+        name="severity-low"
+        style={{color: isSelected ? Colors.grey1 : Colors.green7}}
+      />
+    );
   } else if (severity < 7) {
-    return <Icon name="severity-medium" style={{ color: isSelected ? Colors.grey1 : Colors.red7 }} />;
+    return (
+      <Icon
+        name="severity-medium"
+        style={{color: isSelected ? Colors.grey1 : Colors.red7}}
+      />
+    );
   } else {
-    return <Icon name="severity-high" style={{ color: isSelected ? Colors.grey1 : Colors.red7 }} />;
+    return (
+      <Icon
+        name="severity-high"
+        style={{color: isSelected ? Colors.grey1 : Colors.red7}}
+      />
+    );
   }
 };

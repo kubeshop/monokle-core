@@ -1,10 +1,10 @@
-import Colors from "@/styles/Colors";
-import { SearchOutlined } from "@ant-design/icons";
-import { Input, InputProps } from "antd";
-import React from "react";
-import styled from "styled-components";
+import {Colors} from '@/styles/Colors';
+import {SearchOutlined} from '@ant-design/icons';
+import {Input, InputProps} from 'antd';
+import React from 'react';
+import styled from 'styled-components';
 
-export const SearchInput: React.FC<InputProps> = (props) => {
+export const SearchInput: React.FC<InputProps> = props => {
   return <Search prefix={<SearchOutlined />} {...props} />;
 };
 
