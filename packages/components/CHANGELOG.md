@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.2.0
+
+### Minor Changes
+
+- 23683b5: add eslint config
+
 ## 0.1.2
 
 ### Patch Changes
