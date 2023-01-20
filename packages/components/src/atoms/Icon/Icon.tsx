@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import React, {useMemo} from 'react';
 
-import AntdIcon, { ExclamationCircleOutlined } from "@ant-design/icons";
+import AntdIcon, {ExclamationCircleOutlined} from '@ant-design/icons';
 
-import { IconNames } from "./types";
+import {IconNames} from './types';
 
-import Colors from "@/styles/Colors";
+import Colors from '@/styles/Colors';
 
 import {
   AllProjects,
@@ -12,6 +12,8 @@ import {
   Collapse,
   Compare,
   Git,
+  GitOps,
+  GitRepository,
   Explorer,
   Helm,
   Images,
@@ -28,11 +30,12 @@ import {
   SeverityLow,
   SeverityMedium,
   Shortcuts,
+  SplitView,
   Terminal,
   Validation,
   Warning,
   YAMLSyntax,
-} from "./Icons";
+} from './Icons';
 
 type IconProps = {
   name: IconNames;
@@ -44,36 +47,39 @@ type IconProps = {
 };
 
 const icons: Record<IconNames, React.ComponentType<any>> = {
-  "all-projects": AllProjects,
-  "cluster-dashboard": ClusterDashboard,
+  'all-projects': AllProjects,
+  'cluster-dashboard': ClusterDashboard,
   collapse: Collapse,
   compare: Compare,
   error: ExclamationCircleOutlined,
   explorer: Explorer,
-  "git-ops": Git,
+  git: Git,
+  'git-ops': GitOps,
+  'git-repository': GitRepository,
   helm: Helm,
   images: Images,
   incomingRefs: IncomingRefs,
-  "k8s-schema": K8sSchema,
+  'k8s-schema': K8sSchema,
   kubernetes: Kubernetes,
   kustomize: Kustomize,
-  "opa-status": OPAStatus,
-  "open-policy-agent": OpenPolicyAgent,
+  'opa-status': OPAStatus,
+  'open-policy-agent': OpenPolicyAgent,
   outgoingRefs: OutgoingRefs,
-  "resource-links": ResourceLinks,
+  'resource-links': ResourceLinks,
   search: Search,
-  "severity-high": SeverityHigh,
-  "severity-low": SeverityLow,
-  "severity-medium": SeverityMedium,
+  'severity-high': SeverityHigh,
+  'severity-low': SeverityLow,
+  'severity-medium': SeverityMedium,
   shortcuts: Shortcuts,
+  'split-view': SplitView,
   terminal: Terminal,
   validation: Validation,
   warning: Warning,
-  "yaml-syntax": YAMLSyntax,
+  'yaml-syntax': YAMLSyntax,
 };
 
-export const Icon: React.FC<IconProps> = (props) => {
-  const { name, style, color, onMouseEnter, onMouseLeave, className } = props;
+const Icon: React.FC<IconProps> = props => {
+  const {name, style, color, onMouseEnter, onMouseLeave, className} = props;
 
   const finalStyle: React.CSSProperties = useMemo(() => {
     const customStyle = style || {};
@@ -87,7 +93,6 @@ export const Icon: React.FC<IconProps> = (props) => {
   return (
     <AntdIcon
       className={className}
-      // @ts-ignore */
       component={icons[name]}
       style={finalStyle}
       onMouseEnter={onMouseEnter}
@@ -95,3 +100,5 @@ export const Icon: React.FC<IconProps> = (props) => {
     />
   );
 };
+
+export default Icon;
