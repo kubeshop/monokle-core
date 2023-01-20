@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.1.2
+
+### Patch Changes
+
+- 6b263a6: Export LearnPage and types
+
 ## 0.1.1
 
 ### Patch Changes
