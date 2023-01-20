@@ -5,23 +5,9 @@ import {Icon} from '@/atoms/Icon';
 import HelpfulResourceCard from './HelpfulResourceCard';
 import LearnCard from './LearnCard';
 import * as S from './LearnPage.styled';
+import {LearnPageType} from './types';
 
-type LearnTopic = 'explore' | 'edit' | 'validate' | 'publish';
-
-type HelpTopic =
-  | 'start-guide'
-  | 'video-tutorial'
-  | 'documentation'
-  | 'discord'
-  | 'whats-new'
-  | 'feedback';
-
-export interface IProps {
-  onLearnCardClick: (topic: LearnTopic) => void;
-  onHelpfulResourceCardClick: (topic: HelpTopic) => void;
-}
-
-const LearnPage: React.FC<IProps> = ({
+const LearnPage: React.FC<LearnPageType> = ({
   onLearnCardClick,
   onHelpfulResourceCardClick,
 }) => {
@@ -67,34 +53,21 @@ const LearnPage: React.FC<IProps> = ({
 
       <S.HelpfulResourcesContainer>
         <HelpfulResourceCard
-          description="A quick read"
-          title="Start Guide"
-          onClick={() => onHelpfulResourceCardClick('start-guide')}
+          description="Everything you need to know"
+          title="Documentation"
+          onClick={() => onHelpfulResourceCardClick('documentation')}
         />
+
         <HelpfulResourceCard
           description="To learn the basics"
           title="3-minute Video Tutorial"
           onClick={() => onHelpfulResourceCardClick('video-tutorial')}
         />
-        <HelpfulResourceCard
-          description="in Confluence"
-          title="Documentation"
-          onClick={() => onHelpfulResourceCardClick('documentation')}
-        />
+
         <HelpfulResourceCard
           description="Join the conversation"
           title="Discord"
           onClick={() => onHelpfulResourceCardClick('discord')}
-        />
-        <HelpfulResourceCard
-          description="in the latest version?"
-          title="What's new"
-          onClick={() => onHelpfulResourceCardClick('whats-new')}
-        />
-        <HelpfulResourceCard
-          description="Share your thoughts"
-          title="Feedback"
-          onClick={() => onHelpfulResourceCardClick('feedback')}
         />
       </S.HelpfulResourcesContainer>
     </S.LearnPageContainer>

@@ -1,5 +1,23 @@
 # @monokle/components
 
+## 0.2.0
+
+### Minor Changes
+
+- 23683b5: add eslint config
+
+## 0.1.2
+
+### Patch Changes
+
+- 6b263a6: Export LearnPage and types
+
+## 0.1.1
+
+### Patch Changes
+
+- 4df3dae: Remove helpful resources that are no longer needed
+
 ## 0.1.0
 
 ### Minor Changes
