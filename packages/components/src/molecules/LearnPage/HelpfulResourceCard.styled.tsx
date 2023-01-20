@@ -2,7 +2,7 @@ import {rgba} from 'polished';
 import styled from 'styled-components';
 
 import {AnimationDurations} from '@/styles/Animations';
-import Colors from '@/styles/Colors';
+import {Colors} from '@/styles/Colors';
 
 export const Description = styled.div`
   color: ${Colors.grey8};

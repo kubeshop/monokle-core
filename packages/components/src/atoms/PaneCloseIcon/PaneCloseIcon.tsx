@@ -1,8 +1,8 @@
-import Colors from "@/styles/Colors";
-import React from "react";
-import styled from "styled-components";
+import {Colors} from '@/styles/Colors';
+import React from 'react';
+import styled from 'styled-components';
 
-import { DoubleLeftOutlined as RawDoubleLeftOutlined } from "@ant-design/icons";
+import {DoubleLeftOutlined as RawDoubleLeftOutlined} from '@ant-design/icons';
 
 export type PaneCloseIconType = {
   onClick: () => void;
@@ -13,18 +13,26 @@ export type PaneCloseIconType = {
   iconStyle?: React.CSSProperties;
 };
 
-export const PaneCloseIcon: React.FC<PaneCloseIconType> = (props) => {
-  const { containerId = "pane-close", containerStyle = {}, iconStyle = {}, onClick } = props;
-  const { containerClassName = "", iconClassName = "" } = props;
+export const PaneCloseIcon: React.FC<PaneCloseIconType> = props => {
+  const {
+    containerId = 'pane-close',
+    containerStyle = {},
+    iconStyle = {},
+    onClick,
+  } = props;
+  const {containerClassName = '', iconClassName = ''} = props;
 
   return (
     <StyledPaneCloseIconContainer
       className={containerClassName}
       id={containerId}
-      style={{ ...containerStyle }}
+      style={{...containerStyle}}
       onClick={onClick}
     >
-      <StyledDoubleLeftOutlined className={iconClassName} style={{ ...iconStyle }} />
+      <StyledDoubleLeftOutlined
+        className={iconClassName}
+        style={{...iconStyle}}
+      />
     </StyledPaneCloseIconContainer>
   );
 };

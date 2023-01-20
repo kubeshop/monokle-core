@@ -2,7 +2,7 @@ import { /* Checkbox as RawCheckbox, */ Skeleton as RawSkeleton } from "antd";
 
 import styled from "styled-components";
 
-import Colors, { FontColors } from "../../styles/colors";
+import {Colors}, { FontColors } from "../../styles/colors";
 
 type NameContainerProps = {
   $hasCustomRow: boolean;

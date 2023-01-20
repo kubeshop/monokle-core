@@ -4,8 +4,6 @@ import AntdIcon, {ExclamationCircleOutlined} from '@ant-design/icons';
 
 import {IconNames} from './types';
 
-import Colors from '@/styles/Colors';
-
 import {
   AllProjects,
   ClusterDashboard,
@@ -37,6 +35,7 @@ import {
   Warning,
   YAMLSyntax,
 } from './Icons';
+import {Colors} from '@/styles/Colors';
 
 type IconProps = {
   name: IconNames;

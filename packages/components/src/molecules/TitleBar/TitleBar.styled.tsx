@@ -1,4 +1,4 @@
-import Colors, { PanelColors } from "@/styles/Colors";
+import {Colors}, { PanelColors } from "@/styles/Colors";
 import styled from "styled-components";
 import { DownOutlined as RawDownOutlined, RightOutlined as RawRightOutlined } from "@ant-design/icons";
 

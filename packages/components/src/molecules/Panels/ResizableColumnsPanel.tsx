@@ -1,23 +1,52 @@
-import { useCallback } from "react";
-import { ReflexContainer, ReflexElement, ReflexSplitter, HandlerProps } from "react-reflex";
-import styled from "styled-components";
+import {useCallback} from 'react';
+import {
+  ReflexContainer,
+  ReflexElement,
+  ReflexSplitter,
+  HandlerProps,
+} from 'react-reflex';
+import styled from 'styled-components';
 
-import Colors from "@/styles/Colors";
+import {Colors} from '@/styles/Colors';
 
-import { OnStopResize, ResizableColumnsPanelType } from "./types";
-import { PaneCloseIcon } from "@/atoms";
-import { LAYOUT } from "@/constants";
+import {OnStopResize, ResizableColumnsPanelType} from './types';
+import {PaneCloseIcon} from '@/atoms';
+import {LAYOUT} from '@/constants';
 
-const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
-  const { center, layout, left, right, height = "100%", width = "100%", minPaneWidth = 350 } = props;
-  const { leftClosable = false, onCloseLeftPane = () => {}, onStopResize = () => {} } = props;
+const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
+  const {
+    center,
+    layout,
+    left,
+    right,
+    height = '100%',
+    width = '100%',
+    minPaneWidth = 350,
+  } = props;
+  const {
+    leftClosable = false,
+    onCloseLeftPane = () => {},
+    onStopResize = () => {},
+  } = props;
 
-  const onStopResizeLeft = useCallback(makeOnStopResize("left", onStopResize), [onStopResize]);
-  const onStopResizeCenter = useCallback(makeOnStopResize("center", onStopResize), [onStopResize]);
-  const onStopResizeRight = useCallback(makeOnStopResize("right", onStopResize), [onStopResize]);
+  const onStopResizeLeft = useCallback(makeOnStopResize('left', onStopResize), [
+    onStopResize,
+  ]);
+  const onStopResizeCenter = useCallback(
+    makeOnStopResize('center', onStopResize),
+    [onStopResize]
+  );
+  const onStopResizeRight = useCallback(
+    makeOnStopResize('right', onStopResize),
+    [onStopResize]
+  );
 
   return (
-    <ReflexContainer orientation="vertical" windowResizeAware style={{ height, width }}>
+    <ReflexContainer
+      orientation="vertical"
+      windowResizeAware
+      style={{height, width}}
+    >
       {left && (
         <StyledLeftReflexElement
           $leftClosable={leftClosable}
@@ -30,14 +59,21 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = (props) => {
             {leftClosable && (
               <PaneCloseIcon
                 onClick={onCloseLeftPane}
-                containerStyle={{ position: "absolute", top: 20, right: -10, zIndex: LAYOUT.zIndex.low }}
+                containerStyle={{
+                  position: 'absolute',
+                  top: 20,
+                  right: -10,
+                  zIndex: LAYOUT.zIndex.low,
+                }}
               />
             )}
           </StyledLeftPane>
         </StyledLeftReflexElement>
       )}
 
-      {left && <ReflexSplitter propagate style={{ backgroundColor: Colors.grey10 }} />}
+      {left && (
+        <ReflexSplitter propagate style={{backgroundColor: Colors.grey10}} />
+      )}
 
       {center && (
         <ReflexElement
@@ -71,18 +107,18 @@ const StyledPane = styled.div`
   overflow-x: hidden;
 `;
 
-const StyledLeftPane = styled(StyledPane)<{ $leftClosable: boolean }>`
+const StyledLeftPane = styled(StyledPane)<{$leftClosable: boolean}>`
   background-color: ${Colors.grey10};
 
-  ${({ $leftClosable }) => {
+  ${({$leftClosable}) => {
     if ($leftClosable) {
       return `position: static;`;
     }
   }}
 `;
 
-const StyledLeftReflexElement = styled(ReflexElement)<{ $leftClosable: boolean }>`
-  ${({ $leftClosable }) => {
+const StyledLeftReflexElement = styled(ReflexElement)<{$leftClosable: boolean}>`
+  ${({$leftClosable}) => {
     if ($leftClosable) {
       return `overflow: visible !important;`;
     }
@@ -91,7 +127,10 @@ const StyledLeftReflexElement = styled(ReflexElement)<{ $leftClosable: boolean }
 
 // Utils
 
-const makeOnStopResize = (position: "left" | "center" | "right", onStopResize: OnStopResize) => {
+const makeOnStopResize = (
+  position: 'left' | 'center' | 'right',
+  onStopResize: OnStopResize
+) => {
   return (args: HandlerProps) => {
     const flex = args.component.props.flex;
 
