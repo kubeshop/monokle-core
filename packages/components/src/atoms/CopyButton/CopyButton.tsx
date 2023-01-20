@@ -1,15 +1,15 @@
-import { useCallback, useState } from "react";
-import { useInterval } from "react-use";
+import {useCallback, useState} from 'react';
+import {useInterval} from 'react-use';
 
-import { Button } from "antd";
+import {Button} from 'antd';
 
-import { CopyOutlined } from "@ant-design/icons";
+import {CopyOutlined} from '@ant-design/icons';
 
-import styled from "styled-components";
+import styled from 'styled-components';
 
-import Colors from "@/styles/Colors";
+import {Colors} from '@/styles/Colors';
 
-export function CopyButton({ content }: { content: string }) {
+export function CopyButton({content}: {content: string}) {
   const [isCopiedRecently, setIsCopiedRecently] = useState(false);
 
   useInterval(
@@ -30,7 +30,11 @@ export function CopyButton({ content }: { content: string }) {
 
   return (
     <CpyBox>
-      <CpyButton type="link" icon={<CopyOutlined />} onClick={(e) => handleCopy(e as unknown as MouseEvent)} />
+      <CpyButton
+        type="link"
+        icon={<CopyOutlined />}
+        onClick={e => handleCopy(e as unknown as MouseEvent)}
+      />
       {isCopiedRecently && <CopiedIndicator>copied!</CopiedIndicator>}
     </CpyBox>
   );

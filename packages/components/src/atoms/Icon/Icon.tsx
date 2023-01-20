@@ -4,13 +4,12 @@ import AntdIcon, {ExclamationCircleOutlined} from '@ant-design/icons';
 
 import {IconNames} from './types';
 
-import Colors from '@/styles/Colors';
-
 import {
   AllProjects,
   ClusterDashboard,
   Collapse,
   Compare,
+  CRDs,
   Git,
   GitOps,
   GitRepository,
@@ -36,6 +35,7 @@ import {
   Warning,
   YAMLSyntax,
 } from './Icons';
+import {Colors} from '@/styles/Colors';
 
 type IconProps = {
   name: IconNames;
@@ -51,6 +51,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   'cluster-dashboard': ClusterDashboard,
   collapse: Collapse,
   compare: Compare,
+  crds: CRDs,
   error: ExclamationCircleOutlined,
   explorer: Explorer,
   git: Git,

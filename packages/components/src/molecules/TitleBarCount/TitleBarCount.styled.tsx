@@ -1,5 +1,5 @@
-import Colors from "@/styles/Colors";
-import styled from "styled-components";
+import {Colors} from '@/styles/Colors';
+import styled from 'styled-components';
 
 export const BaseBox = styled.div`
   font-size: 11px;

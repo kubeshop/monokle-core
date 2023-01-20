@@ -2,6 +2,7 @@ export type IconNames =
   | 'all-projects'
   | 'cluster-dashboard'
   | 'compare'
+  | 'crds'
   | 'explorer'
   | 'images'
   | 'git'
