@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.2.3
+
+### Patch Changes
+
+- 73ad79a: Fix errors
+
 ## 0.2.2
 
 ### Patch Changes

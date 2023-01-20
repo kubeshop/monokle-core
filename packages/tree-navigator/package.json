@@ -1,7 +1,7 @@
 {
   "name": "@monokle/tree-navigator",
   "description": "React library for rendering tree structures based on the Redux store.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "source": "src/index.ts",
   "module": "lib/index.js",
