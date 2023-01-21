@@ -36,7 +36,12 @@ export const CollapseItemRow: React.FC<IProps> = props => {
       onClick={onClick}
     >
       {showByFilterValue === 'show-by-rule' ? (
-        getFileLocation(result).physicalLocation?.artifactLocation.uri
+        <>
+          <ErrorStartLine $isSelected={isSelected}>
+            {result.locations[0].physicalLocation?.region?.startLine}
+          </ErrorStartLine>
+          {getFileLocation(result).physicalLocation?.artifactLocation.uri}
+        </>
       ) : (
         <>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
@@ -62,6 +67,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
 const ErrorStartLine = styled.div<{$isSelected: boolean}>`
   color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
   font-weight: 400;
+  min-width: 26px;
 `;
 
 const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`

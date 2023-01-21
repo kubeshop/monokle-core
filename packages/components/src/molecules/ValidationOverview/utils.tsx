@@ -102,24 +102,37 @@ export const selectProblemsByResource = (
 
 export const extractNewProblems = (
   previousProblems: ProblemsType,
-  currentProblems: ProblemsType
+  currentProblems: ProblemsType,
+  showByFilterValue: ShowByFilterOptionType
 ) => {
   let newProblems: ProblemsType = {};
   let resultsCounter = 0;
 
-  Object.entries(currentProblems).forEach(([filePath, results]) => {
+  Object.entries(currentProblems).forEach(([key, results]) => {
     results.forEach(result => {
-      const comparingResults = previousProblems[filePath];
+      const comparingResults = previousProblems[key];
+
+      if (showByFilterValue === 'show-by-rule') {
+        if (!comparingResults) {
+          if (!newProblems[key]) {
+            newProblems[key] = [];
+          }
+
+          newProblems[key].push(result);
+          resultsCounter += 1;
+          return;
+        }
+      }
 
       if (
         comparingResults?.length &&
         !comparingResults.find(r => r.ruleId === result.ruleId)
       ) {
-        if (!newProblems[filePath]) {
-          newProblems[filePath] = [];
+        if (!newProblems[key]) {
+          newProblems[key] = [];
         }
 
-        newProblems[filePath].push(result);
+        newProblems[key].push(result);
         resultsCounter += 1;
       }
     });
