@@ -13,32 +13,17 @@ import {ShowByFilterOptionType, ValidationOverviewType} from './types';
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 
 export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {
-    containerClassName = '',
-    containerStyle = {},
-    height,
-    selectedError,
-    validationResponse,
-  } = props;
-  const {newErrorsIntroducedType, onErrorSelect} = props;
+  const {containerClassName = '', containerStyle = {}, height, selectedError} = props;
+  const {customMessage, newErrorsIntroducedType, validationResponse, onErrorSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
-  const [showByFilterValue, setShowByFilterValue] =
-    useState<ShowByFilterOptionType>('show-by-file');
+  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>('show-by-file');
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
-  const {newProblems, problems} = useCurrentAndNewProblems(
-    showByFilterValue,
-    validationResponse
-  );
-  const filteredProblems = useFilteredProblems(
-    problems,
-    newProblems,
-    showNewErrors,
-    searchValue
-  );
+  const {newProblems, problems} = useCurrentAndNewProblems(showByFilterValue, validationResponse);
+  const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -57,11 +42,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   }, [problems]);
 
   return (
-    <MainContainer
-      style={containerStyle}
-      $height={height}
-      className={containerClassName}
-    >
+    <MainContainer style={containerStyle} $height={height} className={containerClassName}>
       <ActionsContainer>
         <SearchInput
           value={searchValue}
@@ -77,18 +58,12 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
         {Object.keys(newProblems.data).length && showNewErrorsMessage ? (
           <>
             {showNewErrors ? (
-              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>
-                Show all
-              </ShowNewErrorsButton>
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
             ) : (
               <NewErrorsMessage>
-                {newErrorsIntroducedType
-                  ? newErrorsTextMap[newErrorsIntroducedType]
-                  : ''}{' '}
+                {newErrorsIntroducedType ? newErrorsTextMap[newErrorsIntroducedType] : customMessage ?? ''}{' '}
                 <b>{newProblems.resultsCount} errors</b> introduced.{' '}
-                <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>
-                  Show only those
-                </ShowNewErrorsButton>
+                <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
                 <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
               </NewErrorsMessage>
             )}
@@ -118,11 +93,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
             {Object.entries(filteredProblems).map(([id, results]) => (
               <Collapse.Panel
                 header={
-                  <ValidationCollapsePanelHeader
-                    id={id}
-                    results={results}
-                    showByFilterValue={showByFilterValue}
-                  />
+                  <ValidationCollapsePanelHeader id={id} results={results} showByFilterValue={showByFilterValue} />
                 }
                 key={id}
               >
@@ -140,10 +111,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                         if (onErrorSelect) {
                           onErrorSelect({
                             error: result,
-                            selectedFrom:
-                              showByFilterValue === 'show-by-resource'
-                                ? 'resource'
-                                : 'file',
+                            selectedFrom: showByFilterValue === 'show-by-resource' ? 'resource' : 'file',
                           });
                         }
                       }}
@@ -156,9 +124,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
           {showNewErrors && (
             <ActionsContainer>
-              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>
-                Show all
-              </ShowNewErrorsButton>
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
             </ActionsContainer>
           )}
         </>
@@ -173,8 +139,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
 const ActionsContainer = styled.div<{$secondary?: boolean}>`
   display: grid;
-  grid-template-columns: ${({$secondary}) =>
-    $secondary ? 'max-content max-content' : '1fr max-content'};
+  grid-template-columns: ${({$secondary}) => ($secondary ? 'max-content max-content' : '1fr max-content')};
   grid-gap: 16px;
   padding: 0 16px;
 

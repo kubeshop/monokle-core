@@ -30,5 +30,6 @@
   "arrowParens": "avoid",
   "bracketSpacing": false,
   "semi": true,
-  "trailingComma": "es5"
+  "trailingComma": "es5",
+  "printWidth": 120
 }
