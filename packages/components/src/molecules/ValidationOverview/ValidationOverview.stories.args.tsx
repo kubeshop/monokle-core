@@ -5,6 +5,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
   onErrorSelect: error => {
     console.log('Error:', error);
   },
+  containerStyle: {
+    paddingTop: '20px',
+  },
   newErrorsIntroducedType: 'k8s-schema',
   selectedError: {
     ruleId: 'KSV001',
@@ -1104,6 +1107,132 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 },
                 properties: {
                   'security-severity': 2,
+                },
+              },
+            ],
+          },
+        },
+      },
+      {
+        results: [
+          {
+            ruleId: 'K8S001',
+            rule: {
+              index: 0,
+              toolComponent: {
+                name: 'kubernetes-schema',
+              },
+            },
+            level: 'error',
+            message: {
+              text: 'Value at /spec/template/spec/containers/0/ports/0/name should be string',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'vanilla-panda-blog/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 19,
+                    startColumn: 21,
+                    endLine: 19,
+                    endColumn: 23,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                  },
+                  region: {
+                    startLine: 19,
+                    startColumn: 21,
+                    endLine: 19,
+                    endColumn: 23,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'K8S001',
+            rule: {
+              index: 0,
+              toolComponent: {
+                name: 'kubernetes-schema',
+              },
+            },
+            level: 'error',
+            message: {
+              text: 'Value at /spec/selector/matchLabels should be string',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'vanilla-panda-blog/service.yaml',
+                  },
+                  region: {
+                    startLine: 9,
+                    startColumn: 7,
+                    endLine: 10,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '31fc266e-be6e-527a-8292-469fe956c0d1',
+                  },
+                  region: {
+                    startLine: 9,
+                    startColumn: 7,
+                    endLine: 10,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'panda-blog.service@vanilla-panda-blog/service.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        tool: {
+          driver: {
+            name: 'kubernetes-schema',
+            rules: [
+              {
+                id: 'K8S001',
+                name: 'schema-violated',
+                shortDescription: {
+                  text: 'The resource is formatted incorrectly.',
+                },
+                fullDescription: {
+                  text: 'The resource is violating the schema violation. The Kubernetes API will not accept this resource.',
+                },
+                help: {
+                  text: 'Check whether the property is used correctly. You can hover the key for documentation.',
                 },
               },
             ],

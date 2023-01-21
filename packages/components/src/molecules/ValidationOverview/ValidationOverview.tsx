@@ -131,7 +131,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
                   return (
                     <CollapseItemRow
-                      key={result.ruleId}
+                      key={`${result.ruleId}-${result.message.text}`}
                       result={result}
                       rule={rule}
                       showByFilterValue={showByFilterValue}
@@ -254,7 +254,7 @@ const ShowNewErrorsButton = styled.span`
 `;
 
 const ValidationsCollapse = styled(Collapse)`
-  max-height: calc(100% - 100px);
+  max-height: calc(100% - 104px);
   overflow-y: auto;
   margin-top: 24px;
 
