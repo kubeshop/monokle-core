@@ -100,47 +100,6 @@ export const selectProblemsByResource = (
   return Object.fromEntries(problemsByResources);
 };
 
-export const extractNewProblems = (
-  previousProblems: ProblemsType,
-  currentProblems: ProblemsType,
-  showByFilterValue: ShowByFilterOptionType
-) => {
-  let newProblems: ProblemsType = {};
-  let resultsCounter = 0;
-
-  Object.entries(currentProblems).forEach(([key, results]) => {
-    results.forEach(result => {
-      const comparingResults = previousProblems[key];
-
-      if (showByFilterValue === 'show-by-rule') {
-        if (!comparingResults) {
-          if (!newProblems[key]) {
-            newProblems[key] = [];
-          }
-
-          newProblems[key].push(result);
-          resultsCounter += 1;
-          return;
-        }
-      }
-
-      if (
-        comparingResults?.length &&
-        !comparingResults.find(r => r.ruleId === result.ruleId)
-      ) {
-        if (!newProblems[key]) {
-          newProblems[key] = [];
-        }
-
-        newProblems[key].push(result);
-        resultsCounter += 1;
-      }
-    });
-  });
-
-  return {newProblems, resultsCounter};
-};
-
 export const filterBySearchValue = (
   problems: ProblemsType,
   searchValue: string

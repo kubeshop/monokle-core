@@ -7,7 +7,7 @@ import {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {CollapseItemRow} from './CollapseItemRow';
 import {newErrorsTextMap, showByFilterOptions} from './constants';
-import {useGetCurrentAndNewProblems, useGetFilteredProblems} from './hooks';
+import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
 import {ShowByFilterOptionType, ValidationOverviewType} from './types';
 
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
@@ -29,11 +29,11 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
-  const {newProblems, problems} = useGetCurrentAndNewProblems(
+  const {newProblems, problems} = useCurrentAndNewProblems(
     showByFilterValue,
     validationResponse
   );
-  const filteredProblems = useGetFilteredProblems(
+  const filteredProblems = useFilteredProblems(
     problems,
     newProblems,
     showNewErrors,
