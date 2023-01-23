@@ -24,7 +24,7 @@ export const HelpfulResourcesContainer = styled.div`
 export const LearnCardsContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  grid-auto-rows: 250px;
+  grid-auto-rows: 180px;
   grid-column-gap: 30px;
   grid-row-gap: 28px;
 `;
