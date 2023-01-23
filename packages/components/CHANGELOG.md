@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.3.0
+
+### Minor Changes
+
+- 20a86b4: LearnPage component spacing
+
 ## 0.2.3
 
 ### Patch Changes
