@@ -141,7 +141,6 @@ const ActionsContainer = styled.div<{$secondary?: boolean}>`
   display: grid;
   grid-template-columns: ${({$secondary}) => ($secondary ? 'max-content max-content' : '1fr max-content')};
   grid-gap: 16px;
-  padding: 0 16px;
 
   ${({$secondary}) => {
     if ($secondary) {
@@ -226,6 +225,7 @@ const ValidationsCollapse = styled(Collapse)`
   & .ant-collapse-header {
     color: ${Colors.grey8} !important;
     width: max-content;
+    padding-left: 0px !important;
 
     &:first-child {
       padding-top: 0px;

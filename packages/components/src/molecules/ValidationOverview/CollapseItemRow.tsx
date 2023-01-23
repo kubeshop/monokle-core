@@ -1,9 +1,5 @@
 import {Colors} from '@/styles/Colors';
-import {
-  getFileLocation,
-  RuleMetadata,
-  ValidationResult,
-} from '@monokle/validation';
+import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {useMemo} from 'react';
 import styled from 'styled-components';
 import {iconMap} from './constants';
@@ -22,19 +18,12 @@ export const CollapseItemRow: React.FC<IProps> = props => {
   const {result, rule, showByFilterValue, selectedError, onClick} = props;
 
   const isSelected = useMemo(
-    () =>
-      selectedError
-        ? isProblemSelected(selectedError, result, showByFilterValue)
-        : false,
+    () => (selectedError ? isProblemSelected(selectedError, result, showByFilterValue) : false),
     [selectedError, result, showByFilterValue]
   );
 
   return (
-    <Row
-      $isSelected={isSelected}
-      $secondary={showByFilterValue === 'show-by-rule'}
-      onClick={onClick}
-    >
+    <Row $isSelected={isSelected} $secondary={showByFilterValue === 'show-by-rule'} onClick={onClick}>
       {showByFilterValue === 'show-by-rule' ? (
         <>
           <ErrorStartLine $isSelected={isSelected}>
@@ -46,11 +35,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
         <>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
             {iconMap[result.rule.toolComponent.name]}
-            {rule &&
-              renderSeverityIcon(
-                rule.properties?.['security-severity'] ?? 1,
-                isSelected
-              )}
+            {rule && renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, isSelected)}
           </div>
           <ErrorStartLine $isSelected={isSelected}>
             {result.locations[0].physicalLocation?.region?.startLine}
@@ -74,12 +59,10 @@ const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 16px 8px 40px;
+  padding: 8px 16px 8px 25px;
   font-weight: ${({$isSelected}) => ($isSelected ? '700' : '400')};
-  color: ${({$isSelected, $secondary}) =>
-    $isSelected ? Colors.grey1 : $secondary ? Colors.grey8 : Colors.whitePure};
-  background-color: ${({$isSelected}) =>
-    $isSelected ? Colors.blue9 : 'transparent'};
+  color: ${({$isSelected, $secondary}) => ($isSelected ? Colors.grey1 : $secondary ? Colors.grey8 : Colors.whitePure)};
+  background-color: ${({$isSelected}) => ($isSelected ? Colors.blue9 : 'transparent')};
   transition: all 0.15s ease-in;
 
   & .anticon {
@@ -88,7 +71,6 @@ const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`
 
   &:hover {
     cursor: pointer;
-    background-color: ${({$isSelected}) =>
-      $isSelected ? Colors.blue8 : 'rgba(141, 207, 248, 0.15)'};
+    background-color: ${({$isSelected}) => ($isSelected ? Colors.blue8 : 'rgba(141, 207, 248, 0.15)')};
   }
 `;
