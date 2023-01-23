@@ -102,7 +102,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
                   return (
                     <CollapseItemRow
-                      key={`${result.ruleId}-${result.message.text}`}
+                      key={`${result.ruleId}-${result.message.text}-${result.locations[0].physicalLocation?.region?.startLine}`}
                       result={result}
                       rule={rule}
                       showByFilterValue={showByFilterValue}
