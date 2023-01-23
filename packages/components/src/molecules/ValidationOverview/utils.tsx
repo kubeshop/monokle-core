@@ -149,3 +149,6 @@ export const renderSeverityIcon = (severity: number, isSelected: boolean) => {
 export const getFullyQualifiedName = (problem: ValidationResult) =>
   problem.locations[1].logicalLocations?.[0].fullyQualifiedName ||
   problem.locations[0].physicalLocation?.artifactLocation.uri;
+
+export const getItemRowId = (problem: ValidationResult, index: number) =>
+  `${problem.ruleId}-${problem.message.text}-${problem.locations[0].physicalLocation?.region?.startLine}-${problem.locations[0].physicalLocation?.artifactLocation.uri}-${index}`;

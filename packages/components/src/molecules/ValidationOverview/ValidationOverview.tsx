@@ -9,6 +9,7 @@ import {CollapseItemRow} from './CollapseItemRow';
 import {newErrorsTextMap, showByFilterOptions} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
 import {ShowByFilterOptionType, ValidationOverviewType} from './types';
+import {getItemRowId} from './utils';
 
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 
@@ -97,12 +98,12 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                 }
                 key={id}
               >
-                {results.map(result => {
+                {results.map((result, i) => {
                   const rule = getRuleForResult(validationResponse, result);
 
                   return (
                     <CollapseItemRow
-                      key={`${result.ruleId}-${result.message.text}-${result.locations[0].physicalLocation?.region?.startLine}`}
+                      key={getItemRowId(result, i)}
                       result={result}
                       rule={rule}
                       showByFilterValue={showByFilterValue}

@@ -46,7 +46,7 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
 
   return (
     <>
-      {resourceName ? <RuleId>{resourceName}</RuleId> : id} <ResultsCount>{results.length}</ResultsCount>
+      {id} <ResultsCount>{results.length}</ResultsCount>
     </>
   );
 };
