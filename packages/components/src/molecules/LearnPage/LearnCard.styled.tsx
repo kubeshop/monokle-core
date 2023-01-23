@@ -31,7 +31,7 @@ export const LearnCardContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   border-radius: 4px;
   transition: background ${AnimationDurations.base};
 
