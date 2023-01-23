@@ -27,5 +27,7 @@ export {default as Terminal} from './Terminal';
 export {default as Validation} from './Validation';
 export {default as ValidationK8sSchema} from './ValidationK8sSchema';
 export {default as ValidationOPA} from './ValidationOPA';
+export {default as ValidationResourceLinks} from './ValidationResourceLinks';
+export {default as ValidationYamlSyntax} from './ValidationYamlSyntax';
 export {default as Warning} from './Warning';
 export {default as YAMLSyntax} from './YAMLSyntax';

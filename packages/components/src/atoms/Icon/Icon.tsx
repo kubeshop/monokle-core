@@ -33,9 +33,11 @@ import {
   Terminal,
   Validation,
   ValidationOPA,
+  ValidationK8sSchema,
+  ValidationYamlSyntax,
   Warning,
   YAMLSyntax,
-  ValidationK8sSchema,
+  ValidationResourceLinks,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -79,6 +81,8 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   validation: Validation,
   'validation-opa': ValidationOPA,
   'validation-k8s-schema': ValidationK8sSchema,
+  'validation-resource-links': ValidationResourceLinks,
+  'validation-yaml-syntax': ValidationYamlSyntax,
   warning: Warning,
   'yaml-syntax': YAMLSyntax,
 };

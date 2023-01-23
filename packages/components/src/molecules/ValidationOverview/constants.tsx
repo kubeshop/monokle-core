@@ -3,6 +3,8 @@ import {Icon} from '@/atoms';
 export const iconMap: Record<string, JSX.Element> = {
   'kubernetes-schema': <Icon name="validation-k8s-schema" />,
   'open-policy-agent': <Icon name="validation-opa" />,
+  'resource-links': <Icon name="validation-resource-links" />,
+  'yaml-syntax': <Icon name="validation-yaml-syntax" />,
 };
 
 export const newErrorsTextMap: Record<string, string> = {

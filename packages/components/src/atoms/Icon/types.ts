@@ -30,4 +30,6 @@ export type IconNames =
   | 'search'
   | 'terminal'
   | 'validation-opa'
-  | 'validation-k8s-schema';
+  | 'validation-k8s-schema'
+  | 'validation-resource-links'
+  | 'validation-yaml-syntax';
