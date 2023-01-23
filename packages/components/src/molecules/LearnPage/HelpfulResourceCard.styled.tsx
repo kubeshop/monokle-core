@@ -24,6 +24,6 @@ export const HelpfulResourceCardContainer = styled.div`
 `;
 
 export const Title = styled.div`
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   color: ${Colors.blue7};
 `;

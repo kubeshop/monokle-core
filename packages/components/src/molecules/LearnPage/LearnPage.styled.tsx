@@ -11,7 +11,7 @@ export const CloudUploadOutlined = styled(RawCloudUploadOutlined)`
 
 export const Description = styled.div`
   color: ${Colors.grey8};
-  margin-bottom: 50px;
+  margin-bottom: 46px;
 `;
 
 export const HelpfulResourcesContainer = styled.div`
@@ -24,9 +24,9 @@ export const HelpfulResourcesContainer = styled.div`
 export const LearnCardsContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  grid-auto-rows: 250px;
+  grid-auto-rows: 180px;
   grid-column-gap: 30px;
-  grid-row-gap: 20px;
+  grid-row-gap: 28px;
 `;
 
 export const LearnPageContainer = styled.div`
@@ -38,5 +38,5 @@ export const LearnPageContainer = styled.div`
 export const SubTitle = styled.div`
   font-size: 16px;
   font-weight: 700;
-  margin: 40px 0px 30px 0px;
+  margin: 56px 0px 36px 0px;
 `;
