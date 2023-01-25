@@ -1,5 +1,6 @@
 export type IconNames =
   | 'all-projects'
+  | 'checked'
   | 'cluster-dashboard'
   | 'compare'
   | 'crds'
@@ -29,4 +30,7 @@ export type IconNames =
   | 'k8s-schema'
   | 'search'
   | 'terminal'
-  | 'checked';
+  | 'validation-opa'
+  | 'validation-k8s-schema'
+  | 'validation-resource-links'
+  | 'validation-yaml-syntax';
