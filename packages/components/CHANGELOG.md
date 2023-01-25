@@ -1,5 +1,12 @@
 # @monokle/components
 
+## 0.5.0
+
+### Minor Changes
+
+- 779d5fb: ValidationOverview v1
+- 01b68ae: ValidationOverview v1
+
 ## 0.4.0
 
 ### Minor Changes
