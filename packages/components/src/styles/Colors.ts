@@ -81,7 +81,7 @@ export enum Colors {
   geekblue5 = '#263EA0',
   geekblue6 = '#2B4ACB',
   geekblue7 = '#5273E0',
-
+  geekblue8 = '#7F9EF3',
   green5 = '#3c8618',
   green6 = '#49AA19',
   green7 = '#6ABE39', // Polar Green
@@ -102,6 +102,7 @@ export enum Colors {
   cardBG = '#202C4D',
   iconBG = '#2B3759',
   dark70 = 'rgba(255, 255, 255, 0.07)',
+  gradientBackground = 'linear-gradient(108.05deg,#84aae2 8.03%,#9c84e2 93.68%,#cd92f1 93.68%);',
 }
 
 export enum PanelColors {

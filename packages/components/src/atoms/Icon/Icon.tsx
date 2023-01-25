@@ -34,6 +34,7 @@ import {
   Validation,
   Warning,
   YAMLSyntax,
+  Checked,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -77,6 +78,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   validation: Validation,
   warning: Warning,
   'yaml-syntax': YAMLSyntax,
+  checked: Checked,
 };
 
 const Icon: React.FC<IconProps> = props => {
