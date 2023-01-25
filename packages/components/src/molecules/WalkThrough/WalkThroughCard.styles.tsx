@@ -66,5 +66,10 @@ export const BackButton = styled(Button).attrs({
 `;
 
 export const AnimatedImg = styled(motion.img)`
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  max-width: 390px;
+  height: auto;
   object-fit: contain;
 `;

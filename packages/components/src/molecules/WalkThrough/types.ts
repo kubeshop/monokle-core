@@ -17,5 +17,5 @@ export interface WalkThroughProps {
 
 interface LearnMediaItem {
   index: number;
-  url: string;
+  src: any;
 }

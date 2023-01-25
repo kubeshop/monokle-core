@@ -33,29 +33,29 @@ export const SubHeading = styled(Typography.Title)`
 export const Text = styled(Typography.Text)<{$bold?: boolean}>`
   margin-bottom: 16px;
   color: ${Colors.grey2};
-
+  font-size: 16px;
+  line-height: 26px;
   ${({$bold}) => {
     if ($bold) {
       return css`
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 26px;
+        font-weight: 700;
       `;
     } else {
       return css`
         font-weight: 400;
-        font-size: 14px;
-        line-height: 24px;
       `;
     }
   }};
 `;
 
-export const Icon = styled(RawIcon)<{$transparent?: boolean; $color?: string}>`
+export const Icon = styled(RawIcon)<{
+  $transparent?: boolean;
+  $color?: string;
+}>`
   background-color: ${({$transparent}) =>
     $transparent ? 'transparent' : Colors.grey4};
   font-size: 14px;
-  padding: 4px;
+  padding: 2px;
   margin: 0 4px;
   color: ${({$color}) => $color || Colors.grey9};
   border-radius: 50%;
@@ -67,7 +67,7 @@ export const MenuOutlinedIcon = styled(MenuOutlined)`
   padding: 4px;
   margin: 0 4px;
   color: ${Colors.grey9};
-  border-radius: 50%;
+  border-radius: 2px;
 `;
 
 export const SettingOutlinedIcon = styled(SettingOutlined)`

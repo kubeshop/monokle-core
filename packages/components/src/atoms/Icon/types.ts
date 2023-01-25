@@ -28,4 +28,5 @@ export type IconNames =
   | 'resource-links'
   | 'k8s-schema'
   | 'search'
-  | 'terminal';
+  | 'terminal'
+  | 'checked';

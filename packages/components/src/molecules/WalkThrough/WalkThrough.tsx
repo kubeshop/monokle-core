@@ -126,7 +126,7 @@ const WalkThrough: React.FC<WalkThroughProps> = ({
                 <S.Text>
                   A validation or schema change can incur in new errors. Find
                   them easily grouped for a quick fix in
-                  <S.Icon name="validation" />
+                  <S.Icon name="checked" />
                 </S.Text>
               </S.Slice>,
             ]}
@@ -162,7 +162,7 @@ const WalkThrough: React.FC<WalkThroughProps> = ({
                       <S.Text $bold>
                         Create PRs, commit, push, stage/unstage...
                       </S.Text>
-                      in a nutshell, everything git. Find it all in
+                      &nbsp;in a nutshell, everything git. Find it all in
                     </S.Text>
                   </li>
                 </ul>
