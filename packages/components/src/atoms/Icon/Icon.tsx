@@ -6,6 +6,7 @@ import {IconNames} from './types';
 
 import {
   AllProjects,
+  Checked,
   ClusterDashboard,
   Collapse,
   Compare,
@@ -85,6 +86,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   'validation-yaml-syntax': ValidationYamlSyntax,
   warning: Warning,
   'yaml-syntax': YAMLSyntax,
+  checked: Checked,
 };
 
 const Icon: React.FC<IconProps> = props => {

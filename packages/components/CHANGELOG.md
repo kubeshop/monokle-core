@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.4.0
+
+### Minor Changes
+
+- 8540f99: added WalkThrough component
+
 ## 0.3.0
 
 ### Minor Changes

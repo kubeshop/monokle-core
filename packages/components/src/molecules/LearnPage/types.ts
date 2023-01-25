@@ -1,6 +1,6 @@
-export type HelpTopicType = 'documentation' | 'video-tutorial' | 'discord';
+import {LearnTopicType} from '@/types';
 
-export type LearnTopicType = 'explore' | 'edit' | 'validate' | 'publish';
+export type HelpTopicType = 'documentation' | 'video-tutorial' | 'discord';
 
 export type HelpfulResourceCardType = {
   description: string;

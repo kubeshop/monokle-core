@@ -1,5 +1,6 @@
 export type IconNames =
   | 'all-projects'
+  | 'checked'
   | 'cluster-dashboard'
   | 'compare'
   | 'crds'
