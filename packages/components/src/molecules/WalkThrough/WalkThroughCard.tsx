@@ -24,7 +24,7 @@ const WalkThroughCard: React.FC<WalkThroughCardProps> = ({
   };
 
   const mediaItem = mediaItems?.find(el => el.index === sliceIndex);
-  console.log(mediaItem);
+
   return (
     <S.Container>
       <S.CardMedia>
