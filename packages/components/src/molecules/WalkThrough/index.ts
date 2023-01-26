@@ -1,1 +1,1 @@
-export {default as WalkThrough} from './WalkThroughCard';
+export {default as WalkThrough} from './WalkThrough';
