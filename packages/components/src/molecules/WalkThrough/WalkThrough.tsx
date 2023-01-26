@@ -6,7 +6,7 @@ import WalkThroughCard from './WalkThroughCard';
 
 const WalkThrough: React.FC<WalkThroughProps> = ({topic, mediaItems, dismissWalkThrough}) => {
   return (
-    <S.Modal open={!!topic} onCancel={dismissWalkThrough} footer={null}>
+    <S.Modal centered open={!!topic} onCancel={dismissWalkThrough} footer={null}>
       {topic === 'explore' && (
         <WalkThroughCard
           heading="Explore"
