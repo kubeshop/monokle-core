@@ -4,12 +4,7 @@ import {motion, AnimatePresence} from 'framer-motion';
 import * as S from './WalkThroughCard.styles';
 import {WalkThroughCardProps} from './types';
 
-const WalkThroughCard: React.FC<WalkThroughCardProps> = ({
-  heading,
-  items,
-  mediaItems,
-  onFinish,
-}) => {
+const WalkThroughCard: React.FC<WalkThroughCardProps> = ({heading, items, mediaItems, onFinish}) => {
   const [sliceIndex, setSliceIndex] = useState(0);
   const onNextClickHandler = () => {
     if (items?.length - 1 === sliceIndex) {
@@ -31,6 +26,7 @@ const WalkThroughCard: React.FC<WalkThroughCardProps> = ({
         <AnimatePresence>
           {mediaItem && (
             <S.AnimatedImg
+              key={`key_${sliceIndex}`}
               initial={{opacity: 0}}
               animate={{opacity: 1}}
               exit={{opacity: 0}}
@@ -57,10 +53,7 @@ const WalkThroughCard: React.FC<WalkThroughCardProps> = ({
         </S.Slide>
 
         <S.Actions>
-          <S.BackButton
-            disabled={sliceIndex === 0}
-            onClick={onBackClickHandler}
-          >
+          <S.BackButton disabled={sliceIndex === 0} onClick={onBackClickHandler}>
             Back to Learn
           </S.BackButton>
           <S.NextButton onClick={onNextClickHandler}>

@@ -23,6 +23,10 @@ export const Slice = styled.div`
   ul {
     padding-inline-start: 20px;
   }
+
+  ul li::marker {
+    color: ${Colors.grey2};
+  }
 `;
 
 export const SubHeading = styled(Typography.Title)`
