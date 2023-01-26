@@ -63,12 +63,12 @@
     "vite": "3.1.0",
     "vite-plugin-dts": "^1.6.6",
     "vite-tsconfig-paths": "^3.5.2",
-    "framer-motion": "8.5.2"
+    "framer-motion": "6.5.1"
   },
   "peerDependencies": {
     "react": "^18.0 || ^17.0 || ^16.0",
     "react-dom": "^18.0 || ^17.0 || ^16.0",
     "styled-components": "^5.0.0",
-    "framer-motion": "8.5.2"
+    "framer-motion": "6.5.1"
   }
 }

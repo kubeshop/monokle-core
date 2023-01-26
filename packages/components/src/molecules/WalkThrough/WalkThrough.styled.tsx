@@ -6,11 +6,13 @@ import {Icon as RawIcon} from '@/atoms';
 
 import {Colors} from '@/styles/Colors';
 
-export const Modal = styled(RawModal)`
+export const Modal = styled(RawModal).attrs({
+  className: 'walkthrough-modal',
+})`
   min-width: 950px;
 
   .ant-modal-content {
-    background-color: ${Colors.grey9};
+    background-color: ${Colors.grey9} !important;
     border-radius: 4px;
   }
 `;
@@ -52,8 +54,7 @@ export const Icon = styled(RawIcon)<{
   $transparent?: boolean;
   $color?: string;
 }>`
-  background-color: ${({$transparent}) =>
-    $transparent ? 'transparent' : Colors.grey4};
+  background-color: ${({$transparent}) => ($transparent ? 'transparent' : Colors.grey4)};
   font-size: 14px;
   padding: 2px;
   margin: 0 4px;
