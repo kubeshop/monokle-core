@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.5.2
+
+### Patch Changes
+
+- 977b859: export walkthrough component
+
 ## 0.5.1
 
 ### Patch Changes
