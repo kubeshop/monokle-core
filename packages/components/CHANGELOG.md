@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.5.4
+
+### Patch Changes
+
+- c517045: animate walkthrough images
+
 ## 0.5.3
 
 ### Patch Changes
