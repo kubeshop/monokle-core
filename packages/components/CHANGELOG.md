@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.5.3
+
+### Patch Changes
+
+- 3920a26: degrade framer version to match all dependenices
+
 ## 0.5.2
 
 ### Patch Changes
