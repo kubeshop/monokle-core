@@ -9,7 +9,7 @@ export const Container = styled.div`
   gap: 64px;
   padding: 24px 32px 32px 32px;
 
-  height: 450px;
+  height: 402px;
 `;
 
 export const CardMedia = styled.div`
