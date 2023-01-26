@@ -13,8 +13,7 @@ export const Container = styled.div`
 `;
 
 export const CardMedia = styled.div`
-  background: ${Colors.gradientBackground};
-  border-radius: 4px;
+  position: relative;
 `;
 
 export const CardContent = styled.div`
@@ -66,6 +65,9 @@ export const BackButton = styled(Button).attrs({
 `;
 
 export const AnimatedImg = styled(motion.img)`
+  position: absolute;
+  background: ${Colors.gradientBackground};
+  border-radius: 4px;
   min-width: 100%;
   min-height: 100%;
   width: auto;
