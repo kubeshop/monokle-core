@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.5.5
+
+### Patch Changes
+
+- cf942c1: adjest the modal height to match the designs
+
 ## 0.5.4
 
 ### Patch Changes
