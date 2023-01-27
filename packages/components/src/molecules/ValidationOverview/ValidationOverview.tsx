@@ -56,7 +56,7 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       </ActionsContainer>
 
       <ActionsContainer $secondary>
-        {Object.keys(newProblems.data).length && showNewErrorsMessage ? (
+        {Object.keys(newProblems.data).length && showNewErrorsMessage && newErrorsIntroducedType !== 'initial' ? (
           <>
             {showNewErrors ? (
               <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
