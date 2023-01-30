@@ -49,9 +49,7 @@ const WalkThroughCard: React.FC<WalkThroughCardProps> = ({heading, items, mediaI
         </S.Slide>
 
         <S.Actions>
-          <S.BackButton disabled={sliceIndex === 0} onClick={onFinish}>
-            Back to Learn
-          </S.BackButton>
+          <S.BackButton onClick={onFinish}>Back to Learn</S.BackButton>
           <S.NextButton onClick={onNextClickHandler}>
             {items?.length - 1 === sliceIndex ? 'Got it' : 'Next'}
           </S.NextButton>
