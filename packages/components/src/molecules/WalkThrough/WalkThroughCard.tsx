@@ -14,10 +14,6 @@ const WalkThroughCard: React.FC<WalkThroughCardProps> = ({heading, items, mediaI
     }
   };
 
-  const onBackClickHandler = () => {
-    setSliceIndex(sliceIndex - 1);
-  };
-
   const mediaItem = mediaItems?.find(el => el.index === sliceIndex);
 
   return (
@@ -53,7 +49,7 @@ const WalkThroughCard: React.FC<WalkThroughCardProps> = ({heading, items, mediaI
         </S.Slide>
 
         <S.Actions>
-          <S.BackButton disabled={sliceIndex === 0} onClick={onBackClickHandler}>
+          <S.BackButton disabled={sliceIndex === 0} onClick={onFinish}>
             Back to Learn
           </S.BackButton>
           <S.NextButton onClick={onNextClickHandler}>
