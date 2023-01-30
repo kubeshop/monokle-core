@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.5.6
+
+### Patch Changes
+
+- 9a397dd: update walkthrough back button to dismiss the walkthrough modal
+
 ## 0.5.5
 
 ### Patch Changes
