@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.6.0
+
+### Minor Changes
+
+- 35c4c02: Add ErrorInfo component
+
 ## 0.5.6
 
 ### Patch Changes
