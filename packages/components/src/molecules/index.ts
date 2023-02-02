@@ -1,4 +1,5 @@
 export * from './ActivityBar';
+export * from './ErrorInfo';
 export * from './LearnPage';
 export * from './Panels';
 export * from './TitleBar';
