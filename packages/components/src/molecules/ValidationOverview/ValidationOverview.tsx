@@ -107,7 +107,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                       result={result}
                       rule={rule}
                       showByFilterValue={showByFilterValue}
-                      selectedError={selectedProblem}
+                      selectedProblem={selectedProblem}
                       onClick={() => {
                         if (onProblemSelect) {
                           onProblemSelect({
