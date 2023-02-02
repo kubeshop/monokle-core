@@ -1,9 +1,6 @@
 export * from './ActivityBar';
-<<<<<<< HEAD
-export * from './LearnCard';
-=======
 export * from './ErrorInfo';
->>>>>>> main
+export * from './LearnCard';
 export * from './LearnPage';
 export * from './Panels';
 export * from './TitleBar';
