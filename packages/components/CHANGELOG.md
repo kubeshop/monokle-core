@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.6.2
+
+### Patch Changes
+
+- e24fd3a: Fix selected problem
+
 ## 0.6.1
 
 ### Patch Changes
