@@ -1,11 +1,14 @@
 import {Colors} from '@/styles/Colors';
 import {getFileLocation} from '@monokle/validation';
 import {Descriptions} from 'antd';
+import {useMemo} from 'react';
 import styled from 'styled-components';
 import {ErrorInfoType} from './types';
 
 const ErrorInfo: React.FC<ErrorInfoType> = props => {
-  const {containerClassName = '', containerStyle = {}, error} = props;
+  const {containerClassName = '', containerStyle = {}, error, onLocationClick} = props;
+
+  const errorLocation = useMemo(() => getFileLocation(error), [error]);
 
   return (
     <ErrorInfoContainer className={containerClassName} style={containerStyle}>
@@ -19,7 +22,15 @@ const ErrorInfo: React.FC<ErrorInfoType> = props => {
           </Descriptions.Item>
         )}
         <Descriptions.Item label="Location">
-          {getFileLocation(error).physicalLocation?.artifactLocation.uri}
+          <Location
+            $clickable={Boolean(onLocationClick)}
+            onClick={() => {
+              if (!onLocationClick) return;
+              onLocationClick(errorLocation);
+            }}
+          >
+            {errorLocation.physicalLocation?.artifactLocation.uri}
+          </Location>
         </Descriptions.Item>
       </ErrorInfoContent>
     </ErrorInfoContainer>
@@ -62,4 +73,20 @@ const ErrorInfoContent = styled(Descriptions)`
   .ant-descriptions-item-content {
     color: ${Colors.whitePure};
   }
+`;
+
+const Location = styled.div<{$clickable: boolean}>`
+  ${({$clickable}) => {
+    if ($clickable) {
+      return `
+            cursor: pointer;
+            color:${Colors.blue7};
+            transition: color 0.2s ease-in;
+
+            &:hover {
+                color: ${Colors.blue6}
+            }
+        `;
+    }
+  }}
 `;

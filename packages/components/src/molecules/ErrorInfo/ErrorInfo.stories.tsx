@@ -1,6 +1,6 @@
 import {ComponentMeta, ComponentStory} from '@storybook/react';
 import ErrorInfo from './ErrorInfo';
-import {ErrorInfoArgs} from './ErrorInfo.stories.args';
+import {LocationClickErrorInfoArgs, MainErrorInfoArgs} from './ErrorInfo.stories.args';
 
 export default {
   title: 'Molecules/ErrorInfo',
@@ -10,4 +10,7 @@ export default {
 const Template: ComponentStory<typeof ErrorInfo> = args => <ErrorInfo {...args} />;
 
 export const MainErrorInfo = Template.bind({});
-MainErrorInfo.args = ErrorInfoArgs;
+MainErrorInfo.args = MainErrorInfoArgs;
+
+export const LocationClickErrorInfo = Template.bind({});
+LocationClickErrorInfo.args = LocationClickErrorInfoArgs;
