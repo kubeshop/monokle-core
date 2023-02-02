@@ -29,7 +29,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
           <ProblemStartLine $isSelected={isSelected} $showByFilterValue={showByFilterValue}>
             {result.locations[0].physicalLocation?.region?.startLine}
           </ProblemStartLine>
-          {getFileLocation(result).physicalLocation?.artifactLocation.uri}
+          <MessageText>{getFileLocation(result).physicalLocation?.artifactLocation.uri}</MessageText>
         </>
       ) : (
         <>
@@ -43,7 +43,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
           </ProblemStartLine>
 
           <ErrorWarningCircle $type={result.level ?? 'error'} />
-          {result.message.text}
+          <MessageText>{result.message.text}</MessageText>
         </>
       )}
     </Row>
@@ -58,6 +58,12 @@ const ErrorWarningCircle = styled.div<{$type: 'error' | 'warning'}>`
   width: 10px;
   height: 10px;
   margin-right: -8px;
+`;
+
+const MessageText = styled.div`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const ProblemStartLine = styled.div<{$isSelected: boolean; $showByFilterValue: ShowByFilterOptionType}>`
