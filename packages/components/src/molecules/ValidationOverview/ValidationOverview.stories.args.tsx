@@ -2,14 +2,14 @@ import {ValidationOverviewType} from './types';
 
 export const MainValidationOverviewArgs: ValidationOverviewType = {
   height: 800,
-  onErrorSelect: error => {
-    console.log('Error:', error);
+  onProblemSelect: problem => {
+    console.log('Problem:', problem);
   },
   containerStyle: {
     paddingTop: '20px',
   },
-  newErrorsIntroducedType: 'k8s-schema',
-  selectedError: {
+  newProblemsIntroducedType: 'k8s-schema',
+  selectedProblem: {
     ruleId: 'KSV001',
     rule: {
       index: 0,

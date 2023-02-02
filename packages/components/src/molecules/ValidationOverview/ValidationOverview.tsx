@@ -13,9 +13,9 @@ import {getItemRowId} from './utils';
 
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 
-export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {containerClassName = '', containerStyle = {}, height, selectedError} = props;
-  const {customMessage, newErrorsIntroducedType, validationResponse, onErrorSelect} = props;
+const ValidationOverview: React.FC<ValidationOverviewType> = props => {
+  const {containerClassName = '', containerStyle = {}, height, selectedProblem} = props;
+  const {customMessage, newProblemsIntroducedType, validationResponse, onProblemSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
@@ -56,13 +56,13 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       </ActionsContainer>
 
       <ActionsContainer $secondary>
-        {Object.keys(newProblems.data).length && showNewErrorsMessage && newErrorsIntroducedType !== 'initial' ? (
+        {Object.keys(newProblems.data).length && showNewErrorsMessage && newProblemsIntroducedType !== 'initial' ? (
           <>
             {showNewErrors ? (
               <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
             ) : (
               <NewErrorsMessage>
-                {newErrorsIntroducedType ? newErrorsTextMap[newErrorsIntroducedType] : customMessage ?? ''}{' '}
+                {newProblemsIntroducedType ? newErrorsTextMap[newProblemsIntroducedType] : customMessage ?? ''}{' '}
                 <b>{newProblems.resultsCount} errors</b> introduced.{' '}
                 <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
                 <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
@@ -107,11 +107,11 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                       result={result}
                       rule={rule}
                       showByFilterValue={showByFilterValue}
-                      selectedError={selectedError}
+                      selectedError={selectedProblem}
                       onClick={() => {
-                        if (onErrorSelect) {
-                          onErrorSelect({
-                            error: result,
+                        if (onProblemSelect) {
+                          onProblemSelect({
+                            problem: result,
                             selectedFrom: showByFilterValue === 'show-by-resource' ? 'resource' : 'file',
                           });
                         }
@@ -135,6 +135,8 @@ export const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     </MainContainer>
   );
 };
+
+export default ValidationOverview;
 
 // Styled components
 
