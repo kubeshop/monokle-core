@@ -65,8 +65,12 @@ export enum Colors {
   purple8 = '#AB7AE0',
 
   cyan = '#58D1C9',
-  cyan7 = '#33BCB7',
+  cyan2 = '#113536',
+  cyan3 = '#144848',
   cyan5 = '#138585',
+  cyan7 = '#33BCB7',
+  cyan8 = '#58D1C9',
+
   lightSeaGreen = '#13a8a8',
 
   blue2 = '#112A45',
@@ -103,6 +107,7 @@ export enum Colors {
   cardBG = '#202C4D',
   iconBG = '#2B3759',
   dark70 = 'rgba(255, 255, 255, 0.07)',
+  buttonHover = '#165996',
   gradientBackground = 'linear-gradient(108.05deg,#84aae2 8.03%,#9c84e2 93.68%,#cd92f1 93.68%);',
 }
 
