@@ -1,10 +1,13 @@
 import {useState} from 'react';
 import {motion, AnimatePresence} from 'framer-motion';
 
-import * as S from './WalkThroughCard.styles';
+import * as S from './WalkThroughCard.styled';
 import {WalkThroughCardProps} from './types';
+import styled, { css } from 'styled-components';
+import { Typography } from 'antd';
+import { Colors } from '@/styles/Colors';
 
-const WalkThroughCard: React.FC<WalkThroughCardProps> = ({heading, items, mediaItems, onFinish}) => {
+function WalkThroughCard({heading, items, mediaItems, onFinish}: WalkThroughCardProps) {
   const [sliceIndex, setSliceIndex] = useState(0);
   const onNextClickHandler = () => {
     if (items?.length - 1 === sliceIndex) {
@@ -58,5 +61,42 @@ const WalkThroughCard: React.FC<WalkThroughCardProps> = ({heading, items, mediaI
     </S.Container>
   );
 };
+
+WalkThroughCard.Slice = styled.div`
+  display: grid;
+
+  ul {
+    padding-inline-start: 20px;
+  }
+
+  ul li::marker {
+    color: ${Colors.grey2};
+  }
+`;
+
+WalkThroughCard.SubHeading = styled(Typography.Title)`
+  color: ${Colors.grey2} !important;
+  font-weight: 700;
+  font-size: 28px !important;
+  line-height: 36px !important;
+`;
+
+WalkThroughCard.Text = styled(Typography.Text)<{$bold?: boolean}>`
+  margin-bottom: 16px;
+  color: ${Colors.grey2};
+  font-size: 16px;
+  line-height: 26px;
+  ${({$bold}) => {
+    if ($bold) {
+      return css`
+        font-weight: 700;
+      `;
+    } else {
+      return css`
+        font-weight: 400;
+      `;
+    }
+  }};
+`;
 
 export default WalkThroughCard;

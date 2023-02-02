@@ -1,15 +1,10 @@
-import {CheckOutlined, UnorderedListOutlined} from '@ant-design/icons';
-
-import {Icon} from '@/atoms/Icon';
-
 import HelpfulResourceCard from './HelpfulResourceCard';
-import LearnCard from './LearnCard';
 import * as S from './LearnPage.styled';
 import {LearnPageType} from './types';
 
 const LearnPage: React.FC<LearnPageType> = ({
-  onLearnCardClick,
   onHelpfulResourceCardClick,
+  children
 }) => {
   return (
     <S.LearnPageContainer>
@@ -20,33 +15,7 @@ const LearnPage: React.FC<LearnPageType> = ({
       </S.Description>
 
       <S.LearnCardsContainer>
-        <LearnCard
-          description="Configure your resources workspace, whereas it's local, on a Git, a cluster or from scratch."
-          icon={<UnorderedListOutlined />}
-          title="Explore"
-          onClick={() => onLearnCardClick('explore')}
-        />
-
-        <LearnCard
-          description="Fix errors in your resources, compare them, learn about yaml best practices and much more."
-          icon={<Icon name="terminal" style={{fontSize: '16px'}} />}
-          title="Edit"
-          onClick={() => onLearnCardClick('edit')}
-        />
-
-        <LearnCard
-          description="Configure your policies & validation rules, create your own. See & fix validation errors."
-          icon={<CheckOutlined />}
-          title="Validate"
-          onClick={() => onLearnCardClick('validate')}
-        />
-
-        <LearnCard
-          description="Save locally, get into Git (Github, Gitlab), create PRs, deploy to a cluster..."
-          icon={<S.CloudUploadOutlined />}
-          title="Publish"
-          onClick={() => onLearnCardClick('publish')}
-        />
+        {children}
       </S.LearnCardsContainer>
 
       <S.SubTitle>Helpful resources</S.SubTitle>

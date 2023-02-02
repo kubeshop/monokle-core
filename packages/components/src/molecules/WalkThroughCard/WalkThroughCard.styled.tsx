@@ -1,7 +1,9 @@
 import {Colors} from '@/styles/Colors';
+import { MenuOutlined } from '@ant-design/icons';
 import {Button, Typography} from 'antd';
 import {motion} from 'framer-motion';
 import styled from 'styled-components';
+import {Icon as RawIcon} from '@/atoms';
 
 export const Container = styled.div`
   display: grid;
@@ -74,4 +76,25 @@ export const AnimatedImg = styled(motion.img)`
   max-width: 390px;
   height: auto;
   object-fit: contain;
+`;
+
+export const Icon = styled(RawIcon)<{
+  $transparent?: boolean;
+  $color?: string;
+}>`
+  background-color: ${({$transparent}) => ($transparent ? 'transparent' : Colors.grey4)};
+  font-size: 14px;
+  padding: 2px;
+  margin: 0 4px;
+  color: ${({$color}) => $color || Colors.grey9};
+  border-radius: 50%;
+`;
+
+export const MenuOutlinedIcon = styled(MenuOutlined)`
+  background-color: ${Colors.grey4};
+  font-size: 14px;
+  padding: 4px;
+  margin: 0 4px;
+  color: ${Colors.grey9};
+  border-radius: 2px;
 `;
