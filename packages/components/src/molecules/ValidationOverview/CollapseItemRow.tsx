@@ -26,7 +26,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
     <Row $isSelected={isSelected} $secondary={showByFilterValue === 'show-by-rule'} onClick={onClick}>
       {showByFilterValue === 'show-by-rule' ? (
         <>
-          <ErrorStartLine $isSelected={isSelected}>
+          <ErrorStartLine $isSelected={isSelected} $showByFilterValue={showByFilterValue}>
             {result.locations[0].physicalLocation?.region?.startLine}
           </ErrorStartLine>
           {getFileLocation(result).physicalLocation?.artifactLocation.uri}
@@ -37,7 +37,9 @@ export const CollapseItemRow: React.FC<IProps> = props => {
             {iconMap[result.rule.toolComponent.name]}
             {rule && renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, isSelected)}
           </div>
-
+          <ErrorStartLine $isSelected={isSelected} $showByFilterValue={showByFilterValue}>
+            {result.locations[0].physicalLocation?.region?.startLine}
+          </ErrorStartLine>
           <ErrorWarningCircle $type={result.level ?? 'error'} />
           {result.message.text}
         </>
@@ -48,10 +50,10 @@ export const CollapseItemRow: React.FC<IProps> = props => {
 
 // Styled Components
 
-const ErrorStartLine = styled.div<{$isSelected: boolean}>`
+const ErrorStartLine = styled.div<{$isSelected: boolean; $showByFilterValue: ShowByFilterOptionType}>`
   color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
   font-weight: 400;
-  min-width: 26px;
+  min-width: ${({$showByFilterValue}) => ($showByFilterValue === 'show-by-rule' ? '26' : '18')}px;
 `;
 
 const ErrorWarningCircle = styled.div<{$type: 'error' | 'warning'}>`
