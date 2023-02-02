@@ -1,5 +1,14 @@
 # @monokle/components
 
+## 0.6.1
+
+### Patch Changes
+
+- e63f8c5: Make the learn page and walkthrough components more composible
+- 11e491b: update package lock
+- 70b6da3: Show both errors and warnings in ValidationOverview
+- 86078fd: added shared atoms components
+
 ## 0.6.0
 
 ### Minor Changes
