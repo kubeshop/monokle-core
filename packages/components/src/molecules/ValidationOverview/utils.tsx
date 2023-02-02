@@ -114,19 +114,27 @@ export const isProblemSelected = (
   currentProblem: ValidationResult,
   type: ShowByFilterOptionType
 ) => {
-  const selectedFileLocation = getFileLocation(selectedProblem).physicalLocation?.artifactLocation.uri;
-  const currentFileLocation = getFileLocation(currentProblem).physicalLocation?.artifactLocation.uri;
+  const selectedFilePhysicalLocation = getFileLocation(selectedProblem).physicalLocation;
+  const currentFileLocationPhysicalLocation = getFileLocation(currentProblem).physicalLocation;
+
+  const selectedFileURI = selectedFilePhysicalLocation?.artifactLocation.uri;
+  const selectedFileStartLine = selectedFilePhysicalLocation?.region?.startLine;
+  const currentFileURI = currentFileLocationPhysicalLocation?.artifactLocation.uri;
+  const currentFileStartLine = currentFileLocationPhysicalLocation?.region?.startLine;
 
   if (selectedProblem.ruleId !== currentProblem.ruleId) {
     return false;
   }
 
   if (type === 'show-by-file' || type === 'show-by-rule') {
-    if (selectedFileLocation === currentFileLocation) {
+    if (selectedFileURI === currentFileURI && selectedFileStartLine === currentFileStartLine) {
       return true;
     }
   } else if (type === 'show-by-resource') {
-    if (getResourceName(selectedProblem) === getResourceName(currentProblem)) {
+    if (
+      getResourceName(selectedProblem) === getResourceName(currentProblem) &&
+      selectedFileStartLine === currentFileStartLine
+    ) {
       return true;
     }
   }

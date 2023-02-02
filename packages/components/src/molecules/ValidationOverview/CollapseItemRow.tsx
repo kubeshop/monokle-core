@@ -10,16 +10,16 @@ type IProps = {
   result: ValidationResult;
   rule: RuleMetadata;
   showByFilterValue: ShowByFilterOptionType;
-  selectedError?: ValidationResult;
+  selectedProblem?: ValidationResult;
   onClick: () => void;
 };
 
 export const CollapseItemRow: React.FC<IProps> = props => {
-  const {result, rule, showByFilterValue, selectedError, onClick} = props;
+  const {result, rule, showByFilterValue, selectedProblem, onClick} = props;
 
   const isSelected = useMemo(
-    () => (selectedError ? isProblemSelected(selectedError, result, showByFilterValue) : false),
-    [selectedError, result, showByFilterValue]
+    () => (selectedProblem ? isProblemSelected(selectedProblem, result, showByFilterValue) : false),
+    [selectedProblem, result, showByFilterValue]
   );
 
   return (
