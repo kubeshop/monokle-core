@@ -37,9 +37,8 @@ export const CollapseItemRow: React.FC<IProps> = props => {
             {iconMap[result.rule.toolComponent.name]}
             {rule && renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, isSelected)}
           </div>
-          <ErrorStartLine $isSelected={isSelected}>
-            {result.locations[0].physicalLocation?.region?.startLine}
-          </ErrorStartLine>
+
+          <ErrorWarningCircle $type={result.level ?? 'error'} />
           {result.message.text}
         </>
       )}
@@ -53,6 +52,14 @@ const ErrorStartLine = styled.div<{$isSelected: boolean}>`
   color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
   font-weight: 400;
   min-width: 26px;
+`;
+
+const ErrorWarningCircle = styled.div<{$type: 'error' | 'warning'}>`
+  background-color: ${({$type}) => ($type === 'error' ? Colors.red7 : '#E8B339')};
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  margin-right: -8px;
 `;
 
 const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`

@@ -2,14 +2,14 @@ import {ValidationOverviewType} from './types';
 
 export const MainValidationOverviewArgs: ValidationOverviewType = {
   height: 800,
-  onErrorSelect: error => {
-    console.log('Error:', error);
+  onProblemSelect: problem => {
+    console.log('Problem:', problem);
   },
   containerStyle: {
     paddingTop: '20px',
   },
-  newErrorsIntroducedType: 'k8s-schema',
-  selectedError: {
+  newProblemsIntroducedType: 'k8s-schema',
+  selectedProblem: {
     ruleId: 'KSV001',
     rule: {
       index: 0,
@@ -52,8 +52,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
         logicalLocations: [
           {
             kind: 'resource',
-            fullyQualifiedName:
-              'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+            fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
             name: 'panda-blog',
           },
         ],
@@ -74,7 +73,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 name: 'open-policy-agent',
               },
             },
-            level: 'error',
+            level: 'warning',
             message: {
               text: 'Disallow the process from elevating its privileges on container "panda-blog".',
             },
@@ -109,8 +108,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -160,8 +158,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -211,8 +208,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -262,8 +258,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -313,8 +308,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -364,8 +358,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -415,8 +408,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -466,8 +458,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -517,8 +508,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -568,8 +558,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -619,8 +608,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -641,8 +629,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
                 help: {
                   text: "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
                 },
@@ -662,8 +649,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'A program inside the container can bypass AppArmor protection policies.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/',
+                helpUri: 'https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/',
                 help: {
                   text: "Remove 'container.apparmor.security.beta.kubernetes.io' annotation or set it to 'runtime/default'.",
                 },
@@ -683,8 +669,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'The container should drop all default capabilities and add only those that are needed for its execution.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/',
+                helpUri: 'https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/',
                 help: {
                   text: "Add 'ALL' to containers[].securityContext.capabilities.drop.",
                 },
@@ -701,8 +686,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'SYS_ADMIN gives the processes running inside the container privileges that are equivalent to root.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-securitycontext-capabilities-add-index-sys-admin/',
+                helpUri: 'https://kubesec.io/basics/containers-securitycontext-capabilities-add-index-sys-admin/',
                 help: {
                   text: "Remove the SYS_ADMIN capability from 'containers[].securityContext.capabilities.add'.",
                 },
@@ -722,8 +706,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'Mounting docker.sock from the host can give the container full root access to the host.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/spec-volumes-hostpath-path-var-run-docker-sock/',
+                helpUri: 'https://kubesec.io/basics/spec-volumes-hostpath-path-var-run-docker-sock/',
                 help: {
                   text: 'Do not specify `/var/run/docker.sock` in spec.template.volumes.hostPath.path.',
                 },
@@ -743,8 +726,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: "Sharing the host's IPC namespace allows container processes to communicate with processes on the host.",
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
                 help: {
                   text: "Do not set 'spec.template.spec.hostIPC' to true.",
                 },
@@ -764,8 +746,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'Sharing the host’s network namespace permits processes in the pod to communicate with processes bound to the host’s loopback adapter.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
                 help: {
                   text: "Do not set 'spec.template.spec.hostNetwork' to true.",
                 },
@@ -785,8 +766,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'Sharing the host’s PID namespace allows visibility on host processes, potentially leaking information such as environment variables and configuration.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
                 help: {
                   text: "Do not set 'spec.template.spec.hostPID' to true.",
                 },
@@ -824,8 +804,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: '"runAsNonRoot" forces the running image to run as a non-root user to ensure least privileges.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
                 help: {
                   text: "Set 'containers[].securityContext.runAsNonRoot' to true.",
                 },
@@ -842,8 +821,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: "It is best to avoid using the ':latest' image tag when deploying containers in production. Doing so makes it hard to track which version of the image is running, and hard to roll back the version.",
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/configuration/overview/#container-images',
+                helpUri: 'https://kubernetes.io/docs/concepts/configuration/overview/#container-images',
                 help: {
                   text: "Use a specific container image tag that is not 'latest'.",
                 },
@@ -860,8 +838,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-securitycontext-readonlyrootfilesystem-true/',
+                helpUri: 'https://kubesec.io/basics/containers-securitycontext-readonlyrootfilesystem-true/',
                 help: {
                   text: "Change 'containers[].securityContext.readOnlyRootFilesystem' to 'true'.",
                 },
@@ -878,8 +855,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/',
+                helpUri: 'https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/',
                 help: {
                   text: "Set 'containers[].resources.requests.cpu'.",
                 },
@@ -896,8 +872,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'When containers have memory requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-resources-limits-memory/',
+                helpUri: 'https://kubesec.io/basics/containers-resources-limits-memory/',
                 help: {
                   text: "Set 'containers[].resources.requests.memory'.",
                 },
@@ -914,8 +889,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'Privileged containers share namespaces with the host system and do not offer any security. They should be used exclusively for system containers that require high privileges.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
                 help: {
                   text: "Change 'containers[].securityContext.privileged' to false",
                 },
@@ -935,8 +909,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'Enforcing memory limits prevents DoS via resource exhaustion.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-resources-limits-memory/',
+                helpUri: 'https://kubesec.io/basics/containers-resources-limits-memory/',
                 help: {
                   text: "Set a limit value under 'containers[].resources.limits.memory'.",
                 },
@@ -953,8 +926,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'Force the container to run with user ID > 10000 to avoid conflicts with the host’s user table.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-securitycontext-runasuser/',
+                helpUri: 'https://kubesec.io/basics/containers-securitycontext-runasuser/',
                 help: {
                   text: "Set 'containers[].securityContext.runAsUser' to an integer > 10000.",
                 },
@@ -971,8 +943,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'Force the container to run with group ID > 10000 to avoid conflicts with the host’s user table.',
                 },
-                helpUri:
-                  'https://kubesec.io/basics/containers-securitycontext-runasuser/',
+                helpUri: 'https://kubesec.io/basics/containers-securitycontext-runasuser/',
                 help: {
                   text: "Set 'containers[].securityContext.runAsGroup' to an integer > 10000.",
                 },
@@ -989,8 +960,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'HostPath volumes must be forbidden.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
                 help: {
                   text: "Do not set 'spec.volumes[*].hostPath'.",
                 },
@@ -1007,8 +977,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'HostPorts should be disallowed, or at minimum restricted to a known list.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
                 help: {
                   text: 'Do not set spec.containers[*].ports[*].hostPort and spec.initContainers[*].ports[*].hostPort.',
                 },
@@ -1028,8 +997,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'There should be no custom SELinux options for this container.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
                 help: {
                   text: 'Do not set spec.securityContext.seLinuxOptions, spec.containers[*].securityContext.seLinuxOptions and spec.initContainers[*].securityContext.seLinuxOptions.',
                 },
@@ -1046,8 +1014,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'The default /proc masks are set up to reduce attack surface, and should be required.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline',
                 help: {
                   text: 'Do not set spec.containers[*].securityContext.procMount and spec.initContainers[*].securityContext.procMount.',
                 },
@@ -1064,8 +1031,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'In addition to restricting HostPath volumes, usage of non-ephemeral volume types should be limited to those defined through PersistentVolumes.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
                 help: {
                   text: "Do not Set 'spec.volumes[*]' to any of the disallowed volume types.",
                 },
@@ -1082,8 +1048,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'Containers should be forbidden from running with a root primary or supplementary GID.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
                 help: {
                   text: "containers[].securityContext.runAsGroup' to a non-zero integer or leave undefined.",
                 },
@@ -1100,8 +1065,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 fullDescription: {
                   text: 'The RuntimeDefault seccomp profile must be required, or allow specific additional profiles.',
                 },
-                helpUri:
-                  'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
+                helpUri: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted',
                 help: {
                   text: "Set 'spec.securityContext.seccompProfile.type', 'spec.containers[*].securityContext.seccompProfile' and 'spec.initContainers[*].securityContext.seccompProfile' to 'RuntimeDefault' or undefined.",
                 },
@@ -1158,8 +1122,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -1209,8 +1172,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName:
-                      'panda-blog.service@vanilla-panda-blog/service.yaml',
+                    fullyQualifiedName: 'panda-blog.service@vanilla-panda-blog/service.yaml',
                     name: 'panda-blog',
                   },
                 ],
