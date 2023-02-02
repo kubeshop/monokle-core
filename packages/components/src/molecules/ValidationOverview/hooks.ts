@@ -2,12 +2,7 @@ import {ValidationResponse, ValidationResult} from '@monokle/validation';
 import isEqual from 'lodash.isequal';
 import {useEffect, useMemo, useState} from 'react';
 import {NewProblemsType, ProblemsType, ShowByFilterOptionType} from './types';
-import {
-  filterBySearchValue,
-  selectProblemsByFilePath,
-  selectProblemsByResource,
-  selectProblemsByRule,
-} from './utils';
+import {filterBySearchValue, selectProblemsByFilePath, selectProblemsByResource, selectProblemsByRule} from './utils';
 
 let baseValidationResults: ValidationResult[] = [];
 
@@ -21,10 +16,7 @@ export function useCurrentAndNewProblems(
   });
   const [problems, setProblems] = useState<ProblemsType>({});
 
-  const validationResults = useMemo(
-    () => validationResponse.runs.flatMap(r => r.results) ?? [],
-    [validationResponse]
-  );
+  const validationResults = useMemo(() => validationResponse.runs.flatMap(r => r.results) ?? [], [validationResponse]);
 
   const newResults = useNewResults(validationResults);
 
@@ -33,22 +25,14 @@ export function useCurrentAndNewProblems(
     let newProblems: ProblemsType = {};
 
     if (showByFilterValue === 'show-by-resource') {
-      newProblems = selectProblemsByResource(newResults, 'error');
-      currentProblems = selectProblemsByResource(validationResults, 'error');
+      newProblems = selectProblemsByResource(newResults, 'all');
+      currentProblems = selectProblemsByResource(validationResults, 'all');
     } else if (showByFilterValue === 'show-by-file') {
-      newProblems = selectProblemsByFilePath(newResults, 'error');
-      currentProblems = selectProblemsByFilePath(validationResults, 'error');
+      newProblems = selectProblemsByFilePath(newResults, 'all');
+      currentProblems = selectProblemsByFilePath(validationResults, 'all');
     } else if (showByFilterValue === 'show-by-rule') {
-      newProblems = selectProblemsByRule(
-        validationResponse,
-        newResults,
-        'error'
-      );
-      currentProblems = selectProblemsByRule(
-        validationResponse,
-        validationResults,
-        'error'
-      );
+      newProblems = selectProblemsByRule(validationResponse, newResults, 'all');
+      currentProblems = selectProblemsByRule(validationResponse, validationResults, 'all');
     }
 
     setNewProblems({data: newProblems, resultsCount: newResults.length});
@@ -63,9 +47,7 @@ export function useNewResults(validationResults: ValidationResult[]) {
     () =>
       validationResults.filter(result => {
         const found = baseValidationResults.find(
-          baseResult =>
-            baseResult.ruleId === result.ruleId &&
-            isEqual(baseResult.locations, result.locations)
+          baseResult => baseResult.ruleId === result.ruleId && isEqual(baseResult.locations, result.locations)
         );
         return !found;
       }),
@@ -96,10 +78,7 @@ export function useFilteredProblems(
       showingProblems = problems;
     }
 
-    const currentFilteredProblems = filterBySearchValue(
-      showingProblems,
-      searchValue
-    );
+    const currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
     setFilteredProblems(currentFilteredProblems);
   }, [problems, newProblems, showNewErrors, searchValue]);
 

@@ -1,16 +1,7 @@
-import {Button as RawButton} from 'antd';
-
 import styled from 'styled-components';
 
 import {Colors} from '@/styles/Colors';
 import {AnimationDurations} from '@/styles/Animations';
-
-export const Button = styled(RawButton)`
-  border-radius: 2px;
-  color: ${Colors.whitePure};
-  width: max-content;
-  margin-top: 6px;
-`;
 
 export const Description = styled.div`
   color: ${Colors.grey8};

@@ -6,9 +6,9 @@ export type ValidationOverviewType = {
   containerStyle?: React.CSSProperties;
   customMessage?: string;
   height?: number;
-  newErrorsIntroducedType?: string;
-  selectedError?: ValidationResult;
-  onErrorSelect?: (payload: {error: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
+  newProblemsIntroducedType?: string;
+  selectedProblem?: ValidationResult;
+  onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
 };
 
 export type ProblemsType = {

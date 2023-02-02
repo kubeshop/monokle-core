@@ -1,6 +1,6 @@
 {
   "name": "@monokle/components",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "author": "Kubeshop",
   "description": "UI library for Monokle",
   "repository": {
@@ -49,7 +49,7 @@
     "@types/styled-components": "5.1.25",
     "@vitejs/plugin-react": "2.1.0",
     "acorn-jsx": "5.3.2",
-    "antd": "4.23.6",
+    "antd": "4.24.7",
     "babel-loader": "8.2.4",
     "json": "11.0.0",
     "lodash.isequal": "^4.5.0",
@@ -63,12 +63,14 @@
     "vite": "3.1.0",
     "vite-plugin-dts": "^1.6.6",
     "vite-tsconfig-paths": "^3.5.2",
-    "framer-motion": "6.5.1"
+    "framer-motion": "6.5.1",
+    "use-debounced-effect": "2.0.1"
   },
   "peerDependencies": {
     "react": "^18.0 || ^17.0 || ^16.0",
     "react-dom": "^18.0 || ^17.0 || ^16.0",
     "styled-components": "^5.0.0",
-    "framer-motion": "^6.0 || ^7.0"
+    "framer-motion": "^6.0 || ^7.0",
+    "use-debounced-effect": "2.0.1"
   }
 }
