@@ -3,7 +3,7 @@ import ProblemInfo from './ProblemInfo';
 import {LocationClickProblemInfoArgs, MainProblemInfoArgs} from './ProblemInfo.stories.args';
 
 export default {
-  title: 'Molecules/ErrorInfo',
+  title: 'Molecules/ProblemInfo',
   component: ProblemInfo,
 } as ComponentMeta<typeof ProblemInfo>;
 

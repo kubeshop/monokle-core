@@ -4,6 +4,26 @@ export const LocationClickProblemInfoArgs: ProblemInfoType = {
   onLocationClick: location => {
     console.log('Location:', location);
   },
+  onHelpURLClick: url => {
+    console.log('URL:', url);
+  },
+  rule: {
+    id: 'KSV003',
+    name: 'drop-capabilities',
+    shortDescription: {
+      text: 'Require default capabilities to be dropped',
+    },
+    fullDescription: {
+      text: 'The container should drop all default capabilities and add only those that are needed for its execution.',
+    },
+    helpUri: 'https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/',
+    help: {
+      text: "Add 'ALL' to containers[].securityContext.capabilities.drop.",
+    },
+    properties: {
+      'security-severity': 2,
+    },
+  },
   problem: {
     ruleId: 'KSV003',
     rule: {
@@ -57,6 +77,27 @@ export const LocationClickProblemInfoArgs: ProblemInfoType = {
 };
 
 export const MainProblemInfoArgs: ProblemInfoType = {
+  onHelpURLClick: url => {
+    console.log('URL:', url);
+  },
+  rule: {
+    id: 'KSV011',
+    name: 'cpu-limit',
+    shortDescription: {
+      text: 'Require the CPU to be limited',
+    },
+    fullDescription: {
+      text: 'Enforcing CPU limits prevents DoS via resource exhaustion.',
+    },
+    helpUri:
+      'https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits',
+    help: {
+      text: "Add a cpu limitation to 'spec.resources.limits.cpu'.",
+    },
+    properties: {
+      'security-severity': 2,
+    },
+  },
   problem: {
     ruleId: 'KSV011',
     rule: {
