@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.6.4
+
+### Patch Changes
+
+- 173f25d: externalise peer dependencies to reduce bundle size
+
 ## 0.6.3
 
 ### Patch Changes
