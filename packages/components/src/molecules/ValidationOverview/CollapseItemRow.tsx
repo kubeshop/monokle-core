@@ -61,9 +61,10 @@ const ErrorWarningCircle = styled.div<{$type: 'error' | 'warning'}>`
 `;
 
 const MessageText = styled.div`
-  text-overflow: ellipsis;
+  // TODO: add ellipsis for text-overflow without breaking the resizing of panes
+  /* text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: hidden; */
 `;
 
 const ProblemStartLine = styled.div<{$isSelected: boolean; $showByFilterValue: ShowByFilterOptionType}>`

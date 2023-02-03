@@ -1,10 +1,10 @@
-import {ErrorInfoType} from './types';
+import {ProblemInfoType} from './types';
 
-export const LocationClickErrorInfoArgs: ErrorInfoType = {
+export const LocationClickProblemInfoArgs: ProblemInfoType = {
   onLocationClick: location => {
     console.log('Location:', location);
   },
-  error: {
+  problem: {
     ruleId: 'KSV003',
     rule: {
       index: 2,
@@ -56,8 +56,8 @@ export const LocationClickErrorInfoArgs: ErrorInfoType = {
   },
 };
 
-export const MainErrorInfoArgs: ErrorInfoType = {
-  error: {
+export const MainProblemInfoArgs: ProblemInfoType = {
+  problem: {
     ruleId: 'KSV011',
     rule: {
       index: 8,
