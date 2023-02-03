@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.6.5
+
+### Patch Changes
+
+- c0f7c33: Add rule hints + fix ellipsis
+
 ## 0.6.4
 
 ### Patch Changes
