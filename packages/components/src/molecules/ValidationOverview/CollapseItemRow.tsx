@@ -26,10 +26,10 @@ export const CollapseItemRow: React.FC<IProps> = props => {
     <Row $isSelected={isSelected} $secondary={showByFilterValue === 'show-by-rule'} onClick={onClick}>
       {showByFilterValue === 'show-by-rule' ? (
         <>
-          <ErrorStartLine $isSelected={isSelected}>
+          <ProblemStartLine $isSelected={isSelected} $showByFilterValue={showByFilterValue}>
             {result.locations[0].physicalLocation?.region?.startLine}
-          </ErrorStartLine>
-          {getFileLocation(result).physicalLocation?.artifactLocation.uri}
+          </ProblemStartLine>
+          <MessageText>{getFileLocation(result).physicalLocation?.artifactLocation.uri}</MessageText>
         </>
       ) : (
         <>
@@ -38,8 +38,12 @@ export const CollapseItemRow: React.FC<IProps> = props => {
             {rule && renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, isSelected)}
           </div>
 
+          <ProblemStartLine $isSelected={isSelected} $showByFilterValue={showByFilterValue}>
+            {result.locations[0].physicalLocation?.region?.startLine}
+          </ProblemStartLine>
+
           <ErrorWarningCircle $type={result.level ?? 'error'} />
-          {result.message.text}
+          <MessageText>{result.message.text}</MessageText>
         </>
       )}
     </Row>
@@ -48,18 +52,24 @@ export const CollapseItemRow: React.FC<IProps> = props => {
 
 // Styled Components
 
-const ErrorStartLine = styled.div<{$isSelected: boolean}>`
-  color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
-  font-weight: 400;
-  min-width: 26px;
-`;
-
 const ErrorWarningCircle = styled.div<{$type: 'error' | 'warning'}>`
   background-color: ${({$type}) => ($type === 'error' ? Colors.red7 : '#E8B339')};
   border-radius: 50%;
   width: 10px;
   height: 10px;
   margin-right: -8px;
+`;
+
+const MessageText = styled.div`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+`;
+
+const ProblemStartLine = styled.div<{$isSelected: boolean; $showByFilterValue: ShowByFilterOptionType}>`
+  color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
+  font-weight: 400;
+  min-width: ${({$showByFilterValue}) => ($showByFilterValue === 'show-by-rule' ? '26' : '18')}px;
 `;
 
 const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`
