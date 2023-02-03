@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.6.3
+
+### Patch Changes
+
+- 93397e6: Add back start line + text-overflow ellipsis
+
 ## 0.6.2
 
 ### Patch Changes
