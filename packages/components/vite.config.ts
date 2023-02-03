@@ -22,12 +22,15 @@ export default defineConfig({
       fileName: (format) => `lib.${format}.js`,
     },
     rollupOptions: {
-      external: ["react", "react-dom", "styled-components"],
+      external: ["react", "react-dom", "styled-components", "framer-motion", "antd", "@monokle/validation"],
       output: {
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
           "styled-components": "styled",
+          "framer-motion": "framer",
+          antd: "antd",
+          "@monokle/validation": "monokle-validation",
         },
       },
     },
