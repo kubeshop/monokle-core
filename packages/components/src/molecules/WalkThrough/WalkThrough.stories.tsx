@@ -2,8 +2,10 @@ import {Colors} from '@/styles/Colors';
 import {ComponentMeta, ComponentStory} from '@storybook/react';
 import {WalkThroughCard} from '@/molecules/WalkThroughCard';
 import WalkThrough from './WalkThrough';
-import * as S from './WalkThrough.styled';
-import { WalkThoughArgs } from './args';
+import {WalkThoughArgs} from './args';
+import styled from 'styled-components';
+import {Icon as RawIcon} from '@/atoms';
+import {MenuOutlined, SettingOutlined} from '@ant-design/icons';
 
 export default {
   title: 'Molecules/WalkThrough',
@@ -23,7 +25,7 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
 
             <WalkThroughCard.Text>
               Create a project - then find here all the resource inputs contained in it. Switch between them for
-              different views. Click on <S.MenuOutlinedIcon /> to change project or create a new one.
+              different views. Click on <MenuOutlinedIcon /> to change project or create a new one.
             </WalkThroughCard.Text>
           </WalkThroughCard.Slice>,
 
@@ -39,7 +41,7 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
             <WalkThroughCard.SubHeading>3. Quick cluster preview</WalkThroughCard.SubHeading>
             <WalkThroughCard.Text>
               Click
-              <S.Icon name="cluster-dashboard" />
+              <Icon name="cluster-dashboard" />
               on the left menu to quickly connect your cluster (no project creation needed) and have a dedicated
               dashboard with live activity, incidences, resources, performance, errors and more.
             </WalkThroughCard.Text>
@@ -57,11 +59,12 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
           <WalkThroughCard.Slice>
             <WalkThroughCard.SubHeading>1. Templates & Forms</WalkThroughCard.SubHeading>
             <WalkThroughCard.Text>
-              <WalkThroughCard.Text $bold>Use code or forms indistinctly.</WalkThroughCard.Text> Jump from one to another anytime to see changes.
+              <WalkThroughCard.Text $bold>Use code or forms indistinctly.</WalkThroughCard.Text> Jump from one to
+              another anytime to see changes.
             </WalkThroughCard.Text>
             <WalkThroughCard.Text>
               <WalkThroughCard.Text $bold>Code / form split editor.</WalkThroughCard.Text> Click on
-              <S.Icon name="split-view" $transparent $color={Colors.blue6} />
+              <Icon name="split-view" $transparent $color={Colors.blue6} />
               to access a split screen with side-to-side code and form views.
             </WalkThroughCard.Text>
             <WalkThroughCard.Text>
@@ -76,7 +79,9 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
               Try this dedicated utility to compare resources that are at any stage of the k8s lifecycle: local,
               cluster, previews, on git...
             </WalkThroughCard.Text>
-            <WalkThroughCard.Text>You can promote, deploy or commit changes made, or take to local anything published.</WalkThroughCard.Text>
+            <WalkThroughCard.Text>
+              You can promote, deploy or commit changes made, or take to local anything published.
+            </WalkThroughCard.Text>
           </WalkThroughCard.Slice>,
         ]}
       />
@@ -92,14 +97,14 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
             <WalkThroughCard.SubHeading>1. Enforce validation policies</WalkThroughCard.SubHeading>
 
             <WalkThroughCard.Text>
-              <WalkThroughCard.Text $bold>Activate OPA rules </WalkThroughCard.Text>based on your policy or preferences, severity etc. Set it all
-              up in
-              <S.SettingOutlinedIcon />
+              <WalkThroughCard.Text $bold>Activate OPA rules </WalkThroughCard.Text>based on your policy or preferences,
+              severity etc. Set it all up in
+              <SettingOutlinedIcon />
             </WalkThroughCard.Text>
 
             <WalkThroughCard.Text>
-              <WalkThroughCard.Text $bold>Check schema version.</WalkThroughCard.Text> Make sure you have your desired K8s schema version on. Find
-              it always on the top bar for quick switch.
+              <WalkThroughCard.Text $bold>Check schema version.</WalkThroughCard.Text> Make sure you have your desired
+              K8s schema version on. Find it always on the top bar for quick switch.
             </WalkThroughCard.Text>
           </WalkThroughCard.Slice>,
 
@@ -108,7 +113,7 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
 
             <WalkThroughCard.Text>
               A validation or schema change can incur in new errors. Find them easily grouped for a quick fix in
-              <S.Icon name="checked" />
+              <Icon name="checked" />
             </WalkThroughCard.Text>
           </WalkThroughCard.Slice>,
         ]}
@@ -123,7 +128,9 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
         items={[
           <WalkThroughCard.Slice>
             <WalkThroughCard.SubHeading>1. Git</WalkThroughCard.SubHeading>
-            <WalkThroughCard.Text>Take your changes management into the Git workflow - for any project. You can:</WalkThroughCard.Text>
+            <WalkThroughCard.Text>
+              Take your changes management into the Git workflow - for any project. You can:
+            </WalkThroughCard.Text>
             <ul>
               <li>
                 <WalkThroughCard.Text>
@@ -148,11 +155,12 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
             <WalkThroughCard.SubHeading>2. Cluster</WalkThroughCard.SubHeading>
             <WalkThroughCard.Text>Connect & manage as many clusters as you want:</WalkThroughCard.Text>
             <WalkThroughCard.Text>
-              <WalkThroughCard.Text $bold>Deploy </WalkThroughCard.Text>any change or state of your resources to the cluster anytime.
+              <WalkThroughCard.Text $bold>Deploy </WalkThroughCard.Text>any change or state of your resources to the
+              cluster anytime.
             </WalkThroughCard.Text>
             <WalkThroughCard.Text>
-              <WalkThroughCard.Text $bold>Configure a different accent color </WalkThroughCard.Text>for each one of your clusters for easier
-              differentiation.
+              <WalkThroughCard.Text $bold>Configure a different accent color </WalkThroughCard.Text>for each one of your
+              clusters for easier differentiation.
             </WalkThroughCard.Text>
           </WalkThroughCard.Slice>,
         ]}
@@ -163,3 +171,35 @@ const Template: ComponentStory<typeof WalkThrough> = args => (
 
 export const WalkThroughPage = Template.bind({});
 WalkThroughPage.args = WalkThoughArgs;
+
+// Styled Components
+
+const Icon = styled(RawIcon)<{
+  $transparent?: boolean;
+  $color?: string;
+}>`
+  background-color: ${({$transparent}) => ($transparent ? 'transparent' : Colors.grey4)};
+  font-size: 14px;
+  padding: 2px;
+  margin: 0 4px;
+  color: ${({$color}) => $color || Colors.grey9};
+  border-radius: 50%;
+`;
+
+const MenuOutlinedIcon = styled(MenuOutlined)`
+  background-color: ${Colors.grey4};
+  font-size: 14px;
+  padding: 4px;
+  margin: 0 4px;
+  color: ${Colors.grey9};
+  border-radius: 2px;
+`;
+
+const SettingOutlinedIcon = styled(SettingOutlined)`
+  background-color: ${Colors.grey4};
+  font-size: 14px;
+  padding: 4px;
+  margin: 0 4px;
+  color: ${Colors.grey9};
+  border-radius: 50%;
+`;
