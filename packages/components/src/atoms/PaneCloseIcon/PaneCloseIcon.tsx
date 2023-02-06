@@ -13,13 +13,8 @@ export type PaneCloseIconType = {
   iconStyle?: React.CSSProperties;
 };
 
-export const PaneCloseIcon: React.FC<PaneCloseIconType> = props => {
-  const {
-    containerId = 'pane-close',
-    containerStyle = {},
-    iconStyle = {},
-    onClick,
-  } = props;
+const PaneCloseIcon: React.FC<PaneCloseIconType> = props => {
+  const {containerId = 'pane-close', containerStyle = {}, iconStyle = {}, onClick} = props;
   const {containerClassName = '', iconClassName = ''} = props;
 
   return (
@@ -29,13 +24,12 @@ export const PaneCloseIcon: React.FC<PaneCloseIconType> = props => {
       style={{...containerStyle}}
       onClick={onClick}
     >
-      <StyledDoubleLeftOutlined
-        className={iconClassName}
-        style={{...iconStyle}}
-      />
+      <StyledDoubleLeftOutlined className={iconClassName} style={{...iconStyle}} />
     </StyledPaneCloseIconContainer>
   );
 };
+
+export default PaneCloseIcon;
 
 // Styled Components
 

@@ -1,7 +1,7 @@
-import { ActivityBarItem } from "./ActivityBarItem";
-import { ActivityBarProps } from "./types";
-
-import * as S from "./ActivityBar.styled";
+import styled from 'styled-components';
+import {ActivityBarProps} from './types';
+import ActivityBarItem from './ActivityBarItem';
+import {Colors} from '@/styles/Colors';
 
 /**
  * ActivityBar is responsible for rendering icons in the left menu of the application.
@@ -15,16 +15,16 @@ import * as S from "./ActivityBar.styled";
  * **value** will contain the name of the selected activity,
  * while **extraValue** will contain the name of the selected extraActivity
  */
-export function ActivityBar<ActivityName extends string, ExtraActivityName extends string | undefined>(
+function ActivityBar<ActivityName extends string, ExtraActivityName extends string | undefined>(
   props: ActivityBarProps<ActivityName, ExtraActivityName>
 ) {
-  const { activities, isActive, style = {}, value, onChange } = props;
-  const { extraActivities = [], extraValue = "", onChangeExtra = () => {} } = props;
+  const {activities, isActive, style = {}, value, onChange} = props;
+  const {extraActivities = [], extraValue = '', onChangeExtra = () => {}} = props;
 
   return (
-    <S.BarBox $isActive={isActive} style={style}>
+    <BarBox $isActive={isActive} style={style}>
       <div>
-        {activities.map((activity) => {
+        {activities.map(activity => {
           return (
             <ActivityBarItem
               key={activity.name}
@@ -38,7 +38,7 @@ export function ActivityBar<ActivityName extends string, ExtraActivityName exten
       </div>
 
       <div>
-        {extraActivities.map((activity) => (
+        {extraActivities.map(activity => (
           <ActivityBarItem
             key={activity.name}
             activity={activity}
@@ -48,6 +48,20 @@ export function ActivityBar<ActivityName extends string, ExtraActivityName exten
           />
         ))}
       </div>
-    </S.BarBox>
+    </BarBox>
   );
 }
+
+export default ActivityBar;
+
+// Styled Components
+
+const BarBox = styled.div<{$isActive: boolean}>`
+  background-color: ${({$isActive: activitySelected}) => (activitySelected ? Colors.blackPure : Colors.grey10)};
+  height: 100%;
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+`;

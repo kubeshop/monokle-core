@@ -1,2 +1,2 @@
-export {ActivityBar} from './ActivityBar'
-export type {ActivityType} from './types'
+export {default as ActivityBar} from './ActivityBar';
+export type {ActivityBarProps, ActivityType} from './types';

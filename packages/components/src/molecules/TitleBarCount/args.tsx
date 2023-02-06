@@ -1,13 +1,11 @@
-import { Button } from "antd";
-import { TitleBarCountType } from "./types";
+import {TitleBarCountType} from './types';
 
 export const ActiveTitleBarCountArgs: TitleBarCountType = {
   count: 123,
-  isActive: true
+  isActive: true,
 };
 
 export const InactiveTitleBarCountArgs: TitleBarCountType = {
   count: 123,
-  isActive: false
+  isActive: false,
 };
-

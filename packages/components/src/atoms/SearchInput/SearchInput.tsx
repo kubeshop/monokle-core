@@ -4,9 +4,11 @@ import {Input, InputProps} from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
-export const SearchInput: React.FC<InputProps> = props => {
+const SearchInput: React.FC<InputProps> = props => {
   return <Search prefix={<SearchOutlined />} {...props} />;
 };
+
+export default SearchInput;
 
 // Styled components
 

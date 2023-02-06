@@ -1,26 +1,77 @@
-import { TitleBarType } from "..";
-import * as S from "./TitleBar.styled";
+import {Colors, PanelColors} from '@/styles/Colors';
+import styled from 'styled-components';
+import {TitleBarType} from '..';
+import {DownOutlined as RawDownOutlined, RightOutlined as RawRightOutlined} from '@ant-design/icons';
 
-const TitleBar: React.FC<TitleBarType> = (props) => {
-  const { actions, description, expandable = false, isOpen = false, title, type = "primary", onExpand } = props;
+const TitleBar: React.FC<TitleBarType> = props => {
+  const {actions, description, expandable = false, isOpen = false, title, type = 'primary', onExpand} = props;
 
   return (
     <>
-      <S.HeaderContainer $expandable={expandable} $isOpen={isOpen} $type={type}>
-        {expandable && (isOpen ? <S.DownOutlined onClick={onExpand} /> : <S.RightOulined onClick={onExpand} />)}
+      <HeaderContainer $expandable={expandable} $isOpen={isOpen} $type={type}>
+        {expandable && (isOpen ? <DownOutlined onClick={onExpand} /> : <RightOulined onClick={onExpand} />)}
 
-        <S.Title $expandable={expandable} $isOpen={isOpen}>
+        <Title $expandable={expandable} $isOpen={isOpen}>
           {title}
-        </S.Title>
+        </Title>
 
-        <S.ActionsContainer>{actions}</S.ActionsContainer>
-      </S.HeaderContainer>
+        <ActionsContainer>{actions}</ActionsContainer>
+      </HeaderContainer>
 
       {description && (!expandable || (expandable && isOpen)) && (
-        <S.DescriptionContainer $type={type}>{description}</S.DescriptionContainer>
+        <DescriptionContainer $type={type}>{description}</DescriptionContainer>
       )}
     </>
   );
 };
 
 export default TitleBar;
+
+// Styled Components
+
+const ActionsContainer = styled.div`
+  margin-left: auto;
+`;
+
+const DescriptionContainer = styled.div<{
+  $type: 'primary' | 'secondary';
+}>`
+  background-color: ${({$type}) => ($type === 'secondary' ? 'rgba(25, 31, 33, 0.7)' : 'rgba(82, 115, 224, 0.3)')};
+  padding: 10px 10px 6px 10px;
+  border-radius: 4px;
+  transform: translateY(-4px);
+`;
+
+const DownOutlined = styled(RawDownOutlined)`
+  color: ${Colors.whitePure};
+  font-size: 12px;
+  margin-left: 3px;
+  cursor: pointer;
+`;
+
+const HeaderContainer = styled.div<{
+  $expandable: boolean;
+  $isOpen: boolean;
+  $type: 'primary' | 'secondary';
+}>`
+  background-color: ${({$expandable, $isOpen, $type}) =>
+    $type === 'secondary' ? PanelColors.toolBar : !$expandable || $isOpen ? Colors.geekblue7 : Colors.blue2};
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+`;
+
+const RightOulined = styled(RawRightOutlined)`
+  color: ${Colors.grey9};
+  font-size: 12px;
+  margin-left: 3px;
+  cursor: pointer;
+`;
+
+const Title = styled.div<{$expandable: boolean; $isOpen: boolean}>`
+  font-weight: 600;
+  color: ${({$expandable, $isOpen}) => (!$expandable || $isOpen ? Colors.whitePure : Colors.grey9)};
+  font-size: 14px;
+`;

@@ -1,9 +1,8 @@
 import {ComponentMeta, ComponentStory} from '@storybook/react';
-import {CheckOutlined, UnorderedListOutlined} from '@ant-design/icons';
+import {CheckOutlined, CloudUploadOutlined, UnorderedListOutlined} from '@ant-design/icons';
 import {Icon} from '@/atoms/Icon';
 import {LearnCard} from '@/molecules/LearnCard';
 import LearnPage from './LearnPage';
-import * as S from './LearnPage.styled';
 
 export default {
   title: 'Molecules/LearnPage',
@@ -35,7 +34,7 @@ const Template: ComponentStory<typeof LearnPage> = args => (
 
     <LearnCard
       description="Save locally, get into Git (Github, Gitlab), create PRs, deploy to a cluster..."
-      icon={<S.CloudUploadOutlined />}
+      icon={<CloudUploadOutlined />}
       title="Publish"
       onClick={() => {}}
     />
