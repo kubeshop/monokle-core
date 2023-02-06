@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.7.0
+
+### Minor Changes
+
+- c369ed3: Refactor components + hide filters button on ValidationOverview
+
 ## 0.6.5
 
 ### Patch Changes
