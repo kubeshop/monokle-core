@@ -1,10 +1,12 @@
-import {Colors} from '@/styles/Colors';
+import {ReactNode} from 'react';
 import {ClearOutlined, FilterOutlined} from '@ant-design/icons';
 import styled from 'styled-components';
 
+import {Colors} from '@/styles/Colors';
+
 type Props = {
   onClear?: () => void;
-  filterActions?: JSX.Element;
+  filterActions?: ReactNode;
 };
 
 export function FilterHeader({onClear, filterActions}: Props) {
