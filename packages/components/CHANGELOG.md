@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.7.1
+
+### Patch Changes
+
+- a6520fb: added filter header actions jsx
+
 ## 0.7.0
 
 ### Minor Changes
