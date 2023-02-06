@@ -26,7 +26,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
     <Row $isSelected={isSelected} $secondary={showByFilterValue === 'show-by-rule'} onClick={onClick}>
       {showByFilterValue === 'show-by-rule' ? (
         <>
-          <ProblemStartLine $isSelected={isSelected} $showByFilterValue={showByFilterValue}>
+          <ProblemStartLine $isSelected={isSelected}>
             {result.locations[0].physicalLocation?.region?.startLine}
           </ProblemStartLine>
           <MessageText>{getFileLocation(result).physicalLocation?.artifactLocation.uri}</MessageText>
@@ -38,7 +38,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
             {rule && renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, isSelected)}
           </div>
 
-          <ProblemStartLine $isSelected={isSelected} $showByFilterValue={showByFilterValue}>
+          <ProblemStartLine $isSelected={isSelected}>
             {result.locations[0].physicalLocation?.region?.startLine}
           </ProblemStartLine>
 
@@ -56,7 +56,9 @@ const ErrorWarningCircle = styled.div<{$type: 'error' | 'warning'}>`
   background-color: ${({$type}) => ($type === 'error' ? Colors.red7 : '#E8B339')};
   border-radius: 50%;
   width: 10px;
+  min-width: 10px;
   height: 10px;
+  min-height: 10px;
   margin-right: -8px;
 `;
 
@@ -67,10 +69,10 @@ const MessageText = styled.div`
   overflow: hidden; */
 `;
 
-const ProblemStartLine = styled.div<{$isSelected: boolean; $showByFilterValue: ShowByFilterOptionType}>`
+const ProblemStartLine = styled.div<{$isSelected: boolean}>`
   color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
   font-weight: 400;
-  min-width: ${({$showByFilterValue}) => ($showByFilterValue === 'show-by-rule' ? '26' : '18')}px;
+  min-width: 26px;
 `;
 
 const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`
