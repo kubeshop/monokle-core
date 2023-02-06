@@ -33,12 +33,15 @@ export function processRefs(
   // optional list of files that were processed to extract the specified resources, needed to resolve refs
   // to files that don't contain any resources. If not specified the list of files will be extracted from
   // specified resources instead.
-  files?: string[]
+  files?: string[],
+  options?: {
+    shouldIgnoreOptionalUnsatisfiedRefs?: boolean
+  }
 ): Resource[] {
   const filteredResources = filterResources(resources, incremental);
 
   doProcessRefs(resources, filteredResources, {
-    shouldIgnoreOptionalUnsatisfiedRefs: false,
+    shouldIgnoreOptionalUnsatisfiedRefs: Boolean(options?.shouldIgnoreOptionalUnsatisfiedRefs),
     parser,
   });
 
