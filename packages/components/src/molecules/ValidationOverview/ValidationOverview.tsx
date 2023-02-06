@@ -1,8 +1,8 @@
 import {SearchInput} from '@/atoms';
 import {Colors} from '@/styles/Colors';
-import {CloseOutlined, FilterOutlined} from '@ant-design/icons';
+import {CloseOutlined} from '@ant-design/icons';
 import {getRuleForResult} from '@monokle/validation';
-import {Button, Collapse, Select} from 'antd';
+import {Collapse, Select} from 'antd';
 import {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {CollapseItemRow} from './CollapseItemRow';
@@ -52,7 +52,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           }}
         />
 
-        <FiltersButton icon={<FilterOutlined />} />
+        {/* <FiltersButton icon={<FilterOutlined />} /> */}
       </ActionsContainer>
 
       <ActionsContainer $secondary>
@@ -143,7 +143,7 @@ export default ValidationOverview;
 const ActionsContainer = styled.div<{$secondary?: boolean}>`
   display: grid;
   grid-template-columns: ${({$secondary}) => ($secondary ? 'max-content max-content' : '1fr max-content')};
-  grid-gap: 16px;
+  /* grid-gap: 16px; */
 
   ${({$secondary}) => {
     if ($secondary) {
@@ -164,17 +164,17 @@ const CloseIcon = styled(CloseOutlined)`
   }
 `;
 
-const FiltersButton = styled(Button)`
-  background-color: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: ${Colors.blue7};
-  border-radius: 4px;
+// const FiltersButton = styled(Button)`
+//   background-color: rgba(255, 255, 255, 0.1);
+//   border: none;
+//   color: ${Colors.blue7};
+//   border-radius: 4px;
 
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.07);
-    color: ${Colors.blue7};
-  }
-`;
+//   &:hover {
+//     background-color: rgba(255, 255, 255, 0.07);
+//     color: ${Colors.blue7};
+//   }
+// `;
 
 const MainContainer = styled.div<{$height?: number}>`
   background-color: #191f21;
