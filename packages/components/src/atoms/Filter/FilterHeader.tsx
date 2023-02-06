@@ -4,9 +4,10 @@ import styled from 'styled-components';
 
 type Props = {
   onClear?: () => void;
+  filterActions?: JSX.Element;
 };
 
-export function FilterHeader({onClear}: Props) {
+export function FilterHeader({onClear, filterActions}: Props) {
   return (
     <Box>
       <Left>
@@ -15,6 +16,7 @@ export function FilterHeader({onClear}: Props) {
       </Left>
 
       <Right>
+        {filterActions}
         {onClear && (
           <IconBox onClick={onClear}>
             <ClearIcon />
