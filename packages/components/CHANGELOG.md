@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.7.3
+
+### Patch Changes
+
+- 8edafa3: pass FilterButton as optional prop
+
 ## 0.7.2
 
 ### Patch Changes
