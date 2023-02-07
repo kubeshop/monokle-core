@@ -1,12 +1,22 @@
-const Compare: React.FC = ({ width, height }: { width?: number; height?: number }) => {
-  const iconWidth = width || "16";
-  const iconHeight = height || "16";
+const Compare: React.FC = ({width, height}: {width?: number; height?: number}) => {
+  const iconWidth = width || '18';
+  const iconHeight = height || '18';
 
   return (
-    <svg width={iconWidth} height={iconHeight} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={iconWidth} height={iconHeight} viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M14.75 2.375H9.125V1.25C9.125 0.951631 9.00647 0.665483 8.7955 0.454505C8.58452 0.243526 8.29837 0.125 8 0.125H1.25C0.951631 0.125 0.665483 0.243526 0.454505 0.454505C0.243526 0.665483 0.125 0.951631 0.125 1.25V12.5C0.125 12.7984 0.243526 13.0845 0.454505 13.2955C0.665483 13.5065 0.951631 13.625 1.25 13.625H6.875V14.75C6.875 15.0484 6.99353 15.3345 7.2045 15.5455C7.41548 15.7565 7.70163 15.875 8 15.875H14.75C15.0484 15.875 15.3345 15.7565 15.5455 15.5455C15.7565 15.3345 15.875 15.0484 15.875 14.75V3.5C15.875 3.20163 15.7565 2.91548 15.5455 2.7045C15.3345 2.49353 15.0484 2.375 14.75 2.375ZM1.25 7.4375H4.72062L3.26938 8.89437L4.0625 9.6875L6.875 6.875L4.0625 4.0625L3.26938 4.85563L4.72062 6.3125H1.25V1.25H8V12.5H1.25V7.4375ZM8 14.75V13.625C8.29837 13.625 8.58452 13.5065 8.7955 13.2955C9.00647 13.0845 9.125 12.7984 9.125 12.5V3.5H14.75V8.5625H11.2794L12.7306 7.10563L11.9375 6.3125L9.125 9.125L11.9375 11.9375L12.7306 11.1444L11.2794 9.6875H14.75V14.75H8Z"
-        fill="currentColor"
+        d="M2.25 12.75L4.5 10.5M14.25 12.75H2.25H14.25ZM2.25 12.75L4.5 15L2.25 12.75Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15.75 5.25L13.5 7.5M3.75 5.25H15.75H3.75ZM15.75 5.25L13.5 3L15.75 5.25Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

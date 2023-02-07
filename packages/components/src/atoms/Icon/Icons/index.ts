@@ -34,3 +34,4 @@ export {default as ValidationResourceLinks} from './ValidationResourceLinks';
 export {default as ValidationYamlSyntax} from './ValidationYamlSyntax';
 export {default as Warning} from './Warning';
 export {default as YAMLSyntax} from './YAMLSyntax';
+export {default as Document} from './Document';
