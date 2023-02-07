@@ -3,7 +3,7 @@ import {AnimatePresence, motion} from 'framer-motion';
 import styled from 'styled-components';
 import {SearchOutlined} from '@ant-design/icons';
 
-import {PropsWithChildren, useEffect, useState} from 'react';
+import {PropsWithChildren, ReactNode, useEffect, useState} from 'react';
 import useDebouncedEffect from 'use-debounced-effect';
 import {FILTER_HEADER_HEIGHT} from '@/constants';
 import {FilterButton} from './FilterButton';
@@ -21,6 +21,7 @@ type Props = PropsWithChildren<{
   disabled?: boolean;
   onSearch?: (search: string) => void;
   hasActiveFilters?: boolean;
+  filterButton?: ReactNode;
 }>;
 
 // eslint-disable-next-line
@@ -37,6 +38,7 @@ export function Filter({
   disabled,
   children,
   hasActiveFilters,
+  filterButton,
 }: Props) {
   const [internalSearch, setInternalSearch] = useState<string>(search ?? '');
 
@@ -68,7 +70,11 @@ export function Filter({
 
         {Boolean(children) && (
           <ButtonBox>
-            <FilterButton disabled={disabled} active={active} iconHighlight={hasActiveFilters} onClick={onToggle} />
+            {filterButton ? (
+              filterButton
+            ) : (
+              <FilterButton disabled={disabled} active={active} iconHighlight={hasActiveFilters} onClick={onToggle} />
+            )}
           </ButtonBox>
         )}
       </Header>
