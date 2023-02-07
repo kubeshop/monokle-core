@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.0
+
+### Minor Changes
+
+- 31fffca: Add ValidationPopover
+
 ## 0.7.5
 
 ### Patch Changes
