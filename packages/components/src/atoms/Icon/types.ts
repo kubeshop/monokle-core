@@ -20,6 +20,8 @@ export type IconNames =
   | 'error'
   | 'validation'
   | 'open-policy-agent'
+  | 'problem-icon'
+  | 'problem-split'
   | 'severity-high'
   | 'severity-medium'
   | 'severity-low'

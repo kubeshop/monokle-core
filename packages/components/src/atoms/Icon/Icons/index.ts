@@ -17,6 +17,8 @@ export {default as IncomingRefs} from './IncomingRefs';
 export {default as OPAStatus} from './OPAStatus';
 export {default as OpenPolicyAgent} from './OpenPolicyAgent';
 export {default as OutgoingRefs} from './OutgoingRefs';
+export {default as ProblemIcon} from './ProblemIcon';
+export {default as ProblemSplit} from './ProblemSplit';
 export {default as ResourceLinks} from './ResourceLinks';
 export {default as Search} from './Search';
 export {default as SeverityHigh} from './SeverityHigh';
