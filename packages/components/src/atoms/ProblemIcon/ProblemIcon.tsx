@@ -1,13 +1,14 @@
 import {Colors} from '@/styles/Colors';
 import {Icon} from '../Icon';
 
-type ProblemIconType = {
+export type ProblemIconType = {
   disabled?: boolean;
   level?: 'both' | 'error' | 'warning' | 'none';
+  style?: React.CSSProperties;
 };
 
 const ProblemIcon: React.FC<ProblemIconType> = props => {
-  const {disabled, level} = props;
+  const {disabled, level, style = {}} = props;
 
   return (
     <Icon
@@ -20,6 +21,8 @@ const ProblemIcon: React.FC<ProblemIconType> = props => {
           : level === 'warning'
           ? Colors.yellowWarning
           : '#242424',
+        fontSize: '8px',
+        ...style,
       }}
     />
   );
