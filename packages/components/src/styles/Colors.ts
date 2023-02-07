@@ -34,7 +34,7 @@ export enum Colors {
   greenOkayCompliment = '#B2DFD3',
   okayBg = '#6ABE3933',
 
-  yellowWarning = '#ffe17f',
+  yellowWarning = '#E8B339',
   yellowWarningCompliment = '#FFF3CA',
   yellow5 = '#F3CC62',
   yellow6 = '#D8BD14',
@@ -49,7 +49,7 @@ export enum Colors {
   magenta7 = '#E0529C',
   magenta8 = '#F37FB7',
 
-  redError = '#e65a6d',
+  redError = '#E84749',
   redErrorCompliment = '#F4BAB8',
   red6 = '#D32029',
   red7 = '#E84749', // Dust Red
