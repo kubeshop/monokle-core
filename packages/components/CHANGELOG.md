@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.7.4
+
+### Patch Changes
+
+- 5c0814a: Add ProblemIcon
+
 ## 0.7.3
 
 ### Patch Changes
