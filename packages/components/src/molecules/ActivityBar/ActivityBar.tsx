@@ -57,7 +57,7 @@ export default ActivityBar;
 // Styled Components
 
 const BarBox = styled.div<{$isActive: boolean}>`
-  background-color: ${({$isActive: activitySelected}) => (activitySelected ? Colors.blackPure : Colors.grey10)};
+  background-color: ${({$isActive: activitySelected}) => (activitySelected ? 'inherit' : Colors.grey10)};
   height: 100%;
   width: 50px;
   display: flex;
