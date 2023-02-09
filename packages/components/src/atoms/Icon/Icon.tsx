@@ -42,6 +42,7 @@ import {
   Warning,
   YAMLSyntax,
   ValidationResourceLinks,
+  PullRequest,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -77,6 +78,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   outgoingRefs: OutgoingRefs,
   'problem-icon': ProblemIcon,
   'problem-split': ProblemSplit,
+  'pull-request': PullRequest,
   'resource-links': ResourceLinks,
   search: Search,
   'severity-high': SeverityHigh,
