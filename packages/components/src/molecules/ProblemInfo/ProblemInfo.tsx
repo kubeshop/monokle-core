@@ -87,7 +87,7 @@ const ProblemInfoContainer = styled.div`
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.05);
   width: 100%;
-  max-height: 320px;
+  max-height: 330px;
   overflow-y: auto;
 `;
 
