@@ -47,7 +47,7 @@ const ItemBox = styled.div<{
   $isVisible: boolean;
 }>`
   background-color: ${({$isSelected, $isActive}) =>
-    $isSelected ? Colors.grey10 : $isActive ? Colors.blackPure : Colors.grey10};
+    $isSelected ? Colors.grey10 : $isActive ? 'inherit' : Colors.grey10};
   display: ${({$isVisible}) => ($isVisible ? 'flex' : 'none')};
   align-items: center;
   justify-content: center;
