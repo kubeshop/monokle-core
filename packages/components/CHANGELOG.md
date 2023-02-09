@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.2
+
+### Patch Changes
+
+- 2d984de: Increase max-height of ProblemInfo
+
 ## 0.8.1
 
 ### Patch Changes
