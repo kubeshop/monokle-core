@@ -70,6 +70,14 @@ it("should support relative folder paths in kustomizations", async () => {
   expect(hasErrors).toBe(16);
 });
 
+it("should support patches and additionalValuesFiles", async () => {
+  const {response} = await processResourcesInFolder("src/__tests__/resources/kustomize-5.0.0-patches-and-values-files");
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toBe(2);
+});
+
+
 it("should be flexible to configure", async () => {
   const parser = new ResourceParser();
 

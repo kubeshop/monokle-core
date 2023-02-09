@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+patches:
+  - path: patches/existing-patch.yaml
+  - path: patches/missing-patch.yaml
+
+helmCharts:
+  - name: testChart
+    additionalValuesFiles:
+      - valuesFiles/existing-values.yaml
+      - valuesFiles/missing-values.yaml
