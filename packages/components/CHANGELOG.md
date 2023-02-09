@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.1
+
+### Patch Changes
+
+- 50972d8: add pull-request icon
+
 ## 0.8.0
 
 ### Minor Changes
