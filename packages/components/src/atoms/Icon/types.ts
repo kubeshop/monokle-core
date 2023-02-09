@@ -22,6 +22,7 @@ export type IconNames =
   | 'open-policy-agent'
   | 'problem-icon'
   | 'problem-split'
+  | 'pull-request'
   | 'severity-high'
   | 'severity-medium'
   | 'severity-low'
