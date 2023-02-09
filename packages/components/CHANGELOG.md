@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.3
+
+### Patch Changes
+
+- 68610d6: activitybar buttons inhrits color from parent
+
 ## 0.8.2
 
 ### Patch Changes
