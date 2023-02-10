@@ -11,14 +11,15 @@ import {
   TreeNavigatorCustomization,
   TreeNavigatorRendererComponent,
 } from "../types";
-import { AppDispatch } from "../types/appDispatch";
+import { RootDispatch } from "../types/rootDispatch";
+import { RootState } from "../types/rootState";
 import { createTreeNavigatorListener, createTreeNavigatorSectionListener } from "./listeners";
 
 const treeNavigatorMap: Record<string, ITreeNavigator> = {};
 
 let startListening: StartListening | undefined = undefined;
 let stopListening: StopListening | undefined = undefined;
-let dispatch: AppDispatch | undefined = undefined;
+let dispatch: RootDispatch | undefined = undefined;
 
 const makeNotFoundError = (id: string) => new Error(`Couldn't find section with id ${id}`);
 
@@ -26,7 +27,7 @@ export const getTreeNavigatorReducer = () => {
   return { treeNavigator: treeNavigatorSlice.reducer };
 };
 
-export const setupTreeNavigators = (props: {
+export const setupTreeNavigators = <AppDispatch extends RootDispatch = RootDispatch>(props: {
   startListening: StartListening;
   stopListening: StopListening;
   dispatch: AppDispatch;
@@ -124,8 +125,8 @@ export class TreeNavigator implements ITreeNavigator {
     stopListening(listener);
   }
 
-  registerSection(id: string, sectionBuilder: SectionBuilder<any>) {
-    const sectionBlueprint: SectionBlueprint<any> = {
+  registerSection<State extends RootState>(id: string, sectionBuilder: SectionBuilder<State, any>) {
+    const sectionBlueprint: SectionBlueprint<State, any> = {
       ...sectionBuilder,
       id,
       childSectionIds: [],
