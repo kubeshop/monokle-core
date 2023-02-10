@@ -1,3 +1,4 @@
+import {ProblemIcon} from '@/atoms';
 import {Colors} from '@/styles/Colors';
 import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {useMemo} from 'react';
@@ -42,7 +43,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
             {result.locations[0].physicalLocation?.region?.startLine}
           </ProblemStartLine>
 
-          <ErrorWarningCircle $type={result.level ?? 'error'} />
+          <ProblemIcon level={result.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
           <MessageText>{result.message.text}</MessageText>
         </>
       )}
@@ -51,16 +52,6 @@ export const CollapseItemRow: React.FC<IProps> = props => {
 };
 
 // Styled Components
-
-const ErrorWarningCircle = styled.div<{$type: 'error' | 'warning'}>`
-  background-color: ${({$type}) => ($type === 'error' ? Colors.red7 : '#E8B339')};
-  border-radius: 50%;
-  width: 10px;
-  min-width: 10px;
-  height: 10px;
-  min-height: 10px;
-  margin-right: -8px;
-`;
 
 const MessageText = styled.div`
   // TODO: add ellipsis for text-overflow without breaking the resizing of panes
