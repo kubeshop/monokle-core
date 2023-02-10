@@ -1,4 +1,4 @@
-import { AppDispatch } from "./appDispatch";
+import { RootDispatch } from "./rootDispatch";
 import { ItemCustomization, RowBuilder, SectionCustomization } from "./customization";
 import { ItemInstance, SectionInstance } from "./instance";
 import { RootState } from "./rootState";
@@ -23,8 +23,8 @@ export interface ItemsBuilder<ScopeType> {
   options?: {};
   customization?: ItemCustomization;
   events?: {
-    onClick?: (itemInstance: ItemInstance, dispatch: AppDispatch) => void;
-    onCheck?: (itemInstance: ItemInstance, dispatch: AppDispatch) => void;
+    onClick?: (itemInstance: ItemInstance, dispatch: RootDispatch) => void;
+    onCheck?: (itemInstance: ItemInstance, dispatch: RootDispatch) => void;
   };
 }
 
@@ -39,8 +39,8 @@ export interface SectionBuildResult {
   };
 }
 
-export interface SectionBuilder<ScopeType> {
-  scope: (state: RootState) => ScopeType; // TODO: should we allow this to be optional and an object of type ScopeType as well?
+export interface SectionBuilder<State extends RootState, ScopeType> {
+  scope: (state: State) => ScopeType; // TODO: should we allow this to be optional and an object of type ScopeType as well?
   build: SectionBuildResult | ((scope: ScopeType, itemInstances: ItemInstance[]) => SectionBuildResult);
   row?: RowBuilder<SectionInstance>;
   options?: {
@@ -49,13 +49,13 @@ export interface SectionBuilder<ScopeType> {
   };
   customization?: SectionCustomization;
   events?: {
-    onClick?: (sectionInstance: SectionInstance, dispatch: AppDispatch) => void;
-    onCheck?: (sectionInstance: SectionInstance, dispatch: AppDispatch) => void;
+    onClick?: (sectionInstance: SectionInstance, dispatch: RootDispatch) => void;
+    onCheck?: (sectionInstance: SectionInstance, dispatch: RootDispatch) => void;
   };
   items?: ItemsBuilder<ScopeType>;
 }
 
-export interface SectionBlueprint<ScopeType = any> extends SectionBuilder<ScopeType> {
+export interface SectionBlueprint<State extends RootState, ScopeType = any> extends SectionBuilder<State, ScopeType> {
   id: string;
   childSectionIds: string[];
 }

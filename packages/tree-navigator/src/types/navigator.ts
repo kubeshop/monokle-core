@@ -1,5 +1,6 @@
 import { SectionBlueprint, SectionBuilder } from "./blueprint";
 import { ItemInstance, SectionInstance } from "./instance";
+import { RootState } from "./rootState";
 
 export type TreeNavigatorRowSection = {
   type: "section";
@@ -54,6 +55,6 @@ export interface ITreeNavigator {
   getCustomization(): TreeNavigatorCustomization | undefined;
   getSectionBlueprint(sectionId: string): SectionBlueprint<any> | undefined;
   isRootSection(sectionId: string): boolean;
-  registerSection<ScopeType>(id: string, builder: SectionBuilder<ScopeType>): void;
+  registerSection<State extends RootState, ScopeType>(id: string, builder: SectionBuilder<State, ScopeType>): void;
   unregisterSection(sectionId: string): void;
 }

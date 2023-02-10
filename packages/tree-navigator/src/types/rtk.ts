@@ -12,5 +12,12 @@ export type RtkListener = {
   effect: ListenerEffect<AnyAction, RootState, Dispatch<AnyAction>>;
 };
 
-export type StartListening = TypedStartListening<RootState, Dispatch<AnyAction>>;
-export type StopListening = TypedStopListening<RootState, Dispatch<AnyAction>>;
+export type StartListening<
+  AppState extends RootState = RootState,
+  AppDispatch extends Dispatch<AnyAction> = Dispatch<AnyAction>
+> = TypedStartListening<AppState, AppDispatch>;
+
+export type StopListening<
+  AppState extends RootState = RootState,
+  AppDispatch extends Dispatch<AnyAction> = Dispatch<AnyAction>
+> = TypedStopListening<AppState, AppDispatch>;
