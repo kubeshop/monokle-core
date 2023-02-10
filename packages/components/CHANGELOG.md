@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.5
+
+### Patch Changes
+
+- bcec250: Use ProblemIcon in CollapseItemRow
+
 ## 0.8.4
 
 ### Patch Changes
