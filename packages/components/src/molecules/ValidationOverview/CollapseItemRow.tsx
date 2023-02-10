@@ -50,9 +50,12 @@ export const CollapseItemRow: React.FC<IProps> = props => {
             )}
           </div>
 
-          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="File line">
+          <Tooltip
+            mouseEnterDelay={TOOLTIP_DELAY}
+            title={showByFilterValue === 'show-by-file' ? 'File content line' : 'Resource content line'}
+          >
             <ProblemStartLine $isSelected={isSelected}>
-              {result.locations[0].physicalLocation?.region?.startLine}
+              {result.locations[showByFilterValue === 'show-by-file' ? 0 : 1].physicalLocation?.region?.startLine}
             </ProblemStartLine>
           </Tooltip>
 
