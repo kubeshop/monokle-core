@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.6
+
+### Patch Changes
+
+- 8e08df3: Add tooltips for validation overview
+
 ## 0.8.5
 
 ### Patch Changes
