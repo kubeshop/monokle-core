@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 import SectionRenderer from "../SectionRenderer";
@@ -19,7 +19,7 @@ type TreeNavigatorRendererProps = {
 function TreeNavigatorRenderer(props: TreeNavigatorRendererProps) {
   const { treeNavigator, height } = props;
 
-  const [lastScrollIndex, setLastScrollIndex] = useState<number>(-1);
+  const lastScrollIndexRef = useRef(-1);
 
   const isTreeNavigatorInitialized = true; // TODO: check if the root section instance is initialized
 
@@ -49,16 +49,14 @@ function TreeNavigatorRenderer(props: TreeNavigatorRendererProps) {
   useLayoutEffect(() => {
     if (
       rowIndexToScroll &&
-      rowIndexToScroll !== lastScrollIndex &&
+      rowIndexToScroll !== lastScrollIndexRef.current &&
       !getVirtualItems().some((item) => item.index === rowIndexToScroll)
     ) {
       scrollToIndex(rowIndexToScroll, { align: "center" });
     }
     // we need to set the last index that we scrolled to so we don't end up scrolling to the row unintentionally
-    setLastScrollIndex(rowIndexToScroll || -1);
-    // disabled the below eslint rule because it was causing too many re-renders
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowIndexToScroll, getVirtualItems, lastScrollIndex]);
+    lastScrollIndexRef.current = rowIndexToScroll ?? -1;
+  }, [rowIndexToScroll, getVirtualItems]);
 
   if (!isTreeNavigatorInitialized && treeNavigator.getCustomization()?.beforeInitializationText) {
     return (

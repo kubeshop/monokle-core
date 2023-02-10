@@ -16,7 +16,7 @@
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.2",
     "redux-logger": "^3.0.6",
-    "@monokle/tree-navigator": "file:../"
+    "@monokle/tree-navigator": "*"
   },
   "devDependencies": {
     "@types/react": "^18.0.15",
