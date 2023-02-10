@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export type ResizableColumnsPanelLayout = {
   left?: number;
@@ -11,7 +11,7 @@ export type ResizableRowsPanelLayout = {
   bottom?: number;
 };
 
-export type OnStopResize = (position: "left" | "center" | "right", flex: number) => void;
+export type OnStopResize = (position: 'left' | 'center' | 'right', flex: number) => void;
 
 export type ResizableColumnsPanelType = {
   right: React.ReactNode;
@@ -21,6 +21,7 @@ export type ResizableColumnsPanelType = {
   left?: React.ReactNode;
   leftClosable?: boolean;
   minPaneWidth?: number;
+  paneCloseIconStyle?: React.CSSProperties;
   width?: number;
   onCloseLeftPane?: () => void;
   onStopResize?: OnStopResize;
@@ -37,5 +38,5 @@ export type ResizableRowsPanelType = {
   bottomElementStyle?: React.CSSProperties;
   bottomPaneMinSize?: number;
   bottomPaneMaxSize?: number;
-  onStopResize?: (position: "top" | "bottom", flex: number) => void;
+  onStopResize?: (position: 'top' | 'bottom', flex: number) => void;
 };
