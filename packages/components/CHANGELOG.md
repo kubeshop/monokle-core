@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.4
+
+### Patch Changes
+
+- f97a624: Add paneCloseIconStyle prop
+
 ## 0.8.3
 
 ### Patch Changes
