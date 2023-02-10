@@ -160,3 +160,7 @@ export const getFullyQualifiedName = (problem: ValidationResult) =>
 
 export const getItemRowId = (problem: ValidationResult, index: number) =>
   `${problem.ruleId}-${problem.message.text}-${problem.locations[0].physicalLocation?.region?.startLine}-${problem.locations[0].physicalLocation?.artifactLocation.uri}-${index}`;
+
+export const uppercaseFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};

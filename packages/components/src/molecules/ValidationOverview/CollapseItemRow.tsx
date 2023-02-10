@@ -1,11 +1,13 @@
 import {ProblemIcon} from '@/atoms';
+import {TOOLTIP_DELAY} from '@/constants';
 import {Colors} from '@/styles/Colors';
 import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
+import {Tooltip} from 'antd';
 import {useMemo} from 'react';
 import styled from 'styled-components';
 import {iconMap} from './constants';
 import {ShowByFilterOptionType} from './types';
-import {isProblemSelected, renderSeverityIcon} from './utils';
+import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './utils';
 
 type IProps = {
   result: ValidationResult;
@@ -27,21 +29,32 @@ export const CollapseItemRow: React.FC<IProps> = props => {
     <Row $isSelected={isSelected} $secondary={showByFilterValue === 'show-by-rule'} onClick={onClick}>
       {showByFilterValue === 'show-by-rule' ? (
         <>
-          <ProblemStartLine $isSelected={isSelected}>
-            {result.locations[0].physicalLocation?.region?.startLine}
-          </ProblemStartLine>
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="File line">
+            <ProblemStartLine $isSelected={isSelected}>
+              {result.locations[0].physicalLocation?.region?.startLine}
+            </ProblemStartLine>
+          </Tooltip>
           <MessageText>{getFileLocation(result).physicalLocation?.artifactLocation.uri}</MessageText>
         </>
       ) : (
         <>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-            {iconMap[result.rule.toolComponent.name]}
-            {rule && renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, isSelected)}
+            <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={uppercaseFirstLetter(result.rule.toolComponent.name)}>
+              {iconMap[result.rule.toolComponent.name]}
+            </Tooltip>
+
+            {rule && (
+              <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Severity">
+                {renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, isSelected)}
+              </Tooltip>
+            )}
           </div>
 
-          <ProblemStartLine $isSelected={isSelected}>
-            {result.locations[0].physicalLocation?.region?.startLine}
-          </ProblemStartLine>
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="File line">
+            <ProblemStartLine $isSelected={isSelected}>
+              {result.locations[0].physicalLocation?.region?.startLine}
+            </ProblemStartLine>
+          </Tooltip>
 
           <ProblemIcon level={result.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
           <MessageText>{result.message.text}</MessageText>
