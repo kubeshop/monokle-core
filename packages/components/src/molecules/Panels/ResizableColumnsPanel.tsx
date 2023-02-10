@@ -1,10 +1,5 @@
 import {useCallback} from 'react';
-import {
-  ReflexContainer,
-  ReflexElement,
-  ReflexSplitter,
-  HandlerProps,
-} from 'react-reflex';
+import {ReflexContainer, ReflexElement, ReflexSplitter, HandlerProps} from 'react-reflex';
 import styled from 'styled-components';
 
 import {Colors} from '@/styles/Colors';
@@ -14,39 +9,15 @@ import {PaneCloseIcon} from '@/atoms';
 import {LAYOUT} from '@/constants';
 
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
-  const {
-    center,
-    layout,
-    left,
-    right,
-    height = '100%',
-    width = '100%',
-    minPaneWidth = 350,
-  } = props;
-  const {
-    leftClosable = false,
-    onCloseLeftPane = () => {},
-    onStopResize = () => {},
-  } = props;
+  const {center, layout, left, right, height = '100%', width = '100%', minPaneWidth = 350} = props;
+  const {leftClosable = false, onCloseLeftPane = () => {}, onStopResize = () => {}, paneCloseIconStyle = {}} = props;
 
-  const onStopResizeLeft = useCallback(makeOnStopResize('left', onStopResize), [
-    onStopResize,
-  ]);
-  const onStopResizeCenter = useCallback(
-    makeOnStopResize('center', onStopResize),
-    [onStopResize]
-  );
-  const onStopResizeRight = useCallback(
-    makeOnStopResize('right', onStopResize),
-    [onStopResize]
-  );
+  const onStopResizeLeft = useCallback(makeOnStopResize('left', onStopResize), [onStopResize]);
+  const onStopResizeCenter = useCallback(makeOnStopResize('center', onStopResize), [onStopResize]);
+  const onStopResizeRight = useCallback(makeOnStopResize('right', onStopResize), [onStopResize]);
 
   return (
-    <ReflexContainer
-      orientation="vertical"
-      windowResizeAware
-      style={{height, width}}
-    >
+    <ReflexContainer orientation="vertical" windowResizeAware style={{height, width}}>
       {left && (
         <StyledLeftReflexElement
           $leftClosable={leftClosable}
@@ -64,6 +35,7 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
                   top: 20,
                   right: -10,
                   zIndex: LAYOUT.zIndex.low,
+                  ...paneCloseIconStyle,
                 }}
               />
             )}
@@ -71,9 +43,7 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
         </StyledLeftReflexElement>
       )}
 
-      {left && (
-        <ReflexSplitter propagate style={{backgroundColor: Colors.grey10}} />
-      )}
+      {left && <ReflexSplitter propagate style={{backgroundColor: Colors.grey10}} />}
 
       {center && (
         <ReflexElement
@@ -127,10 +97,7 @@ const StyledLeftReflexElement = styled(ReflexElement)<{$leftClosable: boolean}>`
 
 // Utils
 
-const makeOnStopResize = (
-  position: 'left' | 'center' | 'right',
-  onStopResize: OnStopResize
-) => {
+const makeOnStopResize = (position: 'left' | 'center' | 'right', onStopResize: OnStopResize) => {
   return (args: HandlerProps) => {
     const flex = args.component.props.flex;
 
