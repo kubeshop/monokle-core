@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.7
+
+### Patch Changes
+
+- c212d46: Add flex layout bottom
+
 ## 0.8.6
 
 ### Patch Changes
