@@ -14,7 +14,7 @@ import {getItemRowId} from './utils';
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {containerClassName = '', containerStyle = {}, height, selectedProblem} = props;
+  const {containerClassName = '', containerStyle = {}, height, width, selectedProblem} = props;
   const {customMessage, newProblemsIntroducedType, validationResponse, onProblemSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
@@ -43,7 +43,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   }, [problems]);
 
   return (
-    <MainContainer style={containerStyle} $height={height} className={containerClassName}>
+    <MainContainer style={containerStyle} $height={height} $width={width} className={containerClassName}>
       <ActionsContainer>
         <SearchInput
           value={searchValue}
@@ -176,10 +176,10 @@ const CloseIcon = styled(CloseOutlined)`
 //   }
 // `;
 
-const MainContainer = styled.div<{$height?: number}>`
+const MainContainer = styled.div<{$height?: number; $width?: number}>`
   background-color: #191f21;
   height: ${({$height}) => ($height ? `${$height}px` : '100%')};
-  width: 100%;
+  width: ${({$width}) => ($width ? `${$width}px` : '100%')};
 `;
 
 const NewErrorsMessage = styled.div`
