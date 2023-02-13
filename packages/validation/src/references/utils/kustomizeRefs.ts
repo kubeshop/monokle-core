@@ -145,8 +145,8 @@ function extractPatches(
   patchPath: string,
   parser: ResourceParser
 ) {
-  let strategicMergePatches = getScalarNodes(kustomization, patchPath, parser);
-  strategicMergePatches
+  let patchPaths = getScalarNodes(kustomization, patchPath, parser);
+  patchPaths
     .filter((refNode) => refNode.node.type === "PLAIN")
     .filter(refNode => !isExternalResourceRef(refNode))
     .forEach((refNode: NodeWrapper) => {
@@ -192,13 +192,6 @@ export function processKustomizations(
 ) {
   resources
     .filter((r) => isKustomizationResource(r))
-    .filter(
-      (k) =>
-        k.content.resources ||
-        k.content.bases ||
-        k.content.patchesStrategicMerge ||
-        k.content.patchesJson6902
-    )
     .forEach((kustomization) => {
       let resourceNodes = getScalarNodes(kustomization, "resources", parser);
       if (kustomization.content.bases) {
@@ -235,6 +228,29 @@ export function processKustomizations(
           "patchesJson6902:path",
           parser
         );
+      }
+      if (kustomization.content.patches) {
+        extractPatches(
+          kustomization,
+          files,
+          resources,
+          "patches:path",
+          parser
+        );
+      }
+
+      // extract refs to additional helm values files introduced in Kustomize 5.0.0
+      if (kustomization.content.helmCharts) {
+        let valuesPaths = getScalarNodes(kustomization, "helmCharts:additionalValuesFiles", parser);
+        valuesPaths.filter((refNode) => refNode.node.type === "PLAIN")
+          .filter(refNode => !isExternalResourceRef(refNode))
+          .forEach((refNode: NodeWrapper) => {
+            let targetPath = path.join(
+              path.parse(kustomization.filePath).dir,
+              refNode.nodeValue()
+            );
+            createKustomizationFileRef(kustomization, refNode, targetPath, files);
+          });
       }
     });
 }
