@@ -1,13 +1,13 @@
-import { useCallback } from "react";
-import { HandlerProps, ReflexContainer, ReflexElement, ReflexSplitter } from "react-reflex";
-import { ResizableRowsPanelType } from "./types";
+import {useCallback} from 'react';
+import {HandlerProps, ReflexContainer, ReflexElement, ReflexSplitter} from 'react-reflex';
+import {ResizableRowsPanelType} from './types';
 
-const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = (props) => {
-  const { layout, height = "100%", width = "100%", top, bottom, onStopResize } = props;
-  const { bottomElementStyle = {}, splitterStyle = {}, topElementStyle = {} } = props;
-  const { bottomPaneMinSize = 200, bottomPaneMaxSize = 500 } = props;
+const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = props => {
+  const {layout, height = '100%', width = '100%', top, bottom, onStopResize} = props;
+  const {bottomElementStyle = {}, splitterStyle = {}, topElementStyle = {}} = props;
+  const {bottomPaneMinSize = 200, bottomPaneMaxSize = 500} = props;
 
-  const makeOnStopResize = useCallback((position: "top" | "bottom") => {
+  const makeOnStopResize = useCallback((position: 'top' | 'bottom') => {
     return (args: HandlerProps) => {
       const flex = args.component.props.flex;
 
@@ -18,8 +18,8 @@ const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = (props) => {
   }, []);
 
   return (
-    <ReflexContainer windowResizeAware style={{ height, width }}>
-      <ReflexElement flex={layout?.top} onStopResize={makeOnStopResize("top")} style={topElementStyle}>
+    <ReflexContainer windowResizeAware style={{height, width}}>
+      <ReflexElement flex={layout?.top} onStopResize={makeOnStopResize('top')} style={topElementStyle}>
         {top}
       </ReflexElement>
 
@@ -29,8 +29,9 @@ const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = (props) => {
         <ReflexElement
           minSize={bottomPaneMinSize}
           maxSize={bottomPaneMaxSize}
-          onStopResize={makeOnStopResize("bottom")}
+          onStopResize={makeOnStopResize('bottom')}
           style={bottomElementStyle}
+          flex={layout?.bottom}
         >
           {bottom}
         </ReflexElement>
