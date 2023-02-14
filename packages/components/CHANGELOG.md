@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.10
+
+### Patch Changes
+
+- 7a1b83d: validation by ruleID
+
 ## 0.8.9
 
 ### Patch Changes
