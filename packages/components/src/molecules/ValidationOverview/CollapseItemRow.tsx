@@ -60,7 +60,9 @@ export const CollapseItemRow: React.FC<IProps> = props => {
           </Tooltip>
 
           <ProblemIcon level={result.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
-          <MessageText>{result.message.text}</MessageText>
+          <MessageText>
+            <span>{result.message.text}</span>
+          </MessageText>
         </>
       )}
     </Row>
@@ -70,10 +72,22 @@ export const CollapseItemRow: React.FC<IProps> = props => {
 // Styled Components
 
 const MessageText = styled.div`
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 73%;
+  position: relative;
+  width: 100%;
+
+  &::before {
+    content: '&nbsp;';
+    visibility: hidden;
+  }
+
+  & span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 
 const ProblemStartLine = styled.div<{$isSelected: boolean}>`
