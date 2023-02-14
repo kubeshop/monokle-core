@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.9
+
+### Patch Changes
+
+- e7751ca: Refactor ellipsis solution
+
 ## 0.8.8
 
 ### Patch Changes
