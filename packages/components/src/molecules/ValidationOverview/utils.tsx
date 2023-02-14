@@ -100,7 +100,23 @@ export const filterBySearchValue = (problems: ProblemsType, searchValue: string)
   }
 
   return Object.fromEntries(
-    Object.entries(problems).filter(([filePath, _]) => filePath.toLowerCase().includes(searchValue.toLowerCase()))
+    Object.entries(problems || {})
+      .map(([filePath, validationResults]) => {
+        if (filePath.toLowerCase().includes(searchValue.toLowerCase())) {
+          return [filePath, validationResults];
+        }
+
+        const filteredValidationResults = validationResults.filter(el =>
+          el.ruleId.toLowerCase().includes(searchValue.toLowerCase())
+        );
+
+        if (filteredValidationResults.length > 0) {
+          return [filePath, filteredValidationResults];
+        }
+
+        return [];
+      })
+      .filter(el => el.length > 0)
   );
 };
 
