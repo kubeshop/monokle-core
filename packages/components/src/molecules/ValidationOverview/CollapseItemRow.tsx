@@ -70,10 +70,10 @@ export const CollapseItemRow: React.FC<IProps> = props => {
 // Styled Components
 
 const MessageText = styled.div`
-  // TODO: add ellipsis for text-overflow without breaking the resizing of panes
-  /* text-overflow: ellipsis;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden; */
+  overflow: hidden;
+  max-width: 73%;
 `;
 
 const ProblemStartLine = styled.div<{$isSelected: boolean}>`

@@ -8,6 +8,7 @@ export type ValidationOverviewType = {
   height?: number;
   newProblemsIntroducedType?: string;
   selectedProblem?: ValidationResult;
+  width?: number;
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
 };
 
