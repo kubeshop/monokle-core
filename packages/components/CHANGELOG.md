@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.12
+
+### Patch Changes
+
+- ada3f47: pass SearchInput as antd components
+
 ## 0.8.11
 
 ### Patch Changes
