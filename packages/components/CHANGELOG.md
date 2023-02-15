@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.11
+
+### Patch Changes
+
+- 347166e: Refactor font-size and some styling for ValidationOverview
+
 ## 0.8.10
 
 ### Patch Changes
