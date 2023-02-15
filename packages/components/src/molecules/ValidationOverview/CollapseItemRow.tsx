@@ -34,7 +34,9 @@ export const CollapseItemRow: React.FC<IProps> = props => {
               {result.locations[0].physicalLocation?.region?.startLine}
             </ProblemStartLine>
           </Tooltip>
-          <MessageText>{getFileLocation(result).physicalLocation?.artifactLocation.uri}</MessageText>
+          <MessageText>
+            <span>{getFileLocation(result).physicalLocation?.artifactLocation.uri}</span>
+          </MessageText>
         </>
       ) : (
         <>
@@ -74,6 +76,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
 const MessageText = styled.div`
   position: relative;
   width: 100%;
+  font-size: 13px;
 
   &::before {
     content: '&nbsp;';
@@ -94,6 +97,7 @@ const ProblemStartLine = styled.div<{$isSelected: boolean}>`
   color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
   font-weight: 400;
   min-width: 26px;
+  font-size: 13px;
 `;
 
 const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`
