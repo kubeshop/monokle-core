@@ -4,15 +4,11 @@ import {Input, InputProps} from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
-const SearchInput: React.FC<InputProps> = props => {
-  return <Search prefix={<SearchOutlined />} {...props} />;
-};
-
-export default SearchInput;
-
 // Styled components
 
-const Search = styled(Input)`
+const SearchInput = styled(Input).attrs({
+  prefix: <SearchOutlined />,
+})`
   border-radius: 4px;
   border: none;
   background-color: rgba(255, 255, 255, 0.1);
@@ -32,3 +28,5 @@ const Search = styled(Input)`
     color: ${Colors.grey8};
   }
 `;
+
+export default SearchInput;
