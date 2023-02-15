@@ -162,11 +162,11 @@ export const getResourceName = (problem: ValidationResult) => getResourceLocatio
 
 export const renderSeverityIcon = (severity: number, isSelected: boolean) => {
   if (severity < 4) {
-    return <Icon name="severity-low" style={{color: isSelected ? Colors.grey1 : Colors.green7}} />;
+    return <Icon name="severity-low" style={{color: isSelected ? Colors.grey1 : Colors.green7, fontSize: '13px'}} />;
   } else if (severity < 7) {
-    return <Icon name="severity-medium" style={{color: isSelected ? Colors.grey1 : Colors.red7}} />;
+    return <Icon name="severity-medium" style={{color: isSelected ? Colors.grey1 : Colors.red7, fontSize: '13px'}} />;
   } else {
-    return <Icon name="severity-high" style={{color: isSelected ? Colors.grey1 : Colors.red7}} />;
+    return <Icon name="severity-high" style={{color: isSelected ? Colors.grey1 : Colors.red7, fontSize: '13px'}} />;
   }
 };
 

@@ -229,6 +229,7 @@ const ValidationsCollapse = styled(Collapse)`
     color: ${Colors.grey8} !important;
     width: max-content;
     padding-left: 0px !important;
+    padding-bottom: 0px !important;
 
     &:first-child {
       padding-top: 0px;
@@ -236,6 +237,6 @@ const ValidationsCollapse = styled(Collapse)`
   }
 
   & .ant-collapse-content-box {
-    padding: 10px 0px 20px 0px !important;
+    padding: 10px 0px 15px 0px !important;
   }
 `;
