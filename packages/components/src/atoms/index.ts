@@ -8,3 +8,4 @@ export * from './PaneCloseIcon';
 export * from './ProblemIcon';
 export * from './SearchInput';
 export * from './Spinner';
+export * from './TextEllipsis';
