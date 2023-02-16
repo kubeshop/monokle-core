@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.8.13
+
+### Patch Changes
+
+- a63a369: Add TextEllipsis atom
+
 ## 0.8.12
 
 ### Patch Changes
