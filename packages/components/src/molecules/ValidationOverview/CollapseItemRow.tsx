@@ -1,4 +1,4 @@
-import {ProblemIcon} from '@/atoms';
+import {ProblemIcon, TextEllipsis} from '@/atoms';
 import {TOOLTIP_DELAY} from '@/constants';
 import {Colors} from '@/styles/Colors';
 import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
@@ -34,9 +34,10 @@ export const CollapseItemRow: React.FC<IProps> = props => {
               {result.locations[0].physicalLocation?.region?.startLine}
             </ProblemStartLine>
           </Tooltip>
-          <MessageText>
-            <span>{getFileLocation(result).physicalLocation?.artifactLocation.uri}</span>
-          </MessageText>
+          <TextEllipsis
+            style={{fontSize: '13px'}}
+            text={getFileLocation(result).physicalLocation?.artifactLocation.uri ?? ''}
+          />
         </>
       ) : (
         <>
@@ -62,9 +63,7 @@ export const CollapseItemRow: React.FC<IProps> = props => {
           </Tooltip>
 
           <ProblemIcon level={result.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
-          <MessageText>
-            <span>{result.message.text}</span>
-          </MessageText>
+          <TextEllipsis style={{fontSize: '13px'}} text={result.message.text} />
         </>
       )}
     </Row>
@@ -72,26 +71,6 @@ export const CollapseItemRow: React.FC<IProps> = props => {
 };
 
 // Styled Components
-
-const MessageText = styled.div`
-  position: relative;
-  width: 100%;
-  font-size: 13px;
-
-  &::before {
-    content: '&nbsp;';
-    visibility: hidden;
-  }
-
-  & span {
-    position: absolute;
-    left: 0;
-    right: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-`;
 
 const ProblemStartLine = styled.div<{$isSelected: boolean}>`
   color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
