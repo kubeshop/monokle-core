@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.9.0
+
+### Minor Changes
+
+- 16b7f72: Use TextEllipsis inside CollpaseItemRow
+
 ## 0.8.13
 
 ### Patch Changes
