@@ -223,6 +223,7 @@ const ShowNewErrorsButton = styled.span`
 const ValidationsCollapse = styled(Collapse)`
   max-height: calc(100% - 104px);
   overflow-y: auto;
+  overflow-x: hidden;
   margin-top: 24px;
 
   & .ant-collapse-header {
