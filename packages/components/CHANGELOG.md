@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.9.1
+
+### Patch Changes
+
+- 9af3e3e: Overflow-x hidden for ValidationOverview collapse
+
 ## 0.9.0
 
 ### Minor Changes
