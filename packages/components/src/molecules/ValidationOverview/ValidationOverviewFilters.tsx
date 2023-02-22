@@ -26,7 +26,6 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
           mode="multiple"
           value={filtersValue['tool-component']}
           onChange={value => onFiltersChange({...filtersValue, 'tool-component': value})}
-          allowClear
           placeholder="Select tool component"
         >
           <Select.Option key="open-policy-agent" value="open-policy-agent">

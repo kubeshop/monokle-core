@@ -127,7 +127,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           )}
         </>
       ) : (
-        <NoErrorsMessage>No errors found.</NoErrorsMessage>
+        <NoErrorsMessage>No problems found.</NoErrorsMessage>
       )}
     </MainContainer>
   );
@@ -214,12 +214,24 @@ const ValidationsCollapse = styled(Collapse)`
 
   & .ant-collapse-header {
     color: ${Colors.grey8} !important;
-    width: max-content;
     padding-left: 0px !important;
     padding-bottom: 0px !important;
 
     &:first-child {
       padding-top: 0px;
+    }
+
+    &-text {
+      display: flex;
+      width: calc(100% - 50px);
+      gap: 10px;
+      align-items: center;
+
+      & span:first-child {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
     }
   }
 

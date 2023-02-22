@@ -86,7 +86,7 @@ export function useFilteredProblems(
     }
 
     let currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
-    currentFilteredProblems = filterProblems(showingProblems, filtersValue);
+    currentFilteredProblems = filterProblems(currentFilteredProblems, filtersValue);
     setFilteredProblems(currentFilteredProblems);
   }, [problems, newProblems, showNewErrors, searchValue, filtersValue]);
 
