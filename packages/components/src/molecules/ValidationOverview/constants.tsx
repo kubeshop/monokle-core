@@ -1,5 +1,7 @@
 import {Icon} from '@/atoms';
 
+export const DEFAULT_FILTERS_VALUE = {'tool-component': undefined, type: undefined};
+
 export const iconMap: Record<string, JSX.Element> = {
   'kubernetes-schema': <Icon name="validation-k8s-schema" style={{fontSize: '13px'}} />,
   'open-policy-agent': <Icon name="validation-opa" style={{fontSize: '13px'}} />,

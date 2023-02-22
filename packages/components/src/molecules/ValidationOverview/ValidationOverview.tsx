@@ -1,4 +1,3 @@
-import {SearchInput} from '@/atoms';
 import {Colors} from '@/styles/Colors';
 import {CloseOutlined} from '@ant-design/icons';
 import {getRuleForResult} from '@monokle/validation';
@@ -6,25 +5,27 @@ import {Collapse, Select} from 'antd';
 import {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {CollapseItemRow} from './CollapseItemRow';
-import {newErrorsTextMap, showByFilterOptions} from './constants';
+import {DEFAULT_FILTERS_VALUE, newErrorsTextMap, showByFilterOptions} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
-import {ShowByFilterOptionType, ValidationOverviewType} from './types';
+import {FiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
 import {getItemRowId} from './utils';
 
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
+import ValidationOverviewFilters from './ValidationOverviewFilters';
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {containerClassName = '', containerStyle = {}, height, width, selectedProblem} = props;
   const {customMessage, newProblemsIntroducedType, validationResponse, onProblemSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
   const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>('show-by-file');
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
   const {newProblems, problems} = useCurrentAndNewProblems(showByFilterValue, validationResponse);
-  const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue);
+  const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue, filtersValue);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -44,16 +45,12 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
   return (
     <MainContainer style={containerStyle} $height={height} $width={width} className={containerClassName}>
-      <ActionsContainer>
-        <SearchInput
-          value={searchValue}
-          onChange={e => {
-            setSearchValue(e.target.value);
-          }}
-        />
-
-        {/* <FiltersButton icon={<FilterOutlined />} /> */}
-      </ActionsContainer>
+      <ValidationOverviewFilters
+        filtersValue={filtersValue}
+        searchValue={searchValue}
+        onFiltersChange={filters => setFiltersValue(filters)}
+        onSearch={value => setSearchValue(value)}
+      />
 
       <ActionsContainer $secondary>
         {Object.keys(newProblems.data).length && showNewErrorsMessage && newProblemsIntroducedType !== 'initial' ? (
@@ -130,7 +127,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           )}
         </>
       ) : (
-        <NoErrorsMessage>No errors found.</NoErrorsMessage>
+        <NoErrorsMessage>No problems found.</NoErrorsMessage>
       )}
     </MainContainer>
   );
@@ -164,22 +161,12 @@ const CloseIcon = styled(CloseOutlined)`
   }
 `;
 
-// const FiltersButton = styled(Button)`
-//   background-color: rgba(255, 255, 255, 0.1);
-//   border: none;
-//   color: ${Colors.blue7};
-//   border-radius: 4px;
-
-//   &:hover {
-//     background-color: rgba(255, 255, 255, 0.07);
-//     color: ${Colors.blue7};
-//   }
-// `;
-
 const MainContainer = styled.div<{$height?: number; $width?: number}>`
   background-color: #191f21;
   height: ${({$height}) => ($height ? `${$height}px` : '100%')};
   width: ${({$width}) => ($width ? `${$width}px` : '100%')};
+  display: flex;
+  flex-direction: column;
 `;
 
 const NewErrorsMessage = styled.div`
@@ -221,19 +208,30 @@ const ShowNewErrorsButton = styled.span`
 `;
 
 const ValidationsCollapse = styled(Collapse)`
-  max-height: calc(100% - 104px);
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 24px;
 
   & .ant-collapse-header {
     color: ${Colors.grey8} !important;
-    width: max-content;
     padding-left: 0px !important;
     padding-bottom: 0px !important;
 
     &:first-child {
       padding-top: 0px;
+    }
+
+    &-text {
+      display: flex;
+      width: calc(100% - 50px);
+      gap: 10px;
+      align-items: center;
+
+      & span:first-child {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
     }
   }
 

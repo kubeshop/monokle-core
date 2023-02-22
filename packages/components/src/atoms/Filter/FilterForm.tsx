@@ -1,3 +1,4 @@
+import {Colors} from '@/styles/Colors';
 import {PropsWithChildren} from 'react';
 import styled from 'styled-components';
 
@@ -28,4 +29,5 @@ const FieldItem = styled.div`
   width: 100%;
   flex-direction: column;
   gap: 3px;
+  color: ${Colors.grey9};
 `;

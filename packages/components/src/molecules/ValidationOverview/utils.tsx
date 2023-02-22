@@ -8,7 +8,7 @@ import {
   ValidationResponse,
   getFileLocation,
 } from '@monokle/validation';
-import {ProblemsType, ShowByFilterOptionType} from './types';
+import {FiltersValueType, ProblemsType, ShowByFilterOptionType} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -108,6 +108,32 @@ export const filterBySearchValue = (problems: ProblemsType, searchValue: string)
 
         const filteredValidationResults = validationResults.filter(el =>
           el.ruleId.toLowerCase().includes(searchValue.toLowerCase())
+        );
+
+        if (filteredValidationResults.length > 0) {
+          return [filePath, filteredValidationResults];
+        }
+
+        return [];
+      })
+      .filter(el => el.length > 0)
+  );
+};
+
+export const filterProblems = (problems: ProblemsType, filters: FiltersValueType) => {
+  if (!filters['tool-component'] && !filters['type']) {
+    return problems;
+  }
+
+  return Object.fromEntries(
+    Object.entries(problems || {})
+      .map(([filePath, validationResults]) => {
+        let filteredValidationResults = validationResults.filter(el =>
+          filters['type']
+            ? el.level === filters['type']
+            : true && filters['tool-component']?.length
+            ? filters['tool-component'].includes(el.rule.toolComponent.name)
+            : true
         );
 
         if (filteredValidationResults.length > 0) {

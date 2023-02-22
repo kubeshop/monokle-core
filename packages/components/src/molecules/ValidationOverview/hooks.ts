@@ -1,8 +1,14 @@
 import {ValidationResponse, ValidationResult} from '@monokle/validation';
 import isEqual from 'lodash.isequal';
 import {useEffect, useMemo, useState} from 'react';
-import {NewProblemsType, ProblemsType, ShowByFilterOptionType} from './types';
-import {filterBySearchValue, selectProblemsByFilePath, selectProblemsByResource, selectProblemsByRule} from './utils';
+import {FiltersValueType, NewProblemsType, ProblemsType, ShowByFilterOptionType} from './types';
+import {
+  filterBySearchValue,
+  filterProblems,
+  selectProblemsByFilePath,
+  selectProblemsByResource,
+  selectProblemsByRule,
+} from './utils';
 
 let baseValidationResults: ValidationResult[] = [];
 
@@ -65,7 +71,8 @@ export function useFilteredProblems(
   problems: ProblemsType,
   newProblems: NewProblemsType,
   showNewErrors: boolean,
-  searchValue: string
+  searchValue: string,
+  filtersValue: FiltersValueType
 ) {
   const [filteredProblems, setFilteredProblems] = useState<ProblemsType>({});
 
@@ -78,9 +85,10 @@ export function useFilteredProblems(
       showingProblems = problems;
     }
 
-    const currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
+    let currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
+    currentFilteredProblems = filterProblems(currentFilteredProblems, filtersValue);
     setFilteredProblems(currentFilteredProblems);
-  }, [problems, newProblems, showNewErrors, searchValue]);
+  }, [problems, newProblems, showNewErrors, searchValue, filtersValue]);
 
   return filteredProblems;
 }

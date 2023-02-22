@@ -1,3 +1,4 @@
+import {TextEllipsis} from '@/atoms';
 import {Colors} from '@/styles/Colors';
 import {ValidationResult} from '@monokle/validation';
 import {useMemo} from 'react';
@@ -24,13 +25,13 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
     const {ruleDescription, severity, toolComponentName} = getRuleInfo(id);
 
     return (
-      <Container>
+      <>
         <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
           {iconMap[toolComponentName]}
           {renderSeverityIcon(severity, false)}
         </div>
         <RuleId>{ruleDescription}</RuleId> <ResultsCount>{results.length}</ResultsCount>
-      </Container>
+      </>
     );
   }
 
@@ -46,15 +47,11 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
 
   return (
     <>
-      {id} <ResultsCount>{results.length}</ResultsCount>
+      <span>{id}</span>
+      <ResultsCount>{results.length}</ResultsCount>
     </>
   );
 };
-
-const Container = styled.div`
-  display: flex;
-  gap: 10px;
-`;
 
 const ResourceName = styled.span`
   color: ${Colors.whitePure};
@@ -64,6 +61,9 @@ const ResourceFilePath = styled.span`
   color: ${Colors.grey7};
   margin-left: 8px;
   font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const ResultsCount = styled.span`
@@ -71,6 +71,9 @@ const ResultsCount = styled.span`
   margin-left: 6px;
 `;
 
-const RuleId = styled.div`
+const RuleId = styled.span`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   color: ${Colors.whitePure};
 `;
