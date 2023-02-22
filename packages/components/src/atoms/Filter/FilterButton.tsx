@@ -12,7 +12,7 @@ type Props = {
 
 export function FilterButton({active = false, iconHighlight, onClick, disabled}: Props) {
   return (
-    <Button onClick={onClick} disabled={disabled} $highlight={iconHighlight}>
+    <Button onClick={onClick} disabled={disabled} $highlight={iconHighlight} $active={active}>
       <Tooltip title="Filter">
         <Box $active={active}>{active ? <CaretUpOutlined /> : <FilterOutlined />}</Box>
       </Tooltip>
@@ -25,12 +25,11 @@ const Box = styled.div<{$active: boolean}>`
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: ${({$active}) => ($active ? '4px 4px 0 0' : '4px')};
   transition-delay: ${({$active}) => ($active ? '0s' : '0.8s')};
   transition-property: border-radius, background-color;
   height: 32px;
   width: 32px;
-  background-color: ${({$active}) => ($active ? Colors.cyan2 : Colors.grey3b)};
+
   &:after {
     display: block;
     content: ' ';
@@ -47,15 +46,20 @@ const Box = styled.div<{$active: boolean}>`
   }
 `;
 
-const Button = styled(RawButton)<{$highlight?: boolean}>`
+const Button = styled(RawButton)<{$active: boolean; $highlight?: boolean}>`
+  border-radius: ${({$active}) => ($active ? '4px 4px 0 0' : '4px')};
   border: none;
   padding: 0px;
   width: 100%;
   height: 100%;
+  color: ${Colors.grey9};
+  background-color: ${({$active}) => ($active ? Colors.cyan2 : Colors.grey3b)};
   ${({$highlight}) => ($highlight ? `color: ${Colors.lightSeaGreen};` : ``)};
+
   :hover,
   :focus {
     color: ${Colors.lightSeaGreen};
+    background-color: ${({$active}) => ($active ? Colors.cyan2 : Colors.grey3b)};
   }
   :after {
     animation: none !important;

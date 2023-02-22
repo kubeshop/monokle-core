@@ -12,6 +12,18 @@ export type ValidationOverviewType = {
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
 };
 
+export type ValidationOverviewFiltersType = {
+  filtersValue: FiltersValueType;
+  searchValue: string;
+  onFiltersChange: (filters: FiltersValueType) => void;
+  onSearch: (searchValue: string) => void;
+};
+
+export type FiltersValueType = {
+  'tool-component'?: string[];
+  type?: 'error' | 'warning';
+};
+
 export type ProblemsType = {
   [k: string]: ValidationResult[];
 };

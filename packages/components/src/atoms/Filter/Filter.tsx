@@ -10,6 +10,7 @@ import {FilterButton} from './FilterButton';
 import {FilterHeader} from './FilterHeader';
 import {FilterForm} from './FilterForm';
 import {Colors} from '@/styles/Colors';
+import {SearchInput} from '../SearchInput';
 
 type Props = PropsWithChildren<{
   height?: number;
@@ -22,6 +23,7 @@ type Props = PropsWithChildren<{
   onSearch?: (search: string) => void;
   hasActiveFilters?: boolean;
   filterButton?: ReactNode;
+  style?: React.CSSProperties;
 }>;
 
 // eslint-disable-next-line
@@ -39,6 +41,7 @@ export function Filter({
   children,
   hasActiveFilters,
   filterButton,
+  style = {},
 }: Props) {
   const [internalSearch, setInternalSearch] = useState<string>(search ?? '');
 
@@ -56,16 +59,10 @@ export function Filter({
   );
 
   return (
-    <Box>
+    <Box style={style}>
       <Header>
         <InputBox>
-          <StyledInput
-            prefix={<SearchIcon />}
-            bordered={false}
-            disabled={disabled}
-            value={internalSearch}
-            onChange={e => setInternalSearch(e.target.value)}
-          />
+          <SearchInput disabled={disabled} value={internalSearch} onChange={e => setInternalSearch(e.target.value)} />
         </InputBox>
 
         {Boolean(children) && (

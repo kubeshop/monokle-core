@@ -40,6 +40,7 @@ const Left = styled.div`
   display: flex;
   gap: 6px;
   align-items: center;
+  color: ${Colors.grey9};
 `;
 
 const Title = styled.h2`
@@ -47,6 +48,7 @@ const Title = styled.h2`
   font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
+  color: ${Colors.grey9};
 `;
 
 const Right = styled.div`
