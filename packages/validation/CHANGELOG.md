@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.12.0
+
+### Minor Changes
+
+- 8056fa3: Improve YAML plugin
+
 ## 0.10.3
 
 ### Patch Changes

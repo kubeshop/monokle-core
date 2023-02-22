@@ -1,5 +1,12 @@
 # @monokle/components
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [8056fa3]
+  - @monokle/validation@0.12.0
+
 ## 0.9.2
 
 ### Patch Changes
