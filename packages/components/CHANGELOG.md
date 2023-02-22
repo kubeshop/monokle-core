@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 0.9.2
+
+### Patch Changes
+
+- cb95bd4: Added filters for ValidationOverview
+
 ## 0.9.1
 
 ### Patch Changes
