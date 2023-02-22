@@ -47,6 +47,9 @@ export const YAML_RULES: RuleMetadata[] = [
     help: {
       text: "Do not associate anchors with alias nodes.",
     },
+    defaultConfiguration: {
+      level: "error",
+    },
   },
   {
     id: "YML002",
@@ -58,7 +61,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "An alias identifier must be a non-empty sequence of valid characters.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Change the format of your alias.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -71,7 +77,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Only the %YAML and %TAG directives are supported, and they need to follow the specified structure.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Avoid using directives or limit yourself to %YAML and %TAG.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -84,7 +93,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Double-quotes strings may include '\\' escaped content, but that needs to be valid.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Properly escape the quotes.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -97,7 +109,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Indentation is important in YAML, and collection items need to all start at the same level. Block scalars are also picky about their leading content.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Fix the identation.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -110,7 +125,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Anchors and tags must be placed after the ?, : and - indicators.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "To fix, place the anchor or tag after the ?, : and - indicators.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -125,18 +143,24 @@ export const YAML_RULES: RuleMetadata[] = [
     help: {
       text: "To fix, use a block or quoted scalar for the value",
     },
+    defaultConfiguration: {
+      level: "error",
+    },
   },
   {
     id: "YML008",
     name: "no-block-as-implicit-key",
     shortDescription: {
-      text: "The identation is incorrect.",
+      text: "The identation is likely incorrect.",
     },
     fullDescription: {
       text: "There's probably something wrong with the indentation, or you're trying to parse something like a: b: c, where it's not clear what's the key and what's the value.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Fix the identation.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -149,7 +173,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "YAML scalars and collections both have block and flow styles. Flow is allowed within block, but not the other way around.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Do not use blocks within flow style.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -162,7 +189,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Keys within a map must be unique.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Remove one of the the duplicate keys.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -177,6 +207,9 @@ export const YAML_RULES: RuleMetadata[] = [
     help: {
       text: NO_HELP_AVAILABLE,
     },
+    defaultConfiguration: {
+      level: "error",
+    },
   },
   {
     id: "YML012",
@@ -188,7 +221,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Due to legacy reasons, implicit keys must have their following : indicator after at most 1k characters.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Use a shorter key.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -201,7 +237,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Aliases can only dereference anchors that are before them in the document.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Add the missing anchor or remove the reference.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -210,11 +249,11 @@ export const YAML_RULES: RuleMetadata[] = [
     shortDescription: {
       text: "A character is missing.",
     },
-    fullDescription: {
-      text: "Some character or characters are missing here. See the error message for what you need to add.",
-    },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Add the missing character.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -229,6 +268,9 @@ export const YAML_RULES: RuleMetadata[] = [
     help: {
       text: "Does the input include a plain scalar with a : followed by whitespace, which is getting parsed as a map key?",
     },
+    defaultConfiguration: {
+      level: "error",
+    },
   },
   {
     id: "YML016",
@@ -240,7 +282,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "A node is only allowed to have one anchor.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Remove all but one of the anchors.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -255,6 +300,9 @@ export const YAML_RULES: RuleMetadata[] = [
     help: {
       text: NO_HELP_AVAILABLE,
     },
+    defaultConfiguration: {
+      level: "error",
+    },
   },
   {
     id: "YML018",
@@ -266,7 +314,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "A node is only allowed to have one tag.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Remove all but one of the tags.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -279,7 +330,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Only spaces are allowed as indentation.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Replace the tabs with spaces.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -292,7 +346,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "Something went wrong when resolving a node's tag with the current schema.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Investigate the unresolvable tag.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
   {
@@ -305,7 +362,10 @@ export const YAML_RULES: RuleMetadata[] = [
       text: "A token was encountered in a place where it wasn't expected.",
     },
     help: {
-      text: NO_HELP_AVAILABLE,
+      text: "Investigate the unexpected token.",
+    },
+    defaultConfiguration: {
+      level: "error",
     },
   },
 ];
