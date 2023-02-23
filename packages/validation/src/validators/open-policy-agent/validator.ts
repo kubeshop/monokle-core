@@ -21,7 +21,9 @@ type Settings = z.infer<typeof Settings>;
 const Settings = z.object({
   wasmSrc: z
     .string()
-    .default("https://saas.monokle.io/assets/trivy.18d95eb9.wasm"),
+    .default(
+      "https://plugins.monokle.com/validation/open-policy-agent/trivy.wasm"
+    ),
 });
 
 const CONTROLLER_KINDS = [
