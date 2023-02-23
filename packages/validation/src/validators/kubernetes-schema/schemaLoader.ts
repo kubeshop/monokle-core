@@ -9,11 +9,6 @@ const SCHEMA_BASE =
 
 export class SchemaLoader {
   private schemaCache = new Map<string, ResourceSchema | undefined>();
-  private fetcher: typeof fetch;
-
-  constructor(init?: { fetch?: typeof fetch }) {
-    this.fetcher = init?.fetch ?? fetch;
-  }
 
   async getResourceSchema(
     schemaVersion: string,
@@ -23,24 +18,34 @@ export class SchemaLoader {
     if (!resource) return undefined;
 
     try {
-      const cacheKey = `${schemaVersion}-${resource.kind}`;
+      const kubernetesVersion = this.getKubernetesVersion(schemaVersion);
+      const cacheKey = `${kubernetesVersion}-${resource.kind}`;
       const cachedSchema = this.schemaCache.get(cacheKey);
-      const schemaUri = `${SCHEMA_BASE}/v${schemaVersion}-standalone/${resource.kind.toLowerCase()}.json`;
+      const schemaUri = this.getUrl(resource, kubernetesVersion);
 
       if (cachedSchema) {
         return { schema: cachedSchema, url: schemaUri };
       }
 
-      if (!isKnownResourceKind(resource.kind)) {
-        return undefined;
-      }
-
-      const response = await this.fetcher(schemaUri, { signal });
+      const response = await fetch(schemaUri, { signal });
       const schema = await response.json();
+
+      this.schemaCache.set(cacheKey, schema);
+
       return { url: schemaUri, schema };
     } catch {
       return undefined;
     }
+  }
+
+  private getKubernetesVersion(version: string): string {
+    // Support both with and without v-prefix to avoid mistakes.
+    // example: you easily enter `v1.24.2` while we expect `1.24.2`.
+    return version.startsWith("v") ? version : `v${version}`;
+  }
+
+  private getUrl(resource: Resource, kubernetesVersion: string) {
+    return `${SCHEMA_BASE}/${kubernetesVersion}-standalone/${resource.kind.toLowerCase()}.json`;
   }
 
   async getFullSchema(
@@ -50,7 +55,8 @@ export class SchemaLoader {
     try {
       const cacheKey = schemaVersion;
       const cachedSchema = this.schemaCache.get(cacheKey);
-      const schemaUri = `${SCHEMA_BASE}/v${schemaVersion}/_definitions.json`;
+      const kubernetesVersion = this.getKubernetesVersion(schemaVersion);
+      const schemaUri = `${SCHEMA_BASE}/${kubernetesVersion}/_definitions.json`;
 
       if (cachedSchema) {
         return { schema: cachedSchema, url: schemaUri };
