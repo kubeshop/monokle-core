@@ -4,11 +4,7 @@ import { isKnownResourceKind } from "../../utils/knownResourceKinds.js";
 export type FullSchema = { definitions: Record<string, ResourceSchema> };
 export type ResourceSchema = any;
 
-const SCHEMA_BASE =
-  "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master";
-
 const CORE_SCHEMA_BASE = "https://plugins.monokle.com/schemas";
-
 const CRD_SCHEMA_BASE = "https://plugins.monokle.com/schemas";
 
 export class SchemaLoader {
@@ -69,7 +65,7 @@ export class SchemaLoader {
       const cacheKey = schemaVersion;
       const cachedSchema = this.schemaCache.get(cacheKey);
       const kubernetesVersion = this.getKubernetesVersion(schemaVersion);
-      const schemaUri = `${SCHEMA_BASE}/${kubernetesVersion}/_definitions.json`;
+      const schemaUri = `${CORE_SCHEMA_BASE}/${kubernetesVersion}-standalone/definitions.json`;
 
       if (cachedSchema) {
         return { schema: cachedSchema, url: schemaUri };
