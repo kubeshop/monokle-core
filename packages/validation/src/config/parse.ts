@@ -1,4 +1,3 @@
-import { JsonObject } from "type-fest";
 import * as z from "zod";
 import { ZodType } from "zod";
 
@@ -21,7 +20,7 @@ export type PluginMap = Record<string, boolean>;
 export type Config = {
   plugins?: PluginMap;
   rules?: RuleMap;
-  settings?: JsonObject;
+  settings?: any;
 };
 
 export const configSchema: ZodType<Config> = z.object({
