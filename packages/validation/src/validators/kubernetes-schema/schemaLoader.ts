@@ -7,6 +7,10 @@ export type ResourceSchema = any;
 const SCHEMA_BASE =
   "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master";
 
+const CORE_SCHEMA_BASE = "https://plugins.monokle.com/schemas";
+
+const CRD_SCHEMA_BASE = "https://plugins.monokle.com/schemas";
+
 export class SchemaLoader {
   private schemaCache = new Map<string, ResourceSchema | undefined>();
 
@@ -45,7 +49,16 @@ export class SchemaLoader {
   }
 
   private getUrl(resource: Resource, kubernetesVersion: string) {
-    return `${SCHEMA_BASE}/${kubernetesVersion}-standalone/${resource.kind.toLowerCase()}.json`;
+    if (!isKnownResourceKind(resource.kind)) {
+      const kind = resource.kind.toLowerCase();
+      const [group, apiVersion] = resource.apiVersion.split("/");
+      // e.g. https://plugins.monokle.com/schemas/crds/argoproj.io/v1alpha1/application.json
+      return `${CRD_SCHEMA_BASE}/crds/${group}/${apiVersion}/${kind}.json`;
+    } else {
+      const kind = resource.kind.toLowerCase();
+      // e.g. https://plugins.monokle.com/schemas/v1.24.2-standalone/service.json
+      return `${CORE_SCHEMA_BASE}/${kubernetesVersion}-standalone/${kind}.json`;
+    }
   }
 
   async getFullSchema(
