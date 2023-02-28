@@ -219,11 +219,14 @@ const ValidationsCollapse = styled(Collapse)`
 
     &:first-child {
       padding-top: 0px;
+      min-width: 0;
     }
 
     &-text {
-      display: flex;
-      width: calc(100% - 50px);
+      min-width: 0;
+      width: auto;
+      display: grid;
+      grid-template-columns: 1fr max-content;
       gap: 10px;
       align-items: center;
 
