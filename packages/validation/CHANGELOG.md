@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.12.1
+
+### Patch Changes
+
+- 0dab4a1: Fix schema loader
+
 ## 0.12.0
 
 ### Minor Changes
