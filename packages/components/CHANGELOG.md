@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.0.2
+
+### Patch Changes
+
+- 62fbd5c: Fix showing problems
+
 ## 1.0.1
 
 ### Patch Changes
