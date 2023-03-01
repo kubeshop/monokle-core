@@ -1,5 +1,13 @@
 # @monokle/components
 
+## 1.0.1
+
+### Patch Changes
+
+- 36069a3: Handle validation overview loading
+- Updated dependencies [0dab4a1]
+  - @monokle/validation@0.12.1
+
 ## 1.0.0
 
 ### Patch Changes
