@@ -1,6 +1,7 @@
 import {ValidationResponse, ValidationResult} from '@monokle/validation';
 
 export type ValidationOverviewType = {
+  status: 'uninitialized' | 'loading' | 'error' | 'loaded';
   validationResponse: ValidationResponse;
   containerClassName?: string;
   containerStyle?: React.CSSProperties;
@@ -8,6 +9,7 @@ export type ValidationOverviewType = {
   height?: number;
   newProblemsIntroducedType?: string;
   selectedProblem?: ValidationResult;
+  skeletonStyle?: React.CSSProperties;
   width?: number;
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
 };
