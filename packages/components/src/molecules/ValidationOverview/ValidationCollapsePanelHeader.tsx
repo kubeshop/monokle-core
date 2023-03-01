@@ -38,8 +38,10 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
   if (showByFilterValue === 'show-by-resource') {
     return (
       <>
-        <ResourceName>{resourceName}</ResourceName>
-        <ResourceFilePath>{filePath}</ResourceFilePath>
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 2fr'}}>
+          <ResourceName>{resourceName}</ResourceName>
+          <ResourceFilePath>{filePath}</ResourceFilePath>
+        </div>
         <ResultsCount>{results.length}</ResultsCount>
       </>
     );
@@ -47,7 +49,7 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
 
   return (
     <>
-      <span>{id}</span>
+      <TextEllipsis text={id} />
       <ResultsCount>{results.length}</ResultsCount>
     </>
   );
@@ -55,6 +57,9 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
 
 const ResourceName = styled.span`
   color: ${Colors.whitePure};
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const ResourceFilePath = styled.span`
@@ -69,6 +74,7 @@ const ResourceFilePath = styled.span`
 const ResultsCount = styled.span`
   font-weight: 700;
   margin-left: 6px;
+  flex-shrink: 0;
 `;
 
 const RuleId = styled.span`

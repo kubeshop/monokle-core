@@ -219,22 +219,13 @@ const ValidationsCollapse = styled(Collapse)`
 
     &:first-child {
       padding-top: 0px;
-      min-width: 0;
     }
 
     &-text {
-      min-width: 0;
-      width: auto;
-      display: grid;
-      grid-template-columns: 1fr max-content;
+      display: flex;
+      width: calc(100% - 50px);
       gap: 10px;
       align-items: center;
-
-      & span:first-child {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-      }
     }
   }
 
