@@ -1,3 +1,11 @@
+
+import fs from "fs";
+import path from "path";
+import fetch from 'node-fetch';
+import requireFromString from 'require-from-string';
+import virtual from '@rollup/plugin-virtual';
+import { rollup } from 'rollup';
+
 import { ResourceParser } from "./common/resourceParser.js";
 import { MonokleValidator } from "./MonokleValidator.js";
 import { SimpleCustomValidator } from "./validators/custom/simpleValidator.js";
@@ -7,8 +15,6 @@ import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
-import fs from "fs";
-import * as path from "path";
 
 export function createExtensibleNodeMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
@@ -30,15 +36,8 @@ export function createExtensibleNodeMonokleValidator(
           return new KubernetesSchemaValidator(parser, schemaLoader);
         default:
           try {
-            const filePath = path.join(process.cwd(), ".monokle-plugins", `${pluginName}-plugin.js`);
-            if (fs.existsSync(filePath)) {
-              const customPlugin = await import(/* @vite-ignore */ filePath );
-              return new SimpleCustomValidator(customPlugin.default, parser);
-            } else {
-              const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
-              const customPlugin = await importWithDataUrl(url);
-              return new SimpleCustomValidator(customPlugin.default, parser);
-            }
+            const customPlugin = await loadCustomPlugin(pluginName)
+            return new SimpleCustomValidator(customPlugin, parser);
           } catch (err) {
             throw new Error(`plugin_not_found: $err`);
           }
@@ -47,15 +46,40 @@ export function createExtensibleNodeMonokleValidator(
   );
 }
 
-async function importWithDataUrl(url: string) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Error fetching ${url}: ${response.statusText}`);
-  }
-  const source = await response.text();
-  const buff = Buffer.from(source);
-  const encodedSource = buff.toString("base64");
-  const dataUrl = `data:text/javascript;base64,${encodedSource}`;
 
-  return await import(/* @vite-ignore */ dataUrl);
+async function bundlePluginCode(code:string) {
+  const bundle = await rollup({
+    input: 'pluginCode',
+    plugins: [
+      virtual({
+        pluginCode: code,
+      }) as any,
+    ],
+  });
+  const { output } = await bundle.generate({ format: 'commonjs' });
+  await bundle.close();
+  return output[0].code;
+}
+
+async function loadCustomPlugin(pluginName: string) {
+  const filePath = path.join(
+    process.cwd(),
+    '.monokle-plugins',
+    `${pluginName}-plugin.js`,
+  );
+
+  const pluginCode = fs.existsSync(filePath)
+    ? fs.readFileSync(filePath, { encoding: 'utf-8' })
+    : await (async () => {
+        const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Error fetching ${url}: ${response.statusText}`);
+        }
+        return response.text();
+      })();
+
+  const code = await bundlePluginCode(pluginCode);
+  const customPlugin = requireFromString(code, filePath);
+  return customPlugin
 }
