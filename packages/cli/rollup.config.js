@@ -4,14 +4,14 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import pkg from './package.json' assert { type: 'json' };
 
 export default {
-	input:  pkg.bin.monokle,
-	output: {
+  input: pkg.bin.monokle,
+  output: {
     file: 'cjs/main.js',
-		format: 'cjs',
+    format: 'cjs',
     inlineDynamicImports: true,
-	},
+  },
   plugins: [
-    json(), 
+    json(),
     commonjs(),
     nodeResolve({
       exportConditions: ['node'],
