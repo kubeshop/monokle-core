@@ -1,7 +1,7 @@
 import {Colors} from '@/styles/Colors';
 import {CloseOutlined} from '@ant-design/icons';
 import {getRuleForResult} from '@monokle/validation';
-import {Collapse, Select} from 'antd';
+import {Collapse, Select, Skeleton} from 'antd';
 import {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {CollapseItemRow} from './CollapseItemRow';
@@ -14,8 +14,8 @@ import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {containerClassName = '', containerStyle = {}, height, width, selectedProblem} = props;
-  const {customMessage, newProblemsIntroducedType, validationResponse, onProblemSelect} = props;
+  const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status} = props;
+  const {customMessage, newProblemsIntroducedType, skeletonStyle = {}, validationResponse, onProblemSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
@@ -42,6 +42,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       setSearchValue('');
     }
   }, [problems]);
+
+  if (status === 'loading') {
+    return <Skeleton active style={skeletonStyle} />;
+  }
 
   return (
     <MainContainer style={containerStyle} $height={height} $width={width} className={containerClassName}>

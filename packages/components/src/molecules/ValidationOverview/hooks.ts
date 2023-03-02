@@ -43,7 +43,7 @@ export function useCurrentAndNewProblems(
 
     setNewProblems({data: newProblems, resultsCount: newResults.length});
     setProblems(currentProblems);
-  }, [showByFilterValue]);
+  }, [showByFilterValue, validationResults]);
 
   return {newProblems, problems};
 }
