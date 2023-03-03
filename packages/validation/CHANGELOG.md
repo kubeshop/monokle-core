@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.13.0
+
+### Minor Changes
+
+- 7bc9099: refactor: load custom plugins through `require` instead of `import`
+
 ## 0.12.1
 
 ### Patch Changes
