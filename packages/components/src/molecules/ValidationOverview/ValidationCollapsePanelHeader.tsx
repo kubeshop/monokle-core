@@ -85,6 +85,8 @@ const ResourceFilePath = styled.span`
 const ResultsCount = styled.span`
   font-weight: 700;
   margin-left: 6px;
+  min-width: 24px;
+  width: max-content;
 `;
 
 const RuleId = styled.span`
@@ -96,7 +98,7 @@ const RuleId = styled.span`
 `;
 
 const Container = styled.div`
-  position: absolute;
+  position: relative;
   display: flex;
   width: 100%;
 `;
