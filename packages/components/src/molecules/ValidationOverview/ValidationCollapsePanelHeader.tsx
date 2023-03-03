@@ -1,4 +1,6 @@
-import {TextEllipsis} from '@/atoms';
+import {Tooltip} from 'antd';
+import {TOOLTIP_DELAY} from '@/constants';
+
 import {Colors} from '@/styles/Colors';
 import {ValidationResult} from '@monokle/validation';
 import {useMemo} from 'react';
@@ -37,7 +39,9 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
             {iconMap[toolComponentName]}
             {renderSeverityIcon(severity, false)}
           </div>
-          <RuleId>{ruleDescription}</RuleId>
+          <Tooltip title={ruleDescription} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
+            <RuleId>{ruleDescription}</RuleId>
+          </Tooltip>
           <ResultsCount>{results.length}</ResultsCount>
         </Content>
       </Container>
@@ -48,8 +52,12 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
     return (
       <Container>
         <Content>
-          <ResourceName>{resourceName}</ResourceName>
-          <ResourceFilePath>{filePath}</ResourceFilePath>
+          <Tooltip title={resourceName} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
+            <ResourceName>{resourceName}</ResourceName>
+          </Tooltip>
+          <Tooltip title={filePath} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
+            <ResourceFilePath>{filePath}</ResourceFilePath>
+          </Tooltip>
           <ResultsCount>{results.length}</ResultsCount>
         </Content>
       </Container>
@@ -57,10 +65,14 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
   }
 
   return (
-    <>
-      <TextEllipsis text={id} />
-      <ResultsCount>{results.length}</ResultsCount>
-    </>
+    <Container>
+      <Content>
+        <Tooltip title={id} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
+          <ResourceFile>{id}</ResourceFile>
+        </Tooltip>
+        <ResultsCount>{results.length}</ResultsCount>
+      </Content>
+    </Container>
   );
 };
 
@@ -112,5 +124,12 @@ const Content = styled.div`
   bottom: 0;
   width: 100%;
   gap: 8px;
+  height: max-content;
+`;
+
+const ResourceFile = styled.span`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   height: max-content;
 `;
