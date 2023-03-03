@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.0.3
+
+### Patch Changes
+
+- 1e87b1e: fix: resizable validation pane
+
 ## 1.0.2
 
 ### Patch Changes
