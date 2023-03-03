@@ -25,25 +25,34 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
     const {ruleDescription, severity, toolComponentName} = getRuleInfo(id);
 
     return (
-      <>
-        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-          {iconMap[toolComponentName]}
-          {renderSeverityIcon(severity, false)}
-        </div>
-        <RuleId>{ruleDescription}</RuleId> <ResultsCount>{results.length}</ResultsCount>
-      </>
+      <Container>
+        <Content>
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              alignSelf: 'center',
+            }}
+          >
+            {iconMap[toolComponentName]}
+            {renderSeverityIcon(severity, false)}
+          </div>
+          <RuleId>{ruleDescription}</RuleId>
+          <ResultsCount>{results.length}</ResultsCount>
+        </Content>
+      </Container>
     );
   }
 
   if (showByFilterValue === 'show-by-resource') {
     return (
-      <>
-        <div style={{display: 'grid', gridTemplateColumns: '1fr 2fr'}}>
+      <Container>
+        <Content>
           <ResourceName>{resourceName}</ResourceName>
           <ResourceFilePath>{filePath}</ResourceFilePath>
-        </div>
-        <ResultsCount>{results.length}</ResultsCount>
-      </>
+          <ResultsCount>{results.length}</ResultsCount>
+        </Content>
+      </Container>
     );
   }
 
@@ -60,6 +69,7 @@ const ResourceName = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  height: max-content;
 `;
 
 const ResourceFilePath = styled.span`
@@ -69,17 +79,36 @@ const ResourceFilePath = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  height: max-content;
 `;
 
 const ResultsCount = styled.span`
   font-weight: 700;
   margin-left: 6px;
-  flex-shrink: 0;
 `;
 
 const RuleId = styled.span`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  height: max-content;
   color: ${Colors.whitePure};
+`;
+
+const Container = styled.div`
+  position: absolute;
+  display: flex;
+  width: 100%;
+`;
+
+const Content = styled.div`
+  position: absolute;
+  display: flex;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  gap: 8px;
+  height: max-content;
 `;

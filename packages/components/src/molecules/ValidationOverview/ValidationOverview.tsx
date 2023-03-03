@@ -215,6 +215,7 @@ const ValidationsCollapse = styled(Collapse)`
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 24px;
+  width: 100%;
 
   & .ant-collapse-header {
     color: ${Colors.grey8} !important;
@@ -227,8 +228,6 @@ const ValidationsCollapse = styled(Collapse)`
 
     &-text {
       display: flex;
-      width: calc(100% - 50px);
-      gap: 10px;
       align-items: center;
     }
   }
