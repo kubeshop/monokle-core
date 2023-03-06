@@ -67,7 +67,7 @@
     "use-debounced-effect": "2.0.1"
   },
   "peerDependencies": {
-    "@monokle/validation": "*",
+    "@monokle/validation": "0.x",
     "antd": "^4.0.0",
     "react": "^18.0 || ^17.0 || ^16.0",
     "react-dom": "^18.0 || ^17.0 || ^16.0",
