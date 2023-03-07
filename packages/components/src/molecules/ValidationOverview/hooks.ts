@@ -87,7 +87,15 @@ export function useFilteredProblems(
 
     let currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
     currentFilteredProblems = filterProblems(currentFilteredProblems, filtersValue);
-    setFilteredProblems(currentFilteredProblems);
+
+    const sortedFilteredProblems = Object.keys(currentFilteredProblems)
+      .sort()
+      .reduce((obj, key) => {
+        obj[key] = currentFilteredProblems[key];
+        return obj;
+      }, {} as any);
+
+    setFilteredProblems(sortedFilteredProblems);
   }, [problems, newProblems, showNewErrors, searchValue, filtersValue]);
 
   return filteredProblems;
