@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.0.4
+
+### Patch Changes
+
+- 56d6ec7: Sort problems ascending by key
+
 ## 1.0.3
 
 ### Patch Changes
