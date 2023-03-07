@@ -12,7 +12,7 @@ All packages are open-source and MIT licensed.
 Monokle uses a common set of libraries for validation Kubernetes resources across its CLI, Desktop and Cloud tooling.
 
 - [@monokle/validation](./packages/validation): An extensible validator for Kubernetes resources.
-- [@monokle/cli](./packages/cli): A CLI to validate your Kubernetes resources directly from your terminal.
+- [@monokle/cli](https://github.com/kubeshop/monokle-cli): A CLI to validate your Kubernetes resources directly from your terminal.
 - [create-monokle-plugin](./packages/create-monokle-plugin): Bootstrap a custom plugin within seconds.
 
 Please go to the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo for information

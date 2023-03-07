@@ -1,4 +1,0 @@
-plugins:
-  argo: true
-rules:
-  argo/argo-config-maps: "warn"
