@@ -77,6 +77,13 @@ it("should support patches and additionalValuesFiles", async () => {
   expect(hasErrors).toBe(2);
 });
 
+it("should support ownerRefs", async () => {
+  const {resources} = await processResourcesInFolder("src/__tests__/resources/owner-references");
+
+  expect(resources.length).toBe(2);
+  expect(resources[0].name).toBe("petstore-778587f7d5-nflbg");
+  expect(resources[0].refs?.length).toBe( 5 );
+});
 
 it("should be flexible to configure", async () => {
   const parser = new ResourceParser();
