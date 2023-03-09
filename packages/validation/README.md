@@ -29,18 +29,18 @@ Monokle Validation is a TypeScript library to validate your Kubernetes resources
 - Resource links validates that reference to other Kubernetes resources are valid.
 - Open Policy agent validates security policies to reduce your attack surface.
 
-Learn more about each Core Plugin in the [Core Plugins Documentation](docs/core-plugins.md) 
+Learn more about each Core Plugin in the [Core Plugins Documentation](docs/core-plugins.md)
 
 ## Custom Plugins
 
-Easily create your own validators in typescript - [Read More](docs/custom-plugins.md) 
+Easily create your own validators in typescript - [Read More](docs/custom-plugins.md)
 
 ## Community Plugins
 
-Share your custom validators in the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo, 
+Share your custom validators in the [Monokle Community Plugins](https://github.com/kubeshop/monokle-community-plugins) repo,
 or use any existing community validators as [described below](#using-community-plugins).
 
-## Validate from the CLI or Monokle Cloud 
+## Validate from the CLI or Monokle Cloud
 
 The [Monokle CLI](../cli) provides a convenient wrapper around this library. Use it to validate your resources in seconds:
 
@@ -48,7 +48,7 @@ The [Monokle CLI](../cli) provides a convenient wrapper around this library. Use
 kustomize build . | monokle validate -
 ```
 
-Or visit [Monokle Cloud](https://app.monokle.com); a free web application where you can apply this validation 
+Or visit [Monokle Cloud](https://app.monokle.com); a free web application where you can apply this validation
 library directly on public GitHub repositories.
 
 ## Table of contents
@@ -78,7 +78,7 @@ const validator = createDefaultMonokleValidator();
 await validator.validate({ resources: RESOURCES });
 ```
 
-The Monokle validator is extensible and has a rich plugin system. You can configure and preload 
+The Monokle validator is extensible and has a rich plugin system. You can configure and preload
 plugins as follows:
 
 ```typescript
@@ -182,10 +182,10 @@ SARIF contains both metadata of the tool and the results of the validation. You 
 
 ### Preloading
 
-Each validation plugin has to be initialized which might require heavy operations such as fetching large 
+Each validation plugin has to be initialized which might require heavy operations such as fetching large
 JSON schemas, AJV compilation, WASM initialization and more.
 
-The `preload` API avoids a long first validation and is recommended in more interactive environments. 
+The `preload` API avoids a long first validation and is recommended in more interactive environments.
 It is idempotent so you can call it as often as you want without continuously reinstantiating the plugins.
 
 Example:
@@ -267,7 +267,7 @@ for (const { name, configuration } of validator.rules.annotations) {
 
 await validator.validate({ resources: RESOURCES });
 ```
-****
+
 ## Caveats
 
 - Use `processRefs` before validating with a _resource-links_ validator. It creates a graph between resources and sees if links between them are present or missing.

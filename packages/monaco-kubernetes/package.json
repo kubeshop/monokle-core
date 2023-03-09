@@ -1,9 +1,9 @@
 {
   "name": "monaco-kubernetes",
-  "version": "0.1.4",
+  "version": "0.1.0",
   "description": "Monokle's Kubernetes plugin for the Monaco Editor.",
   "scripts": {
-    "build": "node build.js && rm -rf ~/verdaccio/storage/monaco-kubernetes && npm publish --registry http://localhost:4873"
+    "build": "node build.js"
   },
   "type": "module",
   "files": [
