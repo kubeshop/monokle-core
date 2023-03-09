@@ -24,16 +24,17 @@ export enum Colors {
   grey3 = '#262626', // gray, gray 3
   grey2 = '#1D1D1D',
   grey1 = '#141414', // gray, gray 1
-
+  
   coldGrey = '#31393C',
   warmGrey = '#222222',
-
+  backgroundGrey = '#0A0D0E',
+  
   // Notifications
   greenOkay = '#09b89d',
   polarGreen = '#6ABE39',
   greenOkayCompliment = '#B2DFD3',
   okayBg = '#6ABE3933',
-
+  
   yellowWarning = '#E8B339',
   yellowWarningCompliment = '#FFF3CA',
   yellow5 = '#F3CC62',
@@ -42,35 +43,41 @@ export enum Colors {
   yellow8 = '#F3EA62',
   yellow10 = '#FAFAB5',
   yellow11 = '#C9E75D',
+  
+  goldCluster = '#47381C',
+  goldWarning = '#d48806',
 
   volcano7 = '#E87040',
   volcano8 = '#F3956A',
-
+  
   magenta7 = '#E0529C',
   magenta8 = '#F37FB7',
-
+  
   redError = '#E84749',
   redErrorCompliment = '#F4BAB8',
+  red2 = '#431418',
   red6 = '#D32029',
   red7 = '#E84749', // Dust Red
-
+  
   whitePure = '#ffffff',
   blackPure = '#000000',
   blackPearl = '#111d2c',
   black9 = '#0C0D0E',
-
+  
   lime8 = '#C9E75D',
-
+  
   purple8 = '#AB7AE0',
-
+  
   cyan = '#58D1C9',
+  cyan1 = '#112123',
   cyan2 = '#113536',
   cyan3 = '#144848',
   cyan5 = '#138585',
   cyan7 = '#33BCB7',
   cyan8 = '#58D1C9',
-
+  
   lightSeaGreen = '#13a8a8',
+  imageGreen = '#2E3911',
 
   blue2 = '#112A45',
   blue3 = '#15395B',
@@ -81,6 +88,8 @@ export enum Colors {
   blue8 = '#65B7F3',
   blue9 = '#8DCFF8',
   blue10 = '#B7E3FA',
+  geekblue1 = '#131629',
+  geekblue3 = '#1C2755',
   geekblue4 = '#203175',
   geekblue5 = '#263EA0',
   geekblue6 = '#2B4ACB',

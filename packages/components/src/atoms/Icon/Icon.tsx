@@ -43,6 +43,19 @@ import {
   YAMLSyntax,
   ValidationResourceLinks,
   PullRequest,
+  CompactNodes,
+  Service,
+  Kustomization,
+  Deployment,
+  DefaultResource,
+  Role,
+  Ingress,
+  Namespace,
+  Pod,
+  Cluster,
+  CustomResource,
+  Secret,
+  Image
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -95,6 +108,19 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   warning: Warning,
   'yaml-syntax': YAMLSyntax,
   checked: Checked,
+  'compact-nodes': CompactNodes,
+  service: Service,
+  kustomization: Kustomization,
+  deployment: Deployment,
+  'default-resource': DefaultResource,
+  role: Role,
+  ingress: Ingress,
+  namespace: Namespace,
+  pod: Pod,
+  cluster: Cluster,
+  'custom-resource': CustomResource,
+  secret: Secret,
+  image: Image,
 };
 
 const Icon: React.FC<IconProps> = props => {
