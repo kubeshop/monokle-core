@@ -14,6 +14,7 @@ import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 
 let baseShowByFilterValue: ShowByFilterOptionType = 'show-by-file';
+let baseActiveKeys: string[] = [];
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status} = props;
@@ -36,7 +37,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   }, [newProblems]);
 
   useEffect(() => {
-    setActiveKeys(Object.keys(filteredProblems));
+    setActiveKeys(baseActiveKeys.length ? baseActiveKeys : Object.keys(filteredProblems));
   }, [filteredProblems]);
 
   useEffect(() => {
@@ -84,6 +85,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           onSelect={(value: any) => {
             setShowByFilterValue(value);
             baseShowByFilterValue = value;
+            baseActiveKeys = [];
           }}
         />
       </ActionsContainer>
@@ -94,7 +96,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
             activeKey={activeKeys}
             ghost
             onChange={keys => {
-              setActiveKeys(typeof keys === 'string' ? [keys] : keys);
+              const changedKeys = typeof keys === 'string' ? [keys] : keys;
+
+              setActiveKeys(changedKeys);
+              baseActiveKeys = changedKeys;
             }}
           >
             {Object.entries(filteredProblems).map(([id, results]) => (
@@ -219,7 +224,7 @@ const ShowNewErrorsButton = styled.span`
 const ValidationsCollapse = styled(Collapse)`
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 24px;
+  margin-top: 16px;
   width: 100%;
 
   & .ant-collapse-header {
@@ -235,6 +240,14 @@ const ValidationsCollapse = styled(Collapse)`
       display: flex;
       align-items: center;
     }
+  }
+
+  & .ant-collapse-item {
+    margin-bottom: 8px;
+  }
+
+  & .ant-collapse-item-active {
+    margin-bottom: 0px;
   }
 
   & .ant-collapse-content-box {
