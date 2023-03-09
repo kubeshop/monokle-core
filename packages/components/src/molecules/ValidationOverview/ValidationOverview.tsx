@@ -13,6 +13,8 @@ import {getItemRowId} from './utils';
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 
+let baseShowByFilterValue: ShowByFilterOptionType = 'show-by-file';
+
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status} = props;
   const {customMessage, newProblemsIntroducedType, skeletonStyle = {}, validationResponse, onProblemSelect} = props;
@@ -20,7 +22,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
-  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>('show-by-file');
+  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseShowByFilterValue);
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
@@ -79,7 +81,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           dropdownMatchSelectWidth={false}
           bordered={false}
           options={showByFilterOptions}
-          onSelect={(value: any) => setShowByFilterValue(value)}
+          onSelect={(value: any) => {
+            setShowByFilterValue(value);
+            baseShowByFilterValue = value;
+          }}
         />
       </ActionsContainer>
 
