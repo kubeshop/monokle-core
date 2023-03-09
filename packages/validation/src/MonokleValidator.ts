@@ -23,6 +23,7 @@ import {
   findDefaultVersion
 } from "./utils/customResourceDefinitions.js";
 import { PluginLoadError } from "./utils/error.js";
+import invariant from "./utils/invariant.js";
 import { isDefined } from "./utils/isDefined.js";
 import { SimpleCustomValidator } from "./validators/custom/simpleValidator.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
@@ -247,7 +248,7 @@ export class MonokleValidator implements Validator {
         if (pluginPromise.status === "fulfilled") {
           this.#plugins.push(pluginPromise.value);
         } else {
-          (invariant as any)(pluginPromise.reason instanceof PluginLoadError);
+          invariant(pluginPromise.reason instanceof PluginLoadError);
           this.#failedPlugins.push(pluginPromise.reason.name);
           if (config.settings?.["debug"]) {
             console.error(`[validator] ${pluginPromise.reason.message}`);

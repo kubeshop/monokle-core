@@ -4,7 +4,6 @@ import { isNode, Node } from "yaml";
 
 import get from "lodash/get.js";
 
-import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { z } from "zod";
 import { AbstractPlugin } from "../../common/AbstractPlugin.js";
@@ -17,6 +16,7 @@ import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
 import { LoadedPolicy, OpaProperties, PolicyError } from "./types.js";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 import { isKustomizationResource } from "../../references/utils/kustomizeRefs.js";
+import invariant from "../../utils/invariant.js";
 
 type Settings = z.infer<typeof Settings>;
 
@@ -113,8 +113,8 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
     rule: RuleMetadata<OpaProperties>
   ): ValidationResult[] {
     const entrypoint = rule.properties?.entrypoint;
-    (invariant as any)(entrypoint, "Validator's rule misconfigured");
-    (invariant as any)(this.validator, "Validator has not been configured properly");
+    invariant(entrypoint, "Validator's rule misconfigured");
+    invariant(this.validator, "Validator has not been configured properly");
     const evaluation = this.validator.evaluate(resource.content, entrypoint);
 
     const violations: PolicyError[] = evaluation[0]?.result ?? [];
