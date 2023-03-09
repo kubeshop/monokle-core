@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.0.5
+
+### Patch Changes
+
+- 4553ab1: Base active keys + base show by filter value
+
 ## 1.0.4
 
 ### Patch Changes
