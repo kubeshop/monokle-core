@@ -1,5 +1,5 @@
-import invariant from "tiny-invariant";
 import { Location, ValidationResult } from "../common/sarif.js";
+import invariant from "./invariant.js";
 
 export function getResourceId(result: ValidationResult): string | undefined {
   return getResourceLocation(result).physicalLocation?.artifactLocation.uri;

@@ -1,9 +1,9 @@
 import keyBy from "lodash/keyBy.js";
-import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { RuleMap } from "../config/parse.js";
 import { NOT_CONFIGURED_ERR_MSG } from "../constants.js";
 import { PluginMetadataWithConfig, RuleMetadataWithConfig } from "../types.js";
+import invariant from "../utils/invariant.js";
 import { getResourceId } from "../utils/sarif.js";
 import {
   ValidationResult,
@@ -135,7 +135,7 @@ export abstract class AbstractPlugin implements Plugin {
     return {
       ruleId,
       rule: {
-        index,
+        index: index ?? 0,
         toolComponent: {
           name: this.name,
         },
@@ -243,7 +243,7 @@ export abstract class AbstractPlugin implements Plugin {
   protected getRuleConfig(ruleId: string): RuleConfig {
     const ruleConfig = this._ruleConfig.get(ruleId);
     invariant(ruleConfig, `rule_config_not_found`);
-    return ruleConfig;
+    return ruleConfig as RuleConfig;
   }
 
   protected merge(

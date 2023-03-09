@@ -1,18 +1,8 @@
-import { v5 } from "uuid";
-import { parse } from "path";
-import glob from "tiny-glob";
-import { readFile as readFileFromFs } from "fs/promises";
-import chunkArray from "lodash/chunk.js";
+import { Resource } from "@monokle/validation";
 import { LineCounter, parseAllDocuments, parseDocument } from "yaml";
-import { Resource } from "../index.js";
 
 export const KUSTOMIZATION_KIND = "Kustomization";
 export const KUSTOMIZATION_API_GROUP = "kustomize.config.k8s.io";
-
-/**
- * This is all copied from cli/src/utils - need to be moved to their own shared package
- * so they can be reused across both cli and validator - see https://github.com/kubeshop/monokle-core/issues/63
- */
 
 export type File = {
   id: string;
@@ -30,11 +20,11 @@ export function extractK8sResources(files: File[]): Resource[] {
     for (const document of documents) {
       const content = document.toJS();
 
-      if (document.errors.length) {
+      if (document.errors.length || !content) {
         continue;
       }
 
-      const rawFileOffset = lineCounter.linePos(document.range[0]).line ;
+      const rawFileOffset = lineCounter.linePos(document.range[0]).line;
       const fileOffset = rawFileOffset === 1 ? 0 : rawFileOffset;
 
       const resourceBase = {
@@ -109,7 +99,7 @@ function isKubernetesLike(content: any): content is KubernetesLike {
   );
 }
 
-// some (older) kustomization yamls don't contain kind/group properties to identify them as such
+// Some (older) kustomization yamls don't contain kind/group properties to identify them as such
 // they are identified only by their name
 function isUntypedKustomizationFile(filePath = ""): boolean {
   return /kustomization*.yaml/.test(filePath.toLowerCase().trim());
@@ -134,16 +124,11 @@ export function parseAllYamlDocuments(text: string, lineCounter?: LineCounter) {
   });
 }
 
-function extractNamespace(content: any) {
-  // namespace could be an object if it's a helm template value...
-  return content.metadata?.namespace &&
-  typeof content.metadata.namespace === "string"
-    ? content.metadata.namespace
-    : undefined;
+function extractNamespace(content: any): string | undefined {
+  const namespace = content.metadata?.namespace;
+
+  return namespace && typeof namespace === "string" ? namespace : undefined;
 }
-
-
-const RESOURCE_UUID_NAMESPACE = "6fa71997-8aa8-4b89-b987-cec4fd3de770";
 
 export const createResourceId = (
   fileId: string,
@@ -151,10 +136,7 @@ export const createResourceId = (
   kind: string,
   namespace?: string | null
 ): string => {
-  return v5(
-    `${fileId}${kind}${name}${namespace || ""}`,
-    RESOURCE_UUID_NAMESPACE
-  );
+  return murmurHash(`${fileId}${kind}${name}${namespace || ""}`);
 };
 
 export function createResourceName(
@@ -162,17 +144,6 @@ export function createResourceName(
   content: any,
   kind: string
 ): string {
-  const parsedPath = parse(filePath);
-
-  // dirname for kustomizations
-  // if (
-  //   kind === KUSTOMIZATION_KIND &&
-  //   (!content?.apiVersion ||
-  //     content.apiVersion.startsWith(KUSTOMIZATION_API_GROUP))
-  // ) {
-  //   return parsedPath.dir.replace(/^\/*/, '');
-  // }
-
   try {
     //  metadata name
     return typeof content.metadata.name === "string"
@@ -180,7 +151,7 @@ export function createResourceName(
       : JSON.stringify(content.metadata.name).trim();
   } catch (error) {
     // filename
-    return parsedPath.name;
+    return filePath;
   }
 }
 
@@ -189,30 +160,88 @@ export function getResourcesForPath(
   resources: Resource[] | undefined
 ) {
   return resources
-    ? resources.filter(resource => resource.filePath === filePath)
+    ? resources.filter((resource) => resource.filePath === filePath)
     : [];
 }
 
-export async function readDirectory(directoryPath: string): Promise<File[]> {
-  const filePaths = await glob(`${directoryPath}/**/*.{yaml,yml}`);
-  const files: File[] = [];
+/**
+ * Fast, non-cryptographic hash function.
+ *
+ * All credits go to Perezd's node-murmurhash.
+ *
+ * @see https://en.wikipedia.org/wiki/MurmurHash
+ * @see https://github.com/perezd/node-murmurhash
+ */
+export function murmurHash(
+  key: string | Uint8Array,
+  seed: number = 1337
+): string {
+  if (typeof key === "string") key = new TextEncoder().encode(key);
 
-  for (const chunk of chunkArray(filePaths, 5)) {
-    const promise = await Promise.allSettled(
-      chunk.map((path) => {
-        return readFileFromFs(path, "utf8").then(
-          (content): File => ({ id: path, path, content })
-        );
-      })
-    );
+  const remainder = key.length & 3;
+  const bytes = key.length - remainder;
+  const c1 = 0xcc9e2d51;
+  const c2 = 0x1b873593;
 
-    for (const result of promise) {
-      if (result.status === "rejected") {
-        continue;
-      }
-      files.push(result.value);
-    }
+  let i = 0;
+  let h1 = seed;
+  let k1, h1b;
+
+  while (i < bytes) {
+    k1 =
+      (key[i] & 0xff) |
+      ((key[++i] & 0xff) << 8) |
+      ((key[++i] & 0xff) << 16) |
+      ((key[++i] & 0xff) << 24);
+    ++i;
+
+    k1 =
+      ((k1 & 0xffff) * c1 + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
+    k1 = (k1 << 15) | (k1 >>> 17);
+    k1 =
+      ((k1 & 0xffff) * c2 + ((((k1 >>> 16) * c2) & 0xffff) << 16)) & 0xffffffff;
+
+    h1 ^= k1;
+    h1 = (h1 << 13) | (h1 >>> 19);
+    h1b =
+      ((h1 & 0xffff) * 5 + ((((h1 >>> 16) * 5) & 0xffff) << 16)) & 0xffffffff;
+    h1 = (h1b & 0xffff) + 0x6b64 + ((((h1b >>> 16) + 0xe654) & 0xffff) << 16);
   }
 
-  return files;
+  k1 = 0;
+
+  switch (remainder) {
+    case 3:
+      k1 ^= (key[i + 2] & 0xff) << 16;
+    case 2:
+      k1 ^= (key[i + 1] & 0xff) << 8;
+    case 1:
+      k1 ^= key[i] & 0xff;
+
+      k1 =
+        ((k1 & 0xffff) * c1 + ((((k1 >>> 16) * c1) & 0xffff) << 16)) &
+        0xffffffff;
+      k1 = (k1 << 15) | (k1 >>> 17);
+      k1 =
+        ((k1 & 0xffff) * c2 + ((((k1 >>> 16) * c2) & 0xffff) << 16)) &
+        0xffffffff;
+      h1 ^= k1;
+  }
+
+  h1 ^= key.length;
+
+  h1 ^= h1 >>> 16;
+  h1 =
+    ((h1 & 0xffff) * 0x85ebca6b +
+      ((((h1 >>> 16) * 0x85ebca6b) & 0xffff) << 16)) &
+    0xffffffff;
+  h1 ^= h1 >>> 13;
+  h1 =
+    ((h1 & 0xffff) * 0xc2b2ae35 +
+      ((((h1 >>> 16) * 0xc2b2ae35) & 0xffff) << 16)) &
+    0xffffffff;
+  h1 ^= h1 >>> 16;
+
+  const r = h1 >>> 0;
+  return String(r);
 }

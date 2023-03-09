@@ -7,6 +7,7 @@ export type ValidationOverviewType = {
   containerStyle?: React.CSSProperties;
   customMessage?: string;
   height?: number;
+  showOnlyByResource?: boolean;
   newProblemsIntroducedType?: string;
   selectedProblem?: ValidationResult;
   skeletonStyle?: React.CSSProperties;
@@ -33,3 +34,9 @@ export type ProblemsType = {
 export type NewProblemsType = {data: ProblemsType; resultsCount: number};
 
 export type ShowByFilterOptionType = 'show-by-file' | 'show-by-resource' | 'show-by-rule';
+
+export type BaseDataType = {
+  baseActiveKeys: string[];
+  baseShowByFilterValue: ShowByFilterOptionType;
+  baseShowOnlyByResource: boolean;
+};

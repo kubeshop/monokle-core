@@ -2,30 +2,70 @@ import {Colors} from '@/styles/Colors';
 import {CloseOutlined} from '@ant-design/icons';
 import {getRuleForResult} from '@monokle/validation';
 import {Collapse, Select, Skeleton} from 'antd';
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {CollapseItemRow} from './CollapseItemRow';
-import {DEFAULT_FILTERS_VALUE, newErrorsTextMap, showByFilterOptions} from './constants';
+import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
-import {FiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
+import {BaseDataType, FiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
 import {getItemRowId} from './utils';
 
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 
+let baseData: BaseDataType = {
+  baseActiveKeys: [],
+  baseShowByFilterValue: 'show-by-file',
+  baseShowOnlyByResource: false,
+};
+
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status} = props;
+  const {showOnlyByResource} = props;
   const {customMessage, newProblemsIntroducedType, skeletonStyle = {}, validationResponse, onProblemSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
-  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>('show-by-file');
+  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseData.baseShowByFilterValue);
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
   const {newProblems, problems} = useCurrentAndNewProblems(showByFilterValue, validationResponse);
   const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue, filtersValue);
+
+  const showByFilterOptions = useMemo(
+    () => [
+      {value: 'show-by-file', label: 'Show by file', disabled: showOnlyByResource},
+      {value: 'show-by-resource', label: 'Show by resource'},
+      {value: 'show-by-rule', label: 'Show by rule', disabled: showOnlyByResource},
+    ],
+    [showOnlyByResource]
+  );
+
+  useEffect(() => {
+    if (typeof showOnlyByResource === 'undefined') {
+      return;
+    }
+
+    if (showOnlyByResource === true) {
+      if (showByFilterValue !== 'show-by-resource') {
+        setShowByFilterValue('show-by-resource');
+      }
+
+      if (baseData.baseShowOnlyByResource === false) {
+        baseData.baseActiveKeys = [];
+      }
+    } else if (!showOnlyByResource) {
+      setShowByFilterValue(baseData.baseShowByFilterValue);
+
+      if (baseData.baseShowOnlyByResource === true) {
+        baseData.baseActiveKeys = [];
+      }
+    }
+
+    baseData.baseShowOnlyByResource = showOnlyByResource;
+  }, [showOnlyByResource]);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -34,7 +74,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   }, [newProblems]);
 
   useEffect(() => {
-    setActiveKeys(Object.keys(filteredProblems));
+    setActiveKeys(baseData.baseActiveKeys.length ? baseData.baseActiveKeys : Object.keys(filteredProblems));
   }, [filteredProblems]);
 
   useEffect(() => {
@@ -79,7 +119,11 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           dropdownMatchSelectWidth={false}
           bordered={false}
           options={showByFilterOptions}
-          onSelect={(value: any) => setShowByFilterValue(value)}
+          onSelect={(value: any) => {
+            setShowByFilterValue(value);
+            baseData.baseShowByFilterValue = value;
+            baseData.baseActiveKeys = [];
+          }}
         />
       </ActionsContainer>
 
@@ -89,7 +133,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
             activeKey={activeKeys}
             ghost
             onChange={keys => {
-              setActiveKeys(typeof keys === 'string' ? [keys] : keys);
+              const changedKeys = typeof keys === 'string' ? [keys] : keys;
+
+              setActiveKeys(changedKeys);
+              baseData.baseActiveKeys = changedKeys;
             }}
           >
             {Object.entries(filteredProblems).map(([id, results]) => (
@@ -214,7 +261,7 @@ const ShowNewErrorsButton = styled.span`
 const ValidationsCollapse = styled(Collapse)`
   overflow-y: auto;
   overflow-x: hidden;
-  margin-top: 24px;
+  margin-top: 16px;
   width: 100%;
 
   & .ant-collapse-header {
@@ -230,6 +277,14 @@ const ValidationsCollapse = styled(Collapse)`
       display: flex;
       align-items: center;
     }
+  }
+
+  & .ant-collapse-item {
+    margin-bottom: 8px;
+  }
+
+  & .ant-collapse-item-active {
+    margin-bottom: 0px;
   }
 
   & .ant-collapse-content-box {

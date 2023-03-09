@@ -1,28 +1,28 @@
 import clone from "lodash/clone.js";
 import difference from "lodash/difference.js";
 import isEqual from "lodash/isEqual.js";
-import invariant from "tiny-invariant";
 import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
 import type {
   CustomSchema,
   Incremental,
   Plugin,
-  Resource
+  Resource,
 } from "./common/types.js";
 import { Config, PluginMap } from "./config/parse.js";
 import {
   PluginMetadataWithConfig,
   PluginName,
   RuleMetadataWithConfig,
-  Validator
+  Validator,
 } from "./types.js";
 import { nextTick, throwIfAborted } from "./utils/abort.js";
 import {
   extractSchema,
-  findDefaultVersion
+  findDefaultVersion,
 } from "./utils/customResourceDefinitions.js";
 import { PluginLoadError } from "./utils/error.js";
+import invariant from "./utils/invariant.js";
 import { isDefined } from "./utils/isDefined.js";
 import { DEV_MODE_TOKEN } from "./validators/custom/constants.js";
 import { DevCustomValidator } from "./validators/custom/devValidator.js";
@@ -41,47 +41,6 @@ export function createMonokleValidator(
   fallback?: PluginMap
 ) {
   return new MonokleValidator(loader, fallback);
-}
-
-/**
- * Creates a Monokle validator that can dynamically fetch custom plugins.
- *
- * @remark NodeJs does not yet support ESM HTTP URLs. Instead use `createExtensibleNodeMonokleValidator`.
- */
-export function createExtensibleMonokleValidator(
-  parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
-) {
-  return new MonokleValidator(async (pluginName: string) => {
-    switch (pluginName) {
-      case "open-policy-agent":
-        const wasmLoader = new RemoteWasmLoader();
-        return new OpenPolicyAgentValidator(parser, wasmLoader);
-      case "resource-links":
-        return new ResourceLinksValidator();
-      case "yaml-syntax":
-        return new YamlValidator(parser);
-      case "labels":
-        const labelPlugin = await import("./validators/labels/plugin.js");
-        return new SimpleCustomValidator(labelPlugin.default, parser);
-      case "kubernetes-schema":
-        return new KubernetesSchemaValidator(parser, schemaLoader);
-      case DEV_MODE_TOKEN:
-        return new DevCustomValidator(parser);
-      default:
-        try {
-          const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
-          const customPlugin = await import(/* @vite-ignore */ url);
-          return new SimpleCustomValidator(customPlugin.default, parser);
-        } catch (err) {
-          throw new Error(
-            err instanceof Error
-              ? `plugin_not_found: ${err.message}`
-              : `plugin_not_found: ${String(err)}`
-          );
-        }
-    }
-  });
 }
 
 export function createDefaultMonokleValidator(
@@ -122,7 +81,7 @@ const DEFAULT_PLUGIN_MAP = {
   "open-policy-agent": true,
   "resource-links": true,
   "yaml-syntax": true,
-  "kubernetes-schema": true
+  "kubernetes-schema": true,
 };
 
 export class MonokleValidator implements Validator {
@@ -263,7 +222,8 @@ export class MonokleValidator implements Validator {
       // Unload stale plugins
       const previousPluginNames = Object.keys(this.#previousPluginsInit ?? {});
       const stalePlugins = difference(previousPluginNames, newPluginNames);
-      this.doUnload(stalePlugins);
+
+      await this.doUnload(stalePlugins);
 
       // Load new plugins
       const missingPlugins = newPluginNames.filter(
@@ -282,7 +242,9 @@ export class MonokleValidator implements Validator {
         })
       );
 
-      if (signal.aborted) return;
+      if (signal.aborted) {
+        return;
+      }
 
       loading.forEach((pluginPromise) => {
         if (pluginPromise.status === "fulfilled") {
@@ -310,7 +272,7 @@ export class MonokleValidator implements Validator {
       this.#plugins.map((p) =>
         p.configure({
           rules: config.rules,
-          settings: config.settings
+          settings: config.settings,
         })
       )
     );
@@ -331,10 +293,10 @@ export class MonokleValidator implements Validator {
    * Validates the resources.
    */
   async validate({
-                   resources,
-                   incremental,
-                   abortSignal: externalAbortSignal
-                 }: {
+    resources,
+    incremental,
+    abortSignal: externalAbortSignal,
+  }: {
     resources: Resource[];
     incremental?: Incremental;
     abortSignal?: AbortSignal;
@@ -370,7 +332,7 @@ export class MonokleValidator implements Validator {
     return {
       $schema: "https://json.schemastore.org/sarif-2.1.0.json",
       version: "2.1.0",
-      runs
+      runs,
     };
   }
 
@@ -399,7 +361,7 @@ export class MonokleValidator implements Validator {
   async registerCustomSchema(schema: CustomSchema) {
     if (!this.isPluginLoaded("kubernetes-schema")) {
       this.debug("Cannot register custom schema.", {
-        reason: "Kubernetes Schema plugin must be loaded."
+        reason: "Kubernetes Schema plugin must be loaded.",
       });
       return;
     }
@@ -407,7 +369,7 @@ export class MonokleValidator implements Validator {
     const key = `${schema.apiVersion}-${schema.kind}`;
     if (this.#customSchemas.has(key)) {
       this.debug("Cannot register custom schema.", {
-        reason: "The schema is already registered."
+        reason: "The schema is already registered.",
       });
       return;
     }
@@ -428,7 +390,7 @@ export class MonokleValidator implements Validator {
   async unregisterCustomSchema(schema: Omit<CustomSchema, "schema">) {
     if (!this.isPluginLoaded("kubernetes-schema")) {
       this.debug("Cannot unregister custom schema.", {
-        reason: "Kubernetes Schema plugin must be loaded."
+        reason: "Kubernetes Schema plugin must be loaded.",
       });
       return;
     }
@@ -436,7 +398,7 @@ export class MonokleValidator implements Validator {
     const key = `${schema.apiVersion}-${schema.kind}`;
     if (this.#customSchemas.has(key)) {
       this.debug("Cannot register custom schema.", {
-        reason: "The schema is not registered."
+        reason: "The schema is not registered.",
       });
       return;
     }
