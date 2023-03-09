@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.1.0
+
+### Minor Changes
+
+- cc09277: Add the resource graph
+
 ## 1.0.7
 
 ### Patch Changes
