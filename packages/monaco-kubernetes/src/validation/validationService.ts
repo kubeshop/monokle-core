@@ -111,7 +111,14 @@ export class MonokleService implements MonokleLanguageService {
                 ? DiagnosticSeverity.Error
                 : DiagnosticSeverity.Warning;
 
-            return Diagnostic.create(range, result.message.text, severity);
+            const source = "monokle";
+            return Diagnostic.create(
+              range,
+              result.message.text,
+              severity,
+              result.ruleId,
+              source
+            );
           });
         })
         .filter(isDefined);

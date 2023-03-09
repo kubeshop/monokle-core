@@ -3,7 +3,7 @@ import type { IEvent } from "monaco-editor";
 import type { Config } from "@monokle/validation";
 
 /**
- * Configure `monaco-yaml` diagnostics options.
+ * Configure `monaco-kubernetes` diagnostics options.
  *
  * @param options The options to set.
  */
