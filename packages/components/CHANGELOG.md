@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.0.7
+
+### Patch Changes
+
+- 35b0aaa: showOnlyByResource prop on ValidationOverview
+
 ## 1.0.6
 
 ### Patch Changes
