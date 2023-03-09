@@ -7,6 +7,7 @@ export type ValidationOverviewType = {
   containerStyle?: React.CSSProperties;
   customMessage?: string;
   height?: number;
+  isInClusterMode?: boolean;
   newProblemsIntroducedType?: string;
   selectedProblem?: ValidationResult;
   skeletonStyle?: React.CSSProperties;

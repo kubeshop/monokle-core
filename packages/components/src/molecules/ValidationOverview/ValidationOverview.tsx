@@ -2,10 +2,10 @@ import {Colors} from '@/styles/Colors';
 import {CloseOutlined} from '@ant-design/icons';
 import {getRuleForResult} from '@monokle/validation';
 import {Collapse, Select, Skeleton} from 'antd';
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {CollapseItemRow} from './CollapseItemRow';
-import {DEFAULT_FILTERS_VALUE, newErrorsTextMap, showByFilterOptions} from './constants';
+import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
 import {FiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
 import {getItemRowId} from './utils';
@@ -15,9 +15,10 @@ import ValidationOverviewFilters from './ValidationOverviewFilters';
 
 let baseShowByFilterValue: ShowByFilterOptionType = 'show-by-file';
 let baseActiveKeys: string[] = [];
+let baseIsInClusterMode: boolean = false;
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status} = props;
+  const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status, isInClusterMode} = props;
   const {customMessage, newProblemsIntroducedType, skeletonStyle = {}, validationResponse, onProblemSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
@@ -29,6 +30,35 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
   const {newProblems, problems} = useCurrentAndNewProblems(showByFilterValue, validationResponse);
   const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue, filtersValue);
+
+  const showByFilterOptions = useMemo(
+    () => [
+      {value: 'show-by-file', label: 'Show by file', disabled: isInClusterMode},
+      {value: 'show-by-resource', label: 'Show by resource'},
+      {value: 'show-by-rule', label: 'Show by rule', disabled: isInClusterMode},
+    ],
+    [isInClusterMode]
+  );
+
+  useEffect(() => {
+    if (typeof isInClusterMode === 'undefined') {
+      return;
+    }
+
+    if (isInClusterMode && showByFilterValue !== 'show-by-resource') {
+      setShowByFilterValue('show-by-resource');
+
+      if (!baseIsInClusterMode) {
+        baseActiveKeys = [];
+      }
+
+      baseIsInClusterMode = true;
+    } else {
+      setShowByFilterValue(baseShowByFilterValue);
+      baseActiveKeys = [];
+      baseIsInClusterMode = false;
+    }
+  }, [isInClusterMode]);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
