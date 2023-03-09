@@ -21,12 +21,7 @@ export function configure(settings: LanguageSettings = {}): void {
 
 export const SETTINGS = createLanguageSettingsContainer({
   validation: {
-    plugins: {
-      "open-policy-agent": true,
-      "yaml-syntax": true,
-      "kubernetes-schema": true,
-      argo: true,
-    },
+    plugins: {},
   },
 });
 
