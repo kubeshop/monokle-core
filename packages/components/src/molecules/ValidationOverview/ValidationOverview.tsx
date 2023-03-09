@@ -7,24 +7,27 @@ import styled from 'styled-components';
 import {CollapseItemRow} from './CollapseItemRow';
 import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
-import {FiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
+import {BaseDataType, FiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
 import {getItemRowId} from './utils';
 
 import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 
-let baseShowByFilterValue: ShowByFilterOptionType = 'show-by-file';
-let baseActiveKeys: string[] = [];
-let baseIsInClusterMode: boolean = false;
+let baseData: BaseDataType = {
+  baseActiveKeys: [],
+  baseShowByFilterValue: 'show-by-file',
+  baseShowOnlyByResource: false,
+};
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status, isInClusterMode} = props;
+  const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status} = props;
+  const {showOnlyByResource} = props;
   const {customMessage, newProblemsIntroducedType, skeletonStyle = {}, validationResponse, onProblemSelect} = props;
 
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
-  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseShowByFilterValue);
+  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseData.baseShowByFilterValue);
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
@@ -33,32 +36,36 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
   const showByFilterOptions = useMemo(
     () => [
-      {value: 'show-by-file', label: 'Show by file', disabled: isInClusterMode},
+      {value: 'show-by-file', label: 'Show by file', disabled: showOnlyByResource},
       {value: 'show-by-resource', label: 'Show by resource'},
-      {value: 'show-by-rule', label: 'Show by rule', disabled: isInClusterMode},
+      {value: 'show-by-rule', label: 'Show by rule', disabled: showOnlyByResource},
     ],
-    [isInClusterMode]
+    [showOnlyByResource]
   );
 
   useEffect(() => {
-    if (typeof isInClusterMode === 'undefined') {
+    if (typeof showOnlyByResource === 'undefined') {
       return;
     }
 
-    if (isInClusterMode && showByFilterValue !== 'show-by-resource') {
-      setShowByFilterValue('show-by-resource');
-
-      if (!baseIsInClusterMode) {
-        baseActiveKeys = [];
+    if (showOnlyByResource === true) {
+      if (showByFilterValue !== 'show-by-resource') {
+        setShowByFilterValue('show-by-resource');
       }
 
-      baseIsInClusterMode = true;
-    } else {
-      setShowByFilterValue(baseShowByFilterValue);
-      baseActiveKeys = [];
-      baseIsInClusterMode = false;
+      if (baseData.baseShowOnlyByResource === false) {
+        baseData.baseActiveKeys = [];
+      }
+    } else if (!showOnlyByResource) {
+      setShowByFilterValue(baseData.baseShowByFilterValue);
+
+      if (baseData.baseShowOnlyByResource === true) {
+        baseData.baseActiveKeys = [];
+      }
     }
-  }, [isInClusterMode]);
+
+    baseData.baseShowOnlyByResource = showOnlyByResource;
+  }, [showOnlyByResource]);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -67,7 +74,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   }, [newProblems]);
 
   useEffect(() => {
-    setActiveKeys(baseActiveKeys.length ? baseActiveKeys : Object.keys(filteredProblems));
+    setActiveKeys(baseData.baseActiveKeys.length ? baseData.baseActiveKeys : Object.keys(filteredProblems));
   }, [filteredProblems]);
 
   useEffect(() => {
@@ -114,8 +121,8 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           options={showByFilterOptions}
           onSelect={(value: any) => {
             setShowByFilterValue(value);
-            baseShowByFilterValue = value;
-            baseActiveKeys = [];
+            baseData.baseShowByFilterValue = value;
+            baseData.baseActiveKeys = [];
           }}
         />
       </ActionsContainer>
@@ -129,7 +136,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
               const changedKeys = typeof keys === 'string' ? [keys] : keys;
 
               setActiveKeys(changedKeys);
-              baseActiveKeys = changedKeys;
+              baseData.baseActiveKeys = changedKeys;
             }}
           >
             {Object.entries(filteredProblems).map(([id, results]) => (
