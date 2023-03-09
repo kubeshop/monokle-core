@@ -1,8 +1,5 @@
 import { expect, it } from "vitest";
-import { ResourceParser } from "../common/resourceParser.js";
-import { Resource } from "../common/types.js";
-import { createMonokleValidator } from "../MonokleValidator.js";
-import { SimpleCustomValidator } from "../validators/custom/simpleValidator.js";
+import { ResourceParser,createMonokleValidator, SimpleCustomValidator  } from "../index.js";
 import vm from "vm";
 
 // Usage note: This library relies on fetch being on global scope!

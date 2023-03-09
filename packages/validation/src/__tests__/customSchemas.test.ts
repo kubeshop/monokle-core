@@ -1,9 +1,8 @@
 import { expect, it } from "vitest";
-import { Resource } from "../common/types.js";
+import { Resource, createDefaultMonokleValidator } from "../index.js";
 import YAML from "yaml";
 
 import "isomorphic-fetch";
-import { createDefaultMonokleValidator } from "../MonokleValidator.js";
 
 it("should work with custom schemas", async () => {
   const validator = createDefaultMonokleValidator();
