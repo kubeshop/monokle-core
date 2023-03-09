@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.0.6
+
+### Patch Changes
+
+- 606d8a8: Handle show by resource in cluster mode
+
 ## 1.0.5
 
 ### Patch Changes
