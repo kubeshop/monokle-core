@@ -1,3 +1,4 @@
+// @ts-ignore
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
 import { isNode, Node } from "yaml";
 
@@ -13,11 +14,12 @@ import { Incremental, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
-import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
+import { LoadedPolicy, OpaProperties, PolicyError } from "./types.js";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 import { isKustomizationResource } from "../../references/utils/kustomizeRefs.js";
 
 type Settings = z.infer<typeof Settings>;
+
 const Settings = z.object({
   wasmSrc: z
     .string()
@@ -111,8 +113,8 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
     rule: RuleMetadata<OpaProperties>
   ): ValidationResult[] {
     const entrypoint = rule.properties?.entrypoint;
-    invariant(entrypoint, "Validator's rule misconfigured");
-    invariant(this.validator, "Validator has not been configured properly");
+    (invariant as any)(entrypoint, "Validator's rule misconfigured");
+    (invariant as any)(this.validator, "Validator has not been configured properly");
     const evaluation = this.validator.evaluate(resource.content, entrypoint);
 
     const violations: PolicyError[] = evaluation[0]?.result ?? [];

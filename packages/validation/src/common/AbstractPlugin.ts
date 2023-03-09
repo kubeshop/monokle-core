@@ -124,7 +124,7 @@ export abstract class AbstractPlugin implements Plugin {
     args: Omit<ValidationResult, "ruleId" | "rule">
   ): ValidationResult | undefined {
     const index = this._ruleReverseLookup.get(ruleId);
-    invariant(index !== undefined, "rules misconfigured");
+    (invariant as any)(index !== undefined, "rules misconfigured");
 
     if (!this.isRuleEnabled(ruleId)) {
       return undefined;
@@ -135,7 +135,7 @@ export abstract class AbstractPlugin implements Plugin {
     return {
       ruleId,
       rule: {
-        index,
+        index: index ?? 0,
         toolComponent: {
           name: this.name,
         },
@@ -214,7 +214,7 @@ export abstract class AbstractPlugin implements Plugin {
     resources: Resource[],
     incremental?: Incremental
   ): Promise<ValidationRun> {
-    invariant(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
+    (invariant as any)(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
 
     let results = await this.doValidate(resources, incremental);
 
@@ -242,8 +242,8 @@ export abstract class AbstractPlugin implements Plugin {
 
   protected getRuleConfig(ruleId: string): RuleConfig {
     const ruleConfig = this._ruleConfig.get(ruleId);
-    invariant(ruleConfig, `rule_config_not_found`);
-    return ruleConfig;
+    (invariant as any)(ruleConfig, `rule_config_not_found`);
+    return ruleConfig as RuleConfig;
   }
 
   protected merge(
