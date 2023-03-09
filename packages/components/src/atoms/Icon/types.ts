@@ -37,4 +37,17 @@ export type IconNames =
   | 'validation-opa'
   | 'validation-k8s-schema'
   | 'validation-resource-links'
-  | 'validation-yaml-syntax';
+  | 'validation-yaml-syntax'
+  | 'compact-nodes'
+  | 'cluster'
+  | 'custom-resource'
+  | 'default-resource'
+  | 'deployment'
+  | 'ingress'
+  | 'kustomization'
+  | 'pod'
+  | 'namespace'
+  | 'role'
+  | 'service'
+  | 'secret'
+  | 'image';
