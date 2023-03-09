@@ -1,7 +1,7 @@
 
 import fs from "fs";
 import path from "path";
-import fetch from 'node-fetch';
+import fetch from 'isomorphic-fetch';
 import requireFromString from 'require-from-string';
 import virtual from '@rollup/plugin-virtual';
 import { rollup } from 'rollup';
@@ -16,7 +16,10 @@ import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validat
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 
-export function createExtensibleNodeMonokleValidator(
+/**
+ * Creates a Monokle validator that can dynamically fetch custom plugins.
+ */
+export function createExtensibleMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
   schemaLoader: SchemaLoader = new SchemaLoader()
 ) {
@@ -51,7 +54,7 @@ async function bundlePluginCode(code:string) {
   const bundle = await rollup({
     input: 'pluginCode',
     plugins: [
-      virtual({
+      (virtual as any)({
         pluginCode: code,
       }) as any,
     ],

@@ -14,8 +14,8 @@ export function getRuleForResult(
   const run = response.runs.find((run) => run.tool.driver.name === tool);
   const ruleIndex = result.rule.index;
   const rule = run?.tool.driver.rules[ruleIndex];
-  invariant(rule, "rule not found");
-  return rule;
+  (invariant as any)(rule, "rule not found");
+  return rule as RuleMetadata;
 }
 
 export function createResourceErrorMap(

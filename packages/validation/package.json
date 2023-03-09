@@ -22,6 +22,20 @@
       "module": "./lib/custom.js"
     }
   },
+  "imports": {
+    "#read-config": {
+      "node": "./lib/config/read.node.js",
+      "default": "./lib/config/read.browser.js"
+    },
+    "#remote-wasm-loader": {
+      "node": "./lib/validators/open-policy-agent/wasmLoader/RemoteWasmLoader.node.js",
+      "default": "./lib/validators/open-policy-agent/wasmLoader/RemoteWasmLoader.browser.js"
+    },
+    "#extensible-monokle-validator": {
+      "node": "./lib/createExtensibleMonokleValidator.node.js",
+      "default": "./lib/createExtensibleMonokleValidator.browser.js"
+    }
+  },
   "files": [
     "lib/**"
   ],
@@ -55,8 +69,7 @@
     "type-fest": "3.0.0",
     "typescript": "4.8.3",
     "uuid": "9.0.0",
-    "vite": "3.1.2",
-    "vitest": "0.23.4"
+    "vitest": "0.29.2"
   },
   "dependencies": {
     "@open-policy-agent/opa-wasm": "1.8.0",
@@ -71,9 +84,5 @@
     "tiny-invariant": "1.2.0",
     "yaml": "2.1.1",
     "zod": "3.19.1"
-  },
-  "browser": {
-    "./lib/validators/open-policy-agent/wasmLoader/FileWasmLoader.js": false,
-    "./lib/config/read.node.js": false
   }
 }

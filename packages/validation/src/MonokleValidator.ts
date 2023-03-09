@@ -24,8 +24,6 @@ import {
 } from "./utils/customResourceDefinitions.js";
 import { PluginLoadError } from "./utils/error.js";
 import { isDefined } from "./utils/isDefined.js";
-import { DEV_MODE_TOKEN } from "./validators/custom/constants.js";
-import { DevCustomValidator } from "./validators/custom/devValidator.js";
 import { SimpleCustomValidator } from "./validators/custom/simpleValidator.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
 import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
@@ -36,6 +34,7 @@ import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
+
 export function createMonokleValidator(
   loader: PluginLoader,
   fallback?: PluginMap
@@ -43,46 +42,6 @@ export function createMonokleValidator(
   return new MonokleValidator(loader, fallback);
 }
 
-/**
- * Creates a Monokle validator that can dynamically fetch custom plugins.
- *
- * @remark NodeJs does not yet support ESM HTTP URLs. Instead use `createExtensibleNodeMonokleValidator`.
- */
-export function createExtensibleMonokleValidator(
-  parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
-) {
-  return new MonokleValidator(async (pluginName: string) => {
-    switch (pluginName) {
-      case "open-policy-agent":
-        const wasmLoader = new RemoteWasmLoader();
-        return new OpenPolicyAgentValidator(parser, wasmLoader);
-      case "resource-links":
-        return new ResourceLinksValidator();
-      case "yaml-syntax":
-        return new YamlValidator(parser);
-      case "labels":
-        const labelPlugin = await import("./validators/labels/plugin.js");
-        return new SimpleCustomValidator(labelPlugin.default, parser);
-      case "kubernetes-schema":
-        return new KubernetesSchemaValidator(parser, schemaLoader);
-      case DEV_MODE_TOKEN:
-        return new DevCustomValidator(parser);
-      default:
-        try {
-          const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
-          const customPlugin = await import(/* @vite-ignore */ url);
-          return new SimpleCustomValidator(customPlugin.default, parser);
-        } catch (err) {
-          throw new Error(
-            err instanceof Error
-              ? `plugin_not_found: ${err.message}`
-              : `plugin_not_found: ${String(err)}`
-          );
-        }
-    }
-  });
-}
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
@@ -288,7 +247,7 @@ export class MonokleValidator implements Validator {
         if (pluginPromise.status === "fulfilled") {
           this.#plugins.push(pluginPromise.value);
         } else {
-          invariant(pluginPromise.reason instanceof PluginLoadError);
+          (invariant as any)(pluginPromise.reason instanceof PluginLoadError);
           this.#failedPlugins.push(pluginPromise.reason.name);
           if (config.settings?.["debug"]) {
             console.error(`[validator] ${pluginPromise.reason.message}`);

@@ -1,4 +1,4 @@
-import invariant from "tiny-invariant";
+import { default as invariant } from "tiny-invariant";
 import { Location, ValidationResult } from "../common/sarif.js";
 
 export function getResourceId(result: ValidationResult): string | undefined {
@@ -11,12 +11,12 @@ export function getFileId(result: ValidationResult): string | undefined {
 
 export function getResourceLocation(result: ValidationResult): Location {
   const location = result.locations?.[1];
-  invariant(location, "invalid SARIF result");
+  (invariant as any)(location, "invalid SARIF result");
   return location;
 }
 
 export function getFileLocation(result: ValidationResult): Location {
   const location = result.locations?.[0];
-  invariant(location, "invalid SARIF result");
+  (invariant as any)(location, "invalid SARIF result");
   return location;
 }

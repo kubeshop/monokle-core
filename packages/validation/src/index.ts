@@ -21,5 +21,4 @@ export * from "./validators/resource-links/index.js";
 
 export * from "./references/process.js";
 
-// BOOM this needs to be gone or WebPack bundles it in the worker..
-// export * from "./node.js";
+export { createExtensibleMonokleValidator } from "#extensible-monokle-validator";
