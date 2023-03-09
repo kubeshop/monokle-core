@@ -1,9 +1,9 @@
-import invariant from "tiny-invariant";
 import {
   ValidationResponse,
   ValidationResult,
   RuleMetadata,
 } from "../common/sarif.js";
+import invariant from "./invariant.js";
 import { getResourceId } from "./sarif.js";
 
 export function getRuleForResult(
@@ -14,7 +14,7 @@ export function getRuleForResult(
   const run = response.runs.find((run) => run.tool.driver.name === tool);
   const ruleIndex = result.rule.index;
   const rule = run?.tool.driver.rules[ruleIndex];
-  (invariant as any)(rule, "rule not found");
+  invariant(rule, "rule not found");
   return rule as RuleMetadata;
 }
 

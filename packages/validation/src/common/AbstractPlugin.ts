@@ -1,9 +1,9 @@
 import keyBy from "lodash/keyBy.js";
-import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { RuleMap } from "../config/parse.js";
 import { NOT_CONFIGURED_ERR_MSG } from "../constants.js";
 import { PluginMetadataWithConfig, RuleMetadataWithConfig } from "../types.js";
+import invariant from "../utils/invariant.js";
 import { getResourceId } from "../utils/sarif.js";
 import {
   ValidationResult,
@@ -124,7 +124,7 @@ export abstract class AbstractPlugin implements Plugin {
     args: Omit<ValidationResult, "ruleId" | "rule">
   ): ValidationResult | undefined {
     const index = this._ruleReverseLookup.get(ruleId);
-    (invariant as any)(index !== undefined, "rules misconfigured");
+    invariant(index !== undefined, "rules misconfigured");
 
     if (!this.isRuleEnabled(ruleId)) {
       return undefined;
@@ -214,7 +214,7 @@ export abstract class AbstractPlugin implements Plugin {
     resources: Resource[],
     incremental?: Incremental
   ): Promise<ValidationRun> {
-    (invariant as any)(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
+    invariant(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
 
     let results = await this.doValidate(resources, incremental);
 
@@ -242,7 +242,7 @@ export abstract class AbstractPlugin implements Plugin {
 
   protected getRuleConfig(ruleId: string): RuleConfig {
     const ruleConfig = this._ruleConfig.get(ruleId);
-    (invariant as any)(ruleConfig, `rule_config_not_found`);
+    invariant(ruleConfig, `rule_config_not_found`);
     return ruleConfig as RuleConfig;
   }
 
