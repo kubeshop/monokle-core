@@ -31,7 +31,8 @@ export default defineConfig({
         '@monokle/validation',
         'html-to-image',
         'jspdf',
-        'elkjs'
+        'elkjs',
+        'elkjs/lib/elk-api'
       ],
       output: {
         globals: {
