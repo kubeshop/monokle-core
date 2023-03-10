@@ -36,3 +36,4 @@ export {default as Warning} from './Warning';
 export {default as YAMLSyntax} from './YAMLSyntax';
 export {default as Document} from './Document';
 export {default as PullRequest} from './PullRequest';
+export {default as GlobeSearch} from './GlobeSearch';

@@ -43,6 +43,7 @@ import {
   YAMLSyntax,
   ValidationResourceLinks,
   PullRequest,
+  GlobeSearch,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -95,6 +96,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   warning: Warning,
   'yaml-syntax': YAMLSyntax,
   checked: Checked,
+  'globe-search': GlobeSearch,
 };
 
 const Icon: React.FC<IconProps> = props => {
