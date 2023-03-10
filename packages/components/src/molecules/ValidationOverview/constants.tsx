@@ -13,9 +13,3 @@ export const newErrorsTextMap: Record<string, string> = {
   'k8s-schema': 'K8s Schema changed.',
   rule: 'Rule changed.',
 };
-
-export const showByFilterOptions = [
-  {value: 'show-by-file', label: 'Show by file'},
-  {value: 'show-by-resource', label: 'Show by resource'},
-  {value: 'show-by-rule', label: 'Show by rule'},
-];

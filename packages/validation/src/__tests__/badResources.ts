@@ -1,4 +1,4 @@
-import { Resource } from "../common/types.js";
+import { Resource } from "../index.js";
 
 export const BAD_DEPLOYMENT: Resource = {
   fileId: "vanilla-panda-blog/deployment.yaml",

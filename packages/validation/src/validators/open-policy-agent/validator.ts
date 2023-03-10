@@ -1,9 +1,9 @@
+// @ts-ignore
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
 import { isNode, Node } from "yaml";
 
 import get from "lodash/get.js";
 
-import invariant from "tiny-invariant";
 import { JsonObject } from "type-fest";
 import { z } from "zod";
 import { AbstractPlugin } from "../../common/AbstractPlugin.js";
@@ -13,11 +13,13 @@ import { Incremental, Resource } from "../../common/types.js";
 import { createLocations } from "../../utils/createLocations.js";
 import { isDefined } from "../../utils/isDefined.js";
 import { OPEN_POLICY_AGENT_RULES } from "./rules.js";
-import { LoadedPolicy, OpaProperties, PolicyError } from "./types";
+import { LoadedPolicy, OpaProperties, PolicyError } from "./types.js";
 import { WasmLoader } from "./wasmLoader/WasmLoader.js";
 import { isKustomizationResource } from "../../references/utils/kustomizeRefs.js";
+import invariant from "../../utils/invariant.js";
 
 type Settings = z.infer<typeof Settings>;
+
 const Settings = z.object({
   wasmSrc: z
     .string()

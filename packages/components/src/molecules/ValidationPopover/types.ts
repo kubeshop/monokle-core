@@ -7,5 +7,7 @@ export type ValidationPopoverProps = {
   popoverIconStyle?: React.CSSProperties;
   popoverRenderItem?: JSX.Element;
   style?: React.CSSProperties;
-  onMessageClickHandler: ((result: ValidationResult) => void) | undefined;
+  onMessageClickHandler?: ((result: ValidationResult) => void);
+  title?: string | JSX.Element;
+  hideEmptyPopover?: boolean;
 };

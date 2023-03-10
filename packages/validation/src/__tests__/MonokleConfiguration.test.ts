@@ -1,8 +1,5 @@
 import { expect, it } from "vitest";
-import { ResourceParser } from "../common/resourceParser.js";
-import { Resource } from "../common/types.js";
-import { createDefaultMonokleValidator } from "../MonokleValidator.js";
-import { processRefs } from "../references/process.js";
+import { processRefs, ResourceParser, createDefaultMonokleValidator } from "../index.js";
 
 // Usage note: This library relies on fetch being on global scope!
 import "isomorphic-fetch";
