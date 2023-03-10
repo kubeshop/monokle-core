@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.1.1
+
+### Patch Changes
+
+- dc60c79: fix build error due to missing package
+
 ## 1.1.0
 
 ### Minor Changes
