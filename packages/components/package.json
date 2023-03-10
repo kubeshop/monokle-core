@@ -73,17 +73,10 @@
   "peerDependencies": {
     "@monokle/validation": "^0.x",
     "antd": "^4.0.0",
-<<<<<<< HEAD
     "elkjs": "^0.8.2",
     "framer-motion": "^6.0 || ^7.0",
     "html-to-image": "^1.11.11",
     "jspdf": "^2.5.1",
-=======
-    "elkjs": "0.8.2",
-    "framer-motion": "^6.0 || ^7.0",
-    "html-to-image": "1.11.11",
-    "jspdf": "2.5.1",
->>>>>>> origin/main
     "react": "^18.0 || ^17.0 || ^16.0",
     "react-dom": "^18.0 || ^17.0 || ^16.0",
     "styled-components": "^5.0.0",
