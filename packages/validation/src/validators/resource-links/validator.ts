@@ -51,13 +51,11 @@ export class ResourceLinksValidator extends AbstractPlugin {
     resource: Resource
   ): Promise<ValidationResult[]> {
     const refs = resource.refs ?? [];
-    const unsatisfiedRefs = refs.filter(ref => ref.type === ResourceRefType.Unsatisfied );
+    const unsatisfiedRefs = refs.filter(ref => ref.type === ResourceRefType.Unsatisfied || ref.type === ResourceRefType.UnsatisfiedOwner  );
 
-    const results = unsatisfiedRefs
+    return unsatisfiedRefs
       .map((ref) => this.adaptToValidationResult(resource, ref))
       .filter(isDefined);
-
-    return results;
   }
 
   private adaptToValidationResult(resource: Resource, ref: ResourceRef) {
@@ -88,7 +86,15 @@ export class ResourceLinksValidator extends AbstractPlugin {
         },
         locations
       }) : undefined;
-    } else {
+    } else if( ref.type === ResourceRefType.UnsatisfiedOwner ) {
+      return this.isRuleEnabled("LNK003") ? this.createValidationResult("LNK003", {
+        message: {
+          text: "Unsatisfied ownerReference."
+        },
+        locations
+      }) : undefined;
+    }
+    else {
       return this.isRuleEnabled("LNK001") ? this.createValidationResult("LNK001", {
         message: {
           text: "Unsatisfied resource link."
@@ -98,7 +104,3 @@ export class ResourceLinksValidator extends AbstractPlugin {
     }
   }
 }
-
-const isUnsatisfied = (r: ResourceRef) => {
-  return r.type === ResourceRefType.Unsatisfied;
-};

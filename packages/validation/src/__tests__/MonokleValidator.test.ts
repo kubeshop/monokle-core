@@ -76,7 +76,7 @@ it("should support patches and additionalValuesFiles", async () => {
 });
 
 it("should support ownerRefs", async () => {
-  const {resources} = await processResourcesInFolder("src/__tests__/resources/owner-references");
+  const {resources,response} = await processResourcesInFolder("src/__tests__/resources/owner-references");
 
   expect(resources.length).toBe(2);
   expect(resources[0].name).toBe("petstore-778587f7d5-nflbg");
@@ -85,6 +85,9 @@ it("should support ownerRefs", async () => {
   expect(resources[1].name).toBe("petstore-778587f7d5");
   expect(resources[1].refs?.filter( ref => ref.type === ResourceRefType.IncomingOwner ).length).toBe( 1 );
   expect(resources[1].refs?.filter( ref => ref.type === ResourceRefType.UnsatisfiedOwner ).length).toBe( 1 );
+
+  expect(response.runs[1].results.length).toBe( 1 );
+  expect(response.runs[1].results[0].ruleId).toBe( "LNK003" );
 });
 
 it("should be flexible to configure", async () => {
