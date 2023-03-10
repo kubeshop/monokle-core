@@ -36,6 +36,7 @@ export {default as Warning} from './Warning';
 export {default as YAMLSyntax} from './YAMLSyntax';
 export {default as Document} from './Document';
 export {default as PullRequest} from './PullRequest';
+export {default as GlobeSearch} from './GlobeSearch';
 export {default as CompactNodes} from './CompactNodes';
 export {default as Cluster} from './Cluster';
 export {default as CustomResource} from './CustomResource';

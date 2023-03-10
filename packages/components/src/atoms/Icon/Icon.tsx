@@ -43,6 +43,7 @@ import {
   YAMLSyntax,
   ValidationResourceLinks,
   PullRequest,
+  GlobeSearch,
   CompactNodes,
   Service,
   Kustomization,
@@ -55,7 +56,7 @@ import {
   Cluster,
   CustomResource,
   Secret,
-  Image
+  Image,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -108,6 +109,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   warning: Warning,
   'yaml-syntax': YAMLSyntax,
   checked: Checked,
+  'globe-search': GlobeSearch,
   'compact-nodes': CompactNodes,
   service: Service,
   kustomization: Kustomization,

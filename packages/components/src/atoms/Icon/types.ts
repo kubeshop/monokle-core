@@ -32,6 +32,7 @@ export type IconNames =
   | 'resource-links'
   | 'k8s-schema'
   | 'search'
+  | 'globe-search'
   | 'terminal'
   | 'validation'
   | 'validation-opa'
