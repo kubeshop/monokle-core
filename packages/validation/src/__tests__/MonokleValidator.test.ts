@@ -7,8 +7,8 @@ import { processRefs } from "../references/process.js";
 // Usage note: This library relies on fetch being on global scope!
 import "isomorphic-fetch";
 import { RESOURCES } from "./badResources.js";
-import { extractK8sResources, readDirectory } from "./testUtils";
-import { ResourceRefType } from "../common/types";
+import { extractK8sResources, readDirectory } from "./testUtils.js";
+import { ResourceRefType } from "../common/types.js";
 
 it("should be simple to configure", async () => {
   const parser = new ResourceParser();
