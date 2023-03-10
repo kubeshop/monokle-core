@@ -1,16 +1,14 @@
 import Ajv from "ajv";
 import { expect, it } from "vitest";
 import { ResourceParser } from "../common/resourceParser.js";
-import {
-  createDefaultMonokleValidator,
-  MonokleValidator,
-} from "../MonokleValidator.js";
+import { createDefaultMonokleValidator, MonokleValidator } from "../MonokleValidator.js";
 import { processRefs } from "../references/process.js";
 
 // Usage note: This library relies on fetch being on global scope!
 import "isomorphic-fetch";
 import { RESOURCES } from "./badResources.js";
 import { extractK8sResources, readDirectory } from "./testUtils";
+import { ResourceRefType } from "../common/types";
 
 it("should be simple to configure", async () => {
   const parser = new ResourceParser();
@@ -82,7 +80,11 @@ it("should support ownerRefs", async () => {
 
   expect(resources.length).toBe(2);
   expect(resources[0].name).toBe("petstore-778587f7d5-nflbg");
-  expect(resources[0].refs?.length).toBe( 5 );
+  expect(resources[0].refs?.filter( ref => ref.type === ResourceRefType.OutgoingOwner ).length).toBe( 1 );
+
+  expect(resources[1].name).toBe("petstore-778587f7d5");
+  expect(resources[1].refs?.filter( ref => ref.type === ResourceRefType.IncomingOwner ).length).toBe( 1 );
+  expect(resources[1].refs?.filter( ref => ref.type === ResourceRefType.UnsatisfiedOwner ).length).toBe( 1 );
 });
 
 it("should be flexible to configure", async () => {

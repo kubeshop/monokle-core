@@ -50,7 +50,7 @@ type RefTarget = {
  * - name: Used for everything else
  */
 export type RefMapper = {
-  type: "path" | "name" | "pairs" | "image";
+  type: "path" | "name" | "pairs" | "image" | "owner";
   source: RefSource;
   target: RefTarget;
 

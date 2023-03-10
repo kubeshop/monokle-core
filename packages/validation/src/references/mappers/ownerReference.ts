@@ -9,6 +9,6 @@ export const ownerReferenceMapper: RefMapper =
       kind: "$.*",
       pathParts: ["metadata", "uid"]
     },
-    type: "path"
+    type: "owner"
   }
 ;

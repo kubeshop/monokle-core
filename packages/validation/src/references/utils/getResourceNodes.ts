@@ -6,6 +6,7 @@ import {
   ResourceRefsProcessingConfig,
 } from "../../common/types.js";
 import { REF_PATH_SEPARATOR, NAME_REFNODE_PATH } from "../../constants.js";
+import isDeepEqual from 'fast-deep-equal/es6/react';
 
 const resourceRefNodesCache = new Map<
   string,
@@ -69,7 +70,7 @@ export function getResourceRefNodes(
           }
 
           if (
-            refMapper.type === "path" &&
+            (refMapper.type === "path" || refMapper.type === "owner") &&
             refMapper.target.pathParts &&
             pathEndsWithPath(keyPathParts, refMapper.target.pathParts)
           ) {
@@ -213,7 +214,9 @@ function addRefNodeAtPath(
   refNodesByPath: Record<string, RefNode[] | undefined>
 ) {
   if (refNodesByPath[path]) {
-    refNodesByPath[path]?.push(refNode);
+    if( !refNodesByPath[path]?.some( ref => isDeepEqual( ref, refNode))) {
+      refNodesByPath[path]?.push(refNode);
+    }
   } else {
     refNodesByPath[path] = [refNode];
   }

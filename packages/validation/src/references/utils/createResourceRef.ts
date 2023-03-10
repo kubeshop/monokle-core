@@ -60,11 +60,12 @@ export function linkResources(
   target: Resource,
   sourceRef: NodeWrapper,
   targetRef?: NodeWrapper,
-  isOptional?: boolean
+  isOptional?: boolean,
+  isOwnerRef?: boolean
 ) {
   createResourceRef(
     source,
-    ResourceRefType.Outgoing,
+    isOwnerRef ? ResourceRefType.OutgoingOwner : ResourceRefType.Outgoing,
     sourceRef,
     target.id,
     target.kind,
@@ -72,7 +73,7 @@ export function linkResources(
   );
   createResourceRef(
     target,
-    ResourceRefType.Incoming,
+    isOwnerRef ? ResourceRefType.IncomingOwner : ResourceRefType.Incoming,
     targetRef,
     source.id,
     source.kind,

@@ -1,5 +1,5 @@
 import { RefPosition, Resource, ResourceRef } from "../../common/types.js";
-import { isUnsatisfiedRef } from "./helpers.js";
+import { isUnsatisfiedOwnerRef, isUnsatisfiedRef } from "./helpers.js";
 
 /**
  * Clears invalid resourceRefs from a resource after processing
@@ -11,7 +11,7 @@ export function cleanResourceRefs(resources: Resource[]) {
     const findSatisfiedRefOnPosition = (refPos: RefPosition) => {
       return resource.refs?.find(
         (ref) =>
-          !isUnsatisfiedRef(ref.type) &&
+          !isUnsatisfiedRef(ref.type) && !isUnsatisfiedOwnerRef(ref.type) &&
           ref.position?.column === refPos.column &&
           ref.position.line === refPos.line
       );
@@ -20,7 +20,7 @@ export function cleanResourceRefs(resources: Resource[]) {
     resource.refs?.forEach((ref) => {
       let shouldPush = true;
 
-      if (isUnsatisfiedRef(ref.type)) {
+      if (isUnsatisfiedRef(ref.type) || isUnsatisfiedOwnerRef(ref.type)) {
         if (ref.position) {
           const foundSatisfiedRefOnSamePosition = findSatisfiedRefOnPosition(
             ref.position

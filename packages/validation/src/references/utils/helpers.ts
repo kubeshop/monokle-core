@@ -6,7 +6,7 @@ import {
   Resource,
   ResourceRefsProcessingConfig,
 } from "../../common/types.js";
-import { RefMapper } from "../mappers/index.js";
+import { RefMapper } from "../mappers";
 import { getSiblingValue } from "./GetSiblings.js";
 import { LineCounter, parseDocument } from "yaml";
 import path from "../../utils/path.js";
@@ -16,12 +16,24 @@ export function isIncomingRef(refType: ResourceRefType) {
   return refType === ResourceRefType.Incoming;
 }
 
+export function isIncomingOwnerRef(refType: ResourceRefType) {
+  return refType === ResourceRefType.IncomingOwner;
+}
+
 export function isOutgoingRef(refType: ResourceRefType) {
   return refType === ResourceRefType.Outgoing;
 }
 
+export function isOutgoingOwnerRef(refType: ResourceRefType) {
+  return refType === ResourceRefType.OutgoingOwner;
+}
+
 export function isUnsatisfiedRef(refType: ResourceRefType) {
   return refType === ResourceRefType.Unsatisfied;
+}
+
+export function isUnsatisfiedOwnerRef(refType: ResourceRefType) {
+  return refType === ResourceRefType.UnsatisfiedOwner;
 }
 
 export function hasIncomingRefs(resource: Resource) {
@@ -46,12 +58,24 @@ export function hasOutgoingRefs(resource: Resource) {
   return resource.refs?.some((e) => isOutgoingRef(e.type));
 }
 
+export function hasOutgoingOwnerRefs(resource: Resource) {
+  return resource.refs?.some((e) => isOutgoingOwnerRef(e.type));
+}
+
+export function hasOwnerRefs(resource: Resource) {
+  return resource.refs?.some((e) => isOutgoingOwnerRef(e.type) || isIncomingOwnerRef(e.type));
+}
+
 export function hasRefs(resource: Resource) {
   return resource.refs?.some((e) => isOutgoingRef(e.type));
 }
 
 export function hasUnsatisfiedRefs(resource: Resource) {
   return resource.refs?.some((e) => isUnsatisfiedRef(e.type));
+}
+
+export function hasUnsatisfiedOwnerRefs(resource: Resource) {
+  return resource.refs?.some((e) => isUnsatisfiedOwnerRef(e.type));
 }
 
 export function areRefPosEqual(
@@ -91,7 +115,7 @@ export function isOptionalRef(
 
 // some (older) kustomization yamls don't contain kind/group properties to identify them as such
 // they are identified only by their name
-function isUntypedKustomizationFile(filePath = ''): boolean {
+export function isUntypedKustomizationFile(filePath = ''): boolean {
   const base = path.parse(filePath).base.toLowerCase();
   return ['kustomization.yaml', 'kustomization.yml', 'kustomization'].includes(
     base
