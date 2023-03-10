@@ -8,9 +8,19 @@ import {getResourceLocation} from '@monokle/validation';
 import {Colors} from '@/styles/Colors';
 
 const ValidationPopover: React.FC<ValidationPopoverProps> = props => {
-  const {level, results, disabled, popoverIconStyle = {}, popoverRenderItem, style = {}, onMessageClickHandler} = props;
+  const {
+    level,
+    results,
+    disabled,
+    popoverIconStyle = {},
+    popoverRenderItem,
+    style = {},
+    onMessageClickHandler,
+    title,
+    hideEmptyPopover = true,
+  } = props;
 
-  if (level === 'none') {
+  if (level === 'none' && hideEmptyPopover) {
     return popoverRenderItem ?? <ProblemIcon level={level} disabled={disabled} />;
   }
 
@@ -18,11 +28,13 @@ const ValidationPopover: React.FC<ValidationPopoverProps> = props => {
     <Popover
       mouseEnterDelay={0.5}
       placement="bottom"
-      title="Validation Problems"
+      title={title ?? "Validation Problems"}
       style={{zIndex: 50, ...style}}
       content={
         <Container direction="vertical">
-          {results.map(result => {
+          {results.length === 0 ? (
+            <EmptyText>No problems found.</EmptyText>
+          ) : results.map(result => {
             const line = getResourceLocation(result).physicalLocation?.region?.startLine;
             const linePostfix = line === undefined ? '' : `-${line}`;
 
@@ -89,4 +101,9 @@ const Message = styled.span<{$onClickHandler: boolean}>`
         `;
     }
   }}
+`;
+
+const EmptyText = styled.div`
+  color: ${Colors.grey7};
+  font-size: 14px;
 `;

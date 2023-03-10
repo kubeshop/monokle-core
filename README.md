@@ -23,6 +23,10 @@ on how to create and share your own validators.
 - @monokle/components: a shared design system.
 - @monokle/tree-navigator: React component to render trees with Redux.
 
+## Other Packages
+
+- monaco-kubernetes: A Kubernetes language plugin for Monaco.
+
 ## Getting involved
 
 - Share ideas, suggestions, bug-reports or complaints on our [Discord server](https://discord.gg/g3pP744AvN).

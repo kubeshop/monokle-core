@@ -1,5 +1,35 @@
 # @monokle/components
 
+## 1.1.1
+
+### Patch Changes
+
+- dc60c79: fix build error due to missing package
+
+## 1.1.0
+
+### Minor Changes
+
+- cc09277: Add the resource graph
+
+## 1.0.7
+
+### Patch Changes
+
+- 35b0aaa: showOnlyByResource prop on ValidationOverview
+
+## 1.0.6
+
+### Patch Changes
+
+- 606d8a8: Handle show by resource in cluster mode
+
+## 1.0.5
+
+### Patch Changes
+
+- 4553ab1: Base active keys + base show by filter value
+
 ## 1.0.4
 
 ### Patch Changes

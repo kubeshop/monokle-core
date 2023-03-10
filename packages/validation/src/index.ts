@@ -21,4 +21,4 @@ export * from "./validators/resource-links/index.js";
 
 export * from "./references/process.js";
 
-export * from "./node.js";
+export { createExtensibleMonokleValidator } from "#extensible-monokle-validator";
