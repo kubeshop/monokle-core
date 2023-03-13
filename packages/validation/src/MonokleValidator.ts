@@ -1,7 +1,6 @@
 import clone from "lodash/clone.js";
 import difference from "lodash/difference.js";
 import isEqual from "lodash/isEqual.js";
-import { ResourceParser } from "./common/resourceParser.js";
 import type { ValidationResponse } from "./common/sarif.js";
 import type {
   CustomSchema,
@@ -24,15 +23,6 @@ import {
 import { PluginLoadError } from "./utils/error.js";
 import invariant from "./utils/invariant.js";
 import { isDefined } from "./utils/isDefined.js";
-import { DEV_MODE_TOKEN } from "./validators/custom/constants.js";
-import { DevCustomValidator } from "./validators/custom/devValidator.js";
-import { SimpleCustomValidator } from "./validators/custom/simpleValidator.js";
-import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
-import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
-import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
-import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
-import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
-import { YamlValidator } from "./validators/yaml-syntax/validator.js";
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
@@ -41,37 +31,6 @@ export function createMonokleValidator(
   fallback?: PluginMap
 ) {
   return new MonokleValidator(loader, fallback);
-}
-
-export function createDefaultMonokleValidator(
-  parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
-) {
-  return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader));
-}
-
-export function createDefaultPluginLoader(
-  parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
-) {
-  return async (pluginName: string) => {
-    switch (pluginName) {
-      case "open-policy-agent":
-        const wasmLoader = new RemoteWasmLoader();
-        return new OpenPolicyAgentValidator(parser, wasmLoader);
-      case "resource-links":
-        return new ResourceLinksValidator();
-      case "yaml-syntax":
-        return new YamlValidator(parser);
-      case "labels":
-        const labelPlugin = await import("./validators/labels/plugin.js");
-        return new SimpleCustomValidator(labelPlugin.default, parser);
-      case "kubernetes-schema":
-        return new KubernetesSchemaValidator(parser, schemaLoader);
-      default:
-        throw new Error("plugin_not_found");
-    }
-  };
 }
 
 /**

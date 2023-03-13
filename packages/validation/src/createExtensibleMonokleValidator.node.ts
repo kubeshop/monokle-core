@@ -1,20 +1,17 @@
 
 import fs from "fs";
-import path from "path";
-import fetch from 'isomorphic-fetch';
 import requireFromString from 'require-from-string';
-import virtual from '@rollup/plugin-virtual';
-import { rollup } from 'rollup';
 
 import { ResourceParser } from "./common/resourceParser.js";
 import { MonokleValidator } from "./MonokleValidator.js";
 import { SimpleCustomValidator } from "./validators/custom/simpleValidator.js";
 import { SchemaLoader } from "./validators/kubernetes-schema/schemaLoader.js";
 import { KubernetesSchemaValidator } from "./validators/kubernetes-schema/validator.js";
-import { RemoteWasmLoader } from "./validators/open-policy-agent/index.js";
+import { RemoteWasmLoader } from "./wasmLoader/RemoteWasmLoader.node.js";
 import { OpenPolicyAgentValidator } from "./validators/open-policy-agent/validator.js";
 import { ResourceLinksValidator } from "./validators/resource-links/validator.js";
 import { YamlValidator } from "./validators/yaml-syntax/validator.js";
+import { bundlePluginCode, loadCustomPlugin } from "./utils/loadCustomPlugin.node.js";
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
@@ -33,8 +30,15 @@ export function createExtensibleMonokleValidator(
         case "yaml-syntax":
           return new YamlValidator(parser);
         case "labels":
-          const labelPlugin = await import("./validators/labels/plugin.js");
-          return new SimpleCustomValidator(labelPlugin.default, parser);
+           try {
+            const filePath = './validators/labels/plugin.js'
+            const pluginCode = fs.readFileSync(filePath, { encoding: 'utf-8' })
+            const code = await bundlePluginCode(pluginCode);
+            const labelPlugin = requireFromString(code, filePath);
+            return new SimpleCustomValidator(labelPlugin, parser);
+          } catch (err) {
+            throw new Error(`plugin_not_found: $err`);
+          }
         case "kubernetes-schema":
           return new KubernetesSchemaValidator(parser, schemaLoader);
         default:
@@ -47,42 +51,4 @@ export function createExtensibleMonokleValidator(
       }
     }
   );
-}
-
-
-async function bundlePluginCode(code:string) {
-  const bundle = await rollup({
-    input: 'pluginCode',
-    plugins: [
-      (virtual as any)({
-        pluginCode: code,
-      }) as any,
-    ],
-  });
-  const { output } = await bundle.generate({ format: 'commonjs' });
-  await bundle.close();
-  return output[0].code;
-}
-
-async function loadCustomPlugin(pluginName: string) {
-  const filePath = path.join(
-    process.cwd(),
-    '.monokle-plugins',
-    `${pluginName}-plugin.js`,
-  );
-
-  const pluginCode = fs.existsSync(filePath)
-    ? fs.readFileSync(filePath, { encoding: 'utf-8' })
-    : await (async () => {
-        const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Error fetching ${url}: ${response.statusText}`);
-        }
-        return response.text();
-      })();
-
-  const code = await bundlePluginCode(pluginCode);
-  const customPlugin = requireFromString(code, filePath);
-  return customPlugin
 }
