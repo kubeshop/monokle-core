@@ -13,27 +13,13 @@
   "typings": "lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
+      "node": "./lib/node.js",
       "module": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./custom": {
       "types": "./lib/custom.d.ts",
       "module": "./lib/custom.js"
-    }
-  },
-  "imports": {
-    "#read-config": {
-      "node": "./lib/config/read.node.js",
-      "default": "./lib/config/read.browser.js"
-    },
-    "#remote-wasm-loader": {
-      "node": "./lib/validators/open-policy-agent/wasmLoader/RemoteWasmLoader.node.js",
-      "default": "./lib/validators/open-policy-agent/wasmLoader/RemoteWasmLoader.browser.js"
-    },
-    "#extensible-monokle-validator": {
-      "node": "./lib/createExtensibleMonokleValidator.node.js",
-      "default": "./lib/createExtensibleMonokleValidator.browser.js"
     }
   },
   "files": [

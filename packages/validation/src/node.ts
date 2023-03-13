@@ -20,8 +20,7 @@ export * from "./validators/resource-links/index.js";
 
 export * from "./references/process.js";
 
-export * from "./createExtensibleMonokleValidator.browser.js";
-export * from "./createDefaultMonokleValidator.browser.js";
-export * from "./config/index.browser.js";
-export * from "./config/read.browser.js";
-export * from "./wasmLoader/RemoteWasmLoader.browser.js";
+export * from "./createExtensibleMonokleValidator.node.js";
+export * from "./createDefaultMonokleValidator.node.js";
+export * from "./config/index.node.js";
+export * from "./wasmLoader/RemoteWasmLoader.node.js";

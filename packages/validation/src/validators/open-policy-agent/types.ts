@@ -1,4 +1,3 @@
-// @ts-ignore
 import { loadPolicy } from "@open-policy-agent/opa-wasm";
 import { RuleMetadata } from "../../common/sarif.js";
 

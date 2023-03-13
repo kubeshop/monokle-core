@@ -5,7 +5,7 @@
     "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "target": "ESNext",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
