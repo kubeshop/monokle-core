@@ -7,7 +7,7 @@ const pkg = JSON.parse(
   await readFile(new URL("package.json", import.meta.url))
 );
 
-await build({
+const defaultBuildConfig = {
   entryPoints: ["src/index.ts", "src/kubernetes.worker.ts"],
   bundle: true,
   external: Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies }),
@@ -70,4 +70,16 @@ await build({
       },
     },
   ],
+}
+
+await build(defaultBuildConfig);
+await build({
+  ...defaultBuildConfig,
+  external: defaultBuildConfig.external.filter(name => !(/monaco/.test(name))),
+  bundle: true,
+  outdir: "cjs",
+  format: 'cjs',
+  loader: {
+    '.ttf': 'dataurl',
+  },
 });
