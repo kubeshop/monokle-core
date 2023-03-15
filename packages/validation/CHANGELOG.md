@@ -1,5 +1,15 @@
 # @monokle/validation
 
+## 0.15.0
+
+### Minor Changes
+
+- e0544e9: validation: isolate node/browser entrypoints
+
+### Patch Changes
+
+- 020f308: Fix legacy builds
+
 ## 0.14.0
 
 ### Minor Changes
