@@ -47,7 +47,7 @@ export class MonokleValidator implements Validator {
   /**
    * The user configuration of this validator.
    */
-  #config?: Config;
+  _config?: Config;
 
   /**
    * The fallback configuration of this validator.
@@ -56,33 +56,33 @@ export class MonokleValidator implements Validator {
    * set configuration it's not taken into consideration
    * to make it easier to reason about what you get.
    */
-  #fallback: Config;
+  _fallback: Config;
 
-  #abortController: AbortController = new AbortController();
-  #loading?: Promise<void>;
-  #loader: PluginLoader;
-  #previousPluginsInit?: Record<string, boolean>;
-  #plugins: Plugin[] = [];
-  #failedPlugins: string[] = [];
-  #customSchemas: Set<string> = new Set();
+  _abortController: AbortController = new AbortController();
+  _loading?: Promise<void>;
+  _loader: PluginLoader;
+  _previousPluginsInit?: Record<string, boolean>;
+  _plugins: Plugin[] = [];
+  _failedPlugins: string[] = [];
+  _customSchemas: Set<string> = new Set();
 
   constructor(loader: PluginLoader, fallback: PluginMap = DEFAULT_PLUGIN_MAP) {
-    this.#loader = loader;
-    this.#fallback = { plugins: fallback };
-    this.#config = this.#fallback;
+    this._loader = loader;
+    this._fallback = { plugins: fallback };
+    this._config = this._fallback;
   }
 
   get config(): Config {
-    return this.#config ?? this.#fallback;
+    return this._config ?? this._fallback;
   }
 
   get metadata(): Record<PluginName, PluginMetadataWithConfig> {
-    const entries = this.#plugins.map((p) => [p.metadata.name, p.metadata]);
+    const entries = this._plugins.map((p) => [p.metadata.name, p.metadata]);
     return Object.fromEntries(entries);
   }
 
   get rules(): Record<PluginName, RuleMetadataWithConfig[]> {
-    const entries = this.#plugins.map((p) => [p.metadata.name, p.rules]);
+    const entries = this._plugins.map((p) => [p.metadata.name, p.rules]);
     return Object.fromEntries(entries);
   }
 
@@ -93,7 +93,7 @@ export class MonokleValidator implements Validator {
    * @example "KSV013" or "open-policy-agent/no-latest-image"
    */
   hasRule(rule: string): boolean {
-    return this.#plugins.some((p) => p.hasRule(rule));
+    return this._plugins.some((p) => p.hasRule(rule));
   }
 
   /**
@@ -103,7 +103,7 @@ export class MonokleValidator implements Validator {
    * @example "KSV013" or "open-policy-agent/no-latest-image"
    */
   isRuleEnabled(rule: string) {
-    return this.#plugins.some((p) => p.isRuleEnabled(rule));
+    return this._plugins.some((p) => p.isRuleEnabled(rule));
   }
 
   /**
@@ -113,21 +113,21 @@ export class MonokleValidator implements Validator {
    * @example "open-policy-agent"
    */
   isPluginLoaded(name: string): boolean {
-    return this.#plugins.some((p) => p.metadata.name === name);
+    return this._plugins.some((p) => p.metadata.name === name);
   }
 
   /**
    * The plugins that are loaded in this validator.
    */
   getPlugins(): Plugin[] {
-    return this.#plugins;
+    return this._plugins;
   }
 
   /**
    * The plugins that failed to load in this validator.
    */
   getFailedPlugins(): string[] {
-    return this.#failedPlugins;
+    return this._failedPlugins;
   }
 
   /**
@@ -136,7 +136,7 @@ export class MonokleValidator implements Validator {
    * @params name - The plugin name
    */
   getPlugin(name: string): Plugin | undefined {
-    return this.#plugins.find((p) => p.metadata.name === name);
+    return this._plugins.find((p) => p.metadata.name === name);
   }
 
   /**
@@ -145,7 +145,7 @@ export class MonokleValidator implements Validator {
    * @param config - the new configuration of the validator.
    */
   async preload(config?: Config): Promise<void> {
-    this.#config = config;
+    this._config = config;
     return this.load();
   }
 
@@ -156,21 +156,21 @@ export class MonokleValidator implements Validator {
    * @see config.plugins
    */
   private load() {
-    this.#abortController.abort();
-    this.#abortController = new AbortController();
-    this.#loading = this.doLoad(this.#abortController.signal);
-    return this.#loading;
+    this._abortController.abort();
+    this._abortController = new AbortController();
+    this._loading = this.doLoad(this._abortController.signal);
+    return this._loading;
   }
 
   private cancelLoad(reason: string = "cancelled") {
-    this.#abortController.abort(reason);
-    this.#loading = undefined;
+    this._abortController.abort(reason);
+    this._loading = undefined;
   }
 
   private async doLoad(signal: AbortSignal) {
     const config = this.config;
-    const previousPlugins = this.#previousPluginsInit;
-    this.#failedPlugins = [];
+    const previousPlugins = this._previousPluginsInit;
+    this._failedPlugins = [];
 
     if (!isEqual(config.plugins, previousPlugins)) {
       // All validators found in configuration are loaded.
@@ -179,7 +179,7 @@ export class MonokleValidator implements Validator {
       const newPluginNames = Object.keys(pluginsConfig ?? {});
 
       // Unload stale plugins
-      const previousPluginNames = Object.keys(this.#previousPluginsInit ?? {});
+      const previousPluginNames = Object.keys(this._previousPluginsInit ?? {});
       const stalePlugins = difference(previousPluginNames, newPluginNames);
 
       await this.doUnload(stalePlugins);
@@ -192,7 +192,7 @@ export class MonokleValidator implements Validator {
       const loading = await Promise.allSettled(
         missingPlugins.map(async (p) => {
           try {
-            const validator = await this.#loader(p);
+            const validator = await this._loader(p);
             return validator;
           } catch (err) {
             const msg = err instanceof Error ? err.message : "reason unknown";
@@ -207,10 +207,10 @@ export class MonokleValidator implements Validator {
 
       loading.forEach((pluginPromise) => {
         if (pluginPromise.status === "fulfilled") {
-          this.#plugins.push(pluginPromise.value);
+          this._plugins.push(pluginPromise.value);
         } else {
           invariant(pluginPromise.reason instanceof PluginLoadError);
-          this.#failedPlugins.push(pluginPromise.reason.name);
+          this._failedPlugins.push(pluginPromise.reason.name);
           if (config.settings?.["debug"]) {
             console.error(`[validator] ${pluginPromise.reason.message}`);
           }
@@ -218,17 +218,17 @@ export class MonokleValidator implements Validator {
       });
 
       // Toggle validators
-      for (const validator of this.#plugins) {
+      for (const validator of this._plugins) {
         const value = pluginsConfig[validator.metadata.name];
         validator.enabled = Boolean(value);
       }
 
-      this.#previousPluginsInit = clone(pluginsConfig);
+      this._previousPluginsInit = clone(pluginsConfig);
     }
 
     // Configure validators
     await Promise.allSettled(
-      this.#plugins.map((p) =>
+      this._plugins.map((p) =>
         p.configure({
           rules: config.rules,
           settings: config.settings,
@@ -242,7 +242,7 @@ export class MonokleValidator implements Validator {
       const plugin = this.getPlugin(pluginName);
       if (!plugin) continue;
       await plugin.unload();
-      this.#plugins = this.#plugins.filter(
+      this._plugins = this._plugins.filter(
         (p) => p.metadata.name !== pluginName
       );
     }
@@ -260,14 +260,14 @@ export class MonokleValidator implements Validator {
     incremental?: Incremental;
     abortSignal?: AbortSignal;
   }): Promise<ValidationResponse> {
-    if (this.#loading === undefined) {
+    if (this._loading === undefined) {
       this.load();
     }
-    const loadAbortSignal = this.#abortController.signal;
-    await this.#loading;
+    const loadAbortSignal = this._abortController.signal;
+    await this._loading;
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
-    const validators = this.#plugins.filter((v) => v.enabled);
+    const validators = this._plugins.filter((v) => v.enabled);
 
     await nextTick();
     throwIfAborted(loadAbortSignal, externalAbortSignal);
@@ -326,7 +326,7 @@ export class MonokleValidator implements Validator {
     }
 
     const key = `${schema.apiVersion}-${schema.kind}`;
-    if (this.#customSchemas.has(key)) {
+    if (this._customSchemas.has(key)) {
       this.debug("Cannot register custom schema.", {
         reason: "The schema is already registered.",
       });
@@ -343,7 +343,7 @@ export class MonokleValidator implements Validator {
       await plugin?.registerCustomSchema(schema);
     }
 
-    this.#customSchemas.add(key);
+    this._customSchemas.add(key);
   }
 
   async unregisterCustomSchema(schema: Omit<CustomSchema, "schema">) {
@@ -355,7 +355,7 @@ export class MonokleValidator implements Validator {
     }
 
     const key = `${schema.apiVersion}-${schema.kind}`;
-    if (this.#customSchemas.has(key)) {
+    if (this._customSchemas.has(key)) {
       this.debug("Cannot register custom schema.", {
         reason: "The schema is not registered.",
       });
@@ -372,14 +372,14 @@ export class MonokleValidator implements Validator {
       await plugin?.unregisterCustomSchema(schema);
     }
 
-    this.#customSchemas.delete(key);
+    this._customSchemas.delete(key);
   }
 
   /**
    * Clear the incremental caches.
    */
   async clear(): Promise<void> {
-    await Promise.all(this.#plugins.map((v) => v.clear()));
+    await Promise.all(this._plugins.map((v) => v.clear()));
   }
 
   /**
@@ -387,15 +387,15 @@ export class MonokleValidator implements Validator {
    */
   async unload(): Promise<void> {
     this.cancelLoad("unload");
-    for (const schema of this.#customSchemas) {
+    for (const schema of this._customSchemas) {
       const [apiVersion, kind] = schema.split("-");
       await this.unregisterCustomSchema({ apiVersion, kind });
     }
 
     const pluginNames = this.getPlugins().map((p) => p.metadata.name);
     await this.doUnload(pluginNames);
-    this.#config = undefined;
-    this.#failedPlugins = [];
+    this._config = undefined;
+    this._failedPlugins = [];
   }
 
   private debug(msg: string, details?: any) {

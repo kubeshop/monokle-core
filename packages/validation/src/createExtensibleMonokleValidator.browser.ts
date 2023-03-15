@@ -36,7 +36,7 @@ export function createExtensibleMonokleValidator(
       default:
         try {
           const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
-          const customPlugin = await import(/* @vite-ignore */ url);
+          const customPlugin = await import(/* @vite-ignore */ `${url}`);
           return new SimpleCustomValidator(customPlugin.default, parser);
         } catch (err) {
           throw new Error(
