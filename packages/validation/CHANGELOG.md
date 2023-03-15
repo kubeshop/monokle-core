@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.15.1
+
+### Patch Changes
+
+- 4b16c29: Fix argo build
+
 ## 0.15.0
 
 ### Minor Changes
