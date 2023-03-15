@@ -39,7 +39,7 @@
     "kubernetes"
   ],
   "dependencies": {
-    "@monokle/validation": "^0.15.0",
+    "@monokle/validation": "^0.15.1",
     "@types/json-schema": "^7.0.0",
     "jsonc-parser": "^3.0.0",
     "monaco-marker-data-provider": "^1.0.0",
