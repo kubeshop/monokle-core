@@ -69,7 +69,7 @@ export class DevCustomValidator implements Plugin {
         this._currentHash = bundle.hash;
         const encodedSource = btoa(bundle.code);
         const dataUrl = `data:text/javascript;base64,${encodedSource}`;
-        import(/* @vite-ignore */ dataUrl).then((module) => {
+        import(/* @vite-ignore */ `${dataUrl}`).then((module) => {
           const pluginInit = module.default;
           const validator = new SimpleCustomValidator(pluginInit, this.parser);
           this._currentValidator = validator;
