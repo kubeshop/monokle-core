@@ -1,5 +1,11 @@
 # monaco-kubernetes
 
+## 0.2.2
+
+### Patch Changes
+
+- f35b6cd: update monaco-kubernetes
+
 ## 0.2.1
 
 ### Patch Changes
