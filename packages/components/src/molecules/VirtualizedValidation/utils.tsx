@@ -1,5 +1,5 @@
 import {getFileId, getRuleForResult, ValidationResponse, ValidationResult} from '@monokle/validation';
-import {FiltersValueType, ProblemsType} from './types';
+import {FiltersValueType, ProblemsType, ValidationListNode} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -139,4 +139,30 @@ export const filterBySearchValue = (problems: ProblemsType, searchValue: string)
       })
       .filter(el => el.length > 0)
   );
+};
+
+export const getValidationList = (problems: ProblemsType) => {
+  if (!problems) {
+    return [];
+  }
+
+  const list: ValidationListNode[] = [];
+
+  const entries = Object.entries(problems).sort();
+  for (const [key, keyProblems] of entries) {
+    // add collapsed
+    const collapsed = false;
+
+    list.push({type: 'header', label: key, count: keyProblems.length});
+
+    if (collapsed) {
+      continue;
+    }
+
+    for (const problem of keyProblems) {
+      list.push({type: 'problem', label: problem.message.text});
+    }
+  }
+
+  return list;
 };
