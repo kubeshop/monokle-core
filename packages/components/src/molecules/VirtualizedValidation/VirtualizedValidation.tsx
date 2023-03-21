@@ -24,6 +24,7 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
   const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}} = props;
   const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource} = props;
 
+  const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>([]);
   const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
   const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseData.baseShowByFilterValue);
@@ -33,7 +34,10 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
   const {newProblems, problems} = useCurrentAndNewProblems(showByFilterValue, validationResponse);
   const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue, filtersValue);
 
-  const validationList = useMemo(() => getValidationList(filteredProblems), [filteredProblems]);
+  const validationList = useMemo(
+    () => getValidationList(filteredProblems, collapsedHeadersKey),
+    [collapsedHeadersKey, filteredProblems]
+  );
   const ref = useRef<HTMLUListElement>(null);
 
   const showByFilterOptions = useMemo(
@@ -127,6 +131,7 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
                     style={{
                       height: `${virtualItem.size}px`,
                       transform: `translateY(${virtualItem.start}px)`,
+                      padding: node.type === 'header' ? '8px 0px' : '0px',
                     }}
                   >
                     {node.type === 'header' ? (
@@ -134,7 +139,11 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
                         node={node}
                         showByFilterValue={showByFilterValue}
                         toggleCollapse={node => {
-                          console.log('Node:', node);
+                          if (collapsedHeadersKey.includes(node.label)) {
+                            setCollapsedHeadersKey(prevState => prevState.filter(item => item !== node.label));
+                          } else {
+                            setCollapsedHeadersKey(prevState => [...prevState, node.label]);
+                          }
                         }}
                       />
                     ) : (

@@ -200,7 +200,7 @@ export const isProblemSelected = (
   return false;
 };
 
-export const getValidationList = (problems: ProblemsType) => {
+export const getValidationList = (problems: ProblemsType, collapsedHeadersKey: string[]) => {
   if (!problems) {
     return [];
   }
@@ -209,8 +209,7 @@ export const getValidationList = (problems: ProblemsType) => {
 
   const entries = Object.entries(problems).sort();
   for (const [key, keyProblems] of entries) {
-    // add collapsed
-    const collapsed = false;
+    const collapsed = collapsedHeadersKey.indexOf(key) !== -1;
 
     list.push({
       type: 'header',
