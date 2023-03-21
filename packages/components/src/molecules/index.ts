@@ -8,5 +8,6 @@ export * from './TitleBar';
 export * from './TitleBarCount';
 export * from './ValidationOverview';
 export * from './ValidationPopover';
+export * from './VirtualizedValidation';
 export * from './WalkThrough';
 export * from './WalkThroughCard';

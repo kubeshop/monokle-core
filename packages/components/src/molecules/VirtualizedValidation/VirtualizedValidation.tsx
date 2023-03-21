@@ -252,6 +252,7 @@ const ValidationList = styled.ul`
   height: 100%;
   overflow-y: auto;
   padding-left: 0px;
+  margin-top: 16px;
 `;
 
 const VirtualItem = styled.div`

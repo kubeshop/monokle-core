@@ -217,6 +217,7 @@ export const getValidationList = (problems: ProblemsType, collapsedHeadersKey: s
       count: keyProblems.length,
       resourceName: getResourceName(keyProblems[0]) || '',
       filePath: key.split('@').pop() || '',
+      collapsed,
     });
 
     if (collapsed) {

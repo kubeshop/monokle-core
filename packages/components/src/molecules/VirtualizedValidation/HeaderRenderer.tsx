@@ -5,6 +5,7 @@ import {TOOLTIP_DELAY} from '@/constants';
 import {Colors} from '@/styles/Colors';
 import {getRuleInfo, renderSeverityIcon} from './utils';
 import {iconMap} from './constants';
+import {DownOutlined as RawDownOutlined, RightOutlined as RawRightOutlined} from '@ant-design/icons';
 
 type IProps = {
   node: HeaderNode;
@@ -19,8 +20,10 @@ const HeaderRenderer: React.FC<IProps> = props => {
     const {ruleDescription, severity, toolComponentName} = getRuleInfo(node.label);
 
     return (
-      <Container>
+      <Container onClick={() => toggleCollapse(node)}>
         <Content>
+          {node.collapsed ? <RightOutlined /> : <DownOutlined />}
+
           <div
             style={{
               display: 'flex',
@@ -42,8 +45,10 @@ const HeaderRenderer: React.FC<IProps> = props => {
 
   if (showByFilterValue === 'show-by-resource') {
     return (
-      <Container>
+      <Container onClick={() => toggleCollapse(node)}>
         <Content>
+          {node.collapsed ? <RightOutlined /> : <DownOutlined />}
+
           <Tooltip title={node.resourceName} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
             <ResourceName>{node.resourceName}</ResourceName>
           </Tooltip>
@@ -59,6 +64,8 @@ const HeaderRenderer: React.FC<IProps> = props => {
   return (
     <Container onClick={() => toggleCollapse(node)}>
       <Content>
+        {node.collapsed ? <RightOutlined /> : <DownOutlined />}
+
         <Tooltip title={node.label} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
           <ResourceFile>{node.label}</ResourceFile>
         </Tooltip>
@@ -91,6 +98,18 @@ const Content = styled.div`
   width: 100%;
   gap: 8px;
   height: max-content;
+`;
+
+const DownOutlined = styled(RawDownOutlined)`
+  color: ${Colors.grey8};
+  font-size: 13px;
+  align-self: center;
+`;
+
+const RightOutlined = styled(RawRightOutlined)`
+  color: ${Colors.grey8};
+  font-size: 13px;
+  align-self: center;
 `;
 
 const ResourceFile = styled.span`
