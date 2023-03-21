@@ -3,6 +3,57 @@ import {ValidationOverviewType} from './types';
 export const MainValidationOverviewArgs: ValidationOverviewType = {
   status: 'loaded',
   height: 800,
+  newProblemsIntroducedType: 'k8s-schema',
+  selectedProblem: {
+    ruleId: 'KSV001',
+    rule: {
+      index: 0,
+      toolComponent: {
+        name: 'open-policy-agent',
+      },
+    },
+    level: 'error',
+    message: {
+      text: 'Disallow the process from elevating its privileges on container "panda-blog".',
+    },
+    locations: [
+      {
+        physicalLocation: {
+          artifactLocation: {
+            uriBaseId: 'SRCROOT',
+            uri: 'vanilla-panda-blog/deployment.yaml',
+          },
+          region: {
+            startLine: 16,
+            startColumn: 11,
+            endLine: 28,
+            endColumn: 1,
+          },
+        },
+      },
+      {
+        physicalLocation: {
+          artifactLocation: {
+            uriBaseId: 'RESOURCE',
+            uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+          },
+          region: {
+            startLine: 16,
+            startColumn: 11,
+            endLine: 28,
+            endColumn: 1,
+          },
+        },
+        logicalLocations: [
+          {
+            kind: 'resource',
+            fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+            name: 'panda-blog',
+          },
+        ],
+      },
+    ],
+  },
   validationResponse: {
     $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
     version: '2.1.0',

@@ -75,7 +75,9 @@ export default HeaderRenderer;
 const Container = styled.div`
   position: relative;
   display: flex;
+  align-items: center;
   width: 100%;
+  height: 100%;
   cursor: pointer;
 `;
 

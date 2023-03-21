@@ -10,6 +10,8 @@ import {getValidationList} from './utils';
 import HeaderRenderer from './HeaderRenderer';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 import {Colors} from '@/styles/Colors';
+import ProblemRenderer from './ProblemRenderer';
+import {getRuleForResult} from '@monokle/validation';
 
 let baseData: BaseDataType = {
   baseActiveKeys: [],
@@ -20,7 +22,7 @@ let baseData: BaseDataType = {
 const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
   const {status, validationResponse} = props;
   const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}} = props;
-  const {customMessage, newProblemsIntroducedType, showOnlyByResource} = props;
+  const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource} = props;
 
   const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
@@ -34,8 +36,6 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
   const validationList = useMemo(() => getValidationList(filteredProblems), [filteredProblems]);
   const ref = useRef<HTMLUListElement>(null);
 
-  console.log('List:', validationList);
-
   const showByFilterOptions = useMemo(
     () => [
       {value: 'show-by-file', label: 'Show by file', disabled: showOnlyByResource},
@@ -47,7 +47,7 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
 
   const rowVirtualizer = useVirtualizer({
     count: validationList.length,
-    estimateSize: () => 28,
+    estimateSize: () => 36,
     getScrollElement: () => ref.current,
     scrollToFn: elementScroll,
   });
@@ -112,7 +112,7 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
 
       {validationList.length ? (
         <>
-          <ValidationList>
+          <ValidationList ref={ref}>
             <div style={{height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative'}}>
               {rowVirtualizer.getVirtualItems().map(virtualItem => {
                 const node = validationList[virtualItem.index];
@@ -137,7 +137,15 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
                           console.log('Node:', node);
                         }}
                       />
-                    ) : null}
+                    ) : (
+                      <ProblemRenderer
+                        node={node}
+                        rule={getRuleForResult(validationResponse, node.problem)}
+                        selectedProblem={selectedProblem}
+                        showByFilterValue={showByFilterValue}
+                        onClick={() => {}}
+                      />
+                    )}
                   </VirtualItem>
                 );
               })}
@@ -234,6 +242,7 @@ const ShowNewErrorsButton = styled.span`
 const ValidationList = styled.ul`
   height: 100%;
   overflow-y: auto;
+  padding-left: 0px;
 `;
 
 const VirtualItem = styled.div`

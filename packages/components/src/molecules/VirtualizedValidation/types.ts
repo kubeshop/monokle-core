@@ -8,6 +8,7 @@ export type ValidationOverviewType = {
   customMessage?: string;
   height?: number;
   newProblemsIntroducedType?: string;
+  selectedProblem?: ValidationResult;
   showOnlyByResource?: boolean;
   skeletonStyle?: React.CSSProperties;
 };
@@ -48,7 +49,7 @@ export type HeaderNode = {
 
 export type ProblemNode = {
   type: 'problem';
-  label: string;
+  problem: ValidationResult;
 };
 
 export type ValidationListNode = HeaderNode | ProblemNode;

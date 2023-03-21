@@ -2,12 +2,13 @@ import {Icon} from '@/atoms';
 import {Colors} from '@/styles/Colors';
 import {
   getFileId,
+  getFileLocation,
   getResourceLocation,
   getRuleForResult,
   ValidationResponse,
   ValidationResult,
 } from '@monokle/validation';
-import {FiltersValueType, ProblemsType, ValidationListNode} from './types';
+import {FiltersValueType, ProblemsType, ShowByFilterOptionType, ValidationListNode} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -166,6 +167,39 @@ export const getRuleInfo = (key: string) => {
 
 export const getResourceName = (problem: ValidationResult) => getResourceLocation(problem).logicalLocations?.[0]?.name;
 
+export const isProblemSelected = (
+  selectedProblem: ValidationResult,
+  currentProblem: ValidationResult,
+  type: ShowByFilterOptionType
+) => {
+  const selectedFilePhysicalLocation = getFileLocation(selectedProblem).physicalLocation;
+  const currentFileLocationPhysicalLocation = getFileLocation(currentProblem).physicalLocation;
+
+  const selectedFileURI = selectedFilePhysicalLocation?.artifactLocation.uri;
+  const selectedFileStartLine = selectedFilePhysicalLocation?.region?.startLine;
+  const currentFileURI = currentFileLocationPhysicalLocation?.artifactLocation.uri;
+  const currentFileStartLine = currentFileLocationPhysicalLocation?.region?.startLine;
+
+  if (selectedProblem.ruleId !== currentProblem.ruleId) {
+    return false;
+  }
+
+  if (type === 'show-by-file' || type === 'show-by-rule') {
+    if (selectedFileURI === currentFileURI && selectedFileStartLine === currentFileStartLine) {
+      return true;
+    }
+  } else if (type === 'show-by-resource') {
+    if (
+      getResourceName(selectedProblem) === getResourceName(currentProblem) &&
+      selectedFileStartLine === currentFileStartLine
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 export const getValidationList = (problems: ProblemsType) => {
   if (!problems) {
     return [];
@@ -191,9 +225,13 @@ export const getValidationList = (problems: ProblemsType) => {
     }
 
     for (const problem of keyProblems) {
-      list.push({type: 'problem', label: problem.message.text});
+      list.push({type: 'problem', problem});
     }
   }
 
   return list;
+};
+
+export const uppercaseFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };
