@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.2.0
+
+### Minor Changes
+
+- b561c55: Virtualized validation list
+
 ## 1.1.2
 
 ### Patch Changes
