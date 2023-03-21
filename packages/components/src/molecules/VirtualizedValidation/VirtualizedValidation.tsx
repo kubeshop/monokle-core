@@ -12,19 +12,20 @@ import ValidationOverviewFilters from './ValidationOverviewFilters';
 import {Colors} from '@/styles/Colors';
 import ProblemRenderer from './ProblemRenderer';
 import {getRuleForResult} from '@monokle/validation';
+import {useScroll} from './useScroll';
 
 let baseData: BaseDataType = {
-  baseActiveKeys: [],
+  baseCollapsedKeys: [],
   baseShowByFilterValue: 'show-by-file',
   baseShowOnlyByResource: false,
 };
 
 const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
   const {status, validationResponse} = props;
-  const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}} = props;
+  const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}, onProblemSelect} = props;
   const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource} = props;
 
-  const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>([]);
+  const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
   const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseData.baseShowByFilterValue);
@@ -56,13 +57,52 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
     scrollToFn: elementScroll,
   });
 
-  // useScroll({
-  //   scrollTo: index =>
-  //     rowVirtualizer.scrollToIndex(index, {
-  //       align: 'center',
-  //       smoothScroll: false,
-  //     }),
-  // });
+  useScroll({
+    list: validationList,
+    showByFilterValue,
+    selectedProblem,
+    scrollTo: index =>
+      rowVirtualizer.scrollToIndex(index, {
+        align: 'center',
+        behavior: 'smooth',
+      }),
+  });
+
+  useEffect(() => {
+    if (typeof showOnlyByResource === 'undefined') {
+      return;
+    }
+
+    if (showOnlyByResource === true) {
+      if (showByFilterValue !== 'show-by-resource') {
+        setShowByFilterValue('show-by-resource');
+      }
+
+      if (baseData.baseShowOnlyByResource === false) {
+        baseData.baseCollapsedKeys = [];
+      }
+    } else if (!showOnlyByResource) {
+      setShowByFilterValue(baseData.baseShowByFilterValue);
+
+      if (baseData.baseShowOnlyByResource === true) {
+        baseData.baseCollapsedKeys = [];
+      }
+    }
+
+    baseData.baseShowOnlyByResource = showOnlyByResource;
+  }, [showOnlyByResource]);
+
+  useEffect(() => {
+    if (!showNewErrorsMessage) {
+      setShowNewErrorsMessage(true);
+    }
+  }, [newProblems]);
+
+  useEffect(() => {
+    const keys = baseData.baseCollapsedKeys ? baseData.baseCollapsedKeys : [];
+    setCollapsedHeadersKey(keys);
+    baseData.baseCollapsedKeys = keys;
+  }, [filteredProblems]);
 
   useEffect(() => {
     if (searchValue) {
@@ -109,7 +149,7 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
           onSelect={(value: any) => {
             setShowByFilterValue(value);
             baseData.baseShowByFilterValue = value;
-            baseData.baseActiveKeys = [];
+            baseData.baseCollapsedKeys = [];
           }}
         />
       </ActionsContainer>
@@ -140,9 +180,13 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
                         showByFilterValue={showByFilterValue}
                         toggleCollapse={node => {
                           if (collapsedHeadersKey.includes(node.label)) {
-                            setCollapsedHeadersKey(prevState => prevState.filter(item => item !== node.label));
+                            const collapsedKeys = collapsedHeadersKey.filter(item => item !== node.label);
+                            setCollapsedHeadersKey(collapsedKeys);
+                            baseData.baseCollapsedKeys = collapsedKeys;
                           } else {
-                            setCollapsedHeadersKey(prevState => [...prevState, node.label]);
+                            const collapsedKeys = [...collapsedHeadersKey, node.label];
+                            setCollapsedHeadersKey(collapsedKeys);
+                            baseData.baseCollapsedKeys = collapsedKeys;
                           }
                         }}
                       />
@@ -152,7 +196,14 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
                         rule={getRuleForResult(validationResponse, node.problem)}
                         selectedProblem={selectedProblem}
                         showByFilterValue={showByFilterValue}
-                        onClick={() => {}}
+                        onClick={() => {
+                          if (onProblemSelect) {
+                            onProblemSelect({
+                              problem: node.problem,
+                              selectedFrom: showByFilterValue === 'show-by-resource' ? 'resource' : 'file',
+                            });
+                          }
+                        }}
                       />
                     )}
                   </VirtualItem>

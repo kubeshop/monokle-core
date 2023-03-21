@@ -11,6 +11,7 @@ export type ValidationOverviewType = {
   selectedProblem?: ValidationResult;
   showOnlyByResource?: boolean;
   skeletonStyle?: React.CSSProperties;
+  onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
 };
 
 export type ValidationOverviewFiltersType = {
@@ -34,7 +35,7 @@ export type NewProblemsType = {data: ProblemsType; resultsCount: number};
 export type ShowByFilterOptionType = 'show-by-file' | 'show-by-resource' | 'show-by-rule';
 
 export type BaseDataType = {
-  baseActiveKeys: string[];
+  baseCollapsedKeys: string[];
   baseShowByFilterValue: ShowByFilterOptionType;
   baseShowOnlyByResource: boolean;
 };
