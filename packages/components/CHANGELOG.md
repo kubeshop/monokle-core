@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.2.1
+
+### Patch Changes
+
+- fc48301: Fix spelling
+
 ## 1.2.0
 
 ### Minor Changes
