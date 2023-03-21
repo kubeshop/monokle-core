@@ -1,2 +1,1 @@
-export {default as ValidationOverview} from './ValidationOverview';
-export type {ValidationOverviewType} from './types';
+export {default as ValidationOverivew} from './ValidationOverview';
