@@ -42,6 +42,8 @@ export type HeaderNode = {
   type: 'header';
   label: string;
   count: number;
+  resourceName: string;
+  filePath: string;
 };
 
 export type ProblemNode = {

@@ -1,4 +1,12 @@
-import {getFileId, getRuleForResult, ValidationResponse, ValidationResult} from '@monokle/validation';
+import {Icon} from '@/atoms';
+import {Colors} from '@/styles/Colors';
+import {
+  getFileId,
+  getResourceLocation,
+  getRuleForResult,
+  ValidationResponse,
+  ValidationResult,
+} from '@monokle/validation';
 import {FiltersValueType, ProblemsType, ValidationListNode} from './types';
 
 export const selectProblemsByRule = (
@@ -141,6 +149,23 @@ export const filterBySearchValue = (problems: ProblemsType, searchValue: string)
   );
 };
 
+export const renderSeverityIcon = (severity: number, isSelected: boolean) => {
+  if (severity < 4) {
+    return <Icon name="severity-low" style={{color: isSelected ? Colors.grey1 : Colors.green7, fontSize: '13px'}} />;
+  } else if (severity < 7) {
+    return <Icon name="severity-medium" style={{color: isSelected ? Colors.grey1 : Colors.red7, fontSize: '13px'}} />;
+  } else {
+    return <Icon name="severity-high" style={{color: isSelected ? Colors.grey1 : Colors.red7, fontSize: '13px'}} />;
+  }
+};
+
+export const getRuleInfo = (key: string) => {
+  const [ruleDescription, toolComponentName, severity] = key.split('__');
+  return {ruleDescription, severity: parseInt(severity), toolComponentName};
+};
+
+export const getResourceName = (problem: ValidationResult) => getResourceLocation(problem).logicalLocations?.[0]?.name;
+
 export const getValidationList = (problems: ProblemsType) => {
   if (!problems) {
     return [];
@@ -153,7 +178,13 @@ export const getValidationList = (problems: ProblemsType) => {
     // add collapsed
     const collapsed = false;
 
-    list.push({type: 'header', label: key, count: keyProblems.length});
+    list.push({
+      type: 'header',
+      label: key,
+      count: keyProblems.length,
+      resourceName: getResourceName(keyProblems[0]) || '',
+      filePath: key.split('@').pop() || '',
+    });
 
     if (collapsed) {
       continue;

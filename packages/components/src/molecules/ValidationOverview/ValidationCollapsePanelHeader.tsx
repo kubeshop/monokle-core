@@ -25,6 +25,7 @@ export const ValidationCollapsePanelHeader: React.FC<IProps> = props => {
 
   if (showByFilterValue === 'show-by-rule') {
     const {ruleDescription, severity, toolComponentName} = getRuleInfo(id);
+    console.log('Id:', id);
 
     return (
       <Container>

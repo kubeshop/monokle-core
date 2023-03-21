@@ -34,6 +34,8 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
   const validationList = useMemo(() => getValidationList(filteredProblems), [filteredProblems]);
   const ref = useRef<HTMLUListElement>(null);
 
+  console.log('List:', validationList);
+
   const showByFilterOptions = useMemo(
     () => [
       {value: 'show-by-file', label: 'Show by file', disabled: showOnlyByResource},
@@ -108,37 +110,49 @@ const VirtualizedValidation: React.FC<ValidationOverviewType> = props => {
         />
       </ActionsContainer>
 
-      <ValidationList>
-        <div style={{height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative'}}>
-          {rowVirtualizer.getVirtualItems().map(virtualItem => {
-            const node = validationList[virtualItem.index];
+      {validationList.length ? (
+        <>
+          <ValidationList>
+            <div style={{height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative'}}>
+              {rowVirtualizer.getVirtualItems().map(virtualItem => {
+                const node = validationList[virtualItem.index];
 
-            if (!node) {
-              return null;
-            }
+                if (!node) {
+                  return null;
+                }
 
-            return (
-              <VirtualItem
-                key={virtualItem.key}
-                style={{
-                  height: `${virtualItem.size}px`,
-                  transform: `translateY(${virtualItem.start}px)`,
-                }}
-              >
-                {node.type === 'header' ? (
-                  <HeaderRenderer
-                    node={node}
-                    showByFilterValue={showByFilterValue}
-                    toggleCollapse={node => {
-                      console.log('Node:', node);
+                return (
+                  <VirtualItem
+                    key={virtualItem.key}
+                    style={{
+                      height: `${virtualItem.size}px`,
+                      transform: `translateY(${virtualItem.start}px)`,
                     }}
-                  />
-                ) : null}
-              </VirtualItem>
-            );
-          })}
-        </div>
-      </ValidationList>
+                  >
+                    {node.type === 'header' ? (
+                      <HeaderRenderer
+                        node={node}
+                        showByFilterValue={showByFilterValue}
+                        toggleCollapse={node => {
+                          console.log('Node:', node);
+                        }}
+                      />
+                    ) : null}
+                  </VirtualItem>
+                );
+              })}
+            </div>
+          </ValidationList>
+
+          {showNewErrors && (
+            <ActionsContainer>
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+            </ActionsContainer>
+          )}
+        </>
+      ) : (
+        <NoErrorsMessage>No problems found.</NoErrorsMessage>
+      )}
     </MainContainer>
   );
 };
