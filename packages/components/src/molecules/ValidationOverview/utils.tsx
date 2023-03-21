@@ -1,14 +1,14 @@
 import {Icon} from '@/atoms';
 import {Colors} from '@/styles/Colors';
 import {
-  ValidationResult,
   getFileId,
+  getFileLocation,
   getResourceLocation,
   getRuleForResult,
   ValidationResponse,
-  getFileLocation,
+  ValidationResult,
 } from '@monokle/validation';
-import {FiltersValueType, ProblemsType, ShowByFilterOptionType} from './types';
+import {FiltersValueType, ProblemsType, ShowByFilterOptionType, ValidationListNode} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -94,31 +94,9 @@ export const selectProblemsByResource = (problems: ValidationResult[], level: 'w
   return Object.fromEntries(problemsByResources);
 };
 
-export const filterBySearchValue = (problems: ProblemsType, searchValue: string) => {
-  if (!searchValue) {
-    return problems;
-  }
-
-  return Object.fromEntries(
-    Object.entries(problems || {})
-      .map(([filePath, validationResults]) => {
-        if (filePath.toLowerCase().includes(searchValue.toLowerCase())) {
-          return [filePath, validationResults];
-        }
-
-        const filteredValidationResults = validationResults.filter(el =>
-          el.ruleId.toLowerCase().includes(searchValue.toLowerCase())
-        );
-
-        if (filteredValidationResults.length > 0) {
-          return [filePath, filteredValidationResults];
-        }
-
-        return [];
-      })
-      .filter(el => el.length > 0)
-  );
-};
+export const getFullyQualifiedName = (problem: ValidationResult) =>
+  problem.locations[1].logicalLocations?.[0].fullyQualifiedName ||
+  problem.locations[0].physicalLocation?.artifactLocation.uri;
 
 export const filterProblems = (problems: ProblemsType, filters: FiltersValueType) => {
   if (!filters['tool-component'] && !filters['type']) {
@@ -146,10 +124,48 @@ export const filterProblems = (problems: ProblemsType, filters: FiltersValueType
   );
 };
 
+export const filterBySearchValue = (problems: ProblemsType, searchValue: string) => {
+  if (!searchValue) {
+    return problems;
+  }
+
+  return Object.fromEntries(
+    Object.entries(problems || {})
+      .map(([filePath, validationResults]) => {
+        if (filePath.toLowerCase().includes(searchValue.toLowerCase())) {
+          return [filePath, validationResults];
+        }
+
+        const filteredValidationResults = validationResults.filter(el =>
+          el.ruleId.toLowerCase().includes(searchValue.toLowerCase())
+        );
+
+        if (filteredValidationResults.length > 0) {
+          return [filePath, filteredValidationResults];
+        }
+
+        return [];
+      })
+      .filter(el => el.length > 0)
+  );
+};
+
+export const renderSeverityIcon = (severity: number, isSelected: boolean) => {
+  if (severity < 4) {
+    return <Icon name="severity-low" style={{color: isSelected ? Colors.grey1 : Colors.green7, fontSize: '13px'}} />;
+  } else if (severity < 7) {
+    return <Icon name="severity-medium" style={{color: isSelected ? Colors.grey1 : Colors.red7, fontSize: '13px'}} />;
+  } else {
+    return <Icon name="severity-high" style={{color: isSelected ? Colors.grey1 : Colors.red7, fontSize: '13px'}} />;
+  }
+};
+
 export const getRuleInfo = (key: string) => {
   const [ruleDescription, toolComponentName, severity] = key.split('__');
   return {ruleDescription, severity: parseInt(severity), toolComponentName};
 };
+
+export const getResourceName = (problem: ValidationResult) => getResourceLocation(problem).logicalLocations?.[0]?.name;
 
 export const isProblemSelected = (
   selectedProblem: ValidationResult,
@@ -184,24 +200,37 @@ export const isProblemSelected = (
   return false;
 };
 
-export const getResourceName = (problem: ValidationResult) => getResourceLocation(problem).logicalLocations?.[0]?.name;
-
-export const renderSeverityIcon = (severity: number, isSelected: boolean) => {
-  if (severity < 4) {
-    return <Icon name="severity-low" style={{color: isSelected ? Colors.grey1 : Colors.green7, fontSize: '13px'}} />;
-  } else if (severity < 7) {
-    return <Icon name="severity-medium" style={{color: isSelected ? Colors.grey1 : Colors.red7, fontSize: '13px'}} />;
-  } else {
-    return <Icon name="severity-high" style={{color: isSelected ? Colors.grey1 : Colors.red7, fontSize: '13px'}} />;
+export const getValidationList = (problems: ProblemsType, collapsedHeadersKey: string[]) => {
+  if (!problems) {
+    return [];
   }
+
+  const list: ValidationListNode[] = [];
+
+  const entries = Object.entries(problems).sort();
+  for (const [key, keyProblems] of entries) {
+    const collapsed = collapsedHeadersKey.indexOf(key) !== -1;
+
+    list.push({
+      type: 'header',
+      label: key,
+      count: keyProblems.length,
+      resourceName: getResourceName(keyProblems[0]) || '',
+      filePath: key.split('@').pop() || '',
+      collapsed,
+    });
+
+    if (collapsed) {
+      continue;
+    }
+
+    for (const problem of keyProblems) {
+      list.push({type: 'problem', problem});
+    }
+  }
+
+  return list;
 };
-
-export const getFullyQualifiedName = (problem: ValidationResult) =>
-  problem.locations[1].logicalLocations?.[0].fullyQualifiedName ||
-  problem.locations[0].physicalLocation?.artifactLocation.uri;
-
-export const getItemRowId = (problem: ValidationResult, index: number) =>
-  `${problem.ruleId}-${problem.message.text}-${problem.locations[0].physicalLocation?.region?.startLine}-${problem.locations[0].physicalLocation?.artifactLocation.uri}-${index}`;
 
 export const uppercaseFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);

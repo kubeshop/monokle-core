@@ -1,30 +1,31 @@
-import {Colors} from '@/styles/Colors';
+import {Select, Skeleton} from 'antd';
 import {CloseOutlined} from '@ant-design/icons';
-import {getRuleForResult} from '@monokle/validation';
-import {Collapse, Select, Skeleton} from 'antd';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components';
-import {CollapseItemRow} from './CollapseItemRow';
+import {elementScroll, useVirtualizer} from '@tanstack/react-virtual';
 import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
 import {BaseDataType, FiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
-import {getItemRowId} from './utils';
-
-import {ValidationCollapsePanelHeader} from './ValidationCollapsePanelHeader';
+import {getValidationList} from './utils';
+import HeaderRenderer from './HeaderRenderer';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
+import {Colors} from '@/styles/Colors';
+import ProblemRenderer from './ProblemRenderer';
+import {getRuleForResult} from '@monokle/validation';
+import {useScroll} from './useScroll';
 
 let baseData: BaseDataType = {
-  baseActiveKeys: [],
+  baseCollapsedKeys: [],
   baseShowByFilterValue: 'show-by-file',
   baseShowOnlyByResource: false,
 };
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {containerClassName = '', containerStyle = {}, height, width, selectedProblem, status} = props;
-  const {showOnlyByResource} = props;
-  const {customMessage, newProblemsIntroducedType, skeletonStyle = {}, validationResponse, onProblemSelect} = props;
+  const {status, validationResponse} = props;
+  const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}, onProblemSelect} = props;
+  const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource} = props;
 
-  const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
   const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseData.baseShowByFilterValue);
@@ -34,6 +35,12 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {newProblems, problems} = useCurrentAndNewProblems(showByFilterValue, validationResponse);
   const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue, filtersValue);
 
+  const validationList = useMemo(
+    () => getValidationList(filteredProblems, collapsedHeadersKey),
+    [collapsedHeadersKey, filteredProblems]
+  );
+  const ref = useRef<HTMLUListElement>(null);
+
   const showByFilterOptions = useMemo(
     () => [
       {value: 'show-by-file', label: 'Show by file', disabled: showOnlyByResource},
@@ -42,6 +49,24 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     ],
     [showOnlyByResource]
   );
+
+  const rowVirtualizer = useVirtualizer({
+    count: validationList.length,
+    estimateSize: () => 36,
+    getScrollElement: () => ref.current,
+    scrollToFn: elementScroll,
+  });
+
+  useScroll({
+    list: validationList,
+    showByFilterValue,
+    selectedProblem,
+    scrollTo: index =>
+      rowVirtualizer.scrollToIndex(index, {
+        align: 'center',
+        behavior: 'smooth',
+      }),
+  });
 
   useEffect(() => {
     if (typeof showOnlyByResource === 'undefined') {
@@ -54,13 +79,13 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       }
 
       if (baseData.baseShowOnlyByResource === false) {
-        baseData.baseActiveKeys = [];
+        baseData.baseCollapsedKeys = [];
       }
     } else if (!showOnlyByResource) {
       setShowByFilterValue(baseData.baseShowByFilterValue);
 
       if (baseData.baseShowOnlyByResource === true) {
-        baseData.baseActiveKeys = [];
+        baseData.baseCollapsedKeys = [];
       }
     }
 
@@ -74,7 +99,9 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   }, [newProblems]);
 
   useEffect(() => {
-    setActiveKeys(baseData.baseActiveKeys.length ? baseData.baseActiveKeys : Object.keys(filteredProblems));
+    const keys = baseData.baseCollapsedKeys ? baseData.baseCollapsedKeys : [];
+    setCollapsedHeadersKey(keys);
+    baseData.baseCollapsedKeys = keys;
   }, [filteredProblems]);
 
   useEffect(() => {
@@ -88,7 +115,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   }
 
   return (
-    <MainContainer style={containerStyle} $height={height} $width={width} className={containerClassName}>
+    <MainContainer $height={height} className={containerClassName} style={containerStyle}>
       <ValidationOverviewFilters
         filtersValue={filtersValue}
         searchValue={searchValue}
@@ -122,54 +149,68 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           onSelect={(value: any) => {
             setShowByFilterValue(value);
             baseData.baseShowByFilterValue = value;
-            baseData.baseActiveKeys = [];
+            baseData.baseCollapsedKeys = [];
           }}
         />
       </ActionsContainer>
 
-      {Object.keys(filteredProblems).length ? (
+      {validationList.length ? (
         <>
-          <ValidationsCollapse
-            activeKey={activeKeys}
-            ghost
-            onChange={keys => {
-              const changedKeys = typeof keys === 'string' ? [keys] : keys;
+          <ValidationList ref={ref}>
+            <div style={{height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative'}}>
+              {rowVirtualizer.getVirtualItems().map(virtualItem => {
+                const node = validationList[virtualItem.index];
 
-              setActiveKeys(changedKeys);
-              baseData.baseActiveKeys = changedKeys;
-            }}
-          >
-            {Object.entries(filteredProblems).map(([id, results]) => (
-              <Collapse.Panel
-                header={
-                  <ValidationCollapsePanelHeader id={id} results={results} showByFilterValue={showByFilterValue} />
+                if (!node) {
+                  return null;
                 }
-                key={id}
-              >
-                {results.map((result, i) => {
-                  const rule = getRuleForResult(validationResponse, result);
 
-                  return (
-                    <CollapseItemRow
-                      key={getItemRowId(result, i)}
-                      result={result}
-                      rule={rule}
-                      showByFilterValue={showByFilterValue}
-                      selectedProblem={selectedProblem}
-                      onClick={() => {
-                        if (onProblemSelect) {
-                          onProblemSelect({
-                            problem: result,
-                            selectedFrom: showByFilterValue === 'show-by-resource' ? 'resource' : 'file',
-                          });
-                        }
-                      }}
-                    />
-                  );
-                })}
-              </Collapse.Panel>
-            ))}
-          </ValidationsCollapse>
+                return (
+                  <VirtualItem
+                    key={virtualItem.key}
+                    style={{
+                      height: `${virtualItem.size}px`,
+                      transform: `translateY(${virtualItem.start}px)`,
+                      padding: node.type === 'header' ? '8px 0px' : '0px',
+                    }}
+                  >
+                    {node.type === 'header' ? (
+                      <HeaderRenderer
+                        node={node}
+                        showByFilterValue={showByFilterValue}
+                        toggleCollapse={node => {
+                          if (collapsedHeadersKey.includes(node.label)) {
+                            const collapsedKeys = collapsedHeadersKey.filter(item => item !== node.label);
+                            setCollapsedHeadersKey(collapsedKeys);
+                            baseData.baseCollapsedKeys = collapsedKeys;
+                          } else {
+                            const collapsedKeys = [...collapsedHeadersKey, node.label];
+                            setCollapsedHeadersKey(collapsedKeys);
+                            baseData.baseCollapsedKeys = collapsedKeys;
+                          }
+                        }}
+                      />
+                    ) : (
+                      <ProblemRenderer
+                        node={node}
+                        rule={getRuleForResult(validationResponse, node.problem)}
+                        selectedProblem={selectedProblem}
+                        showByFilterValue={showByFilterValue}
+                        onClick={() => {
+                          if (onProblemSelect) {
+                            onProblemSelect({
+                              problem: node.problem,
+                              selectedFrom: showByFilterValue === 'show-by-resource' ? 'resource' : 'file',
+                            });
+                          }
+                        }}
+                      />
+                    )}
+                  </VirtualItem>
+                );
+              })}
+            </div>
+          </ValidationList>
 
           {showNewErrors && (
             <ActionsContainer>
@@ -186,7 +227,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
 export default ValidationOverview;
 
-// Styled components
+// Styled Components
 
 const ActionsContainer = styled.div<{$secondary?: boolean}>`
   display: grid;
@@ -258,36 +299,17 @@ const ShowNewErrorsButton = styled.span`
   }
 `;
 
-const ValidationsCollapse = styled(Collapse)`
+const ValidationList = styled.ul`
+  height: 100%;
   overflow-y: auto;
-  overflow-x: hidden;
+  padding-left: 0px;
   margin-top: 16px;
+`;
+
+const VirtualItem = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-
-  & .ant-collapse-header {
-    color: ${Colors.grey8} !important;
-    padding-left: 0px !important;
-    padding-bottom: 0px !important;
-
-    &:first-child {
-      padding-top: 0px;
-    }
-
-    &-text {
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  & .ant-collapse-item {
-    margin-bottom: 8px;
-  }
-
-  & .ant-collapse-item-active {
-    margin-bottom: 0px;
-  }
-
-  & .ant-collapse-content-box {
-    padding: 10px 0px 15px 0px !important;
-  }
+  overflow: hidden;
 `;

@@ -3,12 +3,6 @@ import {ValidationOverviewType} from './types';
 export const MainValidationOverviewArgs: ValidationOverviewType = {
   status: 'loaded',
   height: 800,
-  onProblemSelect: problem => {
-    console.log('Problem:', problem);
-  },
-  containerStyle: {
-    paddingTop: '20px',
-  },
   newProblemsIntroducedType: 'k8s-schema',
   selectedProblem: {
     ruleId: 'KSV001',

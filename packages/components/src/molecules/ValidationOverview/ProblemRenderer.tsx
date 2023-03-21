@@ -1,28 +1,28 @@
-import {ProblemIcon, TextEllipsis} from '@/atoms';
-import {TOOLTIP_DELAY} from '@/constants';
-import {Colors} from '@/styles/Colors';
-import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
-import {Tooltip} from 'antd';
 import {useMemo} from 'react';
 import styled from 'styled-components';
-import {iconMap} from './constants';
-import {ShowByFilterOptionType} from './types';
+import {Tooltip} from 'antd';
+import {Colors} from '@/styles/Colors';
+import {ProblemNode, ShowByFilterOptionType} from './types';
+import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './utils';
+import {TOOLTIP_DELAY} from '@/constants';
+import {ProblemIcon, TextEllipsis} from '@/atoms';
+import {iconMap} from './constants';
 
 type IProps = {
-  result: ValidationResult;
+  node: ProblemNode;
   rule: RuleMetadata;
   showByFilterValue: ShowByFilterOptionType;
   selectedProblem?: ValidationResult;
   onClick: () => void;
 };
 
-export const CollapseItemRow: React.FC<IProps> = props => {
-  const {result, rule, showByFilterValue, selectedProblem, onClick} = props;
+const ProblemRenderer: React.FC<IProps> = props => {
+  const {node, rule, selectedProblem, showByFilterValue, onClick} = props;
 
   const isSelected = useMemo(
-    () => (selectedProblem ? isProblemSelected(selectedProblem, result, showByFilterValue) : false),
-    [selectedProblem, result, showByFilterValue]
+    () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem, showByFilterValue) : false),
+    [selectedProblem, node.problem, showByFilterValue]
   );
 
   return (
@@ -31,19 +31,19 @@ export const CollapseItemRow: React.FC<IProps> = props => {
         <>
           <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="File line">
             <ProblemStartLine $isSelected={isSelected}>
-              {result.locations[0].physicalLocation?.region?.startLine}
+              {node.problem.locations[0].physicalLocation?.region?.startLine}
             </ProblemStartLine>
           </Tooltip>
           <TextEllipsis
             style={{fontSize: '13px'}}
-            text={getFileLocation(result).physicalLocation?.artifactLocation.uri ?? ''}
+            text={getFileLocation(node.problem).physicalLocation?.artifactLocation.uri ?? ''}
           />
         </>
       ) : (
         <>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-            <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={uppercaseFirstLetter(result.rule.toolComponent.name)}>
-              {iconMap[result.rule.toolComponent.name]}
+            <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={uppercaseFirstLetter(node.problem.rule.toolComponent.name)}>
+              {iconMap[node.problem.rule.toolComponent.name]}
             </Tooltip>
 
             {rule && (
@@ -58,19 +58,21 @@ export const CollapseItemRow: React.FC<IProps> = props => {
             title={showByFilterValue === 'show-by-file' ? 'File content line' : 'Resource content line'}
           >
             <ProblemStartLine $isSelected={isSelected}>
-              {result.locations[showByFilterValue === 'show-by-file' ? 0 : 1].physicalLocation?.region?.startLine}
+              {node.problem.locations[showByFilterValue === 'show-by-file' ? 0 : 1].physicalLocation?.region?.startLine}
             </ProblemStartLine>
           </Tooltip>
 
-          <ProblemIcon level={result.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
-          <TextEllipsis style={{fontSize: '13px'}} text={result.message.text} />
+          <ProblemIcon level={node.problem.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
+          <TextEllipsis style={{fontSize: '13px'}} text={node.problem.message.text} />
         </>
       )}
     </Row>
   );
 };
 
-// Styled Components
+export default ProblemRenderer;
+
+// Styled components
 
 const ProblemStartLine = styled.div<{$isSelected: boolean}>`
   color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
