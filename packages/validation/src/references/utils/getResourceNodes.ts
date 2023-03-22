@@ -6,7 +6,7 @@ import {
   ResourceRefsProcessingConfig,
 } from "../../common/types.js";
 import { REF_PATH_SEPARATOR, NAME_REFNODE_PATH } from "../../constants.js";
-import isDeepEqual from 'fast-deep-equal/es6/react';
+import isEqual from "lodash/isEqual.js";
 
 const resourceRefNodesCache = new Map<
   string,
@@ -214,7 +214,7 @@ function addRefNodeAtPath(
   refNodesByPath: Record<string, RefNode[] | undefined>
 ) {
   if (refNodesByPath[path]) {
-    if( !refNodesByPath[path]?.some( ref => isDeepEqual( ref, refNode))) {
+    if( !refNodesByPath[path]?.some( ref => isEqual( ref, refNode))) {
       refNodesByPath[path]?.push(refNode);
     }
   } else {
