@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.2.2
+
+### Patch Changes
+
+- 189bd6f: Refactor filter button styling
+
 ## 1.2.1
 
 ### Patch Changes
