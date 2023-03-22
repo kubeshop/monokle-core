@@ -30,4 +30,18 @@ export const RESOURCE_LINK_RULES: RuleMetadata[] = [
       enabled: false
     }
   },
+  {
+    id: "LNK003",
+    name: "no-missing-owner-references",
+    shortDescription: {
+      text: "Disallow missing ownerReferences.",
+    },
+    fullDescription: {
+      text: "The resource has an unresolved ownerReference in its metadata secion.",
+    },
+    help: {
+      text: "ownerReferences should only be present in cluster resources - if this is a local file you should remove it, if this" +
+        "is in a cluster something seems to have gone wrong in the corresponding operators or Kubernetes itself.",
+    }
+  },
 ];

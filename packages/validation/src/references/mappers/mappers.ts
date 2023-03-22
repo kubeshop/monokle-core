@@ -11,6 +11,7 @@ import { endpointsMappers } from "./endpoints.js";
 import { endpointSliceMappers } from "./endpointSlice.js";
 import { Resource } from "../../common/types.js";
 import { isDefined } from "../../utils/isDefined.js";
+import { ownerReferenceMapper } from "./ownerReference";
 
 export type SiblingMatcher = (
   source: Resource,
@@ -49,7 +50,7 @@ type RefTarget = {
  * - name: Used for everything else
  */
 export type RefMapper = {
-  type: "path" | "name" | "pairs" | "image";
+  type: "path" | "name" | "pairs" | "image" | "owner";
   source: RefSource;
   target: RefTarget;
 
@@ -62,7 +63,10 @@ export type RefMapper = {
 };
 
 export function getOutgoingRefMappers(kind: string): RefMapper[] {
-  return OUTGOING_MAPPERS_BY_KIND[kind as KnownResourceKinds] ?? [];
+  var mappers = OUTGOING_MAPPERS_BY_KIND[kind as KnownResourceKinds] ?? [];
+
+  // always add ownerReferenceMapper
+  return [ownerReferenceMapper, ...mappers]
 }
 
 export const OUTGOING_MAPPERS_BY_KIND: Partial<

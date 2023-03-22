@@ -1,0 +1,117 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: 2022-11-24T14:51:03.000Z
+  generateName: petstore-778587f7d5-
+  labels:
+    app: petstore
+    pod-template-hash: 778587f7d5
+  name: petstore-778587f7d5-nflbg
+  namespace: default
+  ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: petstore-778587f7d5
+      uid: 7ccf7c06-41be-456c-b628-8896375c01c6
+  resourceVersion: "709622"
+  uid: c30eb3ab-2caa-4db8-b9f3-fb048676954e
+spec:
+  containers:
+    - image: swaggerapi/petstore3:latest
+      imagePullPolicy: Always
+      name: service
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-m5tmv
+          readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: minikube
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+  volumes:
+    - name: kube-api-access-m5tmv
+      projected:
+        defaultMode: 420
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              items:
+                - key: ca.crt
+                  path: ca.crt
+              name: kube-root-ca.crt
+          - downwardAPI:
+              items:
+                - fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+                  path: namespace
+status:
+  conditions:
+    - lastProbeTime: null
+      lastTransitionTime: 2022-11-24T14:51:03.000Z
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: 2023-03-08T08:35:30.000Z
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: 2023-03-08T08:35:30.000Z
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: 2022-11-24T14:51:03.000Z
+      status: "True"
+      type: PodScheduled
+  containerStatuses:
+    - containerID: docker://a34a55c9f79fe5b06577257861af9e100062a03dea2aafa93168689379dac8ef
+      image: swaggerapi/petstore3:latest
+      imageID: docker-pullable://swaggerapi/petstore3@sha256:84533ca12dce254c4edf6f0efadc50fa932eb76f363082775c4e70d02c535484
+      lastState:
+        terminated:
+          containerID: docker://4e13e88405a8e08574f7105421d93abe5c8affd59b4f01eb6f0e316fcf802283
+          exitCode: 137
+          finishedAt: 2023-01-31T10:37:12.000Z
+          reason: Error
+          startedAt: 2023-01-24T09:45:43.000Z
+      name: service
+      ready: true
+      restartCount: 6
+      started: true
+      state:
+        running:
+          startedAt: 2023-03-08T08:35:30.000Z
+  hostIP: 192.168.49.2
+  phase: Running
+  podIP: 172.17.0.4
+  podIPs:
+    - ip: 172.17.0.4
+  qosClass: BestEffort
+  startTime: 2022-11-24T14:51:03.000Z

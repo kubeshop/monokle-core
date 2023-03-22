@@ -25,7 +25,7 @@ plugins:
 **Rules**
 
 | id     | name                                        | description                                             |
-| ------ | ------------------------------------------- | ------------------------------------------------------- |
+|--------|---------------------------------------------|---------------------------------------------------------|
 | KSV001 | open-policy-agent/no-elevated-process       | Disallow the process from elevating its privileges.     |
 | KSV002 | open-policy-agent/app-armor                 | Require a default AppArmor profile                      |
 | KSV003 | open-policy-agent/drop-capabilities         | Require default capabilities to be dropped              |
@@ -67,13 +67,13 @@ settings:
 ```
 
 | name          | description                          | default   |
-| ------------- | ------------------------------------ | --------- |
+|---------------|--------------------------------------|-----------|
 | schemaVersion | The version of the Kubernetes schema | "v1.24.2" |
 
 **Rules**
 
 | id     | name                              | description                            |
-| ------ | --------------------------------- | -------------------------------------- |
+|--------|-----------------------------------|----------------------------------------|
 | K8S001 | kubernetes-schema/schema-violated | The resource is formatted incorrectly. |
 
 ### Resource Links
@@ -100,10 +100,11 @@ LNK002 rule is enabled.
 
 **Rules**
 
-| id     | name                                     | description                      |
-|--------|------------------------------------------|----------------------------------|
-| LNK001 | resource-links/no-missing-links          | Disallow missing links.          |
-| LNK002 | resource-links/no-missing-optional-links | Disallow missing optional links. |
+| id     | name                                       | description                           |
+|--------|--------------------------------------------|---------------------------------------|
+| LNK001 | resource-links/no-missing-links            | Disallow unsatisfied links.           |
+| LNK002 | resource-links/no-missing-optional-links   | Disallow unsatisfied optional links.  |
+| LNK003 | resource-links/no-missing-owner-references | Disallow unsatisfied ownerReferences. |
 
 ### YAML Syntax
 
@@ -121,7 +122,7 @@ plugins:
 Generally you either want all of these to be enabled or disabled.
 
 | id     | name                                  | description                                   |
-| ------ | ------------------------------------- | --------------------------------------------- |
+|--------|---------------------------------------|-----------------------------------------------|
 | YML001 | yaml-syntax/alias-props               | The alias props are incorrect.                |
 | YML002 | yaml-syntax/no-bad-alias              | The alias' format is incorrect.               |
 | YML003 | yaml-syntax/no-bad-directive          | The directive is incorrect.                   |

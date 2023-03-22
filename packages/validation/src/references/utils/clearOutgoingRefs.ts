@@ -1,4 +1,4 @@
-import { Resource, ResourceMapType } from "../../common/types.js";
+import { Resource, ResourceMapType, ResourceRefType } from "../../common/types.js";
 import { isResourceRefTo } from "./helpers.js";
 
 /*
@@ -23,12 +23,12 @@ export function clearOutgoingResourceRefs(
       if (targetResource) {
         targetResource.refs = targetResource.refs?.filter(
           (resourceRef) =>
-            resourceRef.type !== "incoming" ||
+            (resourceRef.type !== ResourceRefType.Incoming && resourceRef.type !== ResourceRefType.IncomingOwner) ||
             !isResourceRefTo(resourceRef, resource.id)
         );
       }
     }
   });
 
-  resource.refs = resource.refs.filter((ref) => ref.type === "incoming");
+  resource.refs = resource.refs.filter((ref) => (ref.type === ResourceRefType.Incoming || ref.type === ResourceRefType.IncomingOwner));
 }

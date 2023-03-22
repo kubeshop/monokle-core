@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  annotations:
+    deployment.kubernetes.io/desired-replicas: "3"
+    deployment.kubernetes.io/max-replicas: "4"
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: 2022-11-24T14:49:50.000Z
+  generation: 1
+  labels:
+    app: petstore
+    pod-template-hash: 778587f7d5
+  name: petstore-778587f7d5
+  namespace: default
+  ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: petstore
+      uid: 69b126a9-19f5-47e1-9a60-f8fbc6f6e030
+  resourceVersion: "446033"
+  uid: 7ccf7c06-41be-456c-b628-8896375c01c6
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: petstore
+      pod-template-hash: 778587f7d5
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: petstore
+        pod-template-hash: 778587f7d5
+    spec:
+      containers:
+        - image: swaggerapi/petstore3:latest
+          imagePullPolicy: Always
+          name: service
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 3
+  fullyLabeledReplicas: 3
+  observedGeneration: 1
+  readyReplicas: 3
+  replicas: 3

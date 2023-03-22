@@ -1,10 +1,10 @@
 import { JsonObject } from "type-fest";
 import { Scalar } from "yaml";
-import { RuleMap } from "../config/parse.js";
+import { RuleMap } from "../config";
 import { PluginMetadataWithConfig, RuleMetadataWithConfig } from "../types.js";
-import { ResourceSchema } from "../validators/kubernetes-schema/schemaLoader.js";
+import { ResourceSchema } from "../validators/kubernetes-schema";
 import { ResourceParser } from "./resourceParser.js";
-import { ValidationPolicy, RuleMetadata, ValidationRun } from "./sarif.js";
+import { ValidationPolicy, ValidationRun } from "./sarif.js";
 
 /* * * * * * * * * * * * * * * * *
  * The common resource type
@@ -54,6 +54,10 @@ export enum ResourceRefType {
   Incoming = "incoming",
   Outgoing = "outgoing",
   Unsatisfied = "unsatisfied-outgoing",
+
+  IncomingOwner = "incoming-owner",
+  OutgoingOwner = "outgoing-owner",
+  UnsatisfiedOwner = "unsatisfied-outgoing-owner",
 }
 
 export type RefTargetResource = {

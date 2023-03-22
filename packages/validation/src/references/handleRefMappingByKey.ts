@@ -1,17 +1,10 @@
-import {
-  Resource,
-  ResourceRefsProcessingConfig,
-  ResourceRefType,
-} from "../common/types.js";
+import { Resource, ResourceRefsProcessingConfig, ResourceRefType } from "../common/types.js";
 import { NAME_REFNODE_PATH } from "../constants.js";
-import { RefMapper } from "./mappers/index.js";
+import { RefMapper } from "./mappers";
 
 import { createImageRef } from "./utils/createImageRef.js";
 import { createResourceRef, linkResources } from "./utils/createResourceRef.js";
-import {
-  joinPathParts,
-  getResourceRefNodes,
-} from "./utils/getResourceNodes.js";
+import { getResourceRefNodes, joinPathParts } from "./utils/getResourceNodes.js";
 import { isOptionalRef } from "./utils/helpers.js";
 import { NodeWrapper } from "../common/NodeWrapper.js";
 import { shouldCreateSatisfiedRef } from "./utils/shouldCreateSatisfiedRef.js";
@@ -56,7 +49,7 @@ export function handleRefMappingByKey(
       ) {
         createRef(
           sourceResource,
-          ResourceRefType.Unsatisfied,
+          outgoingRefMapper.type === "owner" ? ResourceRefType.UnsatisfiedOwner : ResourceRefType.Unsatisfied,
           new NodeWrapper(sourceRefNode.scalar, sourceLineCounter),
           undefined,
           outgoingRefMapper.target.kind,
@@ -112,7 +105,7 @@ export function handleRefMappingByKey(
             }
           }
         } else if (
-          outgoingRefMapper.type === "path" &&
+          (outgoingRefMapper.type === "path" || outgoingRefMapper.type === "owner") &&
           outgoingRefMapper.target.pathParts
         ) {
           const outgoingRefMapperTargetPath = joinPathParts(
@@ -145,7 +138,8 @@ export function handleRefMappingByKey(
                   sourceRefNode,
                   outgoingRefMapper,
                   config
-                )
+                ),
+                outgoingRefMapper.type === "owner"
               );
             }
           });
@@ -163,7 +157,7 @@ export function handleRefMappingByKey(
       ) {
         createRef(
           sourceResource,
-          ResourceRefType.Unsatisfied,
+          outgoingRefMapper.type === "owner" ? ResourceRefType.UnsatisfiedOwner : ResourceRefType.Unsatisfied,
           new NodeWrapper(sourceRefNode.scalar, sourceLineCounter),
           undefined,
           outgoingRefMapper.target.kind,
