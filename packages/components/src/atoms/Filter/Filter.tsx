@@ -133,7 +133,7 @@ const StyledInput = styled(Input)`
 `;
 
 const ButtonBox = styled.div`
-  flex: 0 0 32px;
+  flex: 0 0 30px;
 `;
 
 const Menu = styled(motion.div)`

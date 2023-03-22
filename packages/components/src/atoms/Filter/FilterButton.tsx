@@ -27,8 +27,8 @@ const Box = styled.div<{$active: boolean}>`
   border: none;
   transition-delay: ${({$active}) => ($active ? '0s' : '0.8s')};
   transition-property: border-radius, background-color;
-  height: 32px;
-  width: 32px;
+  height: 30px;
+  width: 30px;
 
   &:after {
     display: block;
@@ -39,7 +39,7 @@ const Box = styled.div<{$active: boolean}>`
     height: ${({$active}) => ($active ? '12px' : '0px')};
     transition-delay: ${({$active}) => ($active ? '0s' : '0.6s')};
     transition-property: margin-top, height;
-    width: 32px;
+    width: 30px;
     padding-bottom: auto;
     padding-top: 0;
     background-color: ${Colors.cyan2};
@@ -52,8 +52,8 @@ const Button = styled(RawButton)<{$active: boolean; $highlight?: boolean}>`
   padding: 0px;
   width: 100%;
   height: 100%;
-  color: ${Colors.grey9};
-  background-color: ${({$active}) => ($active ? Colors.cyan2 : Colors.grey3b)};
+  background-color: ${({$active}) => ($active ? Colors.cyan2 : 'rgba(255, 255, 255, 0.1)')};
+  color: ${Colors.blue6};
   ${({$highlight}) => ($highlight ? `color: ${Colors.lightSeaGreen};` : ``)};
 
   :hover,
