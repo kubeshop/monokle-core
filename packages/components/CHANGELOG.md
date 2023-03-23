@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.2.4
+
+### Patch Changes
+
+- d4ebd2f: Fix import
+
 ## 1.2.3
 
 ### Patch Changes
