@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.2.3
+
+### Patch Changes
+
+- 4f22f38: Validation filters as props
+
 ## 1.2.2
 
 ### Patch Changes
