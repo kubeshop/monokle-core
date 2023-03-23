@@ -6,22 +6,24 @@ export type ValidationOverviewType = {
   containerClassName?: string;
   containerStyle?: React.CSSProperties;
   customMessage?: string;
+  filters?: ValidationFiltersValueType;
   height?: number;
   newProblemsIntroducedType?: string;
   selectedProblem?: ValidationResult;
   showOnlyByResource?: boolean;
   skeletonStyle?: React.CSSProperties;
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
+  onFiltersChange?: (filters: ValidationFiltersValueType) => void;
 };
 
 export type ValidationOverviewFiltersType = {
-  filtersValue: FiltersValueType;
+  filtersValue: ValidationFiltersValueType;
   searchValue: string;
-  onFiltersChange: (filters: FiltersValueType) => void;
+  onFiltersChange: (filters: ValidationFiltersValueType) => void;
   onSearch: (searchValue: string) => void;
 };
 
-export type FiltersValueType = {
+export type ValidationFiltersValueType = {
   'tool-component'?: string[];
   type?: 'error' | 'warning';
 };

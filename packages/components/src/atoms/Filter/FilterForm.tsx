@@ -30,4 +30,8 @@ const FieldItem = styled.div`
   flex-direction: column;
   gap: 3px;
   color: ${Colors.grey9};
+
+  & .ant-select-clear {
+    border-radius: 50% !important;
+  }
 `;
