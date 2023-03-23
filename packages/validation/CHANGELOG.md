@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.15.2
+
+### Patch Changes
+
+- d4ebd2f: Fix import
+
 ## 0.15.1
 
 ### Patch Changes
