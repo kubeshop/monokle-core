@@ -1,6 +1,6 @@
 import { JsonObject } from "type-fest";
 import { Scalar } from "yaml";
-import { RuleMap } from "../config";
+import { RuleMap } from "../config/parse.js";
 import { PluginMetadataWithConfig, RuleMetadataWithConfig } from "../types.js";
 import { ResourceSchema } from "../validators/kubernetes-schema";
 import { ResourceParser } from "./resourceParser.js";
