@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import {elementScroll, useVirtualizer} from '@tanstack/react-virtual';
 import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
-import {BaseDataType, FiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
+import {BaseDataType, ValidationFiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
 import {getValidationList} from './utils';
 import HeaderRenderer from './HeaderRenderer';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
@@ -13,6 +13,7 @@ import {Colors} from '@/styles/Colors';
 import ProblemRenderer from './ProblemRenderer';
 import {getRuleForResult} from '@monokle/validation';
 import {useScroll} from './useScroll';
+import isEqual from 'lodash.isequal';
 
 let baseData: BaseDataType = {
   baseCollapsedKeys: [],
@@ -22,11 +23,12 @@ let baseData: BaseDataType = {
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {status, validationResponse} = props;
-  const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}, onProblemSelect} = props;
-  const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource} = props;
+  const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}} = props;
+  const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource, filters} = props;
+  const {onFiltersChange, onProblemSelect} = props;
 
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
-  const [filtersValue, setFiltersValue] = useState<FiltersValueType>(DEFAULT_FILTERS_VALUE);
+  const [filtersValue, setFiltersValue] = useState<ValidationFiltersValueType>(filters || DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
   const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseData.baseShowByFilterValue);
   const [showNewErrors, setShowNewErrors] = useState(false);
@@ -99,6 +101,18 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   }, [newProblems]);
 
   useEffect(() => {
+    if (!filters) {
+      return;
+    }
+
+    if (!isEqual(filters, filtersValue)) {
+      setFiltersValue(filters);
+      setCollapsedHeadersKey([]);
+      baseData.baseCollapsedKeys = [];
+    }
+  }, [filters]);
+
+  useEffect(() => {
     const keys = baseData.baseCollapsedKeys ? baseData.baseCollapsedKeys : [];
     setCollapsedHeadersKey(keys);
     baseData.baseCollapsedKeys = keys;
@@ -119,7 +133,14 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       <ValidationOverviewFilters
         filtersValue={filtersValue}
         searchValue={searchValue}
-        onFiltersChange={filters => setFiltersValue(filters)}
+        onFiltersChange={filters => {
+          setFiltersValue(filters);
+          setCollapsedHeadersKey([]);
+          baseData.baseCollapsedKeys = [];
+          if (onFiltersChange) {
+            onFiltersChange(filters);
+          }
+        }}
         onSearch={value => setSearchValue(value)}
       />
 

@@ -8,7 +8,7 @@ import {
   ValidationResponse,
   ValidationResult,
 } from '@monokle/validation';
-import {FiltersValueType, ProblemsType, ShowByFilterOptionType, ValidationListNode} from './types';
+import {ValidationFiltersValueType, ProblemsType, ShowByFilterOptionType, ValidationListNode} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -98,7 +98,7 @@ export const getFullyQualifiedName = (problem: ValidationResult) =>
   problem.locations[1].logicalLocations?.[0].fullyQualifiedName ||
   problem.locations[0].physicalLocation?.artifactLocation.uri;
 
-export const filterProblems = (problems: ProblemsType, filters: FiltersValueType) => {
+export const filterProblems = (problems: ProblemsType, filters: ValidationFiltersValueType) => {
   if (!filters['tool-component'] && !filters['type']) {
     return problems;
   }
@@ -106,12 +106,10 @@ export const filterProblems = (problems: ProblemsType, filters: FiltersValueType
   return Object.fromEntries(
     Object.entries(problems || {})
       .map(([filePath, validationResults]) => {
-        let filteredValidationResults = validationResults.filter(el =>
-          filters['type']
-            ? el.level === filters['type']
-            : true && filters['tool-component']?.length
-            ? filters['tool-component'].includes(el.rule.toolComponent.name)
-            : true
+        let filteredValidationResults = validationResults.filter(
+          el =>
+            (filters['type'] ? el.level === filters['type'] : true) &&
+            (filters['tool-component']?.length ? filters['tool-component'].includes(el.rule.toolComponent.name) : true)
         );
 
         if (filteredValidationResults.length > 0) {

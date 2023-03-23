@@ -1,7 +1,7 @@
 import {ValidationResponse, ValidationResult} from '@monokle/validation';
 import isEqual from 'lodash.isequal';
 import {useEffect, useMemo, useState} from 'react';
-import {FiltersValueType, NewProblemsType, ProblemsType, ShowByFilterOptionType} from './types';
+import {ValidationFiltersValueType, NewProblemsType, ProblemsType, ShowByFilterOptionType} from './types';
 import {
   filterBySearchValue,
   filterProblems,
@@ -72,7 +72,7 @@ export function useFilteredProblems(
   newProblems: NewProblemsType,
   showNewErrors: boolean,
   searchValue: string,
-  filtersValue: FiltersValueType
+  filtersValue: ValidationFiltersValueType
 ) {
   const [filteredProblems, setFilteredProblems] = useState<ProblemsType>({});
 
