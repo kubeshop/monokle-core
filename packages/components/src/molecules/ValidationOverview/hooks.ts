@@ -1,6 +1,7 @@
 import {ValidationResponse, ValidationResult} from '@monokle/validation';
-import isEqual from 'lodash.isequal';
+
 import {useEffect, useMemo, useState} from 'react';
+import isEqual from 'react-fast-compare';
 import {ValidationFiltersValueType, NewProblemsType, ProblemsType, ShowByFilterOptionType} from './types';
 import {
   filterBySearchValue,

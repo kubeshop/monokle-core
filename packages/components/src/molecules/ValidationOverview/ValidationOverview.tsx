@@ -13,7 +13,7 @@ import {Colors} from '@/styles/Colors';
 import ProblemRenderer from './ProblemRenderer';
 import {getRuleForResult} from '@monokle/validation';
 import {useScroll} from './useScroll';
-import isEqual from 'lodash.isequal';
+import isEqual from 'react-fast-compare';
 
 let baseData: BaseDataType = {
   baseCollapsedKeys: [],
