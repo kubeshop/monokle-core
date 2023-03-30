@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.15.4
+
+### Patch Changes
+
+- f7ebe2b: Fix ownerReference import
+
 ## 0.15.3
 
 ### Patch Changes
