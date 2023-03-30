@@ -1,6 +1,6 @@
 import clone from "lodash/clone.js";
 import difference from "lodash/difference.js";
-import isEqual from "lodash/isEqual.js";
+import isEqual from "react-fast-compare";
 import type { ValidationResponse } from "./common/sarif.js";
 import type {
   CustomSchema,
