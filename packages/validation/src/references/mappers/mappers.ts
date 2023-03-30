@@ -11,7 +11,7 @@ import { endpointsMappers } from "./endpoints.js";
 import { endpointSliceMappers } from "./endpointSlice.js";
 import { Resource } from "../../common/types.js";
 import { isDefined } from "../../utils/isDefined.js";
-import { ownerReferenceMapper } from "./ownerReference";
+import { ownerReferenceMapper } from "./ownerReference.js";
 
 export type SiblingMatcher = (
   source: Resource,
@@ -66,7 +66,7 @@ export function getOutgoingRefMappers(kind: string): RefMapper[] {
   var mappers = OUTGOING_MAPPERS_BY_KIND[kind as KnownResourceKinds] ?? [];
 
   // always add ownerReferenceMapper
-  return [ownerReferenceMapper, ...mappers]
+  return [ownerReferenceMapper, ...mappers];
 }
 
 export const OUTGOING_MAPPERS_BY_KIND: Partial<
