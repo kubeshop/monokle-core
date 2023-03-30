@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.15.3
+
+### Patch Changes
+
+- 587b9e9: Use react-fast-compare
+
 ## 0.15.2
 
 ### Patch Changes

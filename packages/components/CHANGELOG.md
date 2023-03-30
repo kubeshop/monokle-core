@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.2.5
+
+### Patch Changes
+
+- 587b9e9: Use react-fast-compare
+
 ## 1.2.4
 
 ### Patch Changes
