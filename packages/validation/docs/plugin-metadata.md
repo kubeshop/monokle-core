@@ -57,7 +57,7 @@ export const appDestination = defineRule({
 ## Usage in validator / CLI configuration
 
 Plugins need to be contributed to the Community Plugins repository to be directly usable with 
-the [Monokle CLI](https://github.com/kubeshop/monokle-core/tree/main/packages/cli) and Monokle Cloud.
+the [Monokle CLI](https://github.com/kubeshop/monokle-cli) and Monokle Cloud.
 
 Once contributed you can simple use them by adding them to the `monokle.validation.yaml` file as follows:
 
