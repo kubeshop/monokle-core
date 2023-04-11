@@ -21,9 +21,6 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
       <StyledLeftReflexElement
         style={{
           display: !left ? 'none' : undefined,
-          flexGrow: !left ? 0 : undefined,
-          flexShrink: 1,
-          flexBasis: !left ? 0 : undefined,
         }}
         $leftClosable={leftClosable}
         minSize={minPaneWidth}
@@ -50,20 +47,23 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
         style={{display: !left ? 'none' : undefined, backgroundColor: Colors.grey10}}
       />
 
-      <DynamicReflexElement
+      <ReflexElement
         style={{
           display: !center ? 'none' : undefined,
         }}
         minSize={minPaneWidth}
         maxSize={minPaneWidth + 200}
         onStopResize={onStopResizeCenter}
-        flexGrow={0.5}
       >
         <StyledPane>{center}</StyledPane>
-      </DynamicReflexElement>
+      </ReflexElement>
 
       <ReflexSplitter propagate={Boolean(left)} style={{display: !center ? 'none' : undefined}} />
-      <DynamicReflexElement flexGrow={0.5} minSize={minPaneWidth} onStopResize={onStopResizeRight}>
+      <DynamicReflexElement
+        flexGrow={!left || !center ? 1 : undefined}
+        minSize={minPaneWidth}
+        onStopResize={onStopResizeRight}
+      >
         <StyledPane>{right}</StyledPane>
       </DynamicReflexElement>
     </ReflexContainer>
@@ -97,14 +97,14 @@ const DynamicReflexElement = styled(ReflexElement)<{flexGrow?: number}>`
     if (flexGrow) {
       return `
       flex-grow: ${flexGrow} !important;
-      flex-shrink: 0 !important;
+      flex-shrink: 1 !important;
       flex-basis: 0% !important;
       `;
     }
   }}
 `;
 
-const StyledLeftReflexElement = styled(ReflexElement)<{$leftClosable: boolean}>`
+const StyledLeftReflexElement = styled(DynamicReflexElement)<{$leftClosable: boolean}>`
   ${({$leftClosable}) => {
     if ($leftClosable) {
       return `overflow: visible !important;`;
