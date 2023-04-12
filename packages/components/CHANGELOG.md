@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.2.6
+
+### Patch Changes
+
+- 319ead4: show/hide columns without destroy the react component to keep the component's state
+
 ## 1.2.5
 
 ### Patch Changes
