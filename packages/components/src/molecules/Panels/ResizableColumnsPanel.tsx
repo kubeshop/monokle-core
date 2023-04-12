@@ -104,7 +104,7 @@ const DynamicReflexElement = styled(ReflexElement)<{flexGrow?: number}>`
   }}
 `;
 
-const StyledLeftReflexElement = styled(DynamicReflexElement)<{$leftClosable: boolean}>`
+const StyledLeftReflexElement = styled(ReflexElement)<{$leftClosable: boolean}>`
   ${({$leftClosable}) => {
     if ($leftClosable) {
       return `overflow: visible !important;`;
