@@ -18,49 +18,54 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
 
   return (
     <ReflexContainer orientation="vertical" windowResizeAware style={{height, width}}>
-      {left && (
-        <StyledLeftReflexElement
-          $leftClosable={leftClosable}
-          minSize={minPaneWidth}
-          onStopResize={onStopResizeLeft}
-          flex={layout?.left}
-        >
-          <StyledLeftPane $leftClosable={leftClosable}>
-            {left}
-            {leftClosable && (
-              <PaneCloseIcon
-                onClick={onCloseLeftPane}
-                containerStyle={{
-                  position: 'absolute',
-                  top: 20,
-                  right: -10,
-                  zIndex: LAYOUT.zIndex.low,
-                  ...paneCloseIconStyle,
-                }}
-              />
-            )}
-          </StyledLeftPane>
-        </StyledLeftReflexElement>
-      )}
+      <StyledLeftReflexElement
+        style={{
+          display: !left ? 'none' : undefined,
+        }}
+        $leftClosable={leftClosable}
+        minSize={minPaneWidth}
+        onStopResize={onStopResizeLeft}
+      >
+        <StyledLeftPane $leftClosable={leftClosable}>
+          {left}
+          {leftClosable && (
+            <PaneCloseIcon
+              onClick={onCloseLeftPane}
+              containerStyle={{
+                position: 'absolute',
+                top: 20,
+                right: -10,
+                zIndex: LAYOUT.zIndex.low,
+                ...paneCloseIconStyle,
+              }}
+            />
+          )}
+        </StyledLeftPane>
+      </StyledLeftReflexElement>
+      <ReflexSplitter
+        propagate={Boolean(left)}
+        style={{display: !left ? 'none' : undefined, backgroundColor: Colors.grey10}}
+      />
 
-      {left && <ReflexSplitter propagate style={{backgroundColor: Colors.grey10}} />}
-
-      {center && (
-        <ReflexElement
-          minSize={minPaneWidth}
-          maxSize={minPaneWidth + 200}
-          onStopResize={onStopResizeCenter}
-          flex={layout?.center}
-        >
-          <StyledPane>{center}</StyledPane>
-        </ReflexElement>
-      )}
-
-      {center && <ReflexSplitter propagate={Boolean(left)} />}
-
-      <ReflexElement minSize={minPaneWidth} onStopResize={onStopResizeRight}>
-        <StyledPane>{right}</StyledPane>
+      <ReflexElement
+        style={{
+          display: !center ? 'none' : undefined,
+        }}
+        minSize={minPaneWidth}
+        maxSize={minPaneWidth + 200}
+        onStopResize={onStopResizeCenter}
+      >
+        <StyledPane>{center}</StyledPane>
       </ReflexElement>
+
+      <ReflexSplitter propagate={Boolean(left)} style={{display: !center ? 'none' : undefined}} />
+      <DynamicReflexElement
+        flexGrow={!left || !center ? 1 : undefined}
+        minSize={minPaneWidth}
+        onStopResize={onStopResizeRight}
+      >
+        <StyledPane>{right}</StyledPane>
+      </DynamicReflexElement>
     </ReflexContainer>
   );
 };
@@ -83,6 +88,18 @@ const StyledLeftPane = styled(StyledPane)<{$leftClosable: boolean}>`
   ${({$leftClosable}) => {
     if ($leftClosable) {
       return `position: static;`;
+    }
+  }}
+`;
+
+const DynamicReflexElement = styled(ReflexElement)<{flexGrow?: number}>`
+  ${({flexGrow}) => {
+    if (flexGrow) {
+      return `
+      flex-grow: ${flexGrow} !important;
+      flex-shrink: 1 !important;
+      flex-basis: 0% !important;
+      `;
     }
   }}
 `;
