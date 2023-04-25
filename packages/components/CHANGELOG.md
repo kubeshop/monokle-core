@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.2.7
+
+### Patch Changes
+
+- e190842: Fixed height for TitleBar header/description
+
 ## 1.2.6
 
 ### Patch Changes
