@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.16.0
+
+### Minor Changes
+
+- cd94545: Fix publish
+
 ## 0.15.5
 
 ### Patch Changes

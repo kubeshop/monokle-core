@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.3.0
+
+### Minor Changes
+
+- cd94545: Fix publish
+
 ## 1.2.7
 
 ### Patch Changes
