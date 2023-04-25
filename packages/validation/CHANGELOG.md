@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.15.5
+
+### Patch Changes
+
+- f14454c: Update yaml package
+
 ## 0.15.4
 
 ### Patch Changes
