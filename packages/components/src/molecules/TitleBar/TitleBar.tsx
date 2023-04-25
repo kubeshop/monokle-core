@@ -5,10 +5,11 @@ import {DownOutlined as RawDownOutlined, RightOutlined as RawRightOutlined} from
 
 const TitleBar: React.FC<TitleBarType> = props => {
   const {actions, description, expandable = false, isOpen = false, title, type = 'primary', onExpand} = props;
+  const {descriptionStyle = {}, headerStyle = {}} = props;
 
   return (
     <>
-      <HeaderContainer $expandable={expandable} $isOpen={isOpen} $type={type}>
+      <HeaderContainer style={headerStyle} $expandable={expandable} $isOpen={isOpen} $type={type}>
         {expandable && (isOpen ? <DownOutlined onClick={onExpand} /> : <RightOulined onClick={onExpand} />)}
 
         <Title $expandable={expandable} $isOpen={isOpen}>
@@ -19,7 +20,9 @@ const TitleBar: React.FC<TitleBarType> = props => {
       </HeaderContainer>
 
       {description && (!expandable || (expandable && isOpen)) && (
-        <DescriptionContainer $type={type}>{description}</DescriptionContainer>
+        <DescriptionContainer style={descriptionStyle} $type={type}>
+          {description}
+        </DescriptionContainer>
       )}
     </>
   );
@@ -37,9 +40,10 @@ const DescriptionContainer = styled.div<{
   $type: 'primary' | 'secondary';
 }>`
   background-color: ${({$type}) => ($type === 'secondary' ? 'rgba(25, 31, 33, 0.7)' : 'rgba(82, 115, 224, 0.3)')};
-  padding: 10px 10px 6px 10px;
+  padding: 7px 10px 6px 10px;
   border-radius: 4px;
   transform: translateY(-4px);
+  height: 32px;
 `;
 
 const DownOutlined = styled(RawDownOutlined)`
@@ -60,7 +64,8 @@ const HeaderContainer = styled.div<{
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 5px 10px;
+  padding: 0px 10px;
+  height: 32px;
 `;
 
 const RightOulined = styled(RawRightOutlined)`
