@@ -41,8 +41,8 @@ const StyledLeftOutlined = styled(LeftOutlined)`
 const StyledPaneCloseIconContainer = styled.div`
   background-color: ${Colors.grey7};
   border-radius: 50%;
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
