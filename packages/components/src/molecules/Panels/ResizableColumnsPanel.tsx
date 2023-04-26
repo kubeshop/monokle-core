@@ -34,7 +34,7 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
               containerStyle={{
                 position: 'absolute',
                 top: 20,
-                right: -10,
+                right: -7,
                 zIndex: LAYOUT.zIndex.low,
                 ...paneCloseIconStyle,
               }}
