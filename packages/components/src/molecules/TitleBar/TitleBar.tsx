@@ -40,9 +40,12 @@ const DescriptionContainer = styled.div<{
   $type: 'primary' | 'secondary';
 }>`
   background-color: ${({$type}) => ($type === 'secondary' ? 'rgba(25, 31, 33, 0.7)' : 'rgba(82, 115, 224, 0.3)')};
-  padding: 7px 10px 3px 10px;
+  min-height: 35px;
+  padding: 3px 10px 0px 10px;
   border-radius: 4px;
   transform: translateY(-4px);
+  display: flex;
+  align-items: center;
 `;
 
 const DownOutlined = styled(RawDownOutlined)`
@@ -63,7 +66,8 @@ const HeaderContainer = styled.div<{
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 5px 10px;
+  padding: 4px 10px;
+  min-height: 32px;
 `;
 
 const RightOulined = styled(RawRightOutlined)`
