@@ -33,8 +33,8 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
               onClick={onCloseLeftPane}
               containerStyle={{
                 position: 'absolute',
-                top: 20,
-                right: -10,
+                top: 18,
+                right: -8,
                 zIndex: LAYOUT.zIndex.low,
                 ...paneCloseIconStyle,
               }}

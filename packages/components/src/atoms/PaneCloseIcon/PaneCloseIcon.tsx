@@ -2,7 +2,7 @@ import {Colors} from '@/styles/Colors';
 import React from 'react';
 import styled from 'styled-components';
 
-import {DoubleLeftOutlined as RawDoubleLeftOutlined} from '@ant-design/icons';
+import {LeftOutlined} from '@ant-design/icons';
 
 export type PaneCloseIconType = {
   onClick: () => void;
@@ -24,7 +24,7 @@ const PaneCloseIcon: React.FC<PaneCloseIconType> = props => {
       style={{...containerStyle}}
       onClick={onClick}
     >
-      <StyledDoubleLeftOutlined className={iconClassName} style={{...iconStyle}} />
+      <StyledLeftOutlined className={iconClassName} style={{...iconStyle}} />
     </StyledPaneCloseIconContainer>
   );
 };
@@ -33,16 +33,16 @@ export default PaneCloseIcon;
 
 // Styled Components
 
-const StyledDoubleLeftOutlined = styled(RawDoubleLeftOutlined)`
-  font-size: 12px;
-  color: ${Colors.grey2};
+const StyledLeftOutlined = styled(LeftOutlined)`
+  font-size: 8px;
+  color: ${Colors.backgroundGrey};
 `;
 
 const StyledPaneCloseIconContainer = styled.div`
-  background-color: ${Colors.whitePure};
+  background-color: ${Colors.grey7};
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
