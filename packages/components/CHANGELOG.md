@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.3.2
+
+### Patch Changes
+
+- 918c21d: Refactor titlebar styling
+
 ## 1.3.1
 
 ### Patch Changes
