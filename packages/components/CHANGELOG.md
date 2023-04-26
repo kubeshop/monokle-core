@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.3.1
+
+### Patch Changes
+
+- 06f8c55: Fix title bar + refactor pane close icon
+
 ## 1.3.0
 
 ### Minor Changes
