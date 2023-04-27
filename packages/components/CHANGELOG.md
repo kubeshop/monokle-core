@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.3.4
+
+### Patch Changes
+
+- ef8d047: stretch resizable right column
+
 ## 1.3.3
 
 ### Patch Changes
