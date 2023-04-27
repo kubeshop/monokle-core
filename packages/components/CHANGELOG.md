@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.3.3
+
+### Patch Changes
+
+- 44a507b: maintains resizable columns width
+
 ## 1.3.2
 
 ### Patch Changes
