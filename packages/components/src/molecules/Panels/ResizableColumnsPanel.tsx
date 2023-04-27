@@ -22,9 +22,11 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
         style={{
           display: !left ? 'none' : undefined,
         }}
+        resizeWidth={Boolean(left)}
         $leftClosable={leftClosable}
         minSize={minPaneWidth}
         onStopResize={onStopResizeLeft}
+        flex={layout?.left}
       >
         <StyledLeftPane $leftClosable={leftClosable}>
           {left}
@@ -51,21 +53,19 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
         style={{
           display: !center ? 'none' : undefined,
         }}
-        minSize={minPaneWidth}
-        maxSize={minPaneWidth + 200}
+        resizeWidth={Boolean(center)}
+        flex={layout?.center}
+        minSize={!center ? 0.001 : minPaneWidth}
+        maxSize={!center ? 0.001 : minPaneWidth + 200}
         onStopResize={onStopResizeCenter}
       >
         <StyledPane>{center}</StyledPane>
       </ReflexElement>
 
-      <ReflexSplitter propagate={Boolean(left)} style={{display: !center ? 'none' : undefined}} />
-      <DynamicReflexElement
-        flexGrow={!left || !center ? 1 : undefined}
-        minSize={minPaneWidth}
-        onStopResize={onStopResizeRight}
-      >
+      <ReflexSplitter propagate={Boolean(left)} style={{visibility: !center ? 'collapse' : undefined}} />
+      <ReflexElement flex={layout?.right} minSize={minPaneWidth} onStopResize={onStopResizeRight}>
         <StyledPane>{right}</StyledPane>
-      </DynamicReflexElement>
+      </ReflexElement>
     </ReflexContainer>
   );
 };
@@ -88,18 +88,6 @@ const StyledLeftPane = styled(StyledPane)<{$leftClosable: boolean}>`
   ${({$leftClosable}) => {
     if ($leftClosable) {
       return `position: static;`;
-    }
-  }}
-`;
-
-const DynamicReflexElement = styled(ReflexElement)<{flexGrow?: number}>`
-  ${({flexGrow}) => {
-    if (flexGrow) {
-      return `
-      flex-grow: ${flexGrow} !important;
-      flex-shrink: 1 !important;
-      flex-basis: 0% !important;
-      `;
     }
   }}
 `;
