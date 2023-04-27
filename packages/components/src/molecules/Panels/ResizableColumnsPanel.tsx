@@ -63,9 +63,14 @@ const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
       </ReflexElement>
 
       <ReflexSplitter propagate={Boolean(left)} style={{visibility: !center ? 'collapse' : undefined}} />
-      <ReflexElement flex={layout?.right} minSize={minPaneWidth} onStopResize={onStopResizeRight}>
+
+      <DynamicReflexElement
+        $flexGrow={!left || !center ? 1 : undefined}
+        minSize={minPaneWidth}
+        onStopResize={onStopResizeRight}
+      >
         <StyledPane>{right}</StyledPane>
-      </ReflexElement>
+      </DynamicReflexElement>
     </ReflexContainer>
   );
 };
@@ -90,6 +95,14 @@ const StyledLeftPane = styled(StyledPane)<{$leftClosable: boolean}>`
       return `position: static;`;
     }
   }}
+`;
+
+const DynamicReflexElement = styled(ReflexElement)<{$flexGrow?: number}>`
+  ${({$flexGrow}) => {
+    return `
+      flex-grow: ${$flexGrow} !important;
+    `;
+  }};
 `;
 
 const StyledLeftReflexElement = styled(ReflexElement)<{$leftClosable: boolean}>`
