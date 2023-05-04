@@ -29,7 +29,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --segfault-retry=3",
     "test:snapshot": "vitest --update",
-    "build": "rimraf lib && tsc --build tsconfig.build.json"
+    "build": "rimraf lib && tsc --build tsconfig.build.json",
+    "format:all": "prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx}\""
   },
   "repository": {
     "type": "git",
