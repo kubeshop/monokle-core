@@ -1,5 +1,5 @@
-import { LineCounter, Scalar } from "yaml";
-import { RefPosition } from "./types.js";
+import {LineCounter, Scalar} from 'yaml';
+import {RefPosition} from './types.js';
 
 /**
  * Utility class used when parsing and creating refs
@@ -27,6 +27,6 @@ export class NodeWrapper {
       };
     }
 
-    return { line: 0, column: 0, length: 0 };
+    return {line: 0, column: 0, length: 0};
   }
 }

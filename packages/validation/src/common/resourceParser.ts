@@ -1,10 +1,7 @@
-import { parseDocument, Document, LineCounter, ParsedNode } from "yaml";
-import { Resource } from "./types.js";
-import { Region } from "./sarif.js";
-import {
-  clearAllRefNodesCache,
-  clearRefNodesCache,
-} from "../references/utils/getResourceNodes.js";
+import {parseDocument, Document, LineCounter, ParsedNode} from 'yaml';
+import {Resource} from './types.js';
+import {Region} from './sarif.js';
+import {clearAllRefNodesCache, clearRefNodesCache} from '../references/utils/getResourceNodes.js';
 
 export type ParsedResource = {
   parsedDoc: Document.Parsed<ParsedNode>;
@@ -32,14 +29,14 @@ export class ResourceParser {
 
     const lineCounter = new LineCounter();
     const parsedDoc = parseYamlDocument(resource.text, lineCounter);
-    const doc = { parsedDoc, lineCounter };
+    const doc = {parsedDoc, lineCounter};
     this.cache.set(cacheId, doc);
 
     return doc;
   }
 
   parseErrorRegion(resource: Resource, pos: [number, number, number?]): Region {
-    const { lineCounter } = this.parse(resource);
+    const {lineCounter} = this.parse(resource);
     const start = lineCounter.linePos(pos[0]);
     const end = lineCounter.linePos(pos[1]);
 
@@ -70,5 +67,5 @@ export class ResourceParser {
 }
 
 function parseYamlDocument(text: string, lineCounter?: LineCounter) {
-  return parseDocument(text, { lineCounter, uniqueKeys: false, strict: false });
+  return parseDocument(text, {lineCounter, uniqueKeys: false, strict: false});
 }

@@ -1,5 +1,5 @@
-import { readFile } from "fs/promises";
-import { WasmLoader } from "./WasmLoader.js";
+import {readFile} from 'fs/promises';
+import {WasmLoader} from './WasmLoader.js';
 
 export class FileWasmLoader implements WasmLoader {
   async load(path: string): Promise<ArrayBuffer> {

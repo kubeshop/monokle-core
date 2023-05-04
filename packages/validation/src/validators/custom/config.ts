@@ -1,4 +1,4 @@
-import type { Document, ParsedNode } from "yaml";
+import type {Document, ParsedNode} from 'yaml';
 
 export type PluginInit = {
   /**

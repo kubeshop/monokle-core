@@ -1,26 +1,21 @@
-import { paramCase, sentenceCase } from "change-case";
-import { result } from "lodash";
-import keyBy from "lodash/keyBy.js";
-import { JsonObject } from "type-fest";
-import { Document, isNode, Node, ParsedNode } from "yaml";
-import { AbstractPlugin } from "../../common/AbstractPlugin.js";
-import { ResourceParser } from "../../common/resourceParser.js";
-import { ValidationResult, RuleMetadata } from "../../common/sarif.js";
-import { Incremental, PluginMetadata, Resource } from "../../common/types.js";
-import { createLocations } from "../../utils/createLocations.js";
-import { isDefined } from "../../utils/isDefined.js";
-import {
-  PluginInit,
-  ReportArgs,
-  Resource as PlainResource,
-  RuleInit,
-} from "./config.js";
+import {paramCase, sentenceCase} from 'change-case';
+import {result} from 'lodash';
+import keyBy from 'lodash/keyBy.js';
+import {JsonObject} from 'type-fest';
+import {Document, isNode, Node, ParsedNode} from 'yaml';
+import {AbstractPlugin} from '../../common/AbstractPlugin.js';
+import {ResourceParser} from '../../common/resourceParser.js';
+import {ValidationResult, RuleMetadata} from '../../common/sarif.js';
+import {Incremental, PluginMetadata, Resource} from '../../common/types.js';
+import {createLocations} from '../../utils/createLocations.js';
+import {isDefined} from '../../utils/isDefined.js';
+import {PluginInit, ReportArgs, Resource as PlainResource, RuleInit} from './config.js';
 
 type Runtime = {
-  validate: RuleInit["validate"];
+  validate: RuleInit['validate'];
 };
 
-type PlainResourceWithId = PlainResource & { _id: string };
+type PlainResourceWithId = PlainResource & {_id: string};
 
 /**
  * Validator for simple custom policies.
@@ -36,24 +31,19 @@ export class SimpleCustomValidator extends AbstractPlugin {
     this._ruleRuntime = toRuntime(plugin);
   }
 
-  protected override async configurePlugin(
-    rawSettings: JsonObject = {}
-  ): Promise<void> {
+  protected override async configurePlugin(rawSettings: JsonObject = {}): Promise<void> {
     this._settings = rawSettings;
   }
 
-  async doValidate(
-    resources: Resource[],
-    incremental?: Incremental
-  ): Promise<ValidationResult[]> {
+  async doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
-    const resourceMap = keyBy(resources, (r) => r.id);
+    const resourceMap = keyBy(resources, r => r.id);
 
-    const clonedResources: PlainResourceWithId[] = resources.map((r) =>
-      JSON.parse(JSON.stringify({ ...r.content, _id: r.id }))
+    const clonedResources: PlainResourceWithId[] = resources.map(r =>
+      JSON.parse(JSON.stringify({...r.content, _id: r.id}))
     );
     const dirtyResources = incremental
-      ? clonedResources.filter((r) => incremental.resourceIds.includes(r._id))
+      ? clonedResources.filter(r => incremental.resourceIds.includes(r._id))
       : clonedResources;
 
     for (const rule of this.rules) {
@@ -61,7 +51,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
         continue;
       }
 
-      const { validate } = this._ruleRuntime[rule.id];
+      const {validate} = this._ruleRuntime[rule.id];
 
       try {
         await validate(
@@ -71,7 +61,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
             settings: this._settings,
           },
           {
-            parse: (res) => {
+            parse: res => {
               const resource = resourceMap[(res as PlainResourceWithId)._id];
               return this._parser.parse(resource).parsedDoc;
             },
@@ -87,17 +77,13 @@ export class SimpleCustomValidator extends AbstractPlugin {
               if (!resource) return [];
 
               const relatedResources = (resource?.refs ?? [])
-                .map((ref) =>
-                  ref.target?.type === "resource"
-                    ? ref.target.resourceId
-                    : undefined
-                )
+                .map(ref => (ref.target?.type === 'resource' ? ref.target.resourceId : undefined))
                 .filter(isDefined)
-                .map((relatedId) => resourceMap[relatedId])
+                .map(relatedId => resourceMap[relatedId])
                 .filter(isDefined);
 
-              const result = relatedResources.map((r) => {
-                return JSON.parse(JSON.stringify({ ...r.content, _id: r.id }));
+              const result = relatedResources.map(r => {
+                return JSON.parse(JSON.stringify({...r.content, _id: r.id}));
               });
 
               return result;
@@ -106,7 +92,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
         );
       } catch (err) {
         if (this._settings.debug) {
-          console.error("rule_failed", { rule: rule.name, error: err });
+          console.error('rule_failed', {rule: rule.name, error: err});
         }
       }
     }
@@ -119,13 +105,11 @@ export class SimpleCustomValidator extends AbstractPlugin {
     resource: Resource,
     args: ReportArgs
   ): ValidationResult | undefined {
-    const { parsedDoc } = this._parser.parse(resource);
+    const {parsedDoc} = this._parser.parse(resource);
 
-    const path = args.path.split(".");
+    const path = args.path.split('.');
     const node = determineClosestNodeForPath(parsedDoc, path);
-    const region = node?.range
-      ? this._parser.parseErrorRegion(resource, node.range)
-      : undefined;
+    const region = node?.range ? this._parser.parseErrorRegion(resource, node.range) : undefined;
 
     const locations = createLocations(resource, region);
 
@@ -195,7 +179,7 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
           }
         : undefined,
       help: {
-        text: r.help ?? "No help available.",
+        text: r.help ?? 'No help available.',
       },
     };
   });
@@ -203,12 +187,12 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
 
 function toRuntime(plugin: PluginInit): Record<string, Runtime> {
   const entries = Object.entries(plugin.rules).map(([_, rule]) => {
-    return [toRuleId(plugin.id, rule.id), { validate: rule.validate }];
+    return [toRuleId(plugin.id, rule.id), {validate: rule.validate}];
   });
 
   return Object.fromEntries(entries);
 }
 
 function toRuleId(pluginId: string, ruleId: number) {
-  return `${pluginId}${ruleId.toString().padStart(3, "0")}`;
+  return `${pluginId}${ruleId.toString().padStart(3, '0')}`;
 }

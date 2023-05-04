@@ -1,13 +1,13 @@
-import { v5 } from "uuid";
-import { parse } from "path";
-import glob from "tiny-glob";
-import { readFile as readFileFromFs } from "fs/promises";
-import chunkArray from "lodash/chunk.js";
-import { LineCounter, parseAllDocuments, parseDocument } from "yaml";
-import { Resource } from "../index.js";
+import {v5} from 'uuid';
+import {parse} from 'path';
+import glob from 'tiny-glob';
+import {readFile as readFileFromFs} from 'fs/promises';
+import chunkArray from 'lodash/chunk.js';
+import {LineCounter, parseAllDocuments, parseDocument} from 'yaml';
+import {Resource} from '../index.js';
 
-export const KUSTOMIZATION_KIND = "Kustomization";
-export const KUSTOMIZATION_API_GROUP = "kustomize.config.k8s.io";
+export const KUSTOMIZATION_KIND = 'Kustomization';
+export const KUSTOMIZATION_API_GROUP = 'kustomize.config.k8s.io';
 
 /**
  * This is all copied from cli/src/utils - need to be moved to their own shared package
@@ -34,7 +34,7 @@ export function extractK8sResources(files: File[]): Resource[] {
         continue;
       }
 
-      const rawFileOffset = lineCounter.linePos(document.range[0]).line ;
+      const rawFileOffset = lineCounter.linePos(document.range[0]).line;
       const fileOffset = rawFileOffset === 1 ? 0 : rawFileOffset;
 
       const resourceBase = {
@@ -44,17 +44,12 @@ export function extractK8sResources(files: File[]): Resource[] {
         fileId: file.id,
         filePath: file.path,
         fileOffset,
-        text: document.toString({ directives: false }),
+        text: document.toString({directives: false}),
       };
 
       if (isKubernetesLike(content)) {
         const name = createResourceName(file.path, content, content.kind);
-        const id = createResourceId(
-          file.id,
-          content.kind,
-          name,
-          content.metadata?.namespace
-        );
+        const id = createResourceId(file.id, content.kind, name, content.metadata?.namespace);
         const namespace = extractNamespace(content);
         const resource = {
           ...resourceBase,
@@ -64,11 +59,7 @@ export function extractK8sResources(files: File[]): Resource[] {
         };
 
         resources.push(resource);
-      } else if (
-        content &&
-        isUntypedKustomizationFile(file.path) &&
-        documents.length === 1
-      ) {
+      } else if (content && isUntypedKustomizationFile(file.path) && documents.length === 1) {
         const name = createResourceName(file.path, content, KUSTOMIZATION_KIND);
         const id = createResourceId(file.id, name, KUSTOMIZATION_KIND);
         const resource = {
@@ -102,24 +93,20 @@ type KubernetesLike = {
 };
 
 function isKubernetesLike(content: any): content is KubernetesLike {
-  return (
-    content &&
-    typeof content.apiVersion === "string" &&
-    typeof content.kind === "string"
-  );
+  return content && typeof content.apiVersion === 'string' && typeof content.kind === 'string';
 }
 
 // some (older) kustomization yamls don't contain kind/group properties to identify them as such
 // they are identified only by their name
-function isUntypedKustomizationFile(filePath = ""): boolean {
+function isUntypedKustomizationFile(filePath = ''): boolean {
   return /kustomization*.yaml/.test(filePath.toLowerCase().trim());
 }
 
 export function isYamlFile(file: File): boolean {
-  return file.path.endsWith(".yml") || file.path.endsWith(".yaml");
+  return file.path.endsWith('.yml') || file.path.endsWith('.yaml');
 }
 export function parseYamlDocument(text: string, lineCounter?: LineCounter) {
-  return parseDocument(text, { lineCounter, uniqueKeys: false, strict: false });
+  return parseDocument(text, {lineCounter, uniqueKeys: false, strict: false});
 }
 
 /**
@@ -136,32 +123,18 @@ export function parseAllYamlDocuments(text: string, lineCounter?: LineCounter) {
 
 function extractNamespace(content: any) {
   // namespace could be an object if it's a helm template value...
-  return content.metadata?.namespace &&
-  typeof content.metadata.namespace === "string"
+  return content.metadata?.namespace && typeof content.metadata.namespace === 'string'
     ? content.metadata.namespace
     : undefined;
 }
 
+const RESOURCE_UUID_NAMESPACE = '6fa71997-8aa8-4b89-b987-cec4fd3de770';
 
-const RESOURCE_UUID_NAMESPACE = "6fa71997-8aa8-4b89-b987-cec4fd3de770";
-
-export const createResourceId = (
-  fileId: string,
-  name: string,
-  kind: string,
-  namespace?: string | null
-): string => {
-  return v5(
-    `${fileId}${kind}${name}${namespace || ""}`,
-    RESOURCE_UUID_NAMESPACE
-  );
+export const createResourceId = (fileId: string, name: string, kind: string, namespace?: string | null): string => {
+  return v5(`${fileId}${kind}${name}${namespace || ''}`, RESOURCE_UUID_NAMESPACE);
 };
 
-export function createResourceName(
-  filePath: string,
-  content: any,
-  kind: string
-): string {
+export function createResourceName(filePath: string, content: any, kind: string): string {
   const parsedPath = parse(filePath);
 
   // dirname for kustomizations
@@ -175,7 +148,7 @@ export function createResourceName(
 
   try {
     //  metadata name
-    return typeof content.metadata.name === "string"
+    return typeof content.metadata.name === 'string'
       ? content.metadata.name.trim()
       : JSON.stringify(content.metadata.name).trim();
   } catch (error) {
@@ -184,13 +157,8 @@ export function createResourceName(
   }
 }
 
-export function getResourcesForPath(
-  filePath: string,
-  resources: Resource[] | undefined
-) {
-  return resources
-    ? resources.filter(resource => resource.filePath === filePath)
-    : [];
+export function getResourcesForPath(filePath: string, resources: Resource[] | undefined) {
+  return resources ? resources.filter(resource => resource.filePath === filePath) : [];
 }
 
 export async function readDirectory(directoryPath: string): Promise<File[]> {
@@ -199,15 +167,13 @@ export async function readDirectory(directoryPath: string): Promise<File[]> {
 
   for (const chunk of chunkArray(filePaths, 5)) {
     const promise = await Promise.allSettled(
-      chunk.map((path) => {
-        return readFileFromFs(path, "utf8").then(
-          (content): File => ({ id: path, path, content })
-        );
+      chunk.map(path => {
+        return readFileFromFs(path, 'utf8').then((content): File => ({id: path, path, content}));
       })
     );
 
     for (const result of promise) {
-      if (result.status === "rejected") {
+      if (result.status === 'rejected') {
         continue;
       }
       files.push(result.value);

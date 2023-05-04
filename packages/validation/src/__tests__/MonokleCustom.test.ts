@@ -1,41 +1,39 @@
-import { expect, it } from "vitest";
-import { ResourceParser,createMonokleValidator, SimpleCustomValidator  } from "../index.js";
-import vm from "vm";
+import {expect, it} from 'vitest';
+import {ResourceParser, createMonokleValidator, SimpleCustomValidator} from '../index.js';
+import vm from 'vm';
 
 // Usage note: This library relies on fetch being on global scope!
-import "isomorphic-fetch";
-import { noop } from "lodash";
-import { RESOURCES } from "./badResources.js";
+import 'isomorphic-fetch';
+import {noop} from 'lodash';
+import {RESOURCES} from './badResources.js';
 
 // This will only work if the plugin is served.
-it.skip("supports dynamic custom validators", async () => {
+it.skip('supports dynamic custom validators', async () => {
   const parser = new ResourceParser();
 
-  const validator = createMonokleValidator(async (pluginName) => {
-    if (pluginName !== "annotations") {
-      throw new Error("validator_not_found");
+  const validator = createMonokleValidator(async pluginName => {
+    if (pluginName !== 'annotations') {
+      throw new Error('validator_not_found');
     }
 
-    const annotationPlugin = await importWithDataUrl(
-      "http://localhost:4111/plugin.js"
-    );
+    const annotationPlugin = await importWithDataUrl('http://localhost:4111/plugin.js');
     return new SimpleCustomValidator(annotationPlugin.default, parser);
   });
 
   await validator.preload({
-    plugins: { annotations: true },
+    plugins: {annotations: true},
     settings: {
       debug: true,
       whoosh: {
-        teams: ["dreamers", "dancers"],
+        teams: ['dreamers', 'dancers'],
       },
     },
   });
 
-  const response = await validator.validate({ resources: RESOURCES });
+  const response = await validator.validate({resources: RESOURCES});
   console.log(JSON.stringify(response, null, 2));
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toMatchInlineSnapshot("2");
+  expect(hasErrors).toMatchInlineSnapshot('2');
 });
 
 async function importWithDataUrl(url: string) {
@@ -45,7 +43,7 @@ async function importWithDataUrl(url: string) {
   }
   const source = await response.text();
   const buff = Buffer.from(source);
-  const encodedSource = buff.toString("base64");
+  const encodedSource = buff.toString('base64');
   const dataUrl = `data:text/javascript;base64,${encodedSource}`;
 
   const module = await import(dataUrl);

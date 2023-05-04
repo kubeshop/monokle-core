@@ -1,27 +1,16 @@
-import keyBy from "lodash/keyBy.js";
-import { JsonObject } from "type-fest";
-import { RuleMap } from "../config/parse.js";
-import { NOT_CONFIGURED_ERR_MSG } from "../constants.js";
-import { PluginMetadataWithConfig, RuleMetadataWithConfig } from "../types.js";
-import invariant from "../utils/invariant.js";
-import { getResourceId } from "../utils/sarif.js";
-import {
-  ValidationResult,
-  RuleMetadata,
-  RuleConfig,
-  ValidationRun,
-} from "./sarif.js";
-import {
-  Incremental,
-  Resource,
-  Plugin,
-  PluginMetadata,
-  CustomSchema,
-} from "./types.js";
+import keyBy from 'lodash/keyBy.js';
+import {JsonObject} from 'type-fest';
+import {RuleMap} from '../config/parse.js';
+import {NOT_CONFIGURED_ERR_MSG} from '../constants.js';
+import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
+import invariant from '../utils/invariant.js';
+import {getResourceId} from '../utils/sarif.js';
+import {ValidationResult, RuleMetadata, RuleConfig, ValidationRun} from './sarif.js';
+import {Incremental, Resource, Plugin, PluginMetadata, CustomSchema} from './types.js';
 
 const DEFAULT_RULE_CONFIG: RuleConfig = {
   enabled: true,
-  level: "warning",
+  level: 'warning',
   rank: -1,
 };
 
@@ -48,9 +37,7 @@ export abstract class AbstractPlugin implements Plugin {
     this._ruleNameToIdLookup.clear();
     this._rules = rules;
     rules.forEach((r, idx) => this._ruleReverseLookup.set(r.id, idx));
-    rules.forEach((r) =>
-      this._ruleNameToIdLookup.set(`${this._metadata.name}/${r.name}`, r.id)
-    );
+    rules.forEach(r => this._ruleNameToIdLookup.set(`${this._metadata.name}/${r.name}`, r.id));
   }
 
   get metadata(): PluginMetadataWithConfig {
@@ -63,7 +50,7 @@ export abstract class AbstractPlugin implements Plugin {
   }
 
   get rules(): RuleMetadataWithConfig[] {
-    return this._rules.map((rule) => {
+    return this._rules.map(rule => {
       return {
         ...rule,
         configuration: this.getRuleConfig(rule.id),
@@ -84,7 +71,7 @@ export abstract class AbstractPlugin implements Plugin {
   }
 
   hasRule(rule: string): boolean {
-    const split = rule.split("/");
+    const split = rule.split('/');
     if (split.length !== 2) {
       // rule identifier (e.g. KSV013)
       const ruleConfig = this._ruleConfig.get(rule);
@@ -101,7 +88,7 @@ export abstract class AbstractPlugin implements Plugin {
   }
 
   isRuleEnabled(rule: string): boolean {
-    const ruleSplit = rule.split("/");
+    const ruleSplit = rule.split('/');
     if (ruleSplit.length === 1) {
       // rule-id
       const ruleConfig = this._ruleConfig.get(rule);
@@ -121,10 +108,10 @@ export abstract class AbstractPlugin implements Plugin {
 
   protected createValidationResult(
     ruleId: string,
-    args: Omit<ValidationResult, "ruleId" | "rule">
+    args: Omit<ValidationResult, 'ruleId' | 'rule'>
   ): ValidationResult | undefined {
     const index = this._ruleReverseLookup.get(ruleId);
-    invariant(index !== undefined, "rules misconfigured");
+    invariant(index !== undefined, 'rules misconfigured');
 
     if (!this.isRuleEnabled(ruleId)) {
       return undefined;
@@ -145,10 +132,7 @@ export abstract class AbstractPlugin implements Plugin {
     };
   }
 
-  async configure(config: {
-    rules?: RuleMap;
-    settings?: JsonObject;
-  }): Promise<void> {
+  async configure(config: {rules?: RuleMap; settings?: JsonObject}): Promise<void> {
     this.configureRules(config.rules);
     await this.configurePlugin(config.settings);
     this.configured = true;
@@ -181,7 +165,7 @@ export abstract class AbstractPlugin implements Plugin {
 
       this._ruleConfig.set(
         ruleId,
-        typeof newConfig === "boolean"
+        typeof newConfig === 'boolean'
           ? {
               ...defaultConfig,
               enabled: newConfig,
@@ -189,7 +173,7 @@ export abstract class AbstractPlugin implements Plugin {
           : {
               ...defaultConfig,
               enabled: true,
-              level: newConfig === "err" ? "error" : "warning",
+              level: newConfig === 'err' ? 'error' : 'warning',
             }
       );
     }
@@ -204,16 +188,11 @@ export abstract class AbstractPlugin implements Plugin {
     return;
   }
 
-  unregisterCustomSchema(
-    schema: Omit<CustomSchema, "schema">
-  ): void | Promise<void> {
+  unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): void | Promise<void> {
     return;
   }
 
-  async validate(
-    resources: Resource[],
-    incremental?: Incremental
-  ): Promise<ValidationRun> {
+  async validate(resources: Resource[], incremental?: Incremental): Promise<ValidationRun> {
     invariant(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
 
     let results = await this.doValidate(resources, incremental);
@@ -235,10 +214,7 @@ export abstract class AbstractPlugin implements Plugin {
     };
   }
 
-  protected abstract doValidate(
-    resources: Resource[],
-    incremental?: Incremental
-  ): Promise<ValidationResult[]>;
+  protected abstract doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]>;
 
   protected getRuleConfig(ruleId: string): RuleConfig {
     const ruleConfig = this._ruleConfig.get(ruleId);
@@ -246,11 +222,7 @@ export abstract class AbstractPlugin implements Plugin {
     return ruleConfig as RuleConfig;
   }
 
-  protected merge(
-    previous: ValidationResult[],
-    current: ValidationResult[],
-    incremental?: Incremental
-  ) {
+  protected merge(previous: ValidationResult[], current: ValidationResult[], incremental?: Incremental) {
     const results: ValidationResult[] = [];
     const hashmap = keyBy(incremental?.resourceIds);
 

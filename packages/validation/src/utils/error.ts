@@ -8,7 +8,7 @@ export abstract class ExtendableError extends Error {
   private _error: Error;
   private _stack?: string;
 
-  constructor(public message = "") {
+  constructor(public message = '') {
     super(message);
     Object.setPrototypeOf(this, new.target.prototype);
     delete (<Error>this).stack;
@@ -39,7 +39,7 @@ export abstract class ExtendableError extends Error {
       prototype = Object.getPrototypeOf(prototype);
     }
 
-    let stackLines = (this._error.stack || "").match(/.+/g) || [];
+    let stackLines = (this._error.stack || '').match(/.+/g) || [];
     let nameLine = this.name;
 
     if (this.message) {
@@ -48,7 +48,7 @@ export abstract class ExtendableError extends Error {
 
     stackLines.splice(0, depth + 1, nameLine);
 
-    return (this._stack = stackLines.join("\n"));
+    return (this._stack = stackLines.join('\n'));
   }
 }
 

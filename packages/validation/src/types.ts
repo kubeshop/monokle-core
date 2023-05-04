@@ -1,15 +1,6 @@
-import {
-  RuleMetadata,
-  RuleConfig,
-  ValidationResponse,
-} from "./common/sarif.js";
-import {
-  PluginMetadata,
-  Resource,
-  Incremental,
-  CustomSchema,
-} from "./common/types.js";
-import { Config } from "./config/parse.js";
+import {RuleMetadata, RuleConfig, ValidationResponse} from './common/sarif.js';
+import {PluginMetadata, Resource, Incremental, CustomSchema} from './common/types.js';
+import {Config} from './config/parse.js';
 
 export type PluginMetadataWithConfig = PluginMetadata & {
   configuration: {
@@ -40,7 +31,7 @@ export interface Validator {
   readonly rules: Record<PluginName, Array<RuleMetadataWithConfig>>;
 
   registerCustomSchema(schema: CustomSchema): Promise<void>;
-  unregisterCustomSchema(schema: Omit<CustomSchema, "schema">): Promise<void>;
+  unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): Promise<void>;
 
   /**
    * Validates the resources.

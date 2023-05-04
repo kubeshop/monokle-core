@@ -5,12 +5,11 @@ import {
   RefNode,
   Resource,
   ResourceRefsProcessingConfig,
-} from "../../common/types.js";
-import { RefMapper } from "../mappers";
-import { getSiblingValue } from "./GetSiblings.js";
-import { LineCounter, parseDocument } from "yaml";
-import path from "../../utils/path.js";
-
+} from '../../common/types.js';
+import {RefMapper} from '../mappers';
+import {getSiblingValue} from './GetSiblings.js';
+import {LineCounter, parseDocument} from 'yaml';
+import path from '../../utils/path.js';
 
 export function isIncomingRef(refType: ResourceRefType) {
   return refType === ResourceRefType.Incoming;
@@ -37,51 +36,46 @@ export function isUnsatisfiedOwnerRef(refType: ResourceRefType) {
 }
 
 export function hasIncomingRefs(resource: Resource) {
-  return resource.refs?.some((e) => isIncomingRef(e.type));
+  return resource.refs?.some(e => isIncomingRef(e.type));
 }
 
 export function isFileRef(ref: ResourceRef) {
-  return ref.target?.type === "file";
+  return ref.target?.type === 'file';
 }
 
 export function isResourceRef(ref: ResourceRef) {
-  return ref.target?.type === "resource";
+  return ref.target?.type === 'resource';
 }
 
 export function isResourceRefTo(ref: ResourceRef, resourceId: string) {
-  return (
-    ref.target?.type === "resource" && ref.target.resourceId === resourceId
-  );
+  return ref.target?.type === 'resource' && ref.target.resourceId === resourceId;
 }
 
 export function hasOutgoingRefs(resource: Resource) {
-  return resource.refs?.some((e) => isOutgoingRef(e.type));
+  return resource.refs?.some(e => isOutgoingRef(e.type));
 }
 
 export function hasOutgoingOwnerRefs(resource: Resource) {
-  return resource.refs?.some((e) => isOutgoingOwnerRef(e.type));
+  return resource.refs?.some(e => isOutgoingOwnerRef(e.type));
 }
 
 export function hasOwnerRefs(resource: Resource) {
-  return resource.refs?.some((e) => isOutgoingOwnerRef(e.type) || isIncomingOwnerRef(e.type));
+  return resource.refs?.some(e => isOutgoingOwnerRef(e.type) || isIncomingOwnerRef(e.type));
 }
 
 export function hasRefs(resource: Resource) {
-  return resource.refs?.some((e) => isOutgoingRef(e.type));
+  return resource.refs?.some(e => isOutgoingRef(e.type));
 }
 
 export function hasUnsatisfiedRefs(resource: Resource) {
-  return resource.refs?.some((e) => isUnsatisfiedRef(e.type));
+  return resource.refs?.some(e => isUnsatisfiedRef(e.type));
 }
 
 export function hasUnsatisfiedOwnerRefs(resource: Resource) {
-  return resource.refs?.some((e) => isUnsatisfiedOwnerRef(e.type));
+  return resource.refs?.some(e => isUnsatisfiedOwnerRef(e.type));
 }
 
-export function areRefPosEqual(
-  a: RefPosition | undefined,
-  b: RefPosition | undefined
-) {
+export function areRefPosEqual(a: RefPosition | undefined, b: RefPosition | undefined) {
   if (a === undefined && b === undefined) {
     return true;
   }
@@ -101,15 +95,7 @@ export function isOptionalRef(
   config: ResourceRefsProcessingConfig
 ): boolean | undefined {
   return outgoingRefMapper.source.isOptional
-    ? Boolean(
-        getSiblingValue(
-          "optional",
-          outgoingRefMapper,
-          sourceResource,
-          sourceRefNode,
-          config
-        )
-      )
+    ? Boolean(getSiblingValue('optional', outgoingRefMapper, sourceResource, sourceRefNode, config))
     : false;
 }
 
@@ -117,17 +103,15 @@ export function isOptionalRef(
 // they are identified only by their name
 export function isUntypedKustomizationFile(filePath = ''): boolean {
   const base = path.parse(filePath).base.toLowerCase();
-  return ['kustomization.yaml', 'kustomization.yml', 'kustomization'].includes(
-    base
-  );
+  return ['kustomization.yaml', 'kustomization.yml', 'kustomization'].includes(base);
 }
 
-export function isYamlFile(filePath:  string): boolean {
+export function isYamlFile(filePath: string): boolean {
   return filePath.endsWith('.yml') || filePath.endsWith('.yaml');
 }
 
 export function parseYamlDocument(text: string, lineCounter?: LineCounter) {
-  return parseDocument(text, { lineCounter, uniqueKeys: false, strict: false });
+  return parseDocument(text, {lineCounter, uniqueKeys: false, strict: false});
 }
 
 export function findResourceById(id: string, resources: Resource[]) {
@@ -135,25 +119,18 @@ export function findResourceById(id: string, resources: Resource[]) {
 }
 
 export function isFolderPath(filePath: string, files: Set<string>) {
-  if( !filePath.endsWith( path.sep )){
+  if (!filePath.endsWith(path.sep)) {
     filePath += path.sep;
   }
-  return Array.from( files ).find(f => f.startsWith(filePath)) !== undefined;
+  return Array.from(files).find(f => f.startsWith(filePath)) !== undefined;
 }
 
 export function findChildren(files: Set<string>, parentFile: string) {
   return Object.keys(files).filter(
-    f =>
-      f.startsWith(parentFile + path.sep) &&
-      f.indexOf(path.sep, parentFile.length + 1) === -1
+    f => f.startsWith(parentFile + path.sep) && f.indexOf(path.sep, parentFile.length + 1) === -1
   );
 }
 
-export function getResourcesForPath(
-  filePath: string,
-  resources: Resource[] | undefined
-) {
-  return resources
-    ? resources.filter(resource => resource.filePath === filePath)
-    : [];
+export function getResourcesForPath(filePath: string, resources: Resource[] | undefined) {
+  return resources ? resources.filter(resource => resource.filePath === filePath) : [];
 }

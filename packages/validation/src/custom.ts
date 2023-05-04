@@ -1,1 +1,1 @@
-export * from "./validators/custom/config.js";
+export * from './validators/custom/config.js';

@@ -1,25 +1,25 @@
-import { expect, it } from "vitest";
-import { Resource, createDefaultMonokleValidator } from "../index.js";
-import YAML from "yaml";
+import {expect, it} from 'vitest';
+import {Resource, createDefaultMonokleValidator} from '../index.js';
+import YAML from 'yaml';
 
-import "isomorphic-fetch";
+import 'isomorphic-fetch';
 
-it("should work with custom schemas", async () => {
+it('should work with custom schemas', async () => {
   const validator = createDefaultMonokleValidator();
 
   await validator.preload({
-    plugins: { "kubernetes-schema": true },
+    plugins: {'kubernetes-schema': true},
   });
 
   const schema = YAML.parse(GATEWAY_SCHEMA);
   await validator.registerCustomSchema({
-    kind: "Gateway",
-    apiVersion: "networking.istio.io/v1alpha3",
+    kind: 'Gateway',
+    apiVersion: 'networking.istio.io/v1alpha3',
     schema: schema,
   });
 
   const resources = [BAD_CUSTOM_RESOURCE];
-  const response = await validator.validate({ resources });
+  const response = await validator.validate({resources});
 
   // uncomment to debug
   // response.runs.forEach((r) =>
@@ -29,40 +29,40 @@ it("should work with custom schemas", async () => {
   // );
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toMatchInlineSnapshot("1");
+  expect(hasErrors).toMatchInlineSnapshot('1');
 });
 
 const BAD_CUSTOM_RESOURCE: Resource = {
-  fileId: "networking/gateway.yaml",
-  filePath: "networking/gateway.yaml",
+  fileId: 'networking/gateway.yaml',
+  filePath: 'networking/gateway.yaml',
   fileOffset: 0,
   text: 'apiVersion: networking.istio.io/v1alpha3\nkind: Gateway\nmetadata:\n  name: bookinfo-gateway\nspec:\n  selector:\n    istio: ingressgateway # use istio default controller\n  servers:\n    - port:\n        number: 80\n        name: http\n        protocol: HTTP\n      hosts:\n        - "*"\n',
-  apiVersion: "networking.istio.io/v1alpha3",
-  kind: "Gateway",
+  apiVersion: 'networking.istio.io/v1alpha3',
+  kind: 'Gateway',
   content: {
-    apiVersion: "networking.istio.io/v1alpha3",
-    kind: "Gateway",
+    apiVersion: 'networking.istio.io/v1alpha3',
+    kind: 'Gateway',
     metadata: {
-      name: "bookinfo-gateway",
+      name: 'bookinfo-gateway',
     },
     spec: {
       selector: {
-        istio: "ingressgateway",
+        istio: 'ingressgateway',
       },
       servers: [
         {
           port: {
-            number: "VALIDATION_THIS_SHOULD_BE_A_NUMBER",
-            name: "http",
-            protocol: "HTTP",
+            number: 'VALIDATION_THIS_SHOULD_BE_A_NUMBER',
+            name: 'http',
+            protocol: 'HTTP',
           },
-          hosts: ["*"],
+          hosts: ['*'],
         },
       ],
     },
   },
-  id: "0e339786-de2a-5c74-bbd7-c3e3509147fd",
-  name: "bookinfo-gateway",
+  id: '0e339786-de2a-5c74-bbd7-c3e3509147fd',
+  name: 'bookinfo-gateway',
 };
 
 const GATEWAY_SCHEMA = `properties:

@@ -1,2 +1,2 @@
-export * from "./parse.js";
-export * from "./read.node.js";
+export * from './parse.js';
+export * from './read.node.js';

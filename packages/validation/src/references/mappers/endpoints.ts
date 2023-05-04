@@ -1,27 +1,27 @@
-import { optionalExplicitNamespaceMatcher, targetKindMatcher } from "./core.js";
-import { RefMapper } from "./mappers.js";
+import {optionalExplicitNamespaceMatcher, targetKindMatcher} from './core.js';
+import {RefMapper} from './mappers.js';
 
 export const endpointsMappers: RefMapper[] = [
   {
     source: {
-      pathParts: ["metadata", "name"],
+      pathParts: ['metadata', 'name'],
     },
     target: {
-      kind: "Service",
+      kind: 'Service',
     },
-    type: "name",
+    type: 'name',
   },
   {
     source: {
-      pathParts: ["targetRef", "name"],
+      pathParts: ['targetRef', 'name'],
       siblingMatchers: {
         namespace: optionalExplicitNamespaceMatcher,
         kind: targetKindMatcher,
       },
     },
     target: {
-      kind: "$.*",
+      kind: '$.*',
     },
-    type: "name",
+    type: 'name',
   },
 ];

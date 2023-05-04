@@ -1,6 +1,6 @@
-import { KNOWN_RESOURCE_KINDS } from "../../utils/knownResourceKinds.js";
-import { getOutgoingRefMappers } from "../mappers/index.js";
-import { refMapperMatchesKind } from "./refMatcher.js";
+import {KNOWN_RESOURCE_KINDS} from '../../utils/knownResourceKinds.js';
+import {getOutgoingRefMappers} from '../mappers/index.js';
+import {refMapperMatchesKind} from './refMatcher.js';
 
 const targetResourceKindCache = new Map<string, string[]>();
 
@@ -9,9 +9,9 @@ const targetResourceKindCache = new Map<string, string[]>();
  */
 export function getResourceKindsWithTargetingRefs(kind: string): string[] {
   if (!targetResourceKindCache.has(kind)) {
-    const resourceKinds = KNOWN_RESOURCE_KINDS.filter((knownKind) => {
+    const resourceKinds = KNOWN_RESOURCE_KINDS.filter(knownKind => {
       const mappers = getOutgoingRefMappers(knownKind);
-      return mappers.some((m) => refMapperMatchesKind(m, kind));
+      return mappers.some(m => refMapperMatchesKind(m, kind));
     });
 
     targetResourceKindCache.set(kind, resourceKinds);
