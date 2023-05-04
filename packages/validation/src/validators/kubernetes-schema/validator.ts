@@ -12,6 +12,7 @@ import {KNOWN_RESOURCE_KINDS} from '../../utils/knownResourceKinds.js';
 import {getResourceSchemaPrefix} from './resourcePrefixMap.js';
 import {KUBERNETES_SCHEMA_RULES} from './rules.js';
 import {SchemaLoader} from './schemaLoader.js';
+import {throwIfAborted} from '../../utils/abort.js';
 
 type Settings = z.infer<typeof Settings>;
 const Settings = z.object({
@@ -67,11 +68,16 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     KNOWN_RESOURCE_KINDS.forEach(kind => this.getResourceValidator(kind));
   }
 
-  async doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
+  async doValidate(
+    resources: Resource[],
+    incremental?: Incremental,
+    abortSignals?: AbortSignal[]
+  ): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;
 
     for (const resource of dirtyResources) {
+      throwIfAborted(abortSignals);
       const resourceErrors = await this.validateResource(resource);
       results.push(...resourceErrors);
     }

@@ -192,10 +192,14 @@ export abstract class AbstractPlugin implements Plugin {
     return;
   }
 
-  async validate(resources: Resource[], incremental?: Incremental): Promise<ValidationRun> {
+  async validate(
+    resources: Resource[],
+    incremental?: Incremental,
+    abortSignals?: AbortSignal[]
+  ): Promise<ValidationRun> {
     invariant(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
 
-    let results = await this.doValidate(resources, incremental);
+    let results = await this.doValidate(resources, incremental, abortSignals);
 
     if (incremental) {
       results = this.merge(this._previous, results, incremental);
@@ -214,7 +218,11 @@ export abstract class AbstractPlugin implements Plugin {
     };
   }
 
-  protected abstract doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]>;
+  protected abstract doValidate(
+    resources: Resource[],
+    incremental?: Incremental,
+    abortSignals?: AbortSignal[]
+  ): Promise<ValidationResult[]>;
 
   protected getRuleConfig(ruleId: string): RuleConfig {
     const ruleConfig = this._ruleConfig.get(ruleId);

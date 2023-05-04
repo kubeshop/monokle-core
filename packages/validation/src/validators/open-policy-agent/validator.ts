@@ -17,6 +17,7 @@ import {LoadedPolicy, OpaProperties, PolicyError} from './types.js';
 import {WasmLoader} from '../../wasmLoader/WasmLoader.js';
 import {isKustomizationResource} from '../../references/utils/kustomizeRefs.js';
 import invariant from '../../utils/invariant.js';
+import {throwIfAborted} from '../../utils/abort.js';
 
 type Settings = z.infer<typeof Settings>;
 
@@ -57,12 +58,17 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
     this.validator = await loadPolicy(wasm);
   }
 
-  async doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
+  async doValidate(
+    resources: Resource[],
+    incremental?: Incremental,
+    abortSignals?: AbortSignal[]
+  ): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
 
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;
 
     for (const resource of dirtyResources) {
+      throwIfAborted(abortSignals);
       const resourceErrors = await this.validateResource(resource);
       results.push(...resourceErrors);
     }

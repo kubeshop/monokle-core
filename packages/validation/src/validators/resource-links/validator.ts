@@ -1,6 +1,7 @@
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {Region, ValidationResult} from '../../common/sarif.js';
-import {Resource, ResourceRef, ResourceRefType, ToolConfig} from '../../common/types.js';
+import {Incremental, Resource, ResourceRef, ResourceRefType, ToolConfig} from '../../common/types.js';
+import {throwIfAborted} from '../../utils/abort.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {RESOURCE_LINK_RULES} from './rules.js';
@@ -33,10 +34,15 @@ export class ResourceLinksValidator extends AbstractPlugin {
     return current;
   }
 
-  async doValidate(resources: Resource[]): Promise<ValidationResult[]> {
+  async doValidate(
+    resources: Resource[],
+    incremental?: Incremental,
+    abortSignals?: AbortSignal[]
+  ): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
 
     for (const resource of resources) {
+      throwIfAborted(abortSignals);
       const resourceErrors = await this.validateResource(resource);
       results.push(...resourceErrors);
     }

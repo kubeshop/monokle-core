@@ -244,18 +244,19 @@ export class MonokleValidator implements Validator {
       this.load();
     }
     const loadAbortSignal = this._abortController.signal;
+    const abortSignals = [loadAbortSignal, externalAbortSignal].filter(isDefined);
     await this._loading;
-    throwIfAborted(loadAbortSignal, externalAbortSignal);
+    throwIfAborted(abortSignals);
 
     const validators = this._plugins.filter(v => v.enabled);
 
     await nextTick();
-    throwIfAborted(loadAbortSignal, externalAbortSignal);
+    throwIfAborted(abortSignals);
 
     this.preprocessCustomResourceDefinitions(resources);
 
-    const allRuns = await Promise.allSettled(validators.map(v => v.validate(resources, incremental)));
-    throwIfAborted(loadAbortSignal, externalAbortSignal);
+    const allRuns = await Promise.allSettled(validators.map(v => v.validate(resources, incremental, abortSignals)));
+    throwIfAborted(abortSignals);
 
     const runs = allRuns.map(run => (run.status === 'fulfilled' ? run.value : undefined)).filter(isDefined);
 
@@ -271,10 +272,12 @@ export class MonokleValidator implements Validator {
     };
   }
 
-  private preprocessCustomResourceDefinitions(resources: Resource[]) {
+  private preprocessCustomResourceDefinitions(resources: Resource[], abortSignals?: AbortSignal[]) {
     const crds = resources.filter(r => r.kind === 'CustomResourceDefinition');
 
     for (const crd of crds) {
+      throwIfAborted(abortSignals);
+
       const spec = crd.content.spec;
       const kind = spec?.names?.kind;
       const apiVersion = findDefaultVersion(crd.content);

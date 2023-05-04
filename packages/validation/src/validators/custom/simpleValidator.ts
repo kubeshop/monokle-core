@@ -10,6 +10,7 @@ import {Incremental, PluginMetadata, Resource} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {PluginInit, ReportArgs, Resource as PlainResource, RuleInit} from './config.js';
+import {throwIfAborted} from '../../utils/abort.js';
 
 type Runtime = {
   validate: RuleInit['validate'];
@@ -35,9 +36,15 @@ export class SimpleCustomValidator extends AbstractPlugin {
     this._settings = rawSettings;
   }
 
-  async doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
+  async doValidate(
+    resources: Resource[],
+    incremental?: Incremental,
+    abortSignals?: AbortSignal[]
+  ): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
     const resourceMap = keyBy(resources, r => r.id);
+
+    throwIfAborted(abortSignals);
 
     const clonedResources: PlainResourceWithId[] = resources.map(r =>
       JSON.parse(JSON.stringify({...r.content, _id: r.id}))
@@ -50,6 +57,8 @@ export class SimpleCustomValidator extends AbstractPlugin {
       if (!this.isRuleEnabled(rule.id)) {
         continue;
       }
+
+      throwIfAborted(abortSignals);
 
       const {validate} = this._ruleRuntime[rule.id];
 

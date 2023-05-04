@@ -220,7 +220,7 @@ export interface Plugin {
   registerCustomSchema(schema: CustomSchema): Promise<void> | void;
   unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): Promise<void> | void;
 
-  validate(resources: Resource[], incremental?: Incremental): Promise<ValidationRun>;
+  validate(resources: Resource[], incremental?: Incremental, abortSignals?: AbortSignal[]): Promise<ValidationRun>;
 
   clear(): Promise<void>;
   unload(): Promise<void>;

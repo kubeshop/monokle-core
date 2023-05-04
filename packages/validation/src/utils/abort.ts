@@ -14,7 +14,7 @@ export class AbortError extends ExtendableError {
 /**
  * Throws an AbortError if any signal is aborted.
  */
-export function throwIfAborted(...signals: (AbortSignal | undefined)[]) {
+export function throwIfAborted(signals: AbortSignal[] = []) {
   // AbortSignal.throwIfAborted exists but is not supported in NodeJs <v17.3.0
   // and it is also not available in abort-controller polyfill.
   // See https://nodejs.org/api/globals.html#abortsignalthrowifaborted

@@ -42,7 +42,7 @@ export interface Validator {
   validate(args: {
     resources: Resource[];
     incremental?: Incremental;
-    abortSignal?: AbortSignal;
+    abortSignals?: AbortSignal[];
   }): Promise<ValidationResponse>;
 
   /**
