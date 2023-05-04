@@ -8,8 +8,8 @@ import "isomorphic-fetch";
 import { RESOURCES } from "./badResources.js";
 import { extractK8sResources, readDirectory } from "./testUtils.js";
 import { ResourceRefType } from "../common/types.js";
-import { ResourceParser } from "../common/resourceParser";
-import { createDefaultMonokleValidator } from "../createDefaultMonokleValidator.node";
+import { ResourceParser } from "../common/resourceParser.js";
+import { createDefaultMonokleValidator } from "../createDefaultMonokleValidator.node.js";
 
 it("should be simple to configure", async () => {
   const parser = new ResourceParser();
