@@ -12,6 +12,7 @@ import {getResourceRefNodes} from './utils/getResourceNodes.js';
 import {refMapperMatchesKind} from './utils/refMatcher.js';
 import {processKustomizations} from './utils/kustomizeRefs.js';
 import {ResourceParser} from '../common/resourceParser.js';
+import {throwIfAborted} from '../utils/abort.js';
 
 /**
  * Processes resources and MUTATES them with their references to other resources.
@@ -29,9 +30,12 @@ export function processRefs(
   // optional list of files that were processed to extract the specified resources, needed to resolve refs
   // to files that don't contain any resources. If not specified the list of files will be extracted from
   // specified resources instead.
-  files?: string[]
+  files?: string[],
+  abortSignals?: AbortSignal[]
 ): Resource[] {
   const filteredResources = filterResources(resources, incremental);
+
+  throwIfAborted(abortSignals);
 
   doProcessRefs(resources, filteredResources, {
     shouldIgnoreOptionalUnsatisfiedRefs: false,
@@ -58,12 +62,18 @@ function filterResources(resources: Resource[], incremental?: Incremental) {
   });
 }
 
-function doProcessRefs(resources: Resource[], resourcesToProcess: Resource[], config: ResourceRefsProcessingConfig) {
+function doProcessRefs(
+  resources: Resource[],
+  resourcesToProcess: Resource[],
+  config: ResourceRefsProcessingConfig,
+  abortSignals?: AbortSignal[]
+) {
   const resourceMap = keyBy(resources, 'id');
   const resourcesByKind = groupBy(resources, r => r.kind);
   const knownKinds = Object.keys(resourcesByKind);
 
   for (const sourceResource of resourcesToProcess) {
+    throwIfAborted(abortSignals);
     clearOutgoingResourceRefs(sourceResource, resourceMap);
     const sourceRefNodes = getResourceRefNodes(sourceResource, config);
 
