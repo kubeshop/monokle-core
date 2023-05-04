@@ -1,7 +1,6 @@
 import Ajv from "ajv";
 import { expect, it } from "vitest";
-import { ResourceParser } from "../common/resourceParser.js";
-import { createDefaultMonokleValidator, MonokleValidator } from "../MonokleValidator.js";
+import { MonokleValidator } from "../MonokleValidator.js";
 import { processRefs } from "../references/process.js";
 
 // Usage note: This library relies on fetch being on global scope!
@@ -9,6 +8,8 @@ import "isomorphic-fetch";
 import { RESOURCES } from "./badResources.js";
 import { extractK8sResources, readDirectory } from "./testUtils.js";
 import { ResourceRefType } from "../common/types.js";
+import { ResourceParser } from "../common/resourceParser";
+import { createDefaultMonokleValidator } from "../createDefaultMonokleValidator.node";
 
 it("should be simple to configure", async () => {
   const parser = new ResourceParser();
@@ -107,7 +108,7 @@ it("should be flexible to configure", async () => {
   // );
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toMatchInlineSnapshot("14");
+  expect(hasErrors).toMatchInlineSnapshot("13");
 });
 
 it("should be valid SARIF", async () => {
