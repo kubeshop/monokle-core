@@ -1,7 +1,6 @@
 import groupBy from "lodash/groupBy.js";
 import keyBy from "lodash/keyBy.js";
 import uniq from "lodash/uniq.js";
-import { ResourceParser } from "../common/resourceParser.js";
 import {
   Incremental,
   Resource,
@@ -16,6 +15,7 @@ import { getResourceKindsWithTargetingRefs } from "./utils/getResourceKindsWithT
 import { getResourceRefNodes } from "./utils/getResourceNodes.js";
 import { refMapperMatchesKind } from "./utils/refMatcher.js";
 import { processKustomizations } from "./utils/kustomizeRefs.js";
+import { ResourceParser } from "../common/resourceParser.js";
 
 /**
  * Processes resources and MUTATES them with their references to other resources.

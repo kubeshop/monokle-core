@@ -175,7 +175,7 @@ function extractPatches(
 // as specified by https://github.com/hashicorp/go-getter#url-format
 function isExternalResourceRef(refNode: NodeWrapper) {
   const externalPrefixes: string[] = ["http://", "https://", "github.com/", "gitlab.com/",
-    "bitbucket.org/", "git::", "hg::", "s3::", "gcs::", "file:"];
+    "bitbucket.org/", "git::", "hg::", "s3::", "gcs::", "file:", "ssh:"];
 
   let value = refNode.nodeValue().toLowerCase();
   return externalPrefixes.findIndex(v => value.startsWith(v)) >= 0;
