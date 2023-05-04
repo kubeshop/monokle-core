@@ -1,19 +1,11 @@
-import {
-  RefNode,
-  Resource,
-  ResourceRefsProcessingConfig,
-  ResourceRefType,
-} from "../common/types.js";
-import { isDefined } from "../utils/isDefined.js";
-import { RefMapper } from "./mappers/index.js";
-import { createResourceRef, linkResources } from "./utils/createResourceRef.js";
-import {
-  getResourceRefNodes,
-  joinPathParts,
-} from "./utils/getResourceNodes.js";
-import { isOptionalRef } from "./utils/helpers.js";
-import { NodeWrapper } from "../common/NodeWrapper.js";
-import { shouldCreateSatisfiedRef } from "./utils/shouldCreateSatisfiedRef.js";
+import {RefNode, Resource, ResourceRefsProcessingConfig, ResourceRefType} from '../common/types.js';
+import {isDefined} from '../utils/isDefined.js';
+import {RefMapper} from './mappers/index.js';
+import {createResourceRef, linkResources} from './utils/createResourceRef.js';
+import {getResourceRefNodes, joinPathParts} from './utils/getResourceNodes.js';
+import {isOptionalRef} from './utils/helpers.js';
+import {NodeWrapper} from '../common/NodeWrapper.js';
+import {shouldCreateSatisfiedRef} from './utils/shouldCreateSatisfiedRef.js';
 
 /**
  * Creates pair resource refs from a specified resource to target resources using the specified refMapper (i.e. selectors)
@@ -33,12 +25,10 @@ export function handlePairRefMapping(
   Object.values(refNodes)
     .filter(isDefined)
     .flat()
-    .forEach(({ scalar, key, parentKeyPath }) => {
-      const outgoingRefMapperSourcePath = joinPathParts(
-        outgoingRefMapper.source.pathParts
-      );
+    .forEach(({scalar, key, parentKeyPath}) => {
+      const outgoingRefMapperSourcePath = joinPathParts(outgoingRefMapper.source.pathParts);
       if (parentKeyPath.endsWith(outgoingRefMapperSourcePath)) {
-        sourceRefNodes.push({ scalar, key, parentKeyPath });
+        sourceRefNodes.push({scalar, key, parentKeyPath});
       }
     });
 
@@ -46,7 +36,7 @@ export function handlePairRefMapping(
   const sourceLineCounter = config.parser.getLineCounter(sourceResource);
 
   if (targetResources.length === 0) {
-    sourceRefNodes.forEach((sourceRefNode) => {
+    sourceRefNodes.forEach(sourceRefNode => {
       createResourceRef(
         sourceResource,
         ResourceRefType.Unsatisfied,
@@ -56,30 +46,27 @@ export function handlePairRefMapping(
       );
     });
   } else {
-    sourceRefNodes.forEach((sourceRefNode) => {
-      const foundMatchByTargetResourceId: Record<string, boolean> =
-        Object.fromEntries(
-          targetResources.map((targetResource) => [targetResource.id, false])
-        );
+    sourceRefNodes.forEach(sourceRefNode => {
+      const foundMatchByTargetResourceId: Record<string, boolean> = Object.fromEntries(
+        targetResources.map(targetResource => [targetResource.id, false])
+      );
 
-      targetResources.forEach((targetResource) => {
+      targetResources.forEach(targetResource => {
         const targetNodes: RefNode[] = [];
         const targetRefNodes = getResourceRefNodes(targetResource, config);
         if (targetRefNodes) {
           Object.values(targetRefNodes)
             .filter(isDefined)
             .flat()
-            .forEach(({ scalar, key, parentKeyPath }) => {
+            .forEach(({scalar, key, parentKeyPath}) => {
               if (outgoingRefMapper.target.pathParts) {
-                const outgoingRefMapperTargetPath = joinPathParts(
-                  outgoingRefMapper.target.pathParts
-                );
+                const outgoingRefMapperTargetPath = joinPathParts(outgoingRefMapper.target.pathParts);
                 if (parentKeyPath.endsWith(outgoingRefMapperTargetPath)) {
-                  targetNodes.push({ scalar, key, parentKeyPath });
+                  targetNodes.push({scalar, key, parentKeyPath});
                 }
               }
             });
-          targetNodes.forEach((targetNode) => {
+          targetNodes.forEach(targetNode => {
             if (
               sourceRefNode.key === targetNode.key &&
               shouldCreateSatisfiedRef(
@@ -91,8 +78,7 @@ export function handlePairRefMapping(
                 config
               )
             ) {
-              const targetLineCounter =
-                config.parser.getLineCounter(targetResource);
+              const targetLineCounter = config.parser.getLineCounter(targetResource);
 
               foundMatchByTargetResourceId[targetResource.id] = true;
 
@@ -101,12 +87,7 @@ export function handlePairRefMapping(
                 targetResource,
                 new NodeWrapper(sourceRefNode.scalar, sourceLineCounter),
                 new NodeWrapper(targetNode.scalar, targetLineCounter),
-                isOptionalRef(
-                  sourceResource,
-                  sourceRefNode,
-                  outgoingRefMapper,
-                  config
-                )
+                isOptionalRef(sourceResource, sourceRefNode, outgoingRefMapper, config)
               );
             }
           });
@@ -114,9 +95,7 @@ export function handlePairRefMapping(
       });
 
       // if this sourceRefNode did not link to any target resource, mark the node as unsatisfied
-      const noMatchesFound = Object.values(foundMatchByTargetResourceId).every(
-        (foundMatch) => !foundMatch
-      );
+      const noMatchesFound = Object.values(foundMatchByTargetResourceId).every(foundMatch => !foundMatch);
 
       if (noMatchesFound) {
         createResourceRef(

@@ -1,11 +1,11 @@
-import { explicitNamespaceMatcher, SecretTarget } from './core.js';
-import { RefMapper } from './mappers.js';
+import {explicitNamespaceMatcher, SecretTarget} from './core.js';
+import {RefMapper} from './mappers.js';
 
 export const persistentVolumeMapper: RefMapper[] = [
   {
     type: 'name',
-    source: { pathParts: ['spec', 'claimRef', 'name'] },
-    target: { kind: 'PersistentVolumeClaim' },
+    source: {pathParts: ['spec', 'claimRef', 'name']},
+    target: {kind: 'PersistentVolumeClaim'},
   },
   {
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#secretreference-v1-core

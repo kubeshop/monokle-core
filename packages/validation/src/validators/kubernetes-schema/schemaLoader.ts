@@ -1,11 +1,11 @@
-import { Resource } from "../../common/types.js";
-import { isKnownResourceKind } from "../../utils/knownResourceKinds.js";
+import {Resource} from '../../common/types.js';
+import {isKnownResourceKind} from '../../utils/knownResourceKinds.js';
 
-export type FullSchema = { definitions: Record<string, ResourceSchema> };
+export type FullSchema = {definitions: Record<string, ResourceSchema>};
 export type ResourceSchema = any;
 
-const CORE_SCHEMA_BASE = "https://plugins.monokle.com/schemas";
-const CRD_SCHEMA_BASE = "https://plugins.monokle.com/schemas";
+const CORE_SCHEMA_BASE = 'https://plugins.monokle.com/schemas';
+const CRD_SCHEMA_BASE = 'https://plugins.monokle.com/schemas';
 
 export class SchemaLoader {
   private schemaCache = new Map<string, ResourceSchema | undefined>();
@@ -14,7 +14,7 @@ export class SchemaLoader {
     schemaVersion: string,
     resource: Resource | undefined,
     signal?: AbortSignal
-  ): Promise<{ url?: string; schema: ResourceSchema } | undefined> {
+  ): Promise<{url?: string; schema: ResourceSchema} | undefined> {
     if (!resource) return undefined;
 
     try {
@@ -24,15 +24,15 @@ export class SchemaLoader {
       const schemaUri = this.getUrl(resource, kubernetesVersion);
 
       if (cachedSchema) {
-        return { schema: cachedSchema, url: schemaUri };
+        return {schema: cachedSchema, url: schemaUri};
       }
 
-      const response = await fetch(schemaUri, { signal });
+      const response = await fetch(schemaUri, {signal});
       const schema = await response.json();
 
       this.schemaCache.set(cacheKey, schema);
 
-      return { url: schemaUri, schema };
+      return {url: schemaUri, schema};
     } catch {
       return undefined;
     }
@@ -41,13 +41,13 @@ export class SchemaLoader {
   private getKubernetesVersion(version: string): string {
     // Support both with and without v-prefix to avoid mistakes.
     // example: you easily enter `v1.24.2` while we expect `1.24.2`.
-    return version.startsWith("v") ? version : `v${version}`;
+    return version.startsWith('v') ? version : `v${version}`;
   }
 
   private getUrl(resource: Resource, kubernetesVersion: string) {
     if (!isKnownResourceKind(resource.kind)) {
       const kind = resource.kind.toLowerCase();
-      const [group, apiVersion] = resource.apiVersion.split("/");
+      const [group, apiVersion] = resource.apiVersion.split('/');
       // e.g. https://plugins.monokle.com/schemas/crds/argoproj.io/v1alpha1/application.json
       return `${CRD_SCHEMA_BASE}/crds/${group}/${apiVersion}/${kind}.json`;
     } else {
@@ -60,7 +60,7 @@ export class SchemaLoader {
   async getFullSchema(
     schemaVersion: string,
     signal?: AbortSignal
-  ): Promise<{ url: string; schema: FullSchema } | undefined> {
+  ): Promise<{url: string; schema: FullSchema} | undefined> {
     try {
       const cacheKey = schemaVersion;
       const cachedSchema = this.schemaCache.get(cacheKey);
@@ -68,15 +68,15 @@ export class SchemaLoader {
       const schemaUri = `${CORE_SCHEMA_BASE}/${kubernetesVersion}-standalone/definitions.json`;
 
       if (cachedSchema) {
-        return { schema: cachedSchema, url: schemaUri };
+        return {schema: cachedSchema, url: schemaUri};
       }
 
-      const response = await fetch(schemaUri, { signal });
+      const response = await fetch(schemaUri, {signal});
       const schema = await response.json();
 
       this.schemaCache.set(cacheKey, schema);
 
-      return { url: schemaUri, schema };
+      return {url: schemaUri, schema};
     } catch {
       return undefined;
     }

@@ -1,29 +1,20 @@
-import {
-  ValidationResponse,
-  ValidationResult,
-  RuleMetadata,
-} from "../common/sarif.js";
-import invariant from "./invariant.js";
-import { getResourceId } from "./sarif.js";
+import {ValidationResponse, ValidationResult, RuleMetadata} from '../common/sarif.js';
+import invariant from './invariant.js';
+import {getResourceId} from './sarif.js';
 
-export function getRuleForResult(
-  response: ValidationResponse,
-  result: ValidationResult
-): RuleMetadata {
+export function getRuleForResult(response: ValidationResponse, result: ValidationResult): RuleMetadata {
   const tool = result.rule.toolComponent.name;
-  const run = response.runs.find((run) => run.tool.driver.name === tool);
+  const run = response.runs.find(run => run.tool.driver.name === tool);
   const ruleIndex = result.rule.index;
   const rule = run?.tool.driver.rules[ruleIndex];
-  invariant(rule, "rule not found");
+  invariant(rule, 'rule not found');
   return rule as RuleMetadata;
 }
 
-export function createResourceErrorMap(
-  response: ValidationResponse
-): Map<string, ValidationResult[]> {
+export function createResourceErrorMap(response: ValidationResponse): Map<string, ValidationResult[]> {
   const result = new Map<string, ValidationResult[]>();
 
-  const errors = response.runs.flatMap((run) => run.results);
+  const errors = response.runs.flatMap(run => run.results);
 
   for (const err of errors) {
     const resourceId = getResourceId(err);

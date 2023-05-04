@@ -1,17 +1,17 @@
-import { JsonObject } from "type-fest";
-import { createPodSelectorOutgoingRefMappers } from "./core.js";
-import { podMappers } from "./pod.js";
-import { serviceAccountMapper } from "./serviceAccount.js";
-import { persistentVolumeMapper } from "./persistentVolume.js";
-import { roleBindingMappers } from "./roleBinding.js";
-import { clusterRoleBindingMappers } from "./clusterRoleBinding.js";
-import { volumeAttachmentMappers } from "./volumeAttachment.js";
-import { KnownResourceKinds } from "../../utils/knownResourceKinds.js";
-import { endpointsMappers } from "./endpoints.js";
-import { endpointSliceMappers } from "./endpointSlice.js";
-import { Resource } from "../../common/types.js";
-import { isDefined } from "../../utils/isDefined.js";
-import { ownerReferenceMapper } from "./ownerReference.js";
+import {JsonObject} from 'type-fest';
+import {createPodSelectorOutgoingRefMappers} from './core.js';
+import {podMappers} from './pod.js';
+import {serviceAccountMapper} from './serviceAccount.js';
+import {persistentVolumeMapper} from './persistentVolume.js';
+import {roleBindingMappers} from './roleBinding.js';
+import {clusterRoleBindingMappers} from './clusterRoleBinding.js';
+import {volumeAttachmentMappers} from './volumeAttachment.js';
+import {KnownResourceKinds} from '../../utils/knownResourceKinds.js';
+import {endpointsMappers} from './endpoints.js';
+import {endpointSliceMappers} from './endpointSlice.js';
+import {Resource} from '../../common/types.js';
+import {isDefined} from '../../utils/isDefined.js';
+import {ownerReferenceMapper} from './ownerReference.js';
 
 export type SiblingMatcher = (
   source: Resource,
@@ -50,7 +50,7 @@ type RefTarget = {
  * - name: Used for everything else
  */
 export type RefMapper = {
-  type: "path" | "name" | "pairs" | "image" | "owner";
+  type: 'path' | 'name' | 'pairs' | 'image' | 'owner';
   source: RefSource;
   target: RefTarget;
 
@@ -69,9 +69,7 @@ export function getOutgoingRefMappers(kind: string): RefMapper[] {
   return [ownerReferenceMapper, ...mappers];
 }
 
-export const OUTGOING_MAPPERS_BY_KIND: Partial<
-  Record<KnownResourceKinds, RefMapper[] | undefined>
-> = {
+export const OUTGOING_MAPPERS_BY_KIND: Partial<Record<KnownResourceKinds, RefMapper[] | undefined>> = {
   Deployment: [...podMappers],
   DaemonSet: [...podMappers],
   CronJob: [...podMappers],
@@ -90,41 +88,32 @@ export const OUTGOING_MAPPERS_BY_KIND: Partial<
   Service: createPodSelectorOutgoingRefMappers(),
   Ingress: [
     {
-      type: "name",
-      source: { pathParts: ["backend", "service", "name"] },
-      target: { kind: "Service" },
+      type: 'name',
+      source: {pathParts: ['backend', 'service', 'name']},
+      target: {kind: 'Service'},
     },
   ],
   Secret: [
     {
-      type: "name",
+      type: 'name',
       source: {
-        pathParts: [
-          "metadata",
-          "annotations",
-          "kubernetes.io/service-account.name",
-        ],
+        pathParts: ['metadata', 'annotations', 'kubernetes.io/service-account.name'],
       },
-      target: { kind: "ServiceAccount" },
+      target: {kind: 'ServiceAccount'},
 
       shouldCreateUnsatisfiedRef: (refMapper, sourceResource, values) => {
-        return values["kubernetes.io/service-account.name"] !== "default";
+        return values['kubernetes.io/service-account.name'] !== 'default';
       },
     },
   ],
-  NetworkPolicy: createPodSelectorOutgoingRefMappers([
-    "podSelector",
-    "matchLabels",
-  ]),
+  NetworkPolicy: createPodSelectorOutgoingRefMappers(['podSelector', 'matchLabels']),
   PersistentVolumeClaim: [
     {
-      type: "name",
-      source: { pathParts: ["spec", "volumeName"] },
-      target: { kind: "PersistentVolume" },
+      type: 'name',
+      source: {pathParts: ['spec', 'volumeName']},
+      target: {kind: 'PersistentVolume'},
     },
   ],
 };
 
-export const OUTGOING_MAPPERS = Object.values(OUTGOING_MAPPERS_BY_KIND)
-  .filter(isDefined)
-  .flat();
+export const OUTGOING_MAPPERS = Object.values(OUTGOING_MAPPERS_BY_KIND).filter(isDefined).flat();

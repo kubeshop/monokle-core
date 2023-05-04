@@ -1,6 +1,6 @@
 // This code is imported from tiny-invariant package.
-const isProduction: boolean = process.env.NODE_ENV === "production";
-const prefix: string = "Invariant failed";
+const isProduction: boolean = process.env.NODE_ENV === 'production';
+const prefix: string = 'Invariant failed';
 
 // Throw an error if the condition fails
 // Strip out error messages for production
@@ -24,8 +24,7 @@ export default function invariant(
   // When not in production we allow the message to pass through
   // *This block will be removed in production builds*
 
-  const provided: string | undefined =
-    typeof message === "function" ? message() : message;
+  const provided: string | undefined = typeof message === 'function' ? message() : message;
 
   // Options:
   // 1. message provided: `${prefix}: ${provided}`

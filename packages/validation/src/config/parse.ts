@@ -1,5 +1,5 @@
-import * as z from "zod";
-import { ZodType } from "zod";
+import * as z from 'zod';
+import {ZodType} from 'zod';
 
 /**
  * A record that configures rules by their human-readable name.
@@ -10,7 +10,7 @@ import { ZodType } from "zod";
  * - "open-policy-agent/no-latest-image": "warn"
  * ```
  */
-export type RuleMap = Record<string, boolean | "warn" | "err">;
+export type RuleMap = Record<string, boolean | 'warn' | 'err'>;
 
 /**
  * The validators that will be loaded.
@@ -27,7 +27,7 @@ export const configSchema: ZodType<Config> = z.object({
   name: z.string().optional(),
   version: z.string().optional(),
   plugins: z.record(z.boolean()).optional(),
-  rules: z.record(z.boolean().or(z.enum(["warn", "err"]))).optional(),
+  rules: z.record(z.boolean().or(z.enum(['warn', 'err']))).optional(),
 });
 
 /**

@@ -1,6 +1,6 @@
-import { Resource } from "../../common/types.js";
-import { getOutgoingRefMappers, OUTGOING_MAPPERS, RefMapper } from "../mappers/index.js";
-import { refMapperMatchesKind } from "./refMatcher.js";
+import {Resource} from '../../common/types.js';
+import {getOutgoingRefMappers, OUTGOING_MAPPERS, RefMapper} from '../mappers/index.js';
+import {refMapperMatchesKind} from './refMatcher.js';
 
 const refMapperCache = new Map<string, RefMapper[]>();
 const incomingRefMappersCache = new Map<string, RefMapper[]>();
@@ -31,9 +31,7 @@ export function getIncomingRefMappers(kind: string): RefMapper[] {
     return cachedMappers;
   }
 
-  const mappers = OUTGOING_MAPPERS.filter((outgoingMapper) =>
-    refMapperMatchesKind(outgoingMapper, kind)
-  );
+  const mappers = OUTGOING_MAPPERS.filter(outgoingMapper => refMapperMatchesKind(outgoingMapper, kind));
 
   incomingRefMappersCache.set(kind, mappers);
 

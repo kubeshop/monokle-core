@@ -1,6 +1,6 @@
-import { Resource, ResourceRefType } from "../../common/types.js";
-import { areRefPosEqual } from "./helpers.js";
-import { NodeWrapper } from "../../common/NodeWrapper.js";
+import {Resource, ResourceRefType} from '../../common/types.js';
+import {areRefPosEqual} from './helpers.js';
+import {NodeWrapper} from '../../common/NodeWrapper.js';
 
 /**
  * Adds a resource ref with the specified type/target to the specified resource
@@ -15,9 +15,7 @@ export function createResourceRef(
 ) {
   if (!refNode && !targetResourceId) {
     // eslint-disable-next-line no-console
-    console.warn(
-      `missing both refNode and targetResource for refType ${refType} on resource ${resource.filePath}`
-    );
+    console.warn(`missing both refNode and targetResource for refType ${refType} on resource ${resource.filePath}`);
     return;
   }
 
@@ -25,16 +23,15 @@ export function createResourceRef(
     resource.refs = [];
   }
 
-  const refName =
-    (refNode ? refNode.nodeValue() : targetResourceId) || "<missing>";
+  const refName = (refNode ? refNode.nodeValue() : targetResourceId) || '<missing>';
 
   // make sure we don't duplicate
   if (
     !resource.refs.some(
-      (ref) =>
+      ref =>
         ref.type === refType &&
         ref.name === refName &&
-        ref.target?.type === "resource" &&
+        ref.target?.type === 'resource' &&
         ref.target.resourceId === targetResourceId &&
         areRefPosEqual(ref.position, refNode?.getNodePosition())
     )
@@ -44,11 +41,9 @@ export function createResourceRef(
       name: refName,
       position: refNode?.getNodePosition(),
       target: {
-        type: "resource",
+        type: 'resource',
         resourceId: targetResourceId,
-        resourceKind: targetResourceKind?.startsWith("$")
-          ? undefined
-          : targetResourceKind,
+        resourceKind: targetResourceKind?.startsWith('$') ? undefined : targetResourceKind,
         isOptional,
       },
     });

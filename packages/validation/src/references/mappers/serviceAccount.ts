@@ -1,10 +1,10 @@
-import { implicitNamespaceMatcher, SecretTarget } from "./core.js";
-import { RefMapper } from "./mappers.js";
+import {implicitNamespaceMatcher, SecretTarget} from './core.js';
+import {RefMapper} from './mappers.js';
 
 export const serviceAccountMapper: RefMapper[] = [
   {
     source: {
-      pathParts: ["secrets", "*", "name"],
+      pathParts: ['secrets', '*', 'name'],
       siblingMatchers: {
         kind(_source, target, value) {
           return value === undefined || target.kind === value;
@@ -22,14 +22,14 @@ export const serviceAccountMapper: RefMapper[] = [
       isOptional: true,
     },
     target: {
-      kind: "Secret",
+      kind: 'Secret',
     },
-    type: "name",
+    type: 'name',
   },
   {
-    type: "name",
+    type: 'name',
     source: {
-      pathParts: ["imagePullSecrets", "*", "name"],
+      pathParts: ['imagePullSecrets', '*', 'name'],
       siblingMatchers: {
         namespace: implicitNamespaceMatcher,
       },

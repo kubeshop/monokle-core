@@ -1,22 +1,17 @@
-import toLower from "lodash/toLower.js";
-import { Location, Region } from "../common/sarif.js";
-import { Resource } from "../common/types.js";
-import { FALLBACK_REGION } from "../constants.js";
+import toLower from 'lodash/toLower.js';
+import {Location, Region} from '../common/sarif.js';
+import {Resource} from '../common/types.js';
+import {FALLBACK_REGION} from '../constants.js';
 
-export function createLocations(
-  resource: Resource,
-  region: Region = FALLBACK_REGION
-): [Location, Location] {
+export function createLocations(resource: Resource, region: Region = FALLBACK_REGION): [Location, Location] {
   // SARIF expects relative paths without leading path separator '/'.
-  const filePath = resource.filePath.startsWith("/")
-    ? resource.filePath.substring(1)
-    : resource.filePath;
+  const filePath = resource.filePath.startsWith('/') ? resource.filePath.substring(1) : resource.filePath;
 
   return [
     {
       physicalLocation: {
         artifactLocation: {
-          uriBaseId: "SRCROOT",
+          uriBaseId: 'SRCROOT',
           uri: filePath,
         },
         region: {
@@ -29,14 +24,14 @@ export function createLocations(
     {
       physicalLocation: {
         artifactLocation: {
-          uriBaseId: "RESOURCE",
+          uriBaseId: 'RESOURCE',
           uri: resource.id,
         },
         region,
       },
       logicalLocations: [
         {
-          kind: "resource",
+          kind: 'resource',
           fullyQualifiedName: createFullyQualifiedName(resource),
           name: resource.name,
         },
@@ -47,8 +42,6 @@ export function createLocations(
 
 function createFullyQualifiedName(resource: Resource) {
   return resource.namespace
-    ? `${resource.name}.${resource.namespace}.${toLower(resource.kind)}@${
-        resource.filePath
-      }`
+    ? `${resource.name}.${resource.namespace}.${toLower(resource.kind)}@${resource.filePath}`
     : `${resource.name}.${toLower(resource.kind)}@${resource.filePath}`;
 }

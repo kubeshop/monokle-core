@@ -1,11 +1,11 @@
-import { expect, it } from "vitest";
-import { processRefs, ResourceParser, createDefaultMonokleValidator } from "../index.js";
+import {expect, it} from 'vitest';
+import {processRefs, ResourceParser, createDefaultMonokleValidator} from '../index.js';
 
 // Usage note: This library relies on fetch being on global scope!
-import "isomorphic-fetch";
-import { BAD_DEPLOYMENT, BAD_SERVICE, RESOURCES } from "./badResources.js";
+import 'isomorphic-fetch';
+import {BAD_DEPLOYMENT, BAD_SERVICE, RESOURCES} from './badResources.js';
 
-it("should work with monokle.validation.yaml", async () => {
+it('should work with monokle.validation.yaml', async () => {
   // Step 1: Create the validator
   const parser = new ResourceParser();
   const validator = createDefaultMonokleValidator(parser);
@@ -14,16 +14,16 @@ it("should work with monokle.validation.yaml", async () => {
   await validator.preload({
     // Responsible for validator construction
     plugins: {
-      "open-policy-agent": true,
-      "yaml-syntax": true,
+      'open-policy-agent': true,
+      'yaml-syntax': true,
       labels: false,
-      "kubernetes-schema": false,
-      "resource-links": false,
+      'kubernetes-schema': false,
+      'resource-links': false,
     },
     // Responsbility for rules
     rules: {
-      KSV005: "warn",
-      "open-policy-agent/no-latest-image": "warn",
+      KSV005: 'warn',
+      'open-policy-agent/no-latest-image': 'warn',
     },
     // Responsible for validator runtime behavior
     settings: {
@@ -34,7 +34,7 @@ it("should work with monokle.validation.yaml", async () => {
   // Step 3: Validate resources
   const resources = [BAD_DEPLOYMENT, BAD_SERVICE];
   processRefs(resources, parser);
-  const response = await validator.validate({ resources });
+  const response = await validator.validate({resources});
 
   // uncomment to debug
   // response.runs.forEach((r) =>
@@ -44,20 +44,20 @@ it("should work with monokle.validation.yaml", async () => {
   // );
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toMatchInlineSnapshot("11");
+  expect(hasErrors).toMatchInlineSnapshot('11');
 });
 
-it("should handle race conditions", async () => {
+it('should handle race conditions', async () => {
   for (let i = 0; i < 3; i++) {
     const validator = createDefaultMonokleValidator();
 
     validator.preload({
       plugins: {
-        "open-policy-agent": true,
-        "yaml-syntax": true,
+        'open-policy-agent': true,
+        'yaml-syntax': true,
         labels: true,
-        "kubernetes-schema": true,
-        "resource-links": true,
+        'kubernetes-schema': true,
+        'resource-links': true,
       },
       rules: {
         KSV005: false,
@@ -67,11 +67,11 @@ it("should handle race conditions", async () => {
 
     validator.preload({
       plugins: {
-        "open-policy-agent": false,
-        "yaml-syntax": true,
+        'open-policy-agent': false,
+        'yaml-syntax': true,
         labels: false,
-        "kubernetes-schema": false,
-        "resource-links": false,
+        'kubernetes-schema': false,
+        'resource-links': false,
       },
       rules: {
         KSV005: false,
@@ -82,16 +82,16 @@ it("should handle race conditions", async () => {
     validator.preload({
       // Responsible for validator construction
       plugins: {
-        "open-policy-agent": true,
-        "yaml-syntax": false,
+        'open-policy-agent': true,
+        'yaml-syntax': false,
         labels: false,
-        "kubernetes-schema": false,
-        "resource-links": false,
+        'kubernetes-schema': false,
+        'resource-links': false,
       },
       // Responsbility for rules
       rules: {
-        KSV005: "warn",
-        "open-policy-agent/no-latest-image": "warn",
+        KSV005: 'warn',
+        'open-policy-agent/no-latest-image': 'warn',
       },
       // Responsible for validator runtime behavior
       settings: {
@@ -99,7 +99,7 @@ it("should handle race conditions", async () => {
       },
     });
 
-    const response = await validator.validate({ resources: RESOURCES });
+    const response = await validator.validate({resources: RESOURCES});
 
     // uncomment to debug
     // response.runs.forEach((r) =>
@@ -108,10 +108,7 @@ it("should handle race conditions", async () => {
     //   })
     // );
 
-    const hasErrors = response.runs.reduce(
-      (sum, r) => sum + r.results.length,
-      0
-    );
-    expect(hasErrors).toMatchInlineSnapshot("11");
+    const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+    expect(hasErrors).toMatchInlineSnapshot('11');
   }
 });

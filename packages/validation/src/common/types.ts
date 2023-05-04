@@ -1,10 +1,10 @@
-import { JsonObject } from "type-fest";
-import { Scalar } from "yaml";
-import { RuleMap } from "../config/parse.js";
-import { PluginMetadataWithConfig, RuleMetadataWithConfig } from "../types.js";
-import { ResourceSchema } from "../validators/kubernetes-schema";
-import { ResourceParser } from "./resourceParser.js";
-import { ValidationPolicy, ValidationRun } from "./sarif.js";
+import {JsonObject} from 'type-fest';
+import {Scalar} from 'yaml';
+import {RuleMap} from '../config/parse.js';
+import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
+import {ResourceSchema} from '../validators/kubernetes-schema';
+import {ResourceParser} from './resourceParser.js';
+import {ValidationPolicy, ValidationRun} from './sarif.js';
 
 /* * * * * * * * * * * * * * * * *
  * The common resource type
@@ -44,36 +44,36 @@ export type ResourceRefsProcessingConfig = {
   parser: ResourceParser;
 };
 
-export type RefNode = { scalar: Scalar; key: string; parentKeyPath: string };
+export type RefNode = {scalar: Scalar; key: string; parentKeyPath: string};
 
 export type ResourceMapType = {
   [id: string]: Resource | undefined;
 };
 
 export enum ResourceRefType {
-  Incoming = "incoming",
-  Outgoing = "outgoing",
-  Unsatisfied = "unsatisfied-outgoing",
+  Incoming = 'incoming',
+  Outgoing = 'outgoing',
+  Unsatisfied = 'unsatisfied-outgoing',
 
-  IncomingOwner = "incoming-owner",
-  OutgoingOwner = "outgoing-owner",
-  UnsatisfiedOwner = "unsatisfied-outgoing-owner",
+  IncomingOwner = 'incoming-owner',
+  OutgoingOwner = 'outgoing-owner',
+  UnsatisfiedOwner = 'unsatisfied-outgoing-owner',
 }
 
 export type RefTargetResource = {
-  type: "resource";
+  type: 'resource';
   resourceId?: string;
   resourceKind?: string;
   isOptional?: boolean; // set true for satisfied refs that were optional
 };
 
 export type RefTargetFile = {
-  type: "file";
+  type: 'file';
   filePath: string;
 };
 
 export type RefTargetImage = {
-  type: "image";
+  type: 'image';
   tag: string;
 };
 
@@ -215,17 +215,12 @@ export interface Plugin {
    * @remark Configure should be idempotent. A validator can be invoked
    * multiple times with unchanged settings because another validator changed.
    */
-  configure(config: { rules?: RuleMap; settings?: JsonObject }): Promise<void>;
+  configure(config: {rules?: RuleMap; settings?: JsonObject}): Promise<void>;
 
   registerCustomSchema(schema: CustomSchema): Promise<void> | void;
-  unregisterCustomSchema(
-    schema: Omit<CustomSchema, "schema">
-  ): Promise<void> | void;
+  unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): Promise<void> | void;
 
-  validate(
-    resources: Resource[],
-    incremental?: Incremental
-  ): Promise<ValidationRun>;
+  validate(resources: Resource[], incremental?: Incremental): Promise<ValidationRun>;
 
   clear(): Promise<void>;
   unload(): Promise<void>;
