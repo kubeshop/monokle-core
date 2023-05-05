@@ -8,7 +8,9 @@ export default {
 } as ComponentMeta<typeof AllotmentResizableColumnsPanel>;
 
 const Template: ComponentStory<typeof AllotmentResizableColumnsPanel> = args => (
-  <AllotmentResizableColumnsPanel {...args} />
+  <div style={{width: '1500px', height: '800px'}}>
+    <AllotmentResizableColumnsPanel {...args} />{' '}
+  </div>
 );
 
 export const AllColumns = Template.bind({});

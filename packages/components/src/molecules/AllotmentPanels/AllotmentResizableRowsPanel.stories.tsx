@@ -7,7 +7,11 @@ export default {
   component: AllotmentResizableRowsPanel,
 } as ComponentMeta<typeof AllotmentResizableRowsPanel>;
 
-const Template: ComponentStory<typeof AllotmentResizableRowsPanel> = args => <AllotmentResizableRowsPanel {...args} />;
+const Template: ComponentStory<typeof AllotmentResizableRowsPanel> = args => (
+  <div style={{height: 600, width: 1000}}>
+    <AllotmentResizableRowsPanel {...args} />
+  </div>
+);
 
 export const AllPanels = Template.bind({});
 AllPanels.args = AllRowsArgs;
