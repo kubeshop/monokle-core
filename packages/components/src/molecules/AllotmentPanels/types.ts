@@ -9,3 +9,15 @@ export type AllotmentResizableColumnsPanelType = {
   onCloseLeftPane?: () => void;
   onDragEnd?: (sizes: number[]) => void;
 };
+
+export type AllotmentResizableRowsPanelType = {
+  top: React.ReactNode;
+  bottom?: React.ReactNode;
+  defaultSizes?: number[];
+  splitterStyle?: React.CSSProperties;
+  topElementStyle?: React.CSSProperties;
+  bottomElementStyle?: React.CSSProperties;
+  bottomPaneMinSize?: number;
+  bottomPaneMaxSize?: number;
+  onDragEnd?: (sizes: number[]) => void;
+};
