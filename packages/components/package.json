@@ -50,6 +50,7 @@
     "@types/styled-components": "5.1.25",
     "@vitejs/plugin-react": "2.1.0",
     "acorn-jsx": "5.3.2",
+    "allotment": "^1.19.0",
     "antd": "4.24.7",
     "babel-loader": "8.2.4",
     "elkjs": "0.8.2",
@@ -72,6 +73,7 @@
   },
   "peerDependencies": {
     "@monokle/validation": "^0.x",
+    "allotment": "^1.19.0",
     "antd": "^4.0.0",
     "elkjs": "^0.8.2",
     "framer-motion": "^6.0 || ^7.0",
