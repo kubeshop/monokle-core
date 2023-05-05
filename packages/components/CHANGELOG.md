@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.3.5
+
+### Patch Changes
+
+- 60a3cf6: Add allotment library for resizable panels ( testing phase )
+
 ## 1.3.4
 
 ### Patch Changes
