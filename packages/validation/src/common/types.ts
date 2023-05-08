@@ -4,7 +4,7 @@ import {RuleMap} from '../config/parse.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import {ResourceSchema} from '../validators/kubernetes-schema';
 import {ResourceParser} from './resourceParser.js';
-import {ValidationPolicy, ValidationRun} from './sarif.js';
+import {ToolComponent, ToolPlugin, ValidationPolicy, ValidationResult, ValidationRun} from './sarif.js';
 
 /* * * * * * * * * * * * * * * * *
  * The common resource type
@@ -186,6 +186,11 @@ export interface Plugin {
   get metadata(): PluginMetadataWithConfig;
 
   /**
+   * The SARIF tool component.
+   */
+  get toolComponent(): ToolPlugin;
+
+  /**
    * The rules of this plugin.
    */
   get rules(): RuleMetadataWithConfig[];
@@ -220,7 +225,7 @@ export interface Plugin {
   registerCustomSchema(schema: CustomSchema): Promise<void> | void;
   unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): Promise<void> | void;
 
-  validate(resources: Resource[], incremental?: Incremental): Promise<ValidationRun>;
+  validate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]>;
 
   clear(): Promise<void>;
   unload(): Promise<void>;

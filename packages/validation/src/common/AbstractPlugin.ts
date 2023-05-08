@@ -5,7 +5,7 @@ import {NOT_CONFIGURED_ERR_MSG} from '../constants.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import invariant from '../utils/invariant.js';
 import {getResourceId} from '../utils/sarif.js';
-import {ValidationResult, RuleMetadata, RuleConfig, ValidationRun} from './sarif.js';
+import {ValidationResult, RuleMetadata, RuleConfig, ValidationRun, ToolPlugin} from './sarif.js';
 import {Incremental, Resource, Plugin, PluginMetadata, CustomSchema} from './types.js';
 
 const DEFAULT_RULE_CONFIG: RuleConfig = {
@@ -56,6 +56,12 @@ export abstract class AbstractPlugin implements Plugin {
         configuration: this.getRuleConfig(rule.id),
       };
     });
+  }
+
+  get toolComponent(): ToolPlugin {
+    const name = this.name;
+    const rules = this.rules;
+    return {name, rules};
   }
 
   get name(): string {
@@ -192,7 +198,7 @@ export abstract class AbstractPlugin implements Plugin {
     return;
   }
 
-  async validate(resources: Resource[], incremental?: Incremental): Promise<ValidationRun> {
+  async validate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
     invariant(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
 
     let results = await this.doValidate(resources, incremental);
@@ -203,15 +209,7 @@ export abstract class AbstractPlugin implements Plugin {
 
     this._previous = results;
 
-    return {
-      tool: {
-        driver: {
-          name: this.name,
-          rules: this._rules,
-        },
-      },
-      results,
-    };
+    return results;
   }
 
   protected abstract doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]>;
