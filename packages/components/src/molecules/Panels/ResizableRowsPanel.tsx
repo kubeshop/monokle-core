@@ -1,8 +1,6 @@
 import {Allotment} from 'allotment';
 import {ResizableRowsPanelType} from './types';
 
-import 'allotment/dist/style.css';
-
 const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = props => {
   const {top, bottom, onDragEnd = () => {}, defaultSizes} = props;
   const {bottomPaneMinSize = 200, bottomPaneMaxSize = 500} = props;

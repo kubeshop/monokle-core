@@ -1,8 +1,8 @@
-import "antd/dist/antd.css";
-import "react-reflex/styles.css";
+import 'antd/dist/antd.css';
+import 'allotment/dist/style.css';
 
 export const parameters = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
+  actions: {argTypesRegex: '^on[A-Z].*'},
   controls: {
     matchers: {
       color: /(background|color)$/i,

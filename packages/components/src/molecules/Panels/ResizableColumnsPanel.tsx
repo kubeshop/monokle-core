@@ -3,7 +3,6 @@ import {ResizableColumnsPanelType} from './types';
 
 import {Allotment, LayoutPriority} from 'allotment';
 
-import 'allotment/dist/style.css';
 import {LAYOUT} from '@/constants';
 import styled from 'styled-components';
 import {Colors} from '@/styles/Colors';
