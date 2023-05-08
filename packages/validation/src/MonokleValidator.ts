@@ -1,7 +1,7 @@
 import clone from 'lodash/clone.js';
 import difference from 'lodash/difference.js';
 import isEqual from 'react-fast-compare';
-import type {ValidationResponse} from './common/sarif.js';
+import type {Tool, ValidationResponse, ValidationRun} from './common/sarif.js';
 import type {CustomSchema, Incremental, Plugin, Resource} from './common/types.js';
 import {Config, PluginMap} from './config/parse.js';
 import {PluginMetadataWithConfig, PluginName, RuleMetadataWithConfig, Validator} from './types.js';
@@ -248,6 +248,10 @@ export class MonokleValidator implements Validator {
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
     const validators = this._plugins.filter(v => v.enabled);
+    const tool: Tool = {
+      driver: {name: 'monokle'},
+      extensions: validators.map(v => v.toolComponent),
+    };
 
     await nextTick();
     throwIfAborted(loadAbortSignal, externalAbortSignal);
@@ -257,17 +261,25 @@ export class MonokleValidator implements Validator {
     const allRuns = await Promise.allSettled(validators.map(v => v.validate(resources, incremental)));
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
-    const runs = allRuns.map(run => (run.status === 'fulfilled' ? run.value : undefined)).filter(isDefined);
+    const results = allRuns
+      .map(run => (run.status === 'fulfilled' ? run.value : undefined))
+      .filter(isDefined)
+      .flat();
 
-    if (this.config.settings?.debug && allRuns.length !== runs.length) {
-      const failedRuns = allRuns.filter(r => r.status === 'rejected');
-      this.debug('skipped failed validators', failedRuns);
+    const failedRuns = allRuns.filter(r => r.status === 'rejected');
+    if (this.config.settings?.debug && failedRuns.length > 0) {
+      this.debug('skipped failed tool extension', failedRuns);
     }
+
+    const run: ValidationRun = {
+      tool,
+      results,
+    };
 
     return {
       $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
       version: '2.1.0',
-      runs,
+      runs: [run],
     };
   }
 

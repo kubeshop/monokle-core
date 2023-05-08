@@ -13,11 +13,14 @@ export type ValidationResponse = {
 };
 
 export type ValidationRun = {
-  tool: {
-    driver: ValidationTool;
-  };
+  tool: Tool;
   invocations?: ValidationInvocation[];
   results: ValidationResult[];
+};
+
+export type Tool = {
+  driver: ToolComponent;
+  extensions?: ToolPlugin[];
 };
 
 /**
@@ -46,12 +49,21 @@ export type ConfigurationArtifact = {
 };
 
 /**
- * A validation tool, aka toolComponent
+ * The tool component is shared for drivers, plugins, taxonomies and policies.
  *
  * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10540971
  */
-export type ValidationTool = {
+export type ToolComponent = {
   name: string;
+  rules?: RuleMetadata[];
+};
+
+/**
+ * A tool component that adds additional rules.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10540971
+ */
+export type ToolPlugin = ToolComponent & {
   rules: RuleMetadata[];
 };
 
@@ -126,12 +138,15 @@ export type RuleLevel = 'warning' | 'error';
 
 export type ValidationInvocation = {
   ruleConfigurationOverrides: ValidationRuleConfigOverride;
+  toolExecutionNotifications: Notification[];
 };
 
 export type ValidationRuleConfigOverride = {
   description: RuleReference;
   configuration: RuleConfig;
 };
+
+export type Notification = {};
 
 /**
  * The external configuration of validation rules.

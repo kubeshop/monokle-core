@@ -1,6 +1,6 @@
 import {JsonObject} from 'type-fest';
 import {ResourceParser} from '../../common/resourceParser.js';
-import {ValidationRun} from '../../common/sarif.js';
+import {ToolPlugin, ValidationResult, ValidationRun} from '../../common/sarif.js';
 import {CustomSchema, Incremental, Plugin, PluginMetadata, Resource} from '../../common/types.js';
 import {RuleMap} from '../../config/parse.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../../types.js';
@@ -114,6 +114,17 @@ export class DevCustomValidator implements Plugin {
     };
   }
 
+  get toolComponent(): ToolPlugin {
+    if (!this._currentValidator) {
+      return {
+        name: 'developer mode',
+        rules: [],
+      };
+    }
+
+    return this._currentValidator.toolComponent;
+  }
+
   get rules(): RuleMetadataWithConfig[] {
     if (!this._currentValidator) {
       return [];
@@ -166,18 +177,9 @@ export class DevCustomValidator implements Plugin {
       settings: config.settings,
     });
   }
-
-  validate(resources: Resource[], incremental?: Incremental | undefined): Promise<ValidationRun> {
+  validate(resources: Resource[], incremental?: Incremental | undefined): Promise<ValidationResult[]> {
     if (!this._currentValidator) {
-      return Promise.resolve({
-        tool: {
-          driver: {
-            name: 'developer mode',
-            rules: [],
-          },
-        },
-        results: [],
-      });
+      return Promise.resolve([]);
     }
     return this._currentValidator?.validate(resources, incremental);
   }

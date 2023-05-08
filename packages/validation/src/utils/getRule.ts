@@ -3,10 +3,11 @@ import invariant from './invariant.js';
 import {getResourceId} from './sarif.js';
 
 export function getRuleForResult(response: ValidationResponse, result: ValidationResult): RuleMetadata {
-  const tool = result.rule.toolComponent.name;
-  const run = response.runs.find(run => run.tool.driver.name === tool);
+  const toolPluginName = result.rule.toolComponent.name;
+  const run = response.runs.find(run => run.tool.driver.name === 'monokle');
+  const plugin = run?.tool.extensions?.find(plugin => plugin.name === toolPluginName);
   const ruleIndex = result.rule.index;
-  const rule = run?.tool.driver.rules[ruleIndex];
+  const rule = plugin?.rules[ruleIndex];
   invariant(rule, 'rule not found');
   return rule as RuleMetadata;
 }
