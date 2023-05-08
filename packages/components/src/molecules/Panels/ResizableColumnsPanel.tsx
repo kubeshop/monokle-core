@@ -1,77 +1,46 @@
-import {useCallback} from 'react';
-import {ReflexContainer, ReflexElement, ReflexSplitter, HandlerProps} from 'react-reflex';
-import styled from 'styled-components';
+import {PaneCloseIcon} from '@/atoms';
+import {ResizableColumnsPanelType} from './types';
 
+import {Allotment, LayoutPriority} from 'allotment';
+
+import {LAYOUT} from '@/constants';
+import styled from 'styled-components';
 import {Colors} from '@/styles/Colors';
 
-import {OnStopResize, ResizableColumnsPanelType} from './types';
-import {PaneCloseIcon} from '@/atoms';
-import {LAYOUT} from '@/constants';
-
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
-  const {center, layout, left, right, height = '100%', width = '100%', minPaneWidth = 350} = props;
-  const {leftClosable = false, onCloseLeftPane = () => {}, onStopResize = () => {}, paneCloseIconStyle = {}} = props;
-
-  const onStopResizeLeft = useCallback(makeOnStopResize('left', onStopResize), [onStopResize]);
-  const onStopResizeCenter = useCallback(makeOnStopResize('center', onStopResize), [onStopResize]);
-  const onStopResizeRight = useCallback(makeOnStopResize('right', onStopResize), [onStopResize]);
+  const {center, left, right, minPaneWidth = 350, leftClosable = false, paneCloseIconStyle = {}, defaultSizes} = props;
+  const {onDragEnd = () => {}, onCloseLeftPane = () => {}} = props;
 
   return (
-    <ReflexContainer orientation="vertical" windowResizeAware style={{height, width}}>
-      <StyledLeftReflexElement
-        style={{
-          display: !left ? 'none' : undefined,
-        }}
-        resizeWidth={Boolean(left)}
-        $leftClosable={leftClosable}
-        minSize={minPaneWidth}
-        onStopResize={onStopResizeLeft}
-        flex={layout?.left}
-      >
-        <StyledLeftPane $leftClosable={leftClosable}>
-          {left}
-          {leftClosable && (
-            <PaneCloseIcon
-              onClick={onCloseLeftPane}
-              containerStyle={{
-                position: 'absolute',
-                top: 18,
-                right: -8,
-                zIndex: LAYOUT.zIndex.low,
-                ...paneCloseIconStyle,
-              }}
-            />
-          )}
-        </StyledLeftPane>
-      </StyledLeftReflexElement>
-      <ReflexSplitter
-        propagate={Boolean(left)}
-        style={{display: !left ? 'none' : undefined, backgroundColor: Colors.grey10}}
-      />
+    <Container $leftClosable={leftClosable}>
+      <Allotment onDragEnd={onDragEnd} defaultSizes={defaultSizes} proportionalLayout={false}>
+        <Allotment.Pane visible={Boolean(left)} minSize={minPaneWidth} preferredSize={defaultSizes?.[0]}>
+          <LeftPane $leftClosable={leftClosable}>
+            {left}
+            {leftClosable && (
+              <PaneCloseIcon
+                onClick={onCloseLeftPane}
+                containerStyle={{
+                  position: 'absolute',
+                  top: 18,
+                  right: -8,
+                  zIndex: LAYOUT.zIndex.high,
+                  ...paneCloseIconStyle,
+                }}
+              />
+            )}
+          </LeftPane>
+        </Allotment.Pane>
 
-      <ReflexElement
-        style={{
-          display: !center ? 'none' : undefined,
-        }}
-        resizeWidth={Boolean(center)}
-        flex={layout?.center}
-        minSize={!center ? 0.001 : minPaneWidth}
-        maxSize={!center ? 0.001 : minPaneWidth + 200}
-        onStopResize={onStopResizeCenter}
-      >
-        <StyledPane>{center}</StyledPane>
-      </ReflexElement>
+        <Allotment.Pane minSize={minPaneWidth} visible={Boolean(center)} priority={LayoutPriority.Low}>
+          <Pane>{center}</Pane>
+        </Allotment.Pane>
 
-      <ReflexSplitter propagate={Boolean(left)} style={{visibility: !center ? 'collapse' : undefined}} />
-
-      <DynamicReflexElement
-        $flexGrow={!left || !center ? 1 : undefined}
-        minSize={minPaneWidth}
-        onStopResize={onStopResizeRight}
-      >
-        <StyledPane>{right}</StyledPane>
-      </DynamicReflexElement>
-    </ReflexContainer>
+        <Allotment.Pane minSize={minPaneWidth} priority={LayoutPriority.High}>
+          <Pane>{right}</Pane>
+        </Allotment.Pane>
+      </Allotment>
+    </Container>
   );
 };
 
@@ -79,7 +48,22 @@ export default ResizableColumnsPanel;
 
 // Styled Components
 
-const StyledPane = styled.div`
+const Container = styled.div<{$leftClosable: boolean}>`
+  height: 100%;
+  width: 100%;
+
+  ${({$leftClosable}) => {
+    if ($leftClosable) {
+      return `
+        .split-view-view-visible:first-child {
+          overflow: visible;
+        }
+      `;
+    }
+  }}
+`;
+
+const Pane = styled.div`
   position: relative;
   height: 100%;
   width: 100%;
@@ -87,7 +71,7 @@ const StyledPane = styled.div`
   overflow-x: hidden;
 `;
 
-const StyledLeftPane = styled(StyledPane)<{$leftClosable: boolean}>`
+const LeftPane = styled(Pane)<{$leftClosable: boolean}>`
   background-color: ${Colors.grey10};
 
   ${({$leftClosable}) => {
@@ -96,31 +80,3 @@ const StyledLeftPane = styled(StyledPane)<{$leftClosable: boolean}>`
     }
   }}
 `;
-
-const DynamicReflexElement = styled(ReflexElement)<{$flexGrow?: number}>`
-  ${({$flexGrow}) => {
-    return `
-      flex-grow: ${$flexGrow} !important;
-    `;
-  }};
-`;
-
-const StyledLeftReflexElement = styled(ReflexElement)<{$leftClosable: boolean}>`
-  ${({$leftClosable}) => {
-    if ($leftClosable) {
-      return `overflow: visible !important;`;
-    }
-  }}
-`;
-
-// Utils
-
-const makeOnStopResize = (position: 'left' | 'center' | 'right', onStopResize: OnStopResize) => {
-  return (args: HandlerProps) => {
-    const flex = args.component.props.flex;
-
-    if (flex) {
-      onStopResize(position, flex);
-    }
-  };
-};
