@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.4.0
+
+### Minor Changes
+
+- 954d247: Replace react-reflex with allotment
+
 ## 1.3.5
 
 ### Patch Changes
