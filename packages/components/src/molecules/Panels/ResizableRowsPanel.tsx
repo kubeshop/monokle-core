@@ -1,42 +1,20 @@
-import {useCallback} from 'react';
-import {HandlerProps, ReflexContainer, ReflexElement, ReflexSplitter} from 'react-reflex';
+import {Allotment} from 'allotment';
 import {ResizableRowsPanelType} from './types';
 
+import 'allotment/dist/style.css';
+
 const ResizableRowsPanel: React.FC<ResizableRowsPanelType> = props => {
-  const {layout, height = '100%', width = '100%', top, bottom, onStopResize} = props;
-  const {bottomElementStyle = {}, splitterStyle = {}, topElementStyle = {}} = props;
+  const {top, bottom, onDragEnd = () => {}, defaultSizes} = props;
   const {bottomPaneMinSize = 200, bottomPaneMaxSize = 500} = props;
 
-  const makeOnStopResize = useCallback((position: 'top' | 'bottom') => {
-    return (args: HandlerProps) => {
-      const flex = args.component.props.flex;
-
-      if (flex && onStopResize) {
-        onStopResize(position, flex);
-      }
-    };
-  }, []);
-
   return (
-    <ReflexContainer windowResizeAware style={{height, width}}>
-      <ReflexElement flex={layout?.top} onStopResize={makeOnStopResize('top')} style={topElementStyle}>
-        {top}
-      </ReflexElement>
+    <Allotment onDragEnd={onDragEnd} defaultSizes={defaultSizes} vertical>
+      <Allotment.Pane>{top}</Allotment.Pane>
 
-      {bottom && <ReflexSplitter style={splitterStyle} />}
-
-      {bottom && (
-        <ReflexElement
-          minSize={bottomPaneMinSize}
-          maxSize={bottomPaneMaxSize}
-          onStopResize={makeOnStopResize('bottom')}
-          style={bottomElementStyle}
-          flex={layout?.bottom}
-        >
-          {bottom}
-        </ReflexElement>
-      )}
-    </ReflexContainer>
+      <Allotment.Pane visible={Boolean(bottom)} minSize={bottomPaneMinSize} maxSize={bottomPaneMaxSize}>
+        {bottom}
+      </Allotment.Pane>
+    </Allotment>
   );
 };
 

@@ -1,13 +1,17 @@
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { AllColumnsArgs, ClosableLeftColumnArgs, WithoutLeftColumnArgs } from "./args";
-import ResizableColumnsPanel from "./ResizableColumnsPanel";
+import {ComponentMeta, ComponentStory} from '@storybook/react';
+import ResizableColumnsPanel from './ResizableColumnsPanel';
+import {AllColumnsArgs, ClosableLeftColumnArgs, WithoutLeftColumnArgs} from './args';
 
 export default {
-  title: "Molecules/ResizableColumnsPanel",
+  title: 'Molecules/ResizableColumnsPanel',
   component: ResizableColumnsPanel,
 } as ComponentMeta<typeof ResizableColumnsPanel>;
 
-const Template: ComponentStory<typeof ResizableColumnsPanel> = (args) => <ResizableColumnsPanel {...args} />;
+const Template: ComponentStory<typeof ResizableColumnsPanel> = args => (
+  <div style={{width: '1500px', height: '800px'}}>
+    <ResizableColumnsPanel {...args} />{' '}
+  </div>
+);
 
 export const AllColumns = Template.bind({});
 AllColumns.args = AllColumnsArgs;
