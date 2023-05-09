@@ -17,10 +17,8 @@ export type ResizableRowsPanelType = {
   top: React.ReactNode;
   bottom?: React.ReactNode;
   defaultSizes?: number[];
-  splitterStyle?: React.CSSProperties;
-  topElementStyle?: React.CSSProperties;
-  bottomElementStyle?: React.CSSProperties;
   bottomPaneMinSize?: number;
   bottomPaneMaxSize?: number;
+  isBottomVisible?: boolean;
   onDragEnd?: (sizes: number[]) => void;
 };
