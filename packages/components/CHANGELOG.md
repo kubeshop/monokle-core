@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.4.1
+
+### Patch Changes
+
+- 54898be: Do nothing on reset + isLeftActive prop
+
 ## 1.4.0
 
 ### Minor Changes
