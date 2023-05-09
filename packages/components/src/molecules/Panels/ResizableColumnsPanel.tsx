@@ -9,11 +9,11 @@ import {Colors} from '@/styles/Colors';
 
 const ResizableColumnsPanel: React.FC<ResizableColumnsPanelType> = props => {
   const {center, left, right, minPaneWidth = 350, leftClosable = false, paneCloseIconStyle = {}, defaultSizes} = props;
-  const {onDragEnd = () => {}, onCloseLeftPane = () => {}} = props;
+  const {onDragEnd = () => {}, onCloseLeftPane = () => {}, isLeftActive = true} = props;
 
   return (
-    <Container $leftClosable={leftClosable}>
-      <Allotment onDragEnd={onDragEnd} defaultSizes={defaultSizes} proportionalLayout={false}>
+    <Container $leftClosable={leftClosable} $leftActive={isLeftActive}>
+      <Allotment onDragEnd={onDragEnd} onReset={() => {}} defaultSizes={defaultSizes} proportionalLayout={false}>
         <Allotment.Pane visible={Boolean(left)} minSize={minPaneWidth} preferredSize={defaultSizes?.[0]}>
           <LeftPane $leftClosable={leftClosable}>
             {left}
@@ -48,7 +48,7 @@ export default ResizableColumnsPanel;
 
 // Styled Components
 
-const Container = styled.div<{$leftClosable: boolean}>`
+const Container = styled.div<{$leftClosable: boolean; $leftActive: boolean}>`
   height: 100%;
   width: 100%;
 
@@ -57,6 +57,16 @@ const Container = styled.div<{$leftClosable: boolean}>`
       return `
         .split-view-view-visible:first-child {
           overflow: visible;
+        }
+      `;
+    }
+  }}
+
+  ${({$leftActive}) => {
+    if (!$leftActive) {
+      return `
+        .split-view-view-visible:nth-child(2)::before {
+          display: none;
         }
       `;
     }

@@ -4,6 +4,7 @@ export type ResizableColumnsPanelType = {
   right: React.ReactNode;
   center?: React.ReactNode;
   defaultSizes?: number[];
+  isLeftActive?: boolean;
   left?: React.ReactNode;
   leftClosable?: boolean;
   minPaneWidth?: number;
