@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.4.2
+
+### Patch Changes
+
+- 6ebcf23: Add bottom resizable row visibility
+
 ## 1.4.1
 
 ### Patch Changes
