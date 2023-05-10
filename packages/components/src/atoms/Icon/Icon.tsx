@@ -71,6 +71,7 @@ type IconProps = {
 
 const icons: Record<IconNames, React.ComponentType<any>> = {
   'all-projects': AllProjects,
+  checked: Checked,
   'cluster-dashboard': ClusterDashboard,
   collapse: Collapse,
   compare: Compare,
@@ -108,7 +109,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   'validation-yaml-syntax': ValidationYamlSyntax,
   warning: Warning,
   'yaml-syntax': YAMLSyntax,
-  checked: Checked,
+
   'globe-search': GlobeSearch,
   'compact-nodes': CompactNodes,
   service: Service,
