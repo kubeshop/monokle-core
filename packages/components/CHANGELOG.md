@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.4.3
+
+### Patch Changes
+
+- 37fb392: Fix invalid DOM property warnings
+
 ## 1.4.2
 
 ### Patch Changes
