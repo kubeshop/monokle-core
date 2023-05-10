@@ -22,6 +22,8 @@ export const BAD_DEPLOYMENT: Resource = {
     '      containers:\n' +
     '        - name: panda-blog\n' +
     '          image: panda-blog:latest\n' +
+    '          securityContext:\n' +
+    '            allowPrivilegeEscalation: true\n' +
     '          ports:\n' +
     '            - name: 20\n' +
     '              containerPort: 8080\n' +
@@ -66,6 +68,9 @@ export const BAD_DEPLOYMENT: Resource = {
                   containerPort: 8080,
                 },
               ],
+              securityContext: {
+                allowPrivilegeEscalation: true,
+              },
               env: [
                 {
                   name: 'SOME_VALUE',

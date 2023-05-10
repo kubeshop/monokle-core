@@ -60,7 +60,7 @@ export abstract class AbstractPlugin implements Plugin {
 
   get toolComponent(): ToolPlugin {
     const name = this.name;
-    const rules = this.rules;
+    const rules = this._rules;
     return {name, rules};
   }
 
@@ -124,15 +124,19 @@ export abstract class AbstractPlugin implements Plugin {
     }
 
     const ruleConfig = this.getRuleConfig(ruleId);
+    const rule = this.rules[index];
+    const taxa = rule.relationships?.map(r => r.target);
 
     return {
       ruleId,
       rule: {
+        id: ruleId,
         index: index ?? 0,
         toolComponent: {
           name: this.name,
         },
       },
+      taxa,
       level: ruleConfig.level,
       ...args,
     };

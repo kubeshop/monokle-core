@@ -1,3 +1,5 @@
+import {CIS_RELATIONS} from '../../taxonomies/cis.js';
+import {NSA_RELATIONS} from '../../taxonomies/nsa.js';
 import {PolicyMetadata} from './types.js';
 
 export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
@@ -30,6 +32,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         entrypoint: 'appshield/kubernetes/KSV001/deny',
         path: '$container.securityContext.allowPrivilegeEscalation',
       },
+      relationships: [NSA_RELATIONS['kubernetes-pod-security'], CIS_RELATIONS['general']],
     },
     {
       id: 'KSV002',
@@ -52,6 +55,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         entrypoint: 'appshield/kubernetes/KSV002/deny',
         path: '$container.AppArmor',
       },
+      relationships: [NSA_RELATIONS['kubernetes-pod-security']],
     },
     {
       id: 'KSV003',
@@ -137,6 +141,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         entrypoint: 'appshield/kubernetes/KSV008/deny',
         path: 'spec.template.spec.hostIPC',
       },
+      relationships: [NSA_RELATIONS['kubernetes-pod-security'], CIS_RELATIONS['general']],
     },
     {
       id: 'KSV009',
@@ -201,6 +206,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         entrypoint: 'appshield/kubernetes/KSV011/deny',
         path: '$container.resources.limits.cpu',
       },
+      relationships: [NSA_RELATIONS['kubernetes-pod-security']],
     },
     {
       id: 'KSV012',
@@ -449,6 +455,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       help: {
         text: 'Do not set spec.containers[*].securityContext.procMount and spec.initContainers[*].securityContext.procMount.',
       },
+      defaultConfiguration: {},
       properties: {
         'security-severity': 5,
         entrypoint: 'appshield/kubernetes/KSV027/deny',
@@ -457,7 +464,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
     },
     {
       id: 'KSV028',
-      name: 'no-non-emphemeral-volumes',
+      name: 'no-non-ephemeral-volumes',
       shortDescription: {
         text: 'Disallow use of non-ephemeral volume types',
       },

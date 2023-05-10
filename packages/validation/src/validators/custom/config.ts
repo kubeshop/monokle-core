@@ -1,4 +1,5 @@
 import type {Document, ParsedNode} from 'yaml';
+import {RuleLevel, reportingDescriptorRelationship} from '../../node';
 
 export type PluginInit = {
   /**
@@ -104,6 +105,17 @@ export type RuleInit = {
    * The runtime of your rule.
    */
   validate(ctx: RuleContext, api: RuleApi): Promise<void> | void;
+
+  /**
+   * Advanced rule settings.
+   */
+  advanced?: RuleAdvancedInit;
+};
+
+export type RuleAdvancedInit = {
+  level?: RuleLevel;
+  severity?: number;
+  relationships?: reportingDescriptorRelationship[];
 };
 
 /**

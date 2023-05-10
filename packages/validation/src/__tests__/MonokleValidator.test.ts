@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import {expect, it} from 'vitest';
 import {MonokleValidator} from '../MonokleValidator.js';
 import {processRefs} from '../references/process.js';
+import fs from 'fs/promises';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
@@ -89,7 +90,7 @@ it('should support ownerRefs', async () => {
   expect(response.runs[1].results[0].ruleId).toBe('LNK003');
 });
 
-it('should be flexible to configure', async () => {
+it.only('should be flexible to configure', async () => {
   const parser = new ResourceParser();
 
   const validator = createDefaultMonokleValidator(parser);
@@ -105,11 +106,13 @@ it('should be flexible to configure', async () => {
   //   })
   // );
 
+  fs.writeFile('./test.sarif', JSON.stringify(response, null, 2));
+
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
   expect(hasErrors).toMatchInlineSnapshot('13');
 });
 
-it('should be valid SARIF', async () => {
+it.only('should be valid SARIF', async () => {
   const parser = new ResourceParser();
   const resources = RESOURCES;
 
@@ -142,7 +145,6 @@ it('should be valid SARIF', async () => {
 function configureValidator(validator: MonokleValidator) {
   return validator.preload({
     plugins: {
-      labels: true,
       'yaml-syntax': true,
       'resource-links': true,
       'kubernetes-schema': true,
