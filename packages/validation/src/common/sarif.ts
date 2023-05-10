@@ -16,6 +16,27 @@ export type ValidationRun = {
   tool: Tool;
   invocations?: ValidationInvocation[];
   results: ValidationResult[];
+  taxonomies?: Taxonomy[];
+};
+
+/**
+ * A taxonomy, this is a toolComponent.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10540974
+ */
+export type Taxonomy = {
+  name: string;
+  version: string;
+  organization?: string;
+  shortDescription: {text: string};
+  taxa: Taxon[];
+};
+
+export type Taxon = {
+  id: string;
+  name: string;
+  shortDescription: {text: string};
+  relationships?: reportingDescriptorRelationship[];
 };
 
 export type Tool = {
@@ -93,6 +114,21 @@ export type RuleMetadata<TProperties extends JsonObject = {}> = {
    * Optional, custom properties
    */
   properties?: GitHubProperties & TProperties;
+
+  relationships?: reportingDescriptorRelationship[];
+};
+
+export type RelationshipKind = 'superset' | 'relevant';
+
+export type reportingDescriptorRelationship = {
+  target: reportingDescriptorReference;
+  kinds?: RelationshipKind[];
+};
+
+export type reportingDescriptorReference = {
+  id: string;
+  index: number;
+  toolComponent: ToolComponentReference;
 };
 
 /**
@@ -220,10 +256,8 @@ export type GitHubProperties = {
 
 export type ValidationResult = {
   ruleId: string;
-  rule: {
-    index: number;
-    toolComponent: ToolComponentReference;
-  };
+  rule: reportingDescriptorReference;
+  taxa?: reportingDescriptorReference[];
   level?: RuleLevel;
   message: {
     text: string;

@@ -10,6 +10,8 @@ import {extractSchema, findDefaultVersion} from './utils/customResourceDefinitio
 import {PluginLoadError} from './utils/error.js';
 import invariant from './utils/invariant.js';
 import {isDefined} from './utils/isDefined.js';
+import {NSA_TAXONOMY} from './taxonomies/nsa.js';
+import {CIS_TAXONOMY} from './taxonomies/cis.js';
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
 
@@ -274,6 +276,7 @@ export class MonokleValidator implements Validator {
     const run: ValidationRun = {
       tool,
       results,
+      taxonomies: [NSA_TAXONOMY, CIS_TAXONOMY],
     };
 
     return {
