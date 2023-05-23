@@ -174,15 +174,12 @@ export type RuleLevel = 'warning' | 'error';
 
 export type ValidationInvocation = {
   ruleConfigurationOverrides: ValidationRuleConfigOverride;
-  toolExecutionNotifications: Notification[];
 };
 
 export type ValidationRuleConfigOverride = {
   description: RuleReference;
   configuration: RuleConfig;
 };
-
-export type Notification = {};
 
 /**
  * The external configuration of validation rules.
