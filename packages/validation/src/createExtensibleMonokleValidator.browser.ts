@@ -9,6 +9,8 @@ import {RemoteWasmLoader} from './wasmLoader/RemoteWasmLoader.browser.js';
 import {OpenPolicyAgentValidator} from './validators/open-policy-agent/validator.js';
 import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
+import kbpPlugin from './validators/practices/plugin.js';
+import pssPlugin from './validators/pod-security-standards/plugin.js';
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
@@ -19,6 +21,10 @@ export function createExtensibleMonokleValidator(
 ) {
   return new MonokleValidator(async (pluginName: string) => {
     switch (pluginName) {
+      case 'pod-security-standards':
+        return new SimpleCustomValidator(pssPlugin, parser);
+      case 'practices':
+        return new SimpleCustomValidator(kbpPlugin, parser);
       case 'open-policy-agent':
         const wasmLoader = new RemoteWasmLoader();
         return new OpenPolicyAgentValidator(parser, wasmLoader);

@@ -30,7 +30,7 @@ plugins:
 | KSV002 | open-policy-agent/app-armor                 | Require a default AppArmor profile                      |
 | KSV003 | open-policy-agent/drop-capabilities         | Require default capabilities to be dropped              |
 | KSV005 | open-policy-agent/no-sys-admin              | Disallow the SYS_ADMIN capability                       |
-| KSV006 | open-policy-agent/no-mounted-docker-sock    | Disallow mounteing the hostPath volume with docker.sock |
+| KSV006 | open-policy-agent/no-mounted-docker-sock    | Disallow mounting the hostPath volume with docker.sock |
 | KSV008 | open-policy-agent/no-host-ipc               | Disallow access to host IPC namespace                   |
 | KSV009 | open-policy-agent/no-host-network           | Disallow access to host network                         |
 | KSV010 | open-policy-agent/no-host-pid               | Disallow access to host PID                             |
