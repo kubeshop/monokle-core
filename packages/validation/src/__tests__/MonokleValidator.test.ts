@@ -2,7 +2,6 @@ import Ajv from 'ajv';
 import {expect, it} from 'vitest';
 import {MonokleValidator} from '../MonokleValidator.js';
 import {processRefs} from '../references/process.js';
-import fs from 'fs/promises';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
@@ -86,11 +85,12 @@ it('should support ownerRefs', async () => {
   expect(resources[1].refs?.filter(ref => ref.type === ResourceRefType.IncomingOwner).length).toBe(1);
   expect(resources[1].refs?.filter(ref => ref.type === ResourceRefType.UnsatisfiedOwner).length).toBe(1);
 
-  expect(response.runs[1].results.length).toBe(1);
-  expect(response.runs[1].results[0].ruleId).toBe('LNK003');
+  const lnkResults = response.runs[0].results.filter(r => r.rule.toolComponent.name === 'resource-links');
+  expect(lnkResults.length).toBe(1);
+  expect(lnkResults.at(0)?.ruleId).toBe('LNK003');
 });
 
-it.only('should be flexible to configure', async () => {
+it('should be flexible to configure', async () => {
   const parser = new ResourceParser();
 
   const validator = createDefaultMonokleValidator(parser);
@@ -106,13 +106,11 @@ it.only('should be flexible to configure', async () => {
   //   })
   // );
 
-  fs.writeFile('./test.sarif', JSON.stringify(response, null, 2));
-
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
   expect(hasErrors).toMatchInlineSnapshot('13');
 });
 
-it.only('should be valid SARIF', async () => {
+it('should be valid SARIF', async () => {
   const parser = new ResourceParser();
   const resources = RESOURCES;
 
