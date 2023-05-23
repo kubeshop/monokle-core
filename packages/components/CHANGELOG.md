@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.4.4
+
+### Patch Changes
+
+- 5b89934: Add the possibility to set a default namespace for the graph
+
 ## 1.4.3
 
 ### Patch Changes
