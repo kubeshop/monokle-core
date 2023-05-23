@@ -102,7 +102,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
       id: 'KSV006',
       name: 'no-mounted-docker-sock',
       shortDescription: {
-        text: 'Disallow mounteing the hostPath volume with docker.sock',
+        text: 'Disallow mounting the hostPath volume with docker.sock',
       },
       fullDescription: {
         text: 'Mounting docker.sock from the host can give the container full root access to the host.',

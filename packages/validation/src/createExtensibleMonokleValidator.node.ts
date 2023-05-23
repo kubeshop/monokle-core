@@ -21,6 +21,15 @@ export function createExtensibleMonokleValidator(
 ) {
   return new MonokleValidator(async (pluginName: string) => {
     switch (pluginName) {
+      case 'pod-security-standards':
+        const pssPlugin = await getPlugin('./validators/pod-security-standards/plugin.js');
+        return new SimpleCustomValidator(pssPlugin, parser);
+      case 'practices':
+        const kbpPlugin = await getPlugin('./validators/practices/plugin.js');
+        return new SimpleCustomValidator(kbpPlugin, parser);
+      case 'labels':
+        const lblPlugin = await getPlugin('./validators/labels/plugin.js');
+        return new SimpleCustomValidator(lblPlugin, parser);
       case 'open-policy-agent':
         const wasmLoader = new RemoteWasmLoader();
         return new OpenPolicyAgentValidator(parser, wasmLoader);
@@ -28,16 +37,6 @@ export function createExtensibleMonokleValidator(
         return new ResourceLinksValidator();
       case 'yaml-syntax':
         return new YamlValidator(parser);
-      case 'labels':
-        try {
-          const filePath = './validators/labels/plugin.js';
-          const pluginCode = fs.readFileSync(filePath, {encoding: 'utf-8'});
-          const code = await bundlePluginCode(pluginCode);
-          const labelPlugin = requireFromString(code, filePath);
-          return new SimpleCustomValidator(labelPlugin, parser);
-        } catch (err) {
-          throw new Error(`plugin_not_found: $err`);
-        }
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
       default:
@@ -49,4 +48,16 @@ export function createExtensibleMonokleValidator(
         }
     }
   });
+}
+
+async function getPlugin(path: string) {
+  try {
+    const code = fs.readFileSync(path, {encoding: 'utf-8'});
+    const bundle = await bundlePluginCode(code);
+    const plugin = requireFromString(bundle, path);
+    return plugin;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'reason unknown';
+    throw new Error(`plugin_not_found: ${msg}`);
+  }
 }

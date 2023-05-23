@@ -7,6 +7,8 @@ import {OpenPolicyAgentValidator} from './validators/open-policy-agent/validator
 import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
 import {MonokleValidator} from './MonokleValidator.js';
+import kbpPlugin from './validators/practices/plugin.js';
+import pssPlugin from './validators/pod-security-standards/plugin.js';
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
@@ -21,6 +23,10 @@ export function createDefaultPluginLoader(
 ) {
   return async (pluginName: string) => {
     switch (pluginName) {
+      case 'pod-security-standards':
+        return new SimpleCustomValidator(pssPlugin, parser);
+      case 'practices':
+        return new SimpleCustomValidator(kbpPlugin, parser);
       case 'open-policy-agent':
         const wasmLoader = new RemoteWasmLoader();
         return new OpenPolicyAgentValidator(parser, wasmLoader);
