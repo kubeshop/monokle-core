@@ -8,7 +8,7 @@ export const procMount = defineRule({
   fullDescription: `The default /proc masks are set up to reduce attack surface, and should be required.`,
   help: 'Use the default /proc masks.',
   advanced: {
-    relationships: [PSP_RELATIONS['baseline']],
+    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

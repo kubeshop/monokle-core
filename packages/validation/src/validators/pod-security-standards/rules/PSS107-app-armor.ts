@@ -8,7 +8,7 @@ export const appArmor = defineRule({
   fullDescription: `On supported hosts, the runtime/default AppArmor profile is applied by default. The baseline policy should prevent overriding or disabling the default AppArmor profile, or restrict overrides to an allowed set of profiles.`,
   help: 'Do not customize AppArmor.',
   advanced: {
-    relationships: [PSP_RELATIONS['baseline']],
+    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodTemplate(resources, (resource, pod, prefix) => {

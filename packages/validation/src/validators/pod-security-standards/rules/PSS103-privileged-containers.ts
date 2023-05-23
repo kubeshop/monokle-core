@@ -8,7 +8,7 @@ export const privilegedContainers = defineRule({
   fullDescription: 'Privileged Pods disable most security mechanisms and must be disallowed.',
   help: "Do not set 'securityContext.privileged'.",
   advanced: {
-    relationships: [PSP_RELATIONS['baseline']],
+    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

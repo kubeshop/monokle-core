@@ -17,7 +17,7 @@ export const sysctls = defineRule({
   fullDescription: `Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset. A sysctl is considered safe if it is namespaced in the container or the Pod, and it is isolated from other Pods or processes on the same Node. Allowed values are ${ALLOWED_STRING}.`,
   help: 'Set `securityContext.sysctls` to one of the allowed values.',
   advanced: {
-    relationships: [PSP_RELATIONS['baseline']],
+    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
