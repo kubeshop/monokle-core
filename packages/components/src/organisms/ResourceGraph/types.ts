@@ -1,5 +1,5 @@
-import { Resource, ResourceMapType, RuleLevel, ValidationResult } from "@monokle/validation";
-import { KnownResourceKinds } from "@monokle/validation/lib/utils/knownResourceKinds";
+import {Resource, ResourceMapType, RuleLevel, ValidationResult} from '@monokle/validation';
+import {KnownResourceKinds} from '@monokle/validation/lib/utils/knownResourceKinds';
 
 export type ResourceGraphProps = {
   resources: Resource[];
@@ -8,6 +8,7 @@ export type ResourceGraphProps = {
   onSelectResource?: (resource: Resource) => void;
   onSelectImage?: (imageId: string) => void;
   elkWorker: Worker;
+  defaultNamespace?: string;
 };
 
 export enum NodeType {

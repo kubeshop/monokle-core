@@ -8,17 +8,17 @@ import ReactFlow, {
   Node,
 } from 'reactflow';
 import styled from 'styled-components';
-import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
-import { Icon } from '@/atoms';
-import { ResourceNode } from './ResourceNode';
-import { CompactResourceNode } from './CompactResourceNode';
-import { MiniMap } from './MiniMap';
-import { FilterBar } from './FilterBar';
-import { useKeyCombo } from './useKeyCombo';
-import { useGetResourceGraph } from './useGetResourceGraph';
-import { NodeType, ResourceGraphProps } from './types';
-import { Colors } from '@/styles/Colors';
-import { GraphContainer } from './styled';
+import {useEffect, useMemo, useState, useRef, useCallback} from 'react';
+import {Icon} from '@/atoms';
+import {ResourceNode} from './ResourceNode';
+import {CompactResourceNode} from './CompactResourceNode';
+import {MiniMap} from './MiniMap';
+import {FilterBar} from './FilterBar';
+import {useKeyCombo} from './useKeyCombo';
+import {useGetResourceGraph} from './useGetResourceGraph';
+import {NodeType, ResourceGraphProps} from './types';
+import {Colors} from '@/styles/Colors';
+import {GraphContainer} from './styled';
 
 export function ResourceGraph({
   resources,
@@ -27,6 +27,7 @@ export function ResourceGraph({
   onSelectResource = () => null,
   onSelectImage = () => null,
   elkWorker,
+  defaultNamespace,
 }: ResourceGraphProps) {
   const graphRef = useRef<HTMLDivElement>(null);
   const [nodeType, setNodeType] = useState(NodeType.None);
@@ -38,9 +39,9 @@ export function ResourceGraph({
     maxDepth: 5,
   });
 
-  const { namespaces, kinds, maxDepth } = filters;
+  const {namespaces, kinds, maxDepth} = filters;
 
-  const { initialNodes, initialEdges } = useGetResourceGraph(
+  const {initialNodes, initialEdges} = useGetResourceGraph(
     elkWorker,
     getProblemsForResource,
     resourceMap,
@@ -55,8 +56,7 @@ export function ResourceGraph({
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const displayedNodeType = initialNodes[0]?.type || nodeType;
 
-  const [reactFlowInstance, setReactFlowInstance] =
-    useState<ReactFlowInstance>();
+  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance>();
 
   const nodeTypes = useMemo(
     () => ({
@@ -74,14 +74,14 @@ export function ResourceGraph({
 
   useEffect(() => {
     if (graphHasChanged) {
-      reactFlowInstance?.fitView({ maxZoom: 1 });
+      reactFlowInstance?.fitView({maxZoom: 1});
       setGraphHasChanged(false);
     }
   }, [graphHasChanged, reactFlowInstance, nodes]);
 
   useKeyCombo(
     ['Control', 'Equal'],
-    (e) => {
+    e => {
       e.preventDefault();
       e.stopPropagation();
       reactFlowInstance?.zoomIn();
@@ -91,7 +91,7 @@ export function ResourceGraph({
 
   useKeyCombo(
     ['Control', 'Minus'],
-    (e) => {
+    e => {
       e.preventDefault();
       e.stopPropagation();
       reactFlowInstance?.zoomOut();
@@ -110,7 +110,7 @@ export function ResourceGraph({
   const [lastSelectedNode, setLastSelectedNode] = useState<Node>();
 
   const onSelectionChange = useCallback(
-    ({ nodes: selectedNodes }: OnSelectionChangeParams) => {
+    ({nodes: selectedNodes}: OnSelectionChangeParams) => {
       if (selectedNodes.length === 1) {
         const node = selectedNodes[0];
         const nextResource = resourceMap[node.id];
@@ -151,6 +151,7 @@ export function ResourceGraph({
           resources={resources}
           resourceMap={resourceMap}
           setFilters={setFilters}
+          defaultNamespace={defaultNamespace}
         />
         <MiniMap />
         <Controls>
@@ -169,7 +170,7 @@ const Flow = styled(ReactFlow)`
       border-radius: 50%;
       margin-top: 8px;
       background-color: ${Colors.grey3b};
-      border-bottom-color: ${Colors.grey3b};;
+      border-bottom-color: ${Colors.grey3b};
       color: ${Colors.blue7};
       stroke: ${Colors.blue7};
       fill: ${Colors.blue7};
