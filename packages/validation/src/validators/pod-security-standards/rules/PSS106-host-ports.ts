@@ -9,7 +9,7 @@ export const hostPorts = defineRule({
   fullDescription: `HostPorts should be disallowed entirely (recommended) or restricted to a known list.`,
   help: 'Do not use volumes.hostPath.',
   advanced: {
-    relationships: [PSP_RELATIONS['baseline'], NSA_RELATIONS['kubernetes-pod-security']],
+    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

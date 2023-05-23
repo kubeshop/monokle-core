@@ -8,7 +8,7 @@ export const hostProcess = defineRule({
   fullDescription: 'This enables privileged access to the Windows node.',
   help: "Do not set 'securityOptions.windowsOptions.hostProcess'.",
   advanced: {
-    relationships: [PSP_RELATIONS['baseline']],
+    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
