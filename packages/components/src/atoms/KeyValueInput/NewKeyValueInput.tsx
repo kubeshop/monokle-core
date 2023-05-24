@@ -74,7 +74,11 @@ export function NewKeyValueInput({onAddKeyValue, keyOptions = []}: Props) {
             <OptGroup key={prefix} label={prefix}>
               {groupLabels.map(label => {
                 return (
-                  <Option key={label.name} label={label.name} value={`${label.prefix!}/${label.name}`}>
+                  <Option
+                    key={`${label.prefix!}/${label.name}`}
+                    label={label.name}
+                    value={`${label.prefix!}/${label.name}`}
+                  >
                     {label.name}
                   </Option>
                 );
