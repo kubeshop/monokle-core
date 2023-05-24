@@ -4,11 +4,11 @@ import {
   getFileId,
   getFileLocation,
   getResourceLocation,
-  getRuleForResult,
+  getRuleForResultV2,
   ValidationResponse,
   ValidationResult,
 } from '@monokle/validation';
-import {ValidationFiltersValueType, ProblemsType, ShowByFilterOptionType, ValidationListNode} from './types';
+import {ProblemsType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationListNode} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -28,7 +28,7 @@ export const selectProblemsByRule = (
       continue;
     }
 
-    const rule = getRuleForResult(validationResponse, problem);
+    const rule = getRuleForResultV2(validationResponse.runs[0], problem);
     // The following code creates an ID for each rule in the form of "{ruleDescription}__{toolComponentName}__{ruleSecuritySeverity}".
     // This is to ensure that each collapsible panel in the header can have the corresponding icon displayed directly.
     // The reason for this format is that the metadata for the rules does not include the associated tool component.
