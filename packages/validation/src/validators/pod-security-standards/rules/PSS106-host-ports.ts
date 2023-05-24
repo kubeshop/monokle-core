@@ -5,9 +5,9 @@ import {validatePodSpec} from '../../custom/utils.js';
 // TODO: add rule configuration with list of known ports.
 export const hostPorts = defineRule({
   id: 106,
-  description: 'Restrict host path volumes.',
+  description: 'Restrict host ports',
   fullDescription: `HostPorts should be disallowed entirely (recommended) or restricted to a known list.`,
-  help: 'Do not use volumes.hostPath.',
+  help: 'Do not use volumes.hostPort.',
   advanced: {
     relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
   },

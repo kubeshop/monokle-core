@@ -4,7 +4,7 @@ import {validatePodSpec} from '../../custom/utils.js';
 
 export const noMountedDockerSock = defineRule({
   id: 101,
-  description: 'Disallow mounting the hostPath volume with docker.sock',
+  description: 'Disallow mounting the Docker socket using hostPath volumes',
   fullDescription: 'Mounting docker.sock from the host can give the container full root access to the host.',
   help: 'Do not specify `/var/run/docker.sock` in spec.template.volumes.hostPath.path.',
   advanced: {

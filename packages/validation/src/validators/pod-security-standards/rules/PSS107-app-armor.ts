@@ -4,7 +4,7 @@ import {validatePodTemplate} from '../../custom/utils.js';
 
 export const appArmor = defineRule({
   id: 107,
-  description: 'Restrict host path volumes.',
+  description: 'Prohibit customised app armor.',
   fullDescription: `On supported hosts, the runtime/default AppArmor profile is applied by default. The baseline policy should prevent overriding or disabling the default AppArmor profile, or restrict overrides to an allowed set of profiles.`,
   help: 'Do not customize AppArmor.',
   advanced: {
