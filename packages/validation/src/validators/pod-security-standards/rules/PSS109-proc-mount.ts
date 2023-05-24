@@ -4,7 +4,7 @@ import {validatePodSpec} from '../../custom/utils.js';
 
 export const procMount = defineRule({
   id: 109,
-  description: 'Prohibit custom proc masks',
+  description: 'Prohibit custom proc masks.',
   fullDescription: `The default /proc masks are set up to reduce attack surface, and should be required.`,
   help: 'Use the default /proc masks.',
   advanced: {
