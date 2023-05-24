@@ -17,7 +17,7 @@ export function getRuleForResult(response: ValidationResponse, result: Validatio
   return rule as RuleMetadata;
 }
 
-export function getRuleForResultV2(run: ValidationRun, result: ValidationResult): RuleMetadata {
+export function getRuleForResultV2(run: ValidationRun | undefined, result: ValidationResult): RuleMetadata {
   const toolPluginName = result.rule.toolComponent.name;
   const plugin = run?.tool.extensions?.find(plugin => plugin.name === toolPluginName);
   const ruleIndex = result.rule.index;

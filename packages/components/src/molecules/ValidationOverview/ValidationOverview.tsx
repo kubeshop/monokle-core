@@ -1,19 +1,19 @@
-import {Select, Skeleton} from 'antd';
+import {Colors} from '@/styles/Colors';
 import {CloseOutlined} from '@ant-design/icons';
-import {useEffect, useMemo, useRef, useState} from 'react';
-import styled from 'styled-components';
+import {getRuleForResultV2} from '@monokle/validation';
 import {elementScroll, useVirtualizer} from '@tanstack/react-virtual';
+import {Select, Skeleton} from 'antd';
+import {useEffect, useMemo, useRef, useState} from 'react';
+import isEqual from 'react-fast-compare';
+import styled from 'styled-components';
+import HeaderRenderer from './HeaderRenderer';
+import ProblemRenderer from './ProblemRenderer';
+import ValidationOverviewFilters from './ValidationOverviewFilters';
 import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
-import {BaseDataType, ValidationFiltersValueType, ShowByFilterOptionType, ValidationOverviewType} from './types';
-import {getValidationList} from './utils';
-import HeaderRenderer from './HeaderRenderer';
-import ValidationOverviewFilters from './ValidationOverviewFilters';
-import {Colors} from '@/styles/Colors';
-import ProblemRenderer from './ProblemRenderer';
-import {getRuleForResult} from '@monokle/validation';
+import {BaseDataType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationOverviewType} from './types';
 import {useScroll} from './useScroll';
-import isEqual from 'react-fast-compare';
+import {getValidationList} from './utils';
 
 let baseData: BaseDataType = {
   baseCollapsedKeys: [],
@@ -214,7 +214,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                     ) : (
                       <ProblemRenderer
                         node={node}
-                        rule={getRuleForResult(validationResponse, node.problem)}
+                        rule={getRuleForResultV2(validationResponse.runs[0], node.problem)}
                         selectedProblem={selectedProblem}
                         showByFilterValue={showByFilterValue}
                         onClick={() => {
