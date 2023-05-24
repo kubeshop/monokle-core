@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.5.0
+
+### Minor Changes
+
+- b1e45ea: Rework tool and add PSS & KBP plugins
+
 ## 1.4.5
 
 ### Patch Changes

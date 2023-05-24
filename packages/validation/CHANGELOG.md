@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.17.0
+
+### Minor Changes
+
+- b1e45ea: Rework tool and add PSS & KBP plugins
+
 ## 0.16.0
 
 ### Minor Changes
