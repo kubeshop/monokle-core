@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.4.5
+
+### Patch Changes
+
+- c4892b5: Fix key for the new key value input option
+
 ## 1.4.4
 
 ### Patch Changes
