@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.17.1
+
+### Patch Changes
+
+- 3923ea1: fix: fix build
+
 ## 0.17.0
 
 ### Minor Changes
