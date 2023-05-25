@@ -1,10 +1,10 @@
 import {PodSpec, PodTemplateSpec} from 'kubernetes-types/core/v1.js';
-import {isStatefulSet} from './schemas/__generated__/statefulset.apps.v1.js';
-import {isCronJob} from './schemas/__generated__/cronjob.batch.v1.js';
-import {isDaemonSet} from './schemas/__generated__/daemonset.apps.v1.js';
-import {isDeployment} from './schemas/__generated__/deployment.apps.v1.js';
-import {isJob} from './schemas/__generated__/job.batch.v1.js';
-import {isPod} from './schemas/__generated__/pod.v1.js';
+import {isStatefulSet} from './schemas/statefulset.apps.v1.js';
+import {isCronJob} from './schemas/cronjob.batch.v1.js';
+import {isDaemonSet} from './schemas/daemonset.apps.v1.js';
+import {isDeployment} from './schemas/deployment.apps.v1.js';
+import {isJob} from './schemas/job.batch.v1.js';
+import {isPod} from './schemas/pod.v1.js';
 
 export function validatePodSpec(
   resources: any[],
