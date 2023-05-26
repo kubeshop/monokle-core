@@ -11,6 +11,7 @@ export const seccompStrict = defineRule({
   fullDescription: `Seccomp profile must be explicitly set to one of the allowed values. Allowed values are ${ALLOWED_STRING}.`,
   help: "Set 'securityContext.seccompProfile.type' to an allowed value.",
   advanced: {
+    enabled: false,
     severity: 5,
     relationships: [PSP_RELATIONS['restricted']],
   },

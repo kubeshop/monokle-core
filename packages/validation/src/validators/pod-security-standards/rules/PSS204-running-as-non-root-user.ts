@@ -10,6 +10,7 @@ export const runningAsNonRootUser = defineRule({
     'Containers must not set runAsUser to 0. It prevents the running image to run as a root user to ensure least privileges.',
   help: "Set 'securityContext.runAsUser' to non-zero value or leave it undefined.",
   advanced: {
+    enabled: false,
     severity: 8,
     relationships: [PSP_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
   },
