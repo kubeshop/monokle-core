@@ -113,6 +113,7 @@ export type RuleInit = {
 };
 
 export type RuleAdvancedInit = {
+  enabled?: boolean;
   level?: RuleLevel;
   severity?: number;
   relationships?: reportingDescriptorRelationship[];

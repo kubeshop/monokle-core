@@ -11,7 +11,8 @@ export const capabilitiesStrict = defineRule({
   fullDescription: `Containers must drop ALL capabilities, and are only permitted to add back the NET_BIND_SERVICE capability.`,
   help: 'Drop all capabilities.',
   advanced: {
-    relationships: [PSP_RELATIONS['baseline']],
+    severity: 8,
+    relationships: [PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

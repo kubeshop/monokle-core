@@ -7,6 +7,9 @@ export const noLatestImage = defineRule({
   fullDescription:
     "It is best to avoid using the ':latest' image tag when deploying containers in production. Doing so makes it hard to track which version of the image is running, and hard to roll back the version.",
   help: "Use a specific container image tag that is not 'latest'.",
+  advanced: {
+    severity: 5,
+  },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
       pod.initContainers?.forEach((container, index) => {

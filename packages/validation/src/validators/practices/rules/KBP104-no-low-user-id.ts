@@ -8,6 +8,7 @@ export const noLowUserId = defineRule({
   fullDescription: 'Force the container to run with user ID > 10000 to avoid conflicts with the host’s user table.',
   help: "Set 'containers[].securityContext.runAsUser' to an integer > 10000.",
   advanced: {
+    severity: 5,
     relationships: [NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {

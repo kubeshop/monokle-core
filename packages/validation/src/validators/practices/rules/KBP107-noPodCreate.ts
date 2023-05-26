@@ -9,6 +9,7 @@ export const noPodCreate = defineRule({
   description: 'Disallow permissions to create pods',
   help: "Do not include 'create' in 'spec.rules[x].verbs",
   advanced: {
+    severity: 5,
     relationships: [NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {

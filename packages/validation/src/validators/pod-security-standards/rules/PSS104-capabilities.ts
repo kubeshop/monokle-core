@@ -26,6 +26,7 @@ export const capabilities = defineRule({
   fullDescription: `Adding additional capabilities beyond those listed below must be disallowed as they can escalate privileges. The allowed values are ${ALLOWED_STRING}.`,
   help: "Only use allowed values in 'securityContext.capabilities.add'.",
   advanced: {
+    severity: 8,
     relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {

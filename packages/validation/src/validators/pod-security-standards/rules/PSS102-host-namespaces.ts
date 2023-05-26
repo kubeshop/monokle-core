@@ -7,6 +7,7 @@ export const hostNamespaces = defineRule({
   description: 'Sharing the host namespaces must be disallowed.',
   fullDescription: 'Sharing host namespaces is a critical privilege escalation.',
   advanced: {
+    severity: 8,
     relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   help: "Do not set 'spec.host(Network|PID|IPC)'.",

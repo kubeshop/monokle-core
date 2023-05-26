@@ -1,3 +1,4 @@
+import {PSP_RELATIONS} from '../../../taxonomies/psp.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -9,6 +10,10 @@ export const seccompStrict = defineRule({
   description: 'Enforce a valid seccomp profile to be set.',
   fullDescription: `Seccomp profile must be explicitly set to one of the allowed values. Allowed values are ${ALLOWED_STRING}.`,
   help: "Set 'securityContext.seccompProfile.type' to an allowed value.",
+  advanced: {
+    severity: 5,
+    relationships: [PSP_RELATIONS['restricted']],
+  },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
       // The container fields may be undefined/nil if the pod-level spec.securityContext.seccompProfile.type field is set appropriately.

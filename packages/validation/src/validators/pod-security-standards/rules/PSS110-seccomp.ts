@@ -11,6 +11,7 @@ export const seccomp = defineRule({
   fullDescription: `Unconfined seccomps can lead to privilege escalation attacks. Allowed values are ${ALLOWED_STRING}.`,
   help: 'Do not set `securityContext.seccompProfile.type` to `Unconfined`.',
   advanced: {
+    severity: 5,
     relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {

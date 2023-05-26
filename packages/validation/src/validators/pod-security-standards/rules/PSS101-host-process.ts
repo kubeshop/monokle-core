@@ -8,6 +8,7 @@ export const hostProcess = defineRule({
   fullDescription: 'This enables privileged access to the Windows node.',
   help: "Do not set 'securityOptions.windowsOptions.hostProcess'.",
   advanced: {
+    severity: 8,
     relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {

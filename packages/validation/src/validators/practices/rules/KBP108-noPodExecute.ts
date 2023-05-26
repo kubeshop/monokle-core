@@ -9,6 +9,7 @@ export const noPodExecute = defineRule({
   description: 'Disallow permissions to exec on pods',
   help: "Do not include 'pods/exec' in 'spec.rules[x].resourcess",
   advanced: {
+    severity: 5,
     relationships: [NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {

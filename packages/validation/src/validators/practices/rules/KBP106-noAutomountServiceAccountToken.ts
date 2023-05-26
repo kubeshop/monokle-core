@@ -10,6 +10,8 @@ export const noAutomountServiceAccountToken = defineRule({
     'Most often secret tokens are unnecessarily mounted during runtime as there is no need to access the Kubernetes API server.',
   help: 'Set `automountServiceAccountToken: false`.',
   advanced: {
+    enabled: false,
+    severity: 3,
     relationships: [NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report, getRelated}) {

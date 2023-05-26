@@ -8,6 +8,7 @@ export const noMountedDockerSock = defineRule({
   fullDescription: 'Mounting docker.sock from the host can give the container full root access to the host.',
   help: 'Do not specify `/var/run/docker.sock` in spec.template.volumes.hostPath.path.',
   advanced: {
+    severity: 8,
     relationships: [NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {
