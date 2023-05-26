@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.17.4
+
+### Patch Changes
+
+- 7c4ad04: fix pss rule enabled
+
 ## 0.17.3
 
 ### Patch Changes
