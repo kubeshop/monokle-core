@@ -6,6 +6,10 @@ export const memoryLimit = defineRule({
   description: 'Require the memory to be limited',
   fullDescription: 'Enforcing memory limits prevents DoS via resource exhaustion.',
   help: "Set 'containers[].resources.limits.memory'.",
+  advanced: {
+    enabled: false,
+    severity: 3,
+  },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
       pod.initContainers?.forEach((container, index) => {

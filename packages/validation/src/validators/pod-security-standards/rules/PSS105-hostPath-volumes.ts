@@ -8,6 +8,7 @@ export const hostPathVolumes = defineRule({
   fullDescription: `Host path volumes can lead to privilege escalation attacks.`,
   help: 'Do not use volumes.hostPath.',
   advanced: {
+    severity: 8,
     relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {

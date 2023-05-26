@@ -7,6 +7,10 @@ export const cpuRequest = defineRule({
   fullDescription:
     'When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.',
   help: "Set 'containers[].resources.requests.cpu'.",
+  advanced: {
+    enabled: false,
+    severity: 3,
+  },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
       pod.initContainers?.forEach((container, index) => {

@@ -181,6 +181,14 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
       help: {
         text: r.help ?? 'No help available.',
       },
+      defaultConfiguration: {
+        enabled: r.advanced?.enabled,
+        level: r.advanced?.level,
+      },
+      properties: {
+        'security-severity': r.advanced?.severity,
+      },
+      relationships: r.advanced?.relationships,
     };
   });
 }

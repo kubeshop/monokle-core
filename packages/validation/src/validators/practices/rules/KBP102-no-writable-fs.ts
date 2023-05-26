@@ -9,6 +9,7 @@ export const noWritableFs = defineRule({
     'An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.',
   help: "Change 'containers[].securityContext.readOnlyRootFilesystem' to 'true'.",
   advanced: {
+    severity: 5,
     relationships: [NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {

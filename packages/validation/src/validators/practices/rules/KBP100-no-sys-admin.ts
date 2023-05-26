@@ -7,6 +7,9 @@ export const noSysAdmin = defineRule({
   fullDescription:
     'The container should drop all default capabilities and add only those that are needed for its execution.',
   help: "Add 'ALL' to containers[].securityContext.capabilities.drop.",
+  advanced: {
+    severity: 8,
+  },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
       pod.initContainers?.forEach((container, index) => {

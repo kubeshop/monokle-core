@@ -11,6 +11,7 @@ export const selinux = defineRule({
   fullDescription: `Setting the SELinux type is restricted, and setting a custom SELinux user or role option is forbidden. Allowed SELinux types are ${ALLOWED_STRING}`,
   help: 'Use an allowed SELinux type and do not customize the user.',
   advanced: {
+    severity: 5,
     relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {

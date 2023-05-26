@@ -8,6 +8,7 @@ export const noRootGroup = defineRule({
   fullDescription: 'Containers should be forbidden from running with a root primary or supplementary GID.',
   help: "Do not set securityContext.runAsGroup' to zero.",
   advanced: {
+    severity: 5,
     relationships: [NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {

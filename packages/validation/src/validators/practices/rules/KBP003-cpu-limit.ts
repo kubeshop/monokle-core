@@ -6,6 +6,10 @@ export const cpuLimit = defineRule({
   description: 'Require the CPU to be limited',
   fullDescription: 'Enforcing CPU limits prevents DoS via resource exhaustion.',
   help: "Add a cpu limitation to 'spec.resources.limits.cpu'.",
+  advanced: {
+    enabled: false,
+    severity: 3,
+  },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
       pod.initContainers?.forEach((container, index) => {

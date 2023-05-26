@@ -1,4 +1,5 @@
 import {NSA_RELATIONS} from '../../../taxonomies/nsa.js';
+import {PSP_RELATIONS} from '../../../taxonomies/psp.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -9,7 +10,8 @@ export const runningAsNonRoot = defineRule({
     'Containers must be required to run as non-root users. It forces the running image to run as a non-root user to ensure least privileges.',
   help: "Set 'securityContext.runAsNonRoot' to true.",
   advanced: {
-    relationships: [NSA_RELATIONS['kubernetes-pod-security']],
+    severity: 8,
+    relationships: [PSP_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

@@ -1,4 +1,4 @@
-import {CIS_RELATIONS, NSA_RELATIONS} from '../../../taxonomies/index.js';
+import {CIS_RELATIONS, NSA_RELATIONS, PSP_RELATIONS} from '../../../taxonomies/index.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -9,8 +9,8 @@ export const privilegeEscalation = defineRule({
     'Privilege escalation (such as via set-user-ID or set-group-ID file mode) should not be allowed. A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.',
   help: "Set 'securityContext.allowPrivilegeEscalation' to 'false'.",
   advanced: {
-    severity: 5,
-    relationships: [NSA_RELATIONS['kubernetes-pod-security'], CIS_RELATIONS['general']],
+    severity: 8,
+    relationships: [PSP_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security'], CIS_RELATIONS['general']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

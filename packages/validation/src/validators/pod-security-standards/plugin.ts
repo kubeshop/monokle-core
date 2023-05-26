@@ -22,6 +22,7 @@ export default definePlugin({
   name: 'pod-security-standards',
   displayName: 'Pod Security Standards',
   description: 'Essential security controls which broadly cover the security spectrum.',
+  learnMoreUrl: 'https://kubernetes.io/docs/concepts/security/pod-security-standards/',
   rules: {
     hostProcess,
     hostNamespaces,
