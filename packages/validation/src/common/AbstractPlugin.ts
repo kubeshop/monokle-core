@@ -154,8 +154,10 @@ export abstract class AbstractPlugin implements Plugin {
     // Set defaults
     for (const rule of this._rules) {
       const defaultConfig: RuleConfig = {
-        ...DEFAULT_RULE_CONFIG,
-        ...rule.defaultConfiguration,
+        enabled: rule.defaultConfiguration?.enabled ?? DEFAULT_RULE_CONFIG.enabled,
+        level: rule.defaultConfiguration?.level ?? DEFAULT_RULE_CONFIG.level,
+        parameters: rule.defaultConfiguration?.parameters ?? DEFAULT_RULE_CONFIG.parameters,
+        rank: rule.defaultConfiguration?.rank ?? DEFAULT_RULE_CONFIG.rank,
       };
 
       this._ruleConfig.set(rule.id, defaultConfig);
