@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.17.2
+
+### Patch Changes
+
+- 2eabe7b: fix: fix custom validator relationships
+
 ## 0.17.1
 
 ### Patch Changes
