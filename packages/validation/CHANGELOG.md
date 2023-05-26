@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.17.3
+
+### Patch Changes
+
+- e2e1580: Fix default rule config
+
 ## 0.17.2
 
 ### Patch Changes
