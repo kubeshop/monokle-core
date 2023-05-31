@@ -13,6 +13,7 @@ export * from './validators/custom/simpleValidator.js';
 export * from './validators/custom/devValidator.js';
 export * from './validators/custom/constants.js';
 export * from './validators/labels/plugin.js';
+export * from './validators/deprecation/plugin.js';
 export * from './validators/open-policy-agent/index.js';
 export * from './validators/kubernetes-schema/index.js';
 export * from './validators/yaml-syntax/index.js';

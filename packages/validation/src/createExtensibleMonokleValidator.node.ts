@@ -39,6 +39,9 @@ export function createExtensibleMonokleValidator(
         return new YamlValidator(parser);
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
+      case 'deprecation':
+        const deprecationPlugin = await getPlugin('./validators/deprecation/plugin.js');
+        return new SimpleCustomValidator(deprecationPlugin, parser);
       default:
         try {
           const customPlugin = await loadCustomPlugin(pluginName);
@@ -52,6 +55,7 @@ export function createExtensibleMonokleValidator(
 
 async function getPlugin(path: string) {
   try {
+    console.log(`E: Loading plugin from ${path}`);
     const code = fs.readFileSync(path, {encoding: 'utf-8'});
     const bundle = await bundlePluginCode(code);
     const plugin = requireFromString(bundle, path);

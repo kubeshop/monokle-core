@@ -37,6 +37,9 @@ export function createExtensibleMonokleValidator(
         return new SimpleCustomValidator(labelPlugin.default, parser);
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
+      case 'deprecation':
+        const deprecationPlugin = await import('./validators/deprecation/plugin.js');
+        return new SimpleCustomValidator(deprecationPlugin.default, parser);
       case DEV_MODE_TOKEN:
         return new DevCustomValidator(parser);
       default:

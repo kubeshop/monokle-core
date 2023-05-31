@@ -39,6 +39,9 @@ export function createDefaultPluginLoader(
         return new SimpleCustomValidator(labelPlugin.default, parser);
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
+      case 'deprecation':
+        const deprecationPlugin = await import('./validators/deprecation/plugin.js');
+        return new SimpleCustomValidator(deprecationPlugin.default, parser);
       default:
         throw new Error('plugin_not_found');
     }

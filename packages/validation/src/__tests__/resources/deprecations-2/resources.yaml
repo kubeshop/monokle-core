@@ -1,0 +1,55 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: demo-webhook
+webhooks:
+  - name: webhook-server.webhook-demo.svc
+    sideEffects: None
+    admissionReviewVersions: ["v1", "v1beta1"]
+    clientConfig:
+      service:
+        name: webhook-server
+        namespace: webhook-demo
+        path: "/validate"
+      caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURQekNDQWllZ0F3SUJBZ0lVQWFQWSt3MCs3R2NoNGVXSmh5bkxZeHZOYS9Jd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0x6RXRNQ3NHQTFVRUF3d2tRV1J0YVhOemFXOXVJRU52Ym5SeWIyeHNaWElnVjJWaWFHOXZheUJFWlcxdgpJRU5CTUI0WERUSXpNRFV4T1RBNU1qWXhObG9YRFRJek1EWXhPREE1TWpZeE5sb3dMekV0TUNzR0ExVUVBd3drClFXUnRhWE56YVc5dUlFTnZiblJ5YjJ4c1pYSWdWMlZpYUc5dmF5QkVaVzF2SUVOQk1JSUJJakFOQmdrcWhraUcKOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXRZeUhoVklwbVRoWkpvcitYTmN5cERIdVFwcGxMMDR1WjRxRgowZjlqUEhFeE9Eekg1bzllVHZDem94NU5vcGVXbDhVcXJvS2psdFIwT0dHREtEeDZVWHNoak9SU29hRGlHZUtZClU2Ukl1c3B2REZxQ2g2VGZZRVJyVW9XaTIraytMcnZIQVJFQW5TbmpFaWl6cThxaldEU3pTZWdMdDFVdWlxUDMKa1JhanVWcGR3ZkV0blcxYkFRQTIwdE5najMrY2tDakNiOGEvQlFMZ0ZpMHB2em1scllCRWphNnRpYWlpQUFmSQo3VzZVNTdJU0NLY1Z3UXVoR3JZYy9tWEN6cDZVYVRnS2hUK2hQWDQrWi9kbU1LWGxZUWZlSDFnektRYTZEYU83CnMzM3lZK0hmNFptR1ZORDBudWh1MmFVUWwyblM3Z3JtdXpNazlSRkFCR3A5MlFldXlRSURBUUFCbzFNd1VUQWQKQmdOVkhRNEVGZ1FVN1VvWWNvY0F6cXJUMll0SVFJVDc2cHFUSkF3d0h3WURWUjBqQkJnd0ZvQVU3VW9ZY29jQQp6cXJUMll0SVFJVDc2cHFUSkF3d0R3WURWUjBUQVFIL0JBVXdBd0VCL3pBTkJna3Foa2lHOXcwQkFRc0ZBQU9DCkFRRUFJR1hKR3BTUGtzQlNyM0lxditiR1dRYzFqeFRyNW1zbndZd2t0UnVCL1ZWYmhWVmpxNFR6VExBd2NvZ2IKWHNzbWQ0MWpHMnJINTN1dXBmdnF5dEsrTXNZRDByQTN4cWRSazRYYSs2cG5GQTJRekYyaVA4cHJLcTJtY0hJSgpSQ3ptUVc0Rk8xeTQ3U2hwclNFZFU4QzFrSmNWdUhXbUNPQ3pwSlBhbmoxanFITnFmNFMxTVE0UU92M3BRSGJjCjY5bXhJTklodmNMdjdqOGxZKzJVRlpZczcvYTJBQTZybHY0b2xmdmNQSWcwcUhjQkVqU0gyRVNKdHVEc0QyanMKVklKQ05NSmtDM2w2OHFJTzhHd0JYcEpQVytDMWZwN0JhUUF3NVhtaXcra1pyeXZJZkN3Q0NncWhDeVBoZGl1YQpBM0dFMGNDSkd3Tzhtclk2WWpMdXZxQThvZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    rules:
+      - operations: [ "CREATE" ]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+---
+apiVersion: flowcontrol.apiserver.k8s.io/v1beta2
+kind: FlowSchema
+metadata:
+  name: health-for-strangers
+spec:
+  matchingPrecedence: 1000
+  priorityLevelConfiguration:
+    name: exempt
+  rules:
+    - nonResourceRules:
+      - nonResourceURLs:
+          - "/healthz"
+          - "/livez"
+          - "/readyz"
+        verbs:
+          - "*"
+      subjects:
+        - kind: Group
+          group:
+            name: "system:unauthenticated"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-warning
+  labels:
+    app: pod-warning
+spec:
+  restartPolicy: OnFailure
+  securityContext:
+    runAsNonRoot: false
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sh", "-c", "echo I am running as user $(id -u)"]
