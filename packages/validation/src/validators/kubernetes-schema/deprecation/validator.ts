@@ -4,7 +4,7 @@ import {DEPRECATIONS} from './deprecations.js';
 export type Deprecation = {
   kinds: string[];
   versions: string[];
-  recommended: string;
+  recommended: string | null;
   link: string;
   type: 'deprecation' | 'removal';
 };
