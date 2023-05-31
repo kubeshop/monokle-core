@@ -12,6 +12,7 @@ import {KNOWN_RESOURCE_KINDS} from '../../utils/knownResourceKinds.js';
 import {getResourceSchemaPrefix} from './resourcePrefixMap.js';
 import {KUBERNETES_SCHEMA_RULES} from './rules.js';
 import {SchemaLoader} from './schemaLoader.js';
+import {validate} from './deprecation/deprecation-validator.js';
 
 type Settings = z.infer<typeof Settings>;
 const Settings = z.object({
@@ -71,9 +72,18 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     const results: ValidationResult[] = [];
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;
 
+    // K8S001
     for (const resource of dirtyResources) {
       const resourceErrors = await this.validateResource(resource);
       results.push(...resourceErrors);
+    }
+
+    // K8S002
+    for (const resource of dirtyResources) {
+      const deprecationErrors = await validate(resource, this._settings.schemaVersion);
+      const asValidationError = deprecationErrors.map(err => this.adaptToValidationResult2(resource, err.path, err.message)).filter(isDefined);
+
+      results.push(...asValidationError);
     }
 
     return results;
@@ -127,8 +137,12 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       : `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`; // custom resource
 
     const keyRef = `#/definitions/${key}`;
-    const validate = this.ajv.getSchema(keyRef);
-    return validate;
+    try {
+      const validate = this.ajv.getSchema(keyRef);
+      return validate;
+    } catch (err) {
+      return undefined;
+    }
   }
 
   private adaptToValidationResult(resource: Resource, err: ErrorObject) {
@@ -143,6 +157,23 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     return this.createValidationResult('K8S001', {
       message: {
         text: err.message ? `Value at ${err.dataPath} ${err.message}` : '',
+      },
+      locations,
+    });
+  }
+
+  private adaptToValidationResult2(resource: Resource, path: string, errText: string) {
+    const {parsedDoc} = this.resourceParser.parse(resource);
+
+    const valueNode = findJsonPointerNode(parsedDoc, path.split('.'));
+
+    const region = this.resourceParser.parseErrorRegion(resource, valueNode.range);
+
+    const locations = createLocations(resource, region);
+
+    return this.createValidationResult('K8S002', {
+      message: {
+        text: errText,
       },
       locations,
     });

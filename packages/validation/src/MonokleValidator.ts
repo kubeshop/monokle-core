@@ -27,7 +27,6 @@ const DEFAULT_PLUGIN_MAP = {
   'resource-links': true,
   'yaml-syntax': true,
   'kubernetes-schema': true,
-  'deprecation': true,
 };
 
 export class MonokleValidator implements Validator {

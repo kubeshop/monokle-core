@@ -13,8 +13,6 @@ it('should detect deprecation error - single resource', async () => {
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
 
-  console.log(JSON.stringify(response.runs[0].results));
-
   expect(hasErrors).toBe(1);
 });
 
@@ -22,8 +20,6 @@ it('should detect deprecation error - multiple resources', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/deprecations-2', 'v1.29');
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-
-  console.log(JSON.stringify(response.runs[0].results));
 
   expect(hasErrors).toBe(2);
 });
@@ -50,8 +46,7 @@ async function processResourcesInFolder(path: string, schemaVersion?: string) {
 async function configureValidator(validator: MonokleValidator, schemaVersion = '1.24.2') {
   return validator.preload({
     plugins: {
-      'kubernetes-schema': false,
-      'deprecation': true,
+      'kubernetes-schema': true,
     },
     settings: {
       'kubernetes-schema': {

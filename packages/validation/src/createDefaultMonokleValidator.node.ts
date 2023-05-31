@@ -11,7 +11,6 @@ import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
 import {MonokleValidator} from './MonokleValidator.js';
 import {bundlePluginCode} from './utils/loadCustomPlugin.node.js';
-import deprecationValidator from './validators/deprecation/plugin.js';
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
@@ -44,8 +43,6 @@ export function createDefaultPluginLoader(
         return new YamlValidator(parser);
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
-      case 'deprecation':
-        return new SimpleCustomValidator(deprecationValidator, parser);
       default:
         throw new Error('plugin_not_found');
     }
