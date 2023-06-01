@@ -78,5 +78,6 @@ function mapVersionToNr(version: string) {
 }
 
 function composeMessage(error: DeprecationError) {
-  return `The resource '${error.kind}' uses deprecated apiVersion '${error.apiVersion}', use '${error.rule.recommended}' instead. See ${error.rule.link}.`;
+  return `The resource '${error.kind}' uses ${error.rule.type === 'removal' ? 'removed' : 'deprecated'} apiVersion ` +
+    `'${error.apiVersion}', use '${error.rule.recommended}' instead. See ${error.rule.link}.`;
 }
