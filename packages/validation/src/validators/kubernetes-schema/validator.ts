@@ -1,5 +1,4 @@
-import Ajv, {ValidateFunction} from 'ajv';
-import {JsonObject} from 'type-fest';
+import Ajv, {ErrorObject, ValidateFunction} from 'ajv';
 import {Document, isCollection, ParsedNode} from 'yaml';
 import {z} from 'zod';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
@@ -37,7 +36,7 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     );
   }
 
-  protected override async configurePlugin(rawSettings: JsonObject = {}): Promise<void> {
+  protected override async configurePlugin(rawSettings: any = {}): Promise<void> {
     this._settings = Settings.parse(rawSettings['kubernetes-schema'] ?? {});
     const version = this._settings.schemaVersion;
     const schema = await this.schemaLoader.getFullSchema(version);

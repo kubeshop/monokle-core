@@ -4,7 +4,6 @@ import {isNode, Node} from 'yaml';
 
 import get from 'lodash/get.js';
 
-import {JsonObject} from 'type-fest';
 import {z} from 'zod';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
@@ -49,7 +48,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
     );
   }
 
-  override async configurePlugin(settings: JsonObject = {}): Promise<void> {
+  override async configurePlugin(settings: any = {}): Promise<void> {
     if (this.validator) return;
     this._settings = Settings.parse(settings['open-policy-agent'] ?? {});
     const wasmSrc = this._settings.wasmSrc;

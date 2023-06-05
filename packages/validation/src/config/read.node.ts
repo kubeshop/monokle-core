@@ -1,4 +1,3 @@
-import {JsonObject} from 'type-fest';
 import * as fsp from 'fs/promises';
 import * as fs from 'fs';
 import YAML from 'yaml';
@@ -14,7 +13,7 @@ export async function readConfig(path: string = DEFAULT_CONFIG_PATH): Promise<Co
   try {
     const data = await fsp.readFile(path, 'utf8');
     const content = YAML.parse(data);
-    const config = parseConfig(content as JsonObject);
+    const config = parseConfig(content);
     return config;
   } catch (err) {
     console.error('Failed to read configuration from ' + path);

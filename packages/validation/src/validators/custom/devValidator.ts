@@ -1,4 +1,3 @@
-import {JsonObject} from 'type-fest';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {ToolPlugin, ValidationResult, ValidationRun} from '../../common/sarif.js';
 import {CustomSchema, Incremental, Plugin, PluginMetadata, Resource} from '../../common/types.js';
@@ -27,7 +26,7 @@ export class DevCustomValidator implements Plugin {
   private _handleReload?: (hash: string) => void;
   private _lastConfig?: {
     rules?: RuleMap | undefined;
-    settings?: JsonObject | undefined;
+    settings?: any;
   };
   private _debug: boolean = false;
 
@@ -162,7 +161,7 @@ export class DevCustomValidator implements Plugin {
     return this._currentValidator.isRuleEnabled(r);
   }
 
-  configure(config: {rules?: RuleMap | undefined; settings?: JsonObject | undefined}): Promise<void> {
+  configure(config: {rules?: RuleMap | undefined; settings?: any | undefined}): Promise<void> {
     this._debug = Boolean(config?.settings?.debug);
     this._lastConfig = config;
     if (!this._currentValidator) {

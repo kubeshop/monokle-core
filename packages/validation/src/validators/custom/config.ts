@@ -73,6 +73,11 @@ export type RuleContext = {
    * The global settings object.
    */
   settings?: any;
+
+  /**
+   * The configuration specific to this rule.
+   */
+  params?: any;
 };
 
 export type RuleInit = {

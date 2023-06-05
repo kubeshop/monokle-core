@@ -1,6 +1,5 @@
 import keyBy from 'lodash/keyBy.js';
-import {JsonObject} from 'type-fest';
-import {RuleMap} from '../config/parse.js';
+import {PrimitiveRuleValue, RuleMap} from '../config/parse.js';
 import {NOT_CONFIGURED_ERR_MSG} from '../constants.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import invariant from '../utils/invariant.js';
@@ -142,7 +141,7 @@ export abstract class AbstractPlugin implements Plugin {
     };
   }
 
-  async configure(config: {rules?: RuleMap; settings?: JsonObject}): Promise<void> {
+  async configure(config: {rules?: RuleMap; settings?: any}): Promise<void> {
     this.configureRules(config.rules);
     await this.configurePlugin(config.settings);
     this.configured = true;
@@ -174,25 +173,36 @@ export abstract class AbstractPlugin implements Plugin {
       }
 
       const defaultConfig = this._ruleConfig.get(ruleId);
+      invariant(defaultConfig);
 
-      this._ruleConfig.set(
-        ruleId,
-        typeof newConfig === 'boolean'
-          ? {
-              ...defaultConfig,
-              enabled: newConfig,
-            }
-          : {
-              ...defaultConfig,
-              enabled: true,
-              level: newConfig === 'err' ? 'error' : 'warning',
-            }
-      );
+      const isArray = Array.isArray(newConfig);
+      const isObject = typeof newConfig === 'object';
+      const isPrimitive = typeof newConfig === 'string' || typeof newConfig === 'boolean';
+
+      const severity: PrimitiveRuleValue = isArray
+        ? newConfig.at(0)
+        : isObject
+        ? newConfig['severity']
+        : isPrimitive
+        ? newConfig
+        : undefined;
+      const config = isArray ? newConfig.at(1) : isObject ? newConfig['config'] : undefined;
+      const enabled =
+        typeof severity === 'boolean' ? severity : typeof severity === 'string' ? true : defaultConfig.enabled;
+      const level = typeof severity === 'string' ? (severity === 'err' ? 'error' : 'warning') : defaultConfig.level;
+      const parameters = config ?? defaultConfig.parameters;
+
+      this._ruleConfig.set(ruleId, {
+        ...defaultConfig,
+        enabled,
+        level,
+        parameters,
+      });
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected configurePlugin(settings: JsonObject | undefined): Promise<void> {
+  protected configurePlugin(settings: any | undefined): Promise<void> {
     return Promise.resolve();
   }
 

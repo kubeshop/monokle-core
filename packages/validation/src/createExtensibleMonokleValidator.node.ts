@@ -11,6 +11,8 @@ import {OpenPolicyAgentValidator} from './validators/open-policy-agent/validator
 import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
 import {bundlePluginCode, loadCustomPlugin} from './utils/loadCustomPlugin.node.js';
+import kbpPlugin from './validators/practices/plugin.js';
+import pssPlugin from './validators/pod-security-standards/plugin.js';
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
@@ -22,10 +24,8 @@ export function createExtensibleMonokleValidator(
   return new MonokleValidator(async (pluginName: string) => {
     switch (pluginName) {
       case 'pod-security-standards':
-        const pssPlugin = await getPlugin('./validators/pod-security-standards/plugin.js');
         return new SimpleCustomValidator(pssPlugin, parser);
       case 'practices':
-        const kbpPlugin = await getPlugin('./validators/practices/plugin.js');
         return new SimpleCustomValidator(kbpPlugin, parser);
       case 'labels':
         const lblPlugin = await getPlugin('./validators/labels/plugin.js');

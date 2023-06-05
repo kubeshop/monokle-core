@@ -10,7 +10,12 @@ import {ZodType} from 'zod';
  * - "open-policy-agent/no-latest-image": "warn"
  * ```
  */
-export type RuleMap = Record<string, boolean | 'warn' | 'err'>;
+export type RuleMap = Record<string, RuleValue>;
+
+export type RuleValue = PrimitiveRuleValue | ArrayRuleValue | ObjectRuleValue;
+export type PrimitiveRuleValue = boolean | 'warn' | 'err' | undefined;
+export type ArrayRuleValue = [PrimitiveRuleValue] | [PrimitiveRuleValue, any];
+export type ObjectRuleValue = {severity: PrimitiveRuleValue; config: any};
 
 /**
  * The validators that will be loaded.
