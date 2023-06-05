@@ -1,5 +1,3 @@
-import {JsonObject} from 'type-fest';
-
 /**
  * A response as defined by Static Analysis Results Interchange Format.
  *
@@ -94,7 +92,7 @@ export type ToolPlugin = ToolComponent & {
  * @see https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning#reportingdescriptor-object
  * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541274
  */
-export type RuleMetadata<TProperties extends JsonObject = {}> = {
+export type RuleMetadata<TProperties = {}> = {
   id: string;
   name: string;
   shortDescription: {
@@ -167,7 +165,7 @@ export type RuleConfig = {
   /**
    * The parameters for this rule.
    */
-  parameters?: JsonObject;
+  parameters?: any;
 };
 
 export type RuleLevel = 'warning' | 'error';

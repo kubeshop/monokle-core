@@ -110,6 +110,62 @@ it('should be flexible to configure', async () => {
   expect(hasErrors).toMatchInlineSnapshot('13');
 });
 
+it('should allow rules to be configurable', async () => {
+  const parser = new ResourceParser();
+
+  const validator = createDefaultMonokleValidator(parser);
+
+  processRefs(RESOURCES, parser);
+
+  validator.preload({
+    plugins: {
+      practices: true,
+    },
+    rules: {
+      'practices/high-available': 'err',
+    },
+    settings: {
+      debug: true,
+    },
+  });
+  const noConfigResponse = await validator.validate({resources: RESOURCES});
+  const noConfigHasErrors = noConfigResponse.runs.at(0)?.results.some(r => r.ruleId === 'KBP006') ?? false;
+  expect(noConfigHasErrors).toBe(false);
+
+  validator.preload({
+    plugins: {
+      practices: true,
+    },
+    rules: {
+      'practices/high-available': ['err', 5],
+    },
+    settings: {
+      debug: true,
+    },
+  });
+  const shorthandConfigResponse = await validator.validate({resources: RESOURCES});
+  const shorthandConfigHasErrors = shorthandConfigResponse.runs.at(0)?.results.some(r => r.ruleId === 'KBP006');
+  expect(shorthandConfigHasErrors).toBe(true);
+
+  validator.preload({
+    plugins: {
+      practices: true,
+    },
+    rules: {
+      'practices/high-available': {
+        severity: 'err',
+        config: 5,
+      },
+    },
+    settings: {
+      debug: true,
+    },
+  });
+  const configResponse = await validator.validate({resources: RESOURCES});
+  const configHasErrors = configResponse.runs.at(0)?.results.some(r => r.ruleId === 'KBP006');
+  expect(configHasErrors).toBe(true);
+});
+
 it('should be valid SARIF', async () => {
   const parser = new ResourceParser();
   const resources = RESOURCES;

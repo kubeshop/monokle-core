@@ -1,7 +1,5 @@
 import {paramCase, sentenceCase} from 'change-case';
-import {result} from 'lodash';
 import keyBy from 'lodash/keyBy.js';
-import {JsonObject} from 'type-fest';
 import {Document, isNode, Node, ParsedNode} from 'yaml';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
@@ -31,7 +29,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
     this._ruleRuntime = toRuntime(plugin);
   }
 
-  protected override async configurePlugin(rawSettings: JsonObject = {}): Promise<void> {
+  protected override async configurePlugin(rawSettings: any = {}): Promise<void> {
     this._settings = rawSettings;
   }
 
@@ -47,7 +45,9 @@ export class SimpleCustomValidator extends AbstractPlugin {
       : clonedResources;
 
     for (const rule of this.rules) {
-      if (!this.isRuleEnabled(rule.id)) {
+      const ruleConfig = this.getRuleConfig(rule.id);
+
+      if (!ruleConfig.enabled) {
         continue;
       }
 
@@ -59,6 +59,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
             resources: dirtyResources,
             allResources: resources,
             settings: this._settings,
+            params: ruleConfig.parameters,
           },
           {
             parse: res => {

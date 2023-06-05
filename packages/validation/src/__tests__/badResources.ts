@@ -10,7 +10,7 @@ export const BAD_DEPLOYMENT: Resource = {
     'metadata:\n' +
     '  name: panda-blog\n' +
     'spec:\n' +
-    '  replicas: 1\n' +
+    '  replicas: 3\n' +
     '  selector:\n' +
     '    matchLabels:\n' +
     '      app: panda-blog\n' +
@@ -45,7 +45,7 @@ export const BAD_DEPLOYMENT: Resource = {
       name: 'panda-blog',
     },
     spec: {
-      replicas: 1,
+      replicas: 3,
       selector: {
         matchLabels: {
           app: 'panda-blog',

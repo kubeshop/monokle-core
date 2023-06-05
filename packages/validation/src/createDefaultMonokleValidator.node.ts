@@ -11,6 +11,8 @@ import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
 import {MonokleValidator} from './MonokleValidator.js';
 import {bundlePluginCode} from './utils/loadCustomPlugin.node.js';
+import practicesPlugin from './validators/practices/plugin.js';
+import pssPlugin from './validators/pod-security-standards/plugin.js';
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
@@ -26,11 +28,9 @@ export function createDefaultPluginLoader(
   return async (pluginName: string) => {
     switch (pluginName) {
       case 'pod-security-standards':
-        const pssPlugin = await getPlugin('./validators/pod-security-standards/plugin.js');
         return new SimpleCustomValidator(pssPlugin, parser);
       case 'practices':
-        const kbpPlugin = await getPlugin('./validators/practices/plugin.js');
-        return new SimpleCustomValidator(kbpPlugin, parser);
+        return new SimpleCustomValidator(practicesPlugin, parser);
       case 'labels':
         const lblPlugin = await getPlugin('./validators/labels/plugin.js');
         return new SimpleCustomValidator(lblPlugin, parser);

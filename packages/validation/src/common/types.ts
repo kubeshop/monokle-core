@@ -1,10 +1,9 @@
-import {JsonObject} from 'type-fest';
 import {Scalar} from 'yaml';
 import {RuleMap} from '../config/parse.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import {ResourceSchema} from '../validators/kubernetes-schema';
 import {ResourceParser} from './resourceParser.js';
-import {ToolComponent, ToolPlugin, ValidationPolicy, ValidationResult, ValidationRun} from './sarif.js';
+import {ToolPlugin, ValidationPolicy, ValidationResult, ValidationRun} from './sarif.js';
 
 /* * * * * * * * * * * * * * * * *
  * The common resource type
@@ -220,7 +219,7 @@ export interface Plugin {
    * @remark Configure should be idempotent. A validator can be invoked
    * multiple times with unchanged settings because another validator changed.
    */
-  configure(config: {rules?: RuleMap; settings?: JsonObject}): Promise<void>;
+  configure(config: {rules?: RuleMap; settings?: any}): Promise<void>;
 
   registerCustomSchema(schema: CustomSchema): Promise<void> | void;
   unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): Promise<void> | void;
