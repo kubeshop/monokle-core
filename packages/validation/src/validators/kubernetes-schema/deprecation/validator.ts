@@ -1,5 +1,5 @@
 import {Resource} from '../../../common/types.js';
-import {DEPRECATIONS} from './deprecations.js';
+import {REMOVALS} from './deprecations.js';
 
 export type Deprecation = {
   kinds: string[];
@@ -7,6 +7,7 @@ export type Deprecation = {
   recommended: string | null;
   link: string;
   type: 'deprecation' | 'removal';
+  clarification?: string;
 };
 
 export type Deprecations = {
@@ -46,7 +47,7 @@ export function validate(resource: Resource, clusterVersion: string): Deprecatio
 }
 
 function isDeprecated(apiVersion: string, kind: string, clusterVersion: string): DeprecationError | null {
-  for (const {version, rules} of DEPRECATIONS) {
+  for (const {version, rules} of REMOVALS) {
     const clusterVersionNr = mapVersionToNr(version);
     const usedClusterVersionNr = mapVersionToNr(clusterVersion);
 
