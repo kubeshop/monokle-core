@@ -17,7 +17,7 @@ it('should detect deprecation error - single resource, removal', async () => {
   expect(hasErrors).toBe(1);
 
   const result = response.runs[0].results[0];
-  expectResult(result, 'K8S002', 'warning', 'ReplicaSet');
+  expectResult(result, 'K8S003', 'error', 'ReplicaSet');
   expect(result.message.text).toContain('uses removed');
 });
 
@@ -29,11 +29,11 @@ it('should detect deprecation error - multiple resources, removal', async () => 
   expect(hasErrors).toBe(2);
 
   const result1 = response.runs[0].results[0];
-  expectResult(result1, 'K8S002', 'warning', 'ValidatingWebhookConfiguration');
+  expectResult(result1, 'K8S003', 'error', 'ValidatingWebhookConfiguration');
   expect(result1.message.text).toContain('uses removed');
 
   const result2 = response.runs[0].results[1];
-  expectResult(result2, 'K8S002', 'warning', 'FlowSchema');
+  expectResult(result2, 'K8S003', 'error', 'FlowSchema');
   expect(result2.message.text).toContain('uses removed');
 });
 
@@ -47,6 +47,22 @@ it('should detect deprecation error - single resource, deprecation', async () =>
   const result = response.runs[0].results[0];
   expectResult(result, 'K8S002', 'warning', 'ReplicaSet');
   expect(result.message.text).toContain('uses deprecated');
+});
+
+it('should detect deprecation error - multiple resources, removal + deprecation', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/deprecations-4', 'v1.28');
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+
+  expect(hasErrors).toBe(2);
+
+  const result1 = response.runs[0].results[0];
+  expectResult(result1, 'K8S003', 'error', 'RuntimeClass');
+  expect(result1.message.text).toContain('uses removed');
+
+  const result2 = response.runs[0].results[1];
+  expectResult(result2, 'K8S002', 'warning', 'KubeSchedulerConfiguration');
+  expect(result2.message.text).toContain('uses deprecated');
 });
 
 async function processResourcesInFolder(path: string, schemaVersion?: string) {

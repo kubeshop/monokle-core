@@ -77,11 +77,12 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       const resourceErrors = await this.validateResource(resource);
       results.push(...resourceErrors);
 
-      // K8S002
+      // K8S002 and K8S003
       const deprecationError = validate(resource, this._settings.schemaVersion);
 
       if (deprecationError) {
-        const asValidationError = this.adaptToValidationResult(resource, [deprecationError.path], 'K8S002', deprecationError.message);
+        const ruleId = deprecationError.type === 'removal' ? 'K8S003' : 'K8S002';
+        const asValidationError = this.adaptToValidationResult(resource, [deprecationError.path], ruleId, deprecationError.message);
         isDefined(asValidationError) && results.push(asValidationError);
       }
     }

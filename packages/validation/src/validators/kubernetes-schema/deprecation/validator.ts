@@ -1,12 +1,14 @@
 import {Resource} from '../../../common/types.js';
 import {DEPRECATIONS} from './deprecations.js';
 
+export type DeprecationType = 'deprecation' | 'removal';
+
 export type Deprecation = {
   kinds: string[];
   versions: string[];
   recommended: string | null;
   link: string;
-  type: 'deprecation' | 'removal';
+  type: DeprecationType;
 };
 
 export type Deprecations = {
@@ -23,6 +25,7 @@ export type DeprecationError = {
 export type DeprecationMessage = {
   path: string;
   message: string;
+  type: DeprecationType;
 };
 
 export function validate(resource: Resource, clusterVersion: string): DeprecationMessage | null {
@@ -42,6 +45,7 @@ export function validate(resource: Resource, clusterVersion: string): Deprecatio
   return {
       path: 'apiVersion',
       message: composeMessage(isDeprecatedRule),
+      type: isDeprecatedRule.rule.type,
   };
 }
 
