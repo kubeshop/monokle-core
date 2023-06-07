@@ -55,7 +55,7 @@ function isDeprecated(apiVersion: string, kind: string, clusterVersion: string):
     }
 
     const rule = rules.find(rule =>
-      rule.versions.includes(apiVersion) && rule.kinds.includes(kind)
+      rule.versions.includes(apiVersion) && (rule.kinds.includes(kind) || rule.kinds.includes('*'))
     );
 
     if (rule) {
