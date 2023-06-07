@@ -10,6 +10,9 @@ import {extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
+import {SimpleCustomValidator} from '../node.js';
+import {defineRule} from '../custom.js';
+import {isDeployment} from '../validators/custom/schemas/deployment.apps.v1.js';
 
 it('should be simple to configure', async () => {
   const parser = new ResourceParser();
@@ -113,7 +116,37 @@ it('should be flexible to configure', async () => {
 it('should allow rules to be configurable', async () => {
   const parser = new ResourceParser();
 
-  const validator = createDefaultMonokleValidator(parser);
+  const validator = new MonokleValidator(async () => {
+    return new SimpleCustomValidator(
+      {
+        id: 'KBP',
+        name: 'practices',
+        description: 'debug-validator',
+        rules: {
+          highAvailable: defineRule({
+            id: 6,
+            description: 'Require at least two replicas',
+            fullDescription: 'High availability avoids downtimes when a pod crashes.',
+            help: "Set your deployment's replicas to two or higher.",
+            advanced: {
+              enabled: false,
+              severity: 3,
+            },
+            validate({resources, params}, {report}) {
+              resources.filter(isDeployment).forEach(deployment => {
+                const replicaCount = deployment.spec?.replicas ?? 1;
+                const replicaThreshold = params ?? 1;
+                const valid = replicaCount > replicaThreshold;
+                if (valid) return;
+                report(deployment, {path: 'spec.replicas'});
+              });
+            },
+          }),
+        },
+      },
+      parser
+    );
+  });
 
   processRefs(RESOURCES, parser);
 
