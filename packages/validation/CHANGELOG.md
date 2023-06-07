@@ -1,5 +1,12 @@
 # @monokle/validation
 
+## 0.18.0
+
+### Minor Changes
+
+- f0a2fff: introduce 'apiVersion' deprecation rules
+- f28a2fc: add rule configuration
+
 ## 0.17.4
 
 ### Patch Changes
