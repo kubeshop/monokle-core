@@ -1,0 +1,10 @@
+apiVersion: node.k8s.io/v1alpha1
+kind: RuntimeClass
+metadata:
+  name: class1
+handler: config1
+---
+apiVersion: kubescheduler.config.k8s.io/v1beta3
+kind: KubeSchedulerConfiguration
+clientConnection:
+  kubeconfig: /etc/srv/kubernetes/kube-scheduler/kubeconfig

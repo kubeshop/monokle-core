@@ -1,4 +1,4 @@
-import Ajv, {ErrorObject, ValidateFunction} from 'ajv';
+import Ajv, {ValidateFunction} from 'ajv';
 import {JsonObject} from 'type-fest';
 import {Document, isCollection, ParsedNode} from 'yaml';
 import {z} from 'zod';
@@ -12,6 +12,7 @@ import {KNOWN_RESOURCE_KINDS} from '../../utils/knownResourceKinds.js';
 import {getResourceSchemaPrefix} from './resourcePrefixMap.js';
 import {KUBERNETES_SCHEMA_RULES} from './rules.js';
 import {SchemaLoader} from './schemaLoader.js';
+import {validate} from './deprecation/validator.js';
 
 type Settings = z.infer<typeof Settings>;
 const Settings = z.object({
@@ -72,8 +73,18 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;
 
     for (const resource of dirtyResources) {
+      // K8S001
       const resourceErrors = await this.validateResource(resource);
       results.push(...resourceErrors);
+
+      // K8S002 and K8S003
+      const deprecationError = validate(resource, this._settings.schemaVersion);
+
+      if (deprecationError) {
+        const ruleId = deprecationError.type === 'removal' ? 'K8S003' : 'K8S002';
+        const asValidationError = this.adaptToValidationResult(resource, [deprecationError.path], ruleId, deprecationError.message);
+        isDefined(asValidationError) && results.push(asValidationError);
+      }
     }
 
     return results;
@@ -106,7 +117,12 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     validate(resource.content);
 
     const errors = validate.errors ?? [];
-    const results = errors.map(err => this.adaptToValidationResult(resource, err)).filter(isDefined);
+    const results = errors.map(err => this.adaptToValidationResult(
+      resource,
+      err.dataPath.substring(1).split('/'),
+      'K8S001',
+      err.message ? `Value at ${err.dataPath} ${err.message}` : ''
+    )).filter(isDefined);
 
     return results;
   }
@@ -127,22 +143,26 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       : `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`; // custom resource
 
     const keyRef = `#/definitions/${key}`;
-    const validate = this.ajv.getSchema(keyRef);
-    return validate;
+    try {
+      const validate = this.ajv.getSchema(keyRef);
+      return validate;
+    } catch (err) {
+      return undefined;
+    }
   }
 
-  private adaptToValidationResult(resource: Resource, err: ErrorObject) {
+  private adaptToValidationResult(resource: Resource, path: string[], ruleId: string, errText: string) {
     const {parsedDoc} = this.resourceParser.parse(resource);
 
-    const valueNode = findJsonPointerNode(parsedDoc, err.dataPath.substring(1).split('/'));
+    const valueNode = findJsonPointerNode(parsedDoc, path);
 
     const region = this.resourceParser.parseErrorRegion(resource, valueNode.range);
 
     const locations = createLocations(resource, region);
 
-    return this.createValidationResult('K8S001', {
+    return this.createValidationResult(ruleId, {
       message: {
-        text: err.message ? `Value at ${err.dataPath} ${err.message}` : '',
+        text: errText,
       },
       locations,
     });
