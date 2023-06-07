@@ -7,21 +7,46 @@ import 'isomorphic-fetch';
 import {extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
+import { ValidationResult } from '../node.js';
 
-it('should detect deprecation error - single resource', async () => {
+it('should detect deprecation error - single resource, removal', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/deprecations-1');
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
 
   expect(hasErrors).toBe(1);
+
+  const result = response.runs[0].results[0];
+  expectResult(result, 'K8S002', 'warning', 'ReplicaSet');
+  expect(result.message.text).toContain('uses removed');
 });
 
-it('should detect deprecation error - multiple resources', async () => {
+it('should detect deprecation error - multiple resources, removal', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/deprecations-2', 'v1.29');
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
 
   expect(hasErrors).toBe(2);
+
+  const result1 = response.runs[0].results[0];
+  expectResult(result1, 'K8S002', 'warning', 'ValidatingWebhookConfiguration');
+  expect(result1.message.text).toContain('uses removed');
+
+  const result2 = response.runs[0].results[1];
+  expectResult(result2, 'K8S002', 'warning', 'FlowSchema');
+  expect(result2.message.text).toContain('uses removed');
+});
+
+it('should detect deprecation error - single resource, deprecation', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/deprecations-3', 'v1.15');
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+
+  expect(hasErrors).toBe(1);
+
+  const result = response.runs[0].results[0];
+  expectResult(result, 'K8S002', 'warning', 'ReplicaSet');
+  expect(result.message.text).toContain('uses deprecated');
 });
 
 async function processResourcesInFolder(path: string, schemaVersion?: string) {
@@ -41,6 +66,12 @@ async function processResourcesInFolder(path: string, schemaVersion?: string) {
   );
   const response = await validator.validate({resources});
   return {response, resources};
+}
+
+function expectResult(result: ValidationResult, ruleId: string, level: string, resource: string) {
+  expect(result.ruleId).toBe(ruleId);
+  expect(result.level).toBe(level);
+  expect(result.message.text).toContain(resource);
 }
 
 async function configureValidator(validator: MonokleValidator, schemaVersion = '1.24.2') {
