@@ -6,7 +6,7 @@ import {processRefs} from '../references/process.js';
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
 import {RESOURCES} from './badResources.js';
-import {extractK8sResources, readDirectory} from './testUtils.js';
+import {expectResult, extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
@@ -227,6 +227,21 @@ it('should be valid SARIF', async () => {
   });
 
   expect(validateSarif.errors?.length ?? 0).toBe(0);
+});
+
+it('should rise warning when no apiVersion present (K8S004)', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/no-apiversion');
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toBe(2);
+
+  const error1 = response.runs[0].results[0];
+  expectResult(error1, 'K8S004', 'warning', 'FlowSchema');
+  expect(error1.message.text).toContain('Missing "apiVersion"');
+
+  const error2 = response.runs[0].results[1];
+  expectResult(error2, 'K8S004', 'warning', 'Pod');
+  expect(error2.message.text).toContain('Missing "apiVersion"');
 });
 
 function configureValidator(validator: MonokleValidator) {

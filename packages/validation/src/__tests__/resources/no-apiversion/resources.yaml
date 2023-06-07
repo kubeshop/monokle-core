@@ -1,0 +1,54 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: demo-webhook
+webhooks:
+  - name: webhook-server.webhook-demo.svc
+    sideEffects: None
+    admissionReviewVersions: ["v1", "v1beta1"]
+    clientConfig:
+      service:
+        name: webhook-server
+        namespace: webhook-demo
+        path: "/validate"
+      caBundle: ""
+    rules:
+      - operations: [ "CREATE" ]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+---
+apiVersion: ''
+kind: FlowSchema
+metadata:
+  name: health-for-strangers
+spec:
+  matchingPrecedence: 1000
+  priorityLevelConfiguration:
+    name: exempt
+  rules:
+    - nonResourceRules:
+      - nonResourceURLs:
+          - "/healthz"
+          - "/livez"
+          - "/readyz"
+        verbs:
+          - "*"
+      subjects:
+        - kind: Group
+          group:
+            name: "system:unauthenticated"
+---
+kind: Pod
+metadata:
+  name: pod-warning
+  labels:
+    app: pod-warning
+spec:
+  restartPolicy: OnFailure
+  securityContext:
+    runAsNonRoot: false
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sh", "-c", "echo I am running as user $(id -u)"]

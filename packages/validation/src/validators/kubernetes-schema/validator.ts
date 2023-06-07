@@ -84,6 +84,10 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
         const asValidationError = this.adaptToValidationResult(resource, [deprecationError.path], ruleId, deprecationError.message);
         isDefined(asValidationError) && results.push(asValidationError);
       }
+
+      // K8S004
+      const apiVersionError = this.validateApiVersion(resource);
+      isDefined(apiVersionError) && results.push(apiVersionError);
     }
 
     return results;
@@ -165,6 +169,17 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       },
       locations,
     });
+  }
+
+  private validateApiVersion(resource: Resource): ValidationResult | undefined {
+    const apiVersion = resource.apiVersion ?? undefined;
+    const kind = resource.kind ?? undefined;
+
+    if (kind && !apiVersion) {
+      return this.adaptToValidationResult(resource, ['kind'], 'K8S004', `Missing "apiVersion" field for "${resource.kind}".`);
+    }
+
+    return undefined;
   }
 }
 

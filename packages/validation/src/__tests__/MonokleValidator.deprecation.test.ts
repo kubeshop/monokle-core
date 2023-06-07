@@ -4,10 +4,9 @@ import {processRefs} from '../references/process.js';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
-import {extractK8sResources, readDirectory} from './testUtils.js';
+import {expectResult, extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
-import { ValidationResult } from '../node.js';
 
 it('should detect deprecation error - single resource, removal', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/deprecations-1');
@@ -82,12 +81,6 @@ async function processResourcesInFolder(path: string, schemaVersion?: string) {
   );
   const response = await validator.validate({resources});
   return {response, resources};
-}
-
-function expectResult(result: ValidationResult, ruleId: string, level: string, resource: string) {
-  expect(result.ruleId).toBe(ruleId);
-  expect(result.level).toBe(level);
-  expect(result.message.text).toContain(resource);
 }
 
 async function configureValidator(validator: MonokleValidator, schemaVersion = '1.24.2') {
