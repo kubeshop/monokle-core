@@ -14,7 +14,6 @@ import {noRootGroup} from './rules/KBP109-no-root-group.js';
 import {noPodExecute} from './rules/KBP108-noPodExecute.js';
 import {noPodCreate} from './rules/KBP107-noPodCreate.js';
 import {noAutomountServiceAccountToken} from './rules/KBP106-noAutomountServiceAccountToken.js';
-import {highAvailable} from './rules/KBP006-high-available.js';
 
 export default definePlugin({
   id: 'KBP',
@@ -27,7 +26,6 @@ export default definePlugin({
     noMountedDockerSock,
     cpuLimit,
     noLatestImage,
-    highAvailable,
     noWritableFs,
     cpuRequest,
     memoryRequest,
