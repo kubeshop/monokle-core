@@ -50,7 +50,7 @@ export const KUBERNETES_SCHEMA_RULES: RuleMetadata[] = [
       text: 'The resource does not have "apiVersion" field.',
     },
     fullDescription: {
-      text: 'The resource is violating the apiversion required. The resource schema will not be validated',
+      text: 'The resource is violating the apiversion required. The resource schema will not be validated.',
     },
     help: {
       text: 'Set "apiVersion" to correct value according to used resource kind. You can hover the key for documentation.',

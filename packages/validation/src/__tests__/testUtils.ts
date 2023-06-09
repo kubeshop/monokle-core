@@ -72,6 +72,19 @@ export function extractK8sResources(files: File[]): Resource[] {
         };
 
         resources.push(resource);
+      } else if (content && typeof content.kind === 'string') {
+        // Load K8s schemas only with no apiVersion present for testing purposes.
+        const name = createResourceName(file.path, content, content.kind);
+        const id = createResourceId(file.id, content.kind, name, content.metadata?.namespace);
+        const namespace = extractNamespace(content);
+        const resource = {
+          ...resourceBase,
+          id,
+          name,
+          namespace,
+        };
+
+        resources.push(resource);
       }
     }
   }

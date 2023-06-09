@@ -64,6 +64,21 @@ it('should detect deprecation error - multiple resources, removal + deprecation'
   expect(result2.message.text).toContain('uses deprecated');
 });
 
+it('should rise warning when no apiVersion present (K8S004)', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/no-apiversion');
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toBe(2);
+
+  const error1 = response.runs[0].results[0];
+  expectResult(error1, 'K8S004', 'warning', 'FlowSchema');
+  expect(error1.message.text).toContain('Missing "apiVersion"');
+
+  const error2 = response.runs[0].results[1];
+  expectResult(error2, 'K8S004', 'warning', 'Pod');
+  expect(error2.message.text).toContain('Missing "apiVersion"');
+});
+
 async function processResourcesInFolder(path: string, schemaVersion?: string) {
   const files = await readDirectory(path);
   const resources = extractK8sResources(files);
