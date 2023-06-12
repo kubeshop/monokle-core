@@ -5,6 +5,17 @@ export function getResourceSchemaPrefix(kind: string): string | undefined {
   return prefix;
 }
 
+export function matchResourceSchema(kind: string, apiVersion: string, availableDefinitions: string[]): string | undefined {
+  const prefix = getResourceSchemaPrefix(kind);
+
+  if (prefix) {
+    return `${prefix}.${kind}`;
+  }
+
+  const suffix = `${apiVersion.split('/').pop()}.${kind}`;
+  return availableDefinitions.find((definition) => definition.endsWith(suffix));
+}
+
 export const RESOURCE_SCHEMA_PREFIX: Partial<Record<KnownResourceKinds, string>> = {
   ClusterRole: 'io.k8s.api.rbac.v1',
   ClusterRoleBinding: 'io.k8s.api.rbac.v1',

@@ -8,7 +8,7 @@ import {CustomSchema, Incremental, Resource} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {KNOWN_RESOURCE_KINDS} from '../../utils/knownResourceKinds.js';
-import {getResourceSchemaPrefix} from './resourcePrefixMap.js';
+import {getResourceSchemaPrefix, matchResourceSchema} from './resourcePrefixMap.js';
 import {KUBERNETES_SCHEMA_RULES} from './rules.js';
 import {SchemaLoader} from './schemaLoader.js';
 import {validate} from './deprecation/validator.js';
@@ -21,6 +21,7 @@ const Settings = z.object({
 export class KubernetesSchemaValidator extends AbstractPlugin {
   private _settings!: Settings;
   private ajv!: Ajv.Ajv;
+  private definitions!: string[];
 
   constructor(private resourceParser: ResourceParser, private schemaLoader: SchemaLoader) {
     super(
@@ -44,6 +45,8 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     if (!schema) {
       return;
     }
+
+    this.definitions = Object.keys(schema.schema.definitions);
 
     this.ajv = new Ajv({
       unknownFormats: 'ignore',
@@ -139,14 +142,11 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
   private async getResourceValidator(
     resourceOrResourceKind: Resource | Resource['kind']
   ): Promise<ValidateFunction | undefined> {
+    const apiVersion = (typeof resourceOrResourceKind === 'string' ? '' : resourceOrResourceKind.apiVersion) ?? '';
     const kind = typeof resourceOrResourceKind === 'string' ? resourceOrResourceKind : resourceOrResourceKind.kind;
-
-    const prefix = getResourceSchemaPrefix(kind);
-    const key = prefix
-      ? `${prefix}.${kind}` // known resource
-      : `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`; // custom resource
-
+    const key = matchResourceSchema(kind, apiVersion, this.definitions || []) ?? `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`;
     const keyRef = `#/definitions/${key}`;
+
     try {
       const validate = this.ajv.getSchema(keyRef);
       return validate;
