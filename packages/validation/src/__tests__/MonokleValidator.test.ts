@@ -6,7 +6,7 @@ import {processRefs} from '../references/process.js';
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
 import {RESOURCES} from './badResources.js';
-import {expectResult, extractK8sResources, readDirectory} from './testUtils.js';
+import {extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
@@ -45,6 +45,18 @@ async function processResourcesInFolder(path: string) {
 
   const parser = new ResourceParser();
   const validator = createDefaultMonokleValidator(parser);
+
+  await validator.preload({
+    plugins: {
+      'yaml-syntax': true,
+      'resource-links': true,
+      'kubernetes-schema': true,
+      'open-policy-agent': true,
+    },
+    rules: {
+      'kubernetes-schema/strict-mode-violated': false,
+    }
+  });
 
   processRefs(
     resources,

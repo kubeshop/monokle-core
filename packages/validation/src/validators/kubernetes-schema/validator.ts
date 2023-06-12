@@ -8,7 +8,7 @@ import {CustomSchema, Incremental, Resource} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {KNOWN_RESOURCE_KINDS} from '../../utils/knownResourceKinds.js';
-import {getResourceSchemaPrefix, matchResourceSchema} from './resourcePrefixMap.js';
+import {matchResourceSchema} from './resourcePrefixMap.js';
 import {KUBERNETES_SCHEMA_RULES} from './rules.js';
 import {SchemaLoader} from './schemaLoader.js';
 import {validate} from './deprecation/validator.js';
@@ -81,7 +81,6 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
 
       // K8S002 and K8S003
       const deprecationError = validate(resource, this._settings.schemaVersion);
-
       if (deprecationError) {
         const ruleId = deprecationError.type === 'removal' ? 'K8S003' : 'K8S002';
         const asValidationError = this.adaptToValidationResult(resource, [deprecationError.path], ruleId, deprecationError.message);
@@ -89,11 +88,13 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       }
 
       // K8S004
-      if (resourceErrors === undefined) {
-        const hasApiVersion = resource.apiVersion !== undefined;
-        const errorKey = hasApiVersion ? 'apiVersion' : 'kind';
-        const validationResult = this.adaptToValidationResult(resource, [errorKey], 'K8S004', `Missing "apiVersion" field for "${resource.kind}".`);
-
+      const hasApiVersion = resource.apiVersion && resource.apiVersion.length > 0;
+      if (resourceErrors === undefined || !hasApiVersion) {
+        const errorKey = resource.apiVersion !== undefined ? 'apiVersion' : 'kind';
+        const errorText = hasApiVersion ?
+          `Invalid or unsupported "apiVersion" value for "${resource.kind}".` :
+          `Missing "apiVersion" field for "${resource.kind}".`;
+        const validationResult = this.adaptToValidationResult(resource, [errorKey], 'K8S004', errorText);
         isDefined(validationResult) && results.push(validationResult);
       }
     }
