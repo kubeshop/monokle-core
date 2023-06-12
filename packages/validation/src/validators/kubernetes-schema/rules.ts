@@ -43,4 +43,20 @@ export const KUBERNETES_SCHEMA_RULES: RuleMetadata[] = [
       level: 'error',
     },
   },
+  {
+    id: 'K8S004',
+    name: 'strict-mode-violated',
+    shortDescription: {
+      text: 'The resource has unsupported or invalid "apiVersion" field value.',
+    },
+    fullDescription: {
+      text: 'The resource is violating the strict-mode violation. The resource will not be validated against Kubernetes schema.',
+    },
+    help: {
+      text: 'Not supported or invalid "apiVersion" value has been used. You can hover the key for documentation.',
+    },
+    defaultConfiguration: {
+      enabled: false,
+    }
+  },
 ];

@@ -4,7 +4,8 @@ import glob from 'tiny-glob';
 import {readFile as readFileFromFs} from 'fs/promises';
 import chunkArray from 'lodash/chunk.js';
 import {LineCounter, parseAllDocuments, parseDocument} from 'yaml';
-import {Resource} from '../index.js';
+import {Resource, ValidationResult} from '../index.js';
+import { expect } from 'vitest';
 
 export const KUSTOMIZATION_KIND = 'Kustomization';
 export const KUSTOMIZATION_API_GROUP = 'kustomize.config.k8s.io';
@@ -68,6 +69,19 @@ export function extractK8sResources(files: File[]): Resource[] {
           apiVersion: KUSTOMIZATION_API_GROUP,
           id,
           name,
+        };
+
+        resources.push(resource);
+      } else if (content && typeof content.kind === 'string') {
+        // Load K8s schemas only with no apiVersion present for testing purposes.
+        const name = createResourceName(file.path, content, content.kind);
+        const id = createResourceId(file.id, content.kind, name, content.metadata?.namespace);
+        const namespace = extractNamespace(content);
+        const resource = {
+          ...resourceBase,
+          id,
+          name,
+          namespace,
         };
 
         resources.push(resource);
@@ -181,4 +195,10 @@ export async function readDirectory(directoryPath: string): Promise<File[]> {
   }
 
   return files;
+}
+
+export function expectResult(result: ValidationResult, ruleId: string, level: string, resource: string) {
+  expect(result.ruleId).toBe(ruleId);
+  expect(result.level).toBe(level);
+  expect(result.message.text).toContain(resource);
 }

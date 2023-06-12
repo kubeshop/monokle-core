@@ -8,7 +8,7 @@ import {CustomSchema, Incremental, Resource} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {KNOWN_RESOURCE_KINDS} from '../../utils/knownResourceKinds.js';
-import {getResourceSchemaPrefix} from './resourcePrefixMap.js';
+import {matchResourceSchema} from './resourcePrefixMap.js';
 import {KUBERNETES_SCHEMA_RULES} from './rules.js';
 import {SchemaLoader} from './schemaLoader.js';
 import {validate} from './deprecation/validator.js';
@@ -21,6 +21,7 @@ const Settings = z.object({
 export class KubernetesSchemaValidator extends AbstractPlugin {
   private _settings!: Settings;
   private ajv!: Ajv.Ajv;
+  private definitions!: string[];
 
   constructor(private resourceParser: ResourceParser, private schemaLoader: SchemaLoader) {
     super(
@@ -44,6 +45,8 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     if (!schema) {
       return;
     }
+
+    this.definitions = Object.keys(schema.schema.definitions);
 
     this.ajv = new Ajv({
       unknownFormats: 'ignore',
@@ -74,15 +77,25 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     for (const resource of dirtyResources) {
       // K8S001
       const resourceErrors = await this.validateResource(resource);
-      results.push(...resourceErrors);
+      resourceErrors !== undefined && results.push(...resourceErrors);
 
       // K8S002 and K8S003
       const deprecationError = validate(resource, this._settings.schemaVersion);
-
       if (deprecationError) {
         const ruleId = deprecationError.type === 'removal' ? 'K8S003' : 'K8S002';
         const asValidationError = this.adaptToValidationResult(resource, [deprecationError.path], ruleId, deprecationError.message);
         isDefined(asValidationError) && results.push(asValidationError);
+      }
+
+      // K8S004
+      const hasApiVersion = resource.apiVersion && resource.apiVersion.length > 0;
+      if (resourceErrors === undefined || !hasApiVersion) {
+        const errorKey = resource.apiVersion !== undefined ? 'apiVersion' : 'kind';
+        const errorText = hasApiVersion ?
+          `Invalid or unsupported "apiVersion" value for "${resource.kind}".` :
+          `Missing "apiVersion" field for "${resource.kind}".`;
+        const validationResult = this.adaptToValidationResult(resource, [errorKey], 'K8S004', errorText);
+        isDefined(validationResult) && results.push(validationResult);
       }
     }
 
@@ -106,11 +119,11 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     this.ajv.removeSchema(`#/definitions/${key}`);
   }
 
-  private async validateResource(resource: Resource): Promise<ValidationResult[]> {
+  private async validateResource(resource: Resource): Promise<ValidationResult[] | undefined> {
     const validate = await this.getResourceValidator(resource);
 
     if (!validate) {
-      return [];
+      return undefined;
     }
 
     validate(resource.content);
@@ -134,14 +147,11 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
   private async getResourceValidator(
     resourceOrResourceKind: Resource | Resource['kind']
   ): Promise<ValidateFunction | undefined> {
+    const apiVersion = (typeof resourceOrResourceKind === 'string' ? '' : resourceOrResourceKind.apiVersion) ?? '';
     const kind = typeof resourceOrResourceKind === 'string' ? resourceOrResourceKind : resourceOrResourceKind.kind;
-
-    const prefix = getResourceSchemaPrefix(kind);
-    const key = prefix
-      ? `${prefix}.${kind}` // known resource
-      : `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`; // custom resource
-
+    const key = matchResourceSchema(kind, apiVersion, this.definitions || []) ?? `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`;
     const keyRef = `#/definitions/${key}`;
+
     try {
       const validate = this.ajv.getSchema(keyRef);
       return validate;
