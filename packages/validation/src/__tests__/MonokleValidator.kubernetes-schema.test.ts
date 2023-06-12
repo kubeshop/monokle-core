@@ -117,6 +117,9 @@ async function configureValidator(validator: MonokleValidator, schemaVersion = '
     plugins: {
       'kubernetes-schema': true,
     },
+    rules: {
+      'kubernetes-schema/strict-mode-violated': true,
+    },
     settings: {
       'kubernetes-schema': {
         schemaVersion,

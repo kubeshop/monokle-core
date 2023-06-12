@@ -46,18 +46,6 @@ async function processResourcesInFolder(path: string) {
   const parser = new ResourceParser();
   const validator = createDefaultMonokleValidator(parser);
 
-  await validator.preload({
-    plugins: {
-      'yaml-syntax': true,
-      'resource-links': true,
-      'kubernetes-schema': true,
-      'open-policy-agent': true,
-    },
-    rules: {
-      'kubernetes-schema/strict-mode-violated': false,
-    }
-  });
-
   processRefs(
     resources,
     parser,

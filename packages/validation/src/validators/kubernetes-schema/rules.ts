@@ -55,5 +55,8 @@ export const KUBERNETES_SCHEMA_RULES: RuleMetadata[] = [
     help: {
       text: 'Not supported or invalid "apiVersion" value has been used. You can hover the key for documentation.',
     },
+    defaultConfiguration: {
+      enabled: false,
+    }
   },
 ];
