@@ -75,9 +75,9 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;
 
     for (const resource of dirtyResources) {
-      // K8S001 and K8S004
+      // K8S001
       const resourceErrors = await this.validateResource(resource);
-      results.push(...resourceErrors);
+      resourceErrors !== undefined && results.push(...resourceErrors);
 
       // K8S002 and K8S003
       const deprecationError = validate(resource, this._settings.schemaVersion);
@@ -86,6 +86,15 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
         const ruleId = deprecationError.type === 'removal' ? 'K8S003' : 'K8S002';
         const asValidationError = this.adaptToValidationResult(resource, [deprecationError.path], ruleId, deprecationError.message);
         isDefined(asValidationError) && results.push(asValidationError);
+      }
+
+      // K8S004
+      if (resourceErrors === undefined) {
+        const hasApiVersion = resource.apiVersion !== undefined;
+        const errorKey = hasApiVersion ? 'apiVersion' : 'kind';
+        const validationResult = this.adaptToValidationResult(resource, [errorKey], 'K8S004', `Missing "apiVersion" field for "${resource.kind}".`);
+
+        isDefined(validationResult) && results.push(validationResult);
       }
     }
 
@@ -109,16 +118,11 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     this.ajv.removeSchema(`#/definitions/${key}`);
   }
 
-  private async validateResource(resource: Resource): Promise<ValidationResult[]> {
+  private async validateResource(resource: Resource): Promise<ValidationResult[] | undefined> {
     const validate = await this.getResourceValidator(resource);
 
     if (!validate) {
-      // K8S004
-      const hasApiVersion = resource.apiVersion !== undefined;
-      const errorKey = hasApiVersion ? 'apiVersion' : 'kind';
-      const validationResult = this.adaptToValidationResult(resource, [errorKey], 'K8S004', `Missing "apiVersion" field for "${resource.kind}".`);
-
-      return isDefined(validationResult) ? [validationResult] : [];
+      return undefined;
     }
 
     validate(resource.content);
