@@ -8,6 +8,9 @@ metadata:
     app.kubernetes.io/name: rs
     app.kubernetes.io/instance: rs-1
     app.kubernetes.io/version: ""
+  annotations:
+    revision: "1"
+    hash: "123dsd3"
 spec:
   replicas: 3
   selector:

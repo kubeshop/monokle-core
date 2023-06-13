@@ -39,6 +39,24 @@ export const METADATA_RULES: RuleMetadata[] = [
       text: '',
     },
     defaultConfiguration: {
+      enabled: false,
+      level: 'warning',
+    },
+  },
+  {
+    id: 'MTD003',
+    name: 'custom-annotations',
+    shortDescription: {
+      text: 'Custom annotations are missing.',
+    },
+    fullDescription: {
+      text: '',
+    },
+    help: {
+      text: '',
+    },
+    defaultConfiguration: {
+      enabled: false,
       level: 'warning',
     },
   },

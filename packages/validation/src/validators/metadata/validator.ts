@@ -6,7 +6,8 @@ import {ResourceParser} from '../../common/resourceParser.js';
 import {ValidationResult} from '../../common/sarif.js';
 import {Incremental, Resource} from '../../common/types.js';
 import {METADATA_RULES} from './rules.js';
-import { createLocations } from '../../utils/createLocations.js';
+import {createLocations} from '../../utils/createLocations.js';
+import {RuleMetadataWithConfig} from '../../types.js';
 
 export class MetadataValidator extends AbstractPlugin {
   constructor(private resourceParser: ResourceParser) {
@@ -28,8 +29,7 @@ export class MetadataValidator extends AbstractPlugin {
 
     for (const resource of dirtyResources) {
       for (const rule of this.rules) {
-        const labels = rule.configuration?.parameters ?? [];
-        const resourceError = this.validateLabels(resource, labels);
+        const resourceError = this[this.isLabelRule(rule) ? 'validateLabels' : 'validateAnnotations'](resource, rule);
 
         resourceError && results.push(resourceError);
       }
@@ -38,19 +38,44 @@ export class MetadataValidator extends AbstractPlugin {
     return results;
   }
 
-  private validateLabels(resource: Resource, expectedLabels: string[]): ValidationResult | undefined {
-    if (!expectedLabels.length) {
+  private isLabelRule(rule: RuleMetadataWithConfig) {
+    return rule.name.endsWith('-labels') || rule.name.endsWith('-label');
+  }
+
+  private validateAnnotations(resource: Resource, rule: RuleMetadataWithConfig) {
+    const invalidKeys = this.validateMap(resource.content?.metadata?.annotations ?? {}, rule.configuration?.parameters ?? []);
+
+    if (!invalidKeys.length) {
       return undefined;
     }
 
-    const resourceLabels = resource.content?.metadata?.labels ?? {};
-    const missingLabels = difference(expectedLabels, Object.keys(resourceLabels));
-    const emptyLabels = Object.entries(resourceLabels).filter(([_, value]) => !value).map(([key, _]) => key);
-    const missingEmptyLabels = intersection(expectedLabels, emptyLabels);
-    const invalidLabels = [...missingLabels, ...missingEmptyLabels].sort((a, b) => a.localeCompare(b));
-    const errorMessage = `Missing valid: ${invalidLabels.join(', ')} ${invalidLabels.length > 1 ? 'labels' : 'label'} in ${resource.kind}.`;
+    const errorMessage = `Missing valid: ${invalidKeys.join(', ')} ${invalidKeys.length > 1 ? 'annotations' : 'annotation'} in ${resource.kind}.`;
 
-    return this.adaptToValidationResult(resource, ['metadata', 'labels'], 'MTD001', errorMessage);
+    return this.adaptToValidationResult(resource, ['metadata', 'annotations'], rule.id, errorMessage);
+  }
+
+  private validateLabels(resource: Resource, rule: RuleMetadataWithConfig) {
+    const invalidKeys = this.validateMap(resource.content?.metadata?.labels ?? {}, rule.configuration?.parameters ?? []);
+
+    if (!invalidKeys.length) {
+      return undefined;
+    }
+
+    const errorMessage = `Missing valid: ${invalidKeys.join(', ')} ${invalidKeys.length > 1 ? 'labels' : 'label'} in ${resource.kind}.`;
+
+    return this.adaptToValidationResult(resource, ['metadata', 'labels'], rule.id, errorMessage);
+  }
+
+  private validateMap(actualMap: {[key: string]: any}, expectedKeys: string[]): string[] {
+    if (!expectedKeys.length) {
+      return [];
+    }
+
+    const missingLabels = difference(expectedKeys, Object.keys(actualMap));
+    const emptyLabels = Object.entries(actualMap).filter(([_, value]) => !value).map(([key, _]) => key);
+    const missingEmptyLabels = intersection(expectedKeys, emptyLabels);
+
+    return [...missingLabels, ...missingEmptyLabels].sort((a, b) => a.localeCompare(b));
   }
 
   private adaptToValidationResult(resource: Resource, path: string[], ruleId: string, errText: string) {
