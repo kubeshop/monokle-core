@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.5.1
+
+### Patch Changes
+
+- 4bdb493: Add plugin default icon
+
 ## 1.5.0
 
 ### Minor Changes
