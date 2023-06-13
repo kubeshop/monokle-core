@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.19.0
+
+### Minor Changes
+
+- 04c222d: introduce 'strict-mode-violated' validation rule
+
 ## 0.18.0
 
 ### Minor Changes
