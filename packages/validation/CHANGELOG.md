@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.19.1
+
+### Patch Changes
+
+- b719433: Fix validation imports
+
 ## 0.19.0
 
 ### Minor Changes
