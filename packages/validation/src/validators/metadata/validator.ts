@@ -1,11 +1,12 @@
-// import {YAMLError} from 'yaml';
+import {Document, isCollection, ParsedNode} from 'yaml';
+import difference from 'lodash/difference.js';
+import intersection from 'lodash/intersection.js';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {ValidationResult} from '../../common/sarif.js';
 import {Incremental, Resource} from '../../common/types.js';
-// import {createLocations} from '../../utils/createLocations.js';
-// import {isDefined} from '../../utils/isDefined.js';
 import {METADATA_RULES} from './rules.js';
+import { createLocations } from '../../utils/createLocations.js';
 
 export class MetadataValidator extends AbstractPlugin {
   constructor(private resourceParser: ResourceParser) {
@@ -25,44 +26,69 @@ export class MetadataValidator extends AbstractPlugin {
     const results: ValidationResult[] = [];
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;
 
-    console.log(this._rules);
-    console.log(this._ruleConfig);
-
     for (const resource of dirtyResources) {
-      // const resourceErrors = await this.validateResource(resource);
-      // results.push(...resourceErrors);
+      for (const rule of this.rules) {
+        const labels = rule.configuration?.parameters ?? [];
+        const resourceError = this.validateLabels(resource, labels);
+
+        resourceError && results.push(resourceError);
+      }
     }
 
     return results;
   }
 
-  // /**
-  //  * Parse for YAML errors that were allowed by non-strict parsing
-  //  */
-  // private async validateResource(resource: Resource): Promise<ValidationResult[]> {
-  //   const {parsedDoc} = this.resourceParser.parse(resource, {
-  //     forceParse: true,
-  //   });
+  private validateLabels(resource: Resource, expectedLabels: string[]): ValidationResult | undefined {
+    if (!expectedLabels.length) {
+      return undefined;
+    }
 
-  //   const results = parsedDoc.errors.map(err => this.adaptToValidationResult(resource, err)).filter(isDefined);
+    const resourceLabels = resource.content?.metadata?.labels ?? {};
+    const missingLabels = difference(expectedLabels, Object.keys(resourceLabels));
+    const emptyLabels = Object.entries(resourceLabels).filter(([_, value]) => !value).map(([key, _]) => key);
+    const missingEmptyLabels = intersection(expectedLabels, emptyLabels);
+    const invalidLabels = [...missingLabels, ...missingEmptyLabels].sort((a, b) => a.localeCompare(b));
+    const errorMessage = `Missing valid: ${invalidLabels.join(', ')} ${invalidLabels.length > 1 ? 'labels' : 'label'} in ${resource.kind}.`;
 
-  //   return results;
-  // }
+    return this.adaptToValidationResult(resource, ['metadata', 'labels'], 'MTD001', errorMessage);
+  }
 
-  // private adaptToValidationResult(resource: Resource, err: YAMLError) {
-  //   const region = this.resourceParser.parseErrorRegion(resource, err.pos);
-  //   const locations = createLocations(resource, region);
-  //   const ruleId = YAML_RULE_MAP[err.code];
+  private adaptToValidationResult(resource: Resource, path: string[], ruleId: string, errText: string) {
+    const {parsedDoc} = this.resourceParser.parse(resource);
 
-  //   const textWithoutLocation = err.message.split(' at line').at(0) ?? err.message;
+    const valueNode = findJsonPointerNode(parsedDoc, path);
 
-  //   return this.isRuleEnabled(ruleId)
-  //     ? this.createValidationResult(ruleId, {
-  //         message: {
-  //           text: textWithoutLocation,
-  //         },
-  //         locations,
-  //       })
-  //     : undefined;
-  // }
+    const region = this.resourceParser.parseErrorRegion(resource, valueNode.range);
+
+    const locations = createLocations(resource, region);
+
+    return this.createValidationResult(ruleId, {
+      message: {
+        text: errText,
+      },
+      locations,
+    });
+  }
+}
+
+function findJsonPointerNode(valuesDoc: Document.Parsed<ParsedNode>, path: string[]) {
+  if (!valuesDoc.contents) {
+    return undefined;
+  }
+
+  let valueNode: any = valuesDoc.contents;
+
+  for (let c = 0; valueNode && c < path.length; c += 1) {
+    let node = path[c];
+    if (isCollection(valueNode)) {
+      const nextNode = valueNode.get(node, true);
+      if (nextNode) {
+        valueNode = nextNode;
+      } else {
+        return valueNode;
+      }
+    } else break;
+  }
+
+  return valueNode;
 }
