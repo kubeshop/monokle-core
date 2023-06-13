@@ -9,6 +9,7 @@ import {RemoteWasmLoader} from './wasmLoader/RemoteWasmLoader.browser.js';
 import {OpenPolicyAgentValidator} from './validators/open-policy-agent/validator.js';
 import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
+import {MetadataValidator} from './validators/metadata/validator.js';
 import {MonokleValidator} from './MonokleValidator.js';
 import {bundlePluginCode} from './utils/loadCustomPlugin.node.js';
 import practicesPlugin from './validators/practices/plugin.js';
@@ -43,6 +44,8 @@ export function createDefaultPluginLoader(
         return new YamlValidator(parser);
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
+      case 'metadata':
+        return new MetadataValidator(parser);
       default:
         throw new Error('plugin_not_found');
     }
