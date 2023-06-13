@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.5.2
+
+### Patch Changes
+
+- e73912f: Add audit pane default icon
+
 ## 1.5.1
 
 ### Patch Changes
