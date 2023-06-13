@@ -1,6 +1,6 @@
 import {NSA_RELATIONS} from '../../../taxonomies/nsa.js';
 import {defineRule} from '../../custom/config.js';
-import {isServiceAccount} from '../../custom/schemas/serviceaccount.v1';
+import {isServiceAccount} from '../../custom/schemas/serviceaccount.v1.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
 export const noAutomountServiceAccountToken = defineRule({
