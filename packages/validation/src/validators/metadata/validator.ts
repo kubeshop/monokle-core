@@ -1,4 +1,3 @@
-import {Document, isCollection, ParsedNode} from 'yaml';
 import difference from 'lodash/difference.js';
 import intersection from 'lodash/intersection.js';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
@@ -8,6 +7,7 @@ import {Incremental, Resource} from '../../common/types.js';
 import {METADATA_RULES} from './rules.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {RuleMetadataWithConfig} from '../../types.js';
+import {findJsonPointerNode} from '../../utils/findJsonPointerNode.js';
 
 export class MetadataValidator extends AbstractPlugin {
   constructor(private resourceParser: ResourceParser) {
@@ -94,26 +94,4 @@ export class MetadataValidator extends AbstractPlugin {
       locations,
     });
   }
-}
-
-function findJsonPointerNode(valuesDoc: Document.Parsed<ParsedNode>, path: string[]) {
-  if (!valuesDoc.contents) {
-    return undefined;
-  }
-
-  let valueNode: any = valuesDoc.contents;
-
-  for (let c = 0; valueNode && c < path.length; c += 1) {
-    let node = path[c];
-    if (isCollection(valueNode)) {
-      const nextNode = valueNode.get(node, true);
-      if (nextNode) {
-        valueNode = nextNode;
-      } else {
-        return valueNode;
-      }
-    } else break;
-  }
-
-  return valueNode;
 }

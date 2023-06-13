@@ -9,7 +9,7 @@ import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
 import { Config, RuleMap } from '../config/parse.js';
 
-it('should detect missing required labels (MTD001)', async () => {
+it('should detect missing required labels (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata');
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
@@ -17,11 +17,11 @@ it('should detect missing required labels (MTD001)', async () => {
   expect(hasErrors).toBe(1);
 
   const result = response.runs[0].results[0];
-  expectResult(result, 'MTD001', 'error', 'ReplicaSet');
+  expectResult(result, 'MTD-recommended-labels', 'error', 'ReplicaSet');
   expectMatchList(result.message.text, ['app.kubernetes.io/component', 'app.kubernetes.io/part-of', 'app.kubernetes.io/managed']);
 });
 
-it('should detect missing redefined required labels (MTD001)', async () => {
+it('should detect missing redefined required labels (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
     'metadata/recommended-labels': ['err', ['app', 'tier', 'role']]
   });
@@ -31,12 +31,12 @@ it('should detect missing redefined required labels (MTD001)', async () => {
   expect(hasErrors).toBe(1);
 
   const result = response.runs[0].results[0];
-  expectResult(result, 'MTD001', 'error', 'ReplicaSet');
+  expectResult(result, 'MTD-recommended-labels', 'error', 'ReplicaSet');
   expectMatchList(result.message.text, ['role']);
   expect(result.message.text).not.toMatch('app.kubernetes.io/version');
 });
 
-it('should detect missing custom labels (MTD002)', async () => {
+it('should detect missing custom labels (MTD-custom-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
     'metadata/recommended-labels': false,
     'metadata/custom-labels': ['warn', ['app', 'tier', 'role']]
@@ -47,12 +47,12 @@ it('should detect missing custom labels (MTD002)', async () => {
   expect(hasErrors).toBe(1);
 
   const result = response.runs[0].results[0];
-  expectResult(result, 'MTD002', 'warning', 'ReplicaSet');
+  expectResult(result, 'MTD-custom-labels', 'warning', 'ReplicaSet');
   expectMatchList(result.message.text, ['role']);
   expect(result.message.text).not.toMatch('app.kubernetes.io/version');
 });
 
-it('should detect missing annotations labels (MTD002)', async () => {
+it('should detect missing annotations labels (MTD-custom-annotations)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
     'metadata/recommended-labels': false,
     'metadata/custom-annotations': ['warn', ['revision', 'hash', 'annotation-1', 'annotation-2']]
@@ -63,7 +63,7 @@ it('should detect missing annotations labels (MTD002)', async () => {
   expect(hasErrors).toBe(1);
 
   const result = response.runs[0].results[0];
-  expectResult(result, 'MTD003', 'warning', 'ReplicaSet');
+  expectResult(result, 'MTD-custom-annotations', 'warning', 'ReplicaSet');
   expectMatchList(result.message.text, ['annotation-1', 'annotation-2']);
   expectNotMatchList(result.message.text, ['revision', 'hash']);
 });

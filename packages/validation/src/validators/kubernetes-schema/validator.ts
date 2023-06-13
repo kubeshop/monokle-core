@@ -1,5 +1,4 @@
-import Ajv, {ErrorObject, ValidateFunction} from 'ajv';
-import {Document, isCollection, ParsedNode} from 'yaml';
+import Ajv, {ValidateFunction} from 'ajv';
 import {z} from 'zod';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
@@ -12,6 +11,7 @@ import {matchResourceSchema} from './resourcePrefixMap.js';
 import {KUBERNETES_SCHEMA_RULES} from './rules.js';
 import {SchemaLoader} from './schemaLoader.js';
 import {validate} from './deprecation/validator.js';
+import {findJsonPointerNode} from '../../utils/findJsonPointerNode.js';
 
 type Settings = z.infer<typeof Settings>;
 const Settings = z.object({
@@ -176,26 +176,4 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       locations,
     });
   }
-}
-
-function findJsonPointerNode(valuesDoc: Document.Parsed<ParsedNode>, path: string[]) {
-  if (!valuesDoc.contents) {
-    return undefined;
-  }
-
-  let valueNode: any = valuesDoc.contents;
-
-  for (let c = 0; valueNode && c < path.length; c += 1) {
-    let node = path[c];
-    if (isCollection(valueNode)) {
-      const nextNode = valueNode.get(node, true);
-      if (nextNode) {
-        valueNode = nextNode;
-      } else {
-        return valueNode;
-      }
-    } else break;
-  }
-
-  return valueNode;
 }

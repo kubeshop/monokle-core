@@ -2,16 +2,16 @@ import {RuleMetadata} from '../../common/sarif.js';
 
 export const METADATA_RULES: RuleMetadata[] = [
   {
-    id: 'MTD001',
+    id: 'MTD-recommended-labels',
     name: 'recommended-labels',
     shortDescription: {
       text: 'Recommended labels are missing.',
     },
     fullDescription: {
-      text: '',
+      text: 'The resource is violating the recommended labels. The resource may not be discoverable by tools that rely on these labels.',
     },
     help: {
-      text: '',
+      text: 'Add all recommended labels. You can hover the key for documentation.',
     },
     defaultConfiguration: {
       level: 'error',
@@ -27,16 +27,16 @@ export const METADATA_RULES: RuleMetadata[] = [
     },
   },
   {
-    id: 'MTD002',
+    id: 'MTD-custom-labels',
     name: 'custom-labels',
     shortDescription: {
       text: 'Custom labels are missing.',
     },
     fullDescription: {
-      text: '',
+      text: 'The resource is violating the custom labels. The resource may not be discoverable by tools that rely on these labels.',
     },
     help: {
-      text: '',
+      text: 'Add all required custom labels. You can hover the key for documentation.',
     },
     defaultConfiguration: {
       enabled: false,
@@ -44,16 +44,16 @@ export const METADATA_RULES: RuleMetadata[] = [
     },
   },
   {
-    id: 'MTD003',
+    id: 'MTD-custom-annotations',
     name: 'custom-annotations',
     shortDescription: {
       text: 'Custom annotations are missing.',
     },
     fullDescription: {
-      text: '',
+      text: 'The resource is violating the custom annotations. The resource may not be discoverable by tools that rely on these annotations.',
     },
     help: {
-      text: '',
+      text: 'Add all required custom annotations. You can hover the key for documentation.',
     },
     defaultConfiguration: {
       enabled: false,
