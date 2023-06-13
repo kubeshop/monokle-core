@@ -6,7 +6,7 @@ import {ProblemNode, ShowByFilterOptionType} from './types';
 import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
-import {ProblemIcon, TextEllipsis} from '@/atoms';
+import {Icon, ProblemIcon, TextEllipsis} from '@/atoms';
 import {iconMap} from './constants';
 
 type IProps = {
@@ -43,7 +43,9 @@ const ProblemRenderer: React.FC<IProps> = props => {
         <>
           <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
             <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={uppercaseFirstLetter(node.problem.rule.toolComponent.name)}>
-              {iconMap[node.problem.rule.toolComponent.name]}
+              {iconMap[node.problem.rule.toolComponent.name] ?? (
+                <Icon name="plugin-default" style={{fontSize: '13px', color: Colors.grey8}} />
+              )}
             </Tooltip>
 
             {rule && (
