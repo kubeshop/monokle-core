@@ -57,6 +57,7 @@ import {
   CustomResource,
   Secret,
   Image,
+  PluginDefault,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -91,6 +92,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   'opa-status': OPAStatus,
   'open-policy-agent': OpenPolicyAgent,
   outgoingRefs: OutgoingRefs,
+  'plugin-default': PluginDefault,
   'problem-icon': ProblemIcon,
   'problem-split': ProblemSplit,
   'pull-request': PullRequest,
@@ -109,7 +111,6 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   'validation-yaml-syntax': ValidationYamlSyntax,
   warning: Warning,
   'yaml-syntax': YAMLSyntax,
-
   'globe-search': GlobeSearch,
   'compact-nodes': CompactNodes,
   service: Service,

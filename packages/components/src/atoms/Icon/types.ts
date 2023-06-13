@@ -20,6 +20,7 @@ export type IconNames =
   | 'warning'
   | 'error'
   | 'open-policy-agent'
+  | 'plugin-default'
   | 'problem-icon'
   | 'problem-split'
   | 'pull-request'
