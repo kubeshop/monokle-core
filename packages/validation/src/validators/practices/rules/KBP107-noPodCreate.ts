@@ -1,8 +1,8 @@
 import {Role, ClusterRole} from 'kubernetes-types/rbac/v1.js';
-import {defineRule} from '../../custom/config';
+import {defineRule} from '../../custom/config.js';
 import {isClusterRole} from '../../custom/schemas/clusterrole.rbac.authorization.k8s.io.v1';
 import {isRole} from '../../custom/schemas/role.rbac.authorization.k8s.io.v1';
-import {NSA_RELATIONS} from '../../../taxonomies';
+import {NSA_RELATIONS} from '../../../taxonomies/nsa.js';
 
 export const noPodCreate = defineRule({
   id: 107,
