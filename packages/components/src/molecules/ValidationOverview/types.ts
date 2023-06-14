@@ -3,6 +3,7 @@ import {ValidationResponse, ValidationResult} from '@monokle/validation';
 export type ValidationOverviewType = {
   status: 'uninitialized' | 'loading' | 'error' | 'loaded';
   validationResponse: ValidationResponse;
+  activePlugins?: string[];
   containerClassName?: string;
   containerStyle?: React.CSSProperties;
   customMessage?: string;
@@ -17,6 +18,7 @@ export type ValidationOverviewType = {
 };
 
 export type ValidationOverviewFiltersType = {
+  activePlugins: string[];
   filtersValue: ValidationFiltersValueType;
   searchValue: string;
   onFiltersChange: (filters: ValidationFiltersValueType) => void;

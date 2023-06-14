@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import HeaderRenderer from './HeaderRenderer';
 import ProblemRenderer from './ProblemRenderer';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
-import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
+import {CORE_PLUGINS, DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
 import {BaseDataType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationOverviewType} from './types';
 import {useScroll} from './useScroll';
@@ -22,7 +22,7 @@ let baseData: BaseDataType = {
 };
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {status, validationResponse} = props;
+  const {status, validationResponse, activePlugins = CORE_PLUGINS} = props;
   const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}} = props;
   const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource, filters} = props;
   const {onFiltersChange, onProblemSelect} = props;
@@ -131,6 +131,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   return (
     <MainContainer $height={height} className={containerClassName} style={containerStyle}>
       <ValidationOverviewFilters
+        activePlugins={activePlugins}
         filtersValue={filtersValue}
         searchValue={searchValue}
         onFiltersChange={filters => {
