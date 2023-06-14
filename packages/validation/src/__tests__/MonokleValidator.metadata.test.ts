@@ -60,18 +60,45 @@ it('should detect missing annotations labels (MTD-custom-annotations)', async ()
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
 
-  expect(hasErrors).toBe(1);
+  expect(hasErrors).toBe(2);
 
-  const result = response.runs[0].results[0];
-  expectResult(result, 'MTD-custom-annotations', 'warning', 'ReplicaSet');
-  expectMatchList(result.message.text, ['annotation-1', 'annotation-2']);
-  expectNotMatchList(result.message.text, ['revision', 'hash']);
+  const result1 = response.runs[0].results[0];
+  expectResult(result1, 'MTD-custom-annotations', 'warning', 'ReplicaSet');
+  expectMatchList(result1.message.text, ['annotation-1']);
+  expectNotMatchList(result1.message.text, ['revision', 'hash', 'annotation-2']);
+
+  const result2 = response.runs[0].results[1];
+  expectResult(result2, 'MTD-custom-annotations', 'warning', 'ReplicaSet');
+  expectMatchList(result2.message.text, ['annotation-2']);
+  expectNotMatchList(result2.message.text, ['revision', 'hash', 'annotation-1']);
 });
 
-// custom-labels
+it('should detect missing dynamic custom labels', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
+    'metadata/recommended-labels': false,
+    'metadata/app-label': 'warn',
+    'metadata/tier-label': 'warn',
+    'metadata/role-label': ['warn', ['dev', 'stage', 'prod']],
+    'metadata/name-label': 'err',
+  });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+
+  expect(hasErrors).toBe(2);
+
+  const result1 = response.runs[0].results[0];
+  expectResult(result1, 'MTD-role-label', 'warning', 'ReplicaSet');
+  expectMatchList(result1.message.text, ['role']);
+
+  const result2 = response.runs[0].results[1];
+  expectResult(result2, 'MTD-name-label', 'error', 'ReplicaSet');
+  expectMatchList(result2.message.text, ['name']);
+});
+
+// custom-labels with defined values
 // custom-annotations
-// mixed
-// overrides
+// overrides of predefined labels
+// no overrides for recommended labels
 // location when there is no metadata or metadata.labels path
 
 async function processResourcesInFolder(path: string, rules?: RuleMap) {
