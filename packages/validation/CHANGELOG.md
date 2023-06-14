@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.19.2
+
+### Patch Changes
+
+- 1151a9a: Export CORE_PLUGINS constant
+
 ## 0.19.1
 
 ### Patch Changes
