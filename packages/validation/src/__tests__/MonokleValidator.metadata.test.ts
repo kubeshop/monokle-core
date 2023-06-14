@@ -9,31 +9,54 @@ import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
 import { Config, RuleMap } from '../config/parse.js';
 
-it('should detect missing required labels (MTD-recommended-labels)', async () => {
+it('should detect missing recommended labels (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata');
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
 
-  expect(hasErrors).toBe(1);
+  expect(hasErrors).toBe(4);
 
-  const result = response.runs[0].results[0];
-  expectResult(result, 'MTD-recommended-labels', 'error', 'ReplicaSet');
-  expectMatchList(result.message.text, ['app.kubernetes.io/component', 'app.kubernetes.io/part-of', 'app.kubernetes.io/managed']);
+  const result1 = response.runs[0].results[0];
+  expectResult(result1, 'MTD-recommended-labels', 'error', 'ReplicaSet');
+  expect(result1.message.text).toMatch('app.kubernetes.io/component');
+
+  const result2 = response.runs[0].results[1];
+  expectResult(result2, 'MTD-recommended-labels', 'error', 'ReplicaSet');
+  expect(result2.message.text).toMatch('app.kubernetes.io/managed');
+
+  const result3 = response.runs[0].results[2];
+  expectResult(result3, 'MTD-recommended-labels', 'error', 'ReplicaSet');
+  expect(result3.message.text).toMatch('app.kubernetes.io/part-of');
+
+  const result4 = response.runs[0].results[3];
+  expectResult(result4, 'MTD-recommended-labels', 'error', 'ReplicaSet');
+  expect(result4.message.text).toMatch('app.kubernetes.io/version');
 });
 
-it('should detect missing redefined required labels (MTD-recommended-labels)', async () => {
+it('should not override recommended labels but allow to config level (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
-    'metadata/recommended-labels': ['err', ['app', 'tier', 'role']]
+    'metadata/recommended-labels': ['warn', ['app', 'tier', 'role']]
   });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
 
-  expect(hasErrors).toBe(1);
+  expect(hasErrors).toBe(4);
 
-  const result = response.runs[0].results[0];
-  expectResult(result, 'MTD-recommended-labels', 'error', 'ReplicaSet');
-  expectMatchList(result.message.text, ['role']);
-  expect(result.message.text).not.toMatch('app.kubernetes.io/version');
+  const result1 = response.runs[0].results[0];
+  expectResult(result1, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
+  expect(result1.message.text).toMatch('app.kubernetes.io/component');
+
+  const result2 = response.runs[0].results[1];
+  expectResult(result2, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
+  expect(result2.message.text).toMatch('app.kubernetes.io/managed');
+
+  const result3 = response.runs[0].results[2];
+  expectResult(result3, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
+  expect(result3.message.text).toMatch('app.kubernetes.io/part-of');
+
+  const result4 = response.runs[0].results[3];
+  expectResult(result4, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
+  expect(result4.message.text).toMatch('app.kubernetes.io/version');
 });
 
 it('should detect missing custom labels (MTD-custom-labels)', async () => {
@@ -73,6 +96,18 @@ it('should detect missing annotations labels (MTD-custom-annotations)', async ()
   expectNotMatchList(result2.message.text, ['revision', 'hash', 'annotation-1']);
 });
 
+it('should not trigger when predefined custom rules have no names defined (MTD-custom-labels, MTD-custom-annotations)', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
+    'metadata/recommended-labels': false,
+    'metadata/custom-labels': 'err',
+    'metadata/custom-annotations': 'err'
+  });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+
+  expect(hasErrors).toBe(0);
+});
+
 it('should detect missing dynamic custom labels', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
     'metadata/recommended-labels': false,
@@ -95,11 +130,57 @@ it('should detect missing dynamic custom labels', async () => {
   expectMatchList(result2.message.text, ['name']);
 });
 
-// custom-labels with defined values
-// custom-annotations
-// overrides of predefined labels
-// no overrides for recommended labels
+it('should detect missing dynamic custom labels (with slashes replacement)', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
+    'metadata/recommended-labels': false,
+    'metadata/monokle.io__user-label': 'err',
+    'metadata/monokle.io__group-label': ['warn', ['red', 'blue']],
+    'metadata/monokle.io__namespace-label': ['err', ['default', 'kube-system']],
+  });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+
+  expect(hasErrors).toBe(2);
+
+  const result1 = response.runs[0].results[0];
+  expectResult(result1, 'MTD-monokle.io__user-label', 'error', 'ReplicaSet');
+  expectMatchList(result1.message.text, ['monokle.io/user']);
+
+  const result2 = response.runs[0].results[1];
+  expectResult(result2, 'MTD-monokle.io__group-label', 'warning', 'ReplicaSet');
+  expectMatchList(result2.message.text, ['monokle.io/group', 'red, blue']);
+});
+
+it('should detect missing dynamic custom annotations', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
+    'metadata/recommended-labels': false,
+    'metadata/app-annotation': 'err',
+    'metadata/hash-annotation': ['warn'],
+    'metadata/monokle.io__namespace-annotation': ['warn', ['minikube', 'kube-system']],
+  });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+
+  expect(hasErrors).toBe(2);
+
+  const result1 = response.runs[0].results[0];
+  expectResult(result1, 'MTD-app-annotation', 'error', 'ReplicaSet');
+  expectMatchList(result1.message.text, ['app']);
+
+  const result2 = response.runs[0].results[1];
+  expectResult(result2, 'MTD-monokle.io__namespace-annotation', 'warning', 'ReplicaSet');
+  expectMatchList(result2.message.text, ['monokle.io/namespace', 'minikube, kube-system']);
+});
+
 // location when there is no metadata or metadata.labels path
+
+it('should detect missing recommended labels even with no metadata at all (MTD-recommended-labels)', async () => {
+  const {response} = await processResourcesInFolder('src/__tests__/resources/no-metadata');
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+
+  expect(hasErrors).toBe(6);
+});
 
 async function processResourcesInFolder(path: string, rules?: RuleMap) {
   const files = await readDirectory(path);

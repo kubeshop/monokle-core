@@ -5,12 +5,16 @@ metadata:
   labels:
     app: guestbook
     tier: frontend
+    monokle.io/namespace: default
+    monokle.io/group: local
+    monokle.io/user: ""
     app.kubernetes.io/name: rs
     app.kubernetes.io/instance: rs-1
     app.kubernetes.io/version: ""
   annotations:
     revision: "1"
     hash: "123dsd3"
+    monokle.io/namespace: default
 spec:
   replicas: 3
   selector:

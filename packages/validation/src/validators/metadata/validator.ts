@@ -26,6 +26,10 @@ export class MetadataValidator extends AbstractPlugin {
   }
 
   protected preconfigureRules(rules: RuleMap = {}) {
+    // Config method may be called multiple times for same Validator instance
+    // so we need to remove previously added dynamic rules.
+    this._rules = this._rules.filter(rule => !(rule.name.endsWith('-label') || rule.name.endsWith('-annotation')));
+
     Object.entries(rules).forEach(rule => {
       const ruleName = rule[0];
 
@@ -50,7 +54,6 @@ export class MetadataValidator extends AbstractPlugin {
         },
         defaultConfiguration: {
           parameters: {name: ruleNormalizedName}
-          // rest of the configuration is set during 'this.configureRules()' method call
         },
       });
     });
@@ -77,18 +80,18 @@ export class MetadataValidator extends AbstractPlugin {
   }
 
   // We have special behavior for different rules (https://github.com/kubeshop/monokle-saas/issues/722):
-  // MTD-recommended-labels does not allow to config parameters (meaning label names or values).
-  // MTD-custom-labels and MTD-custom-annotations allows to define label/annotations expected names with config parameters.
+  // MTD-recommended-labels does not allow config parameters (meaning label names or values cannot be configured).
+  // MTD-custom-labels and MTD-custom-annotations allows to define labels/annotations expected names with config parameters.
   // MTD-*-(label|annotation) (dynamic rules) allow to define expected values with config parameters.
   private validateResource(resource: Resource, rule: RuleMetadataWithConfig) {
     const isLabelRule = this.isLabelRule(rule.name);
     const allowsNamesList = rule.id === 'MTD-custom-labels' || rule.id === 'MTD-custom-annotations';
     const allowsValuesList = rule.name.endsWith('-label') || rule.name.endsWith('-annotation');
 
-    let expectedNames = allowsNamesList ? rule.configuration?.parameters ?? [] : rule.defaultConfiguration?.parameters ?? [];
-    const expectedValues = allowsValuesList ? rule.configuration?.parameters ?? [] : []; // if not defined it will contain rule name
-    const valuesMap = isLabelRule ? resource.content?.metadata?.labels ?? {} : resource.content?.metadata?.annotations ?? {};
+    const expectedValues = allowsValuesList ? rule.configuration?.parameters ?? [] : [];
+    const valuesMap = (isLabelRule ? resource.content?.metadata?.labels : resource.content?.metadata?.annotations) ?? {};
 
+    let expectedNames = (allowsNamesList ? rule.configuration?.parameters : rule.defaultConfiguration?.parameters) ?? [];
     if (allowsValuesList && rule.defaultConfiguration?.parameters?.name) {
       expectedNames = [rule.defaultConfiguration?.parameters?.name];
     }
@@ -99,11 +102,13 @@ export class MetadataValidator extends AbstractPlugin {
       return [];
     }
 
+    const expectedValuesText = expectedValues.length ? `, expected values: ${expectedValues.join(', ')}` : '';
+
     return invalidKeys.map(key => this.adaptToValidationResult(
         resource,
         ['metadata', isLabelRule ? 'labels' : 'annotations'],
         rule.id,
-        `Missing valid '${key}' ${isLabelRule ? 'label' : 'annotation'} in '${resource.kind}'.` // expected value: ${expectedValues.join(', ')}
+        `Missing valid '${key}' ${isLabelRule ? 'label' : 'annotation'} in '${resource.kind}'${expectedValuesText}.`
       )
     ).filter(isDefined)
   }
