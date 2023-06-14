@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.5.3
+
+### Patch Changes
+
+- 23abb20: Active plugins as prop for validation pane
+
 ## 1.5.2
 
 ### Patch Changes
