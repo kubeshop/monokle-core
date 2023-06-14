@@ -172,8 +172,6 @@ it('should detect missing dynamic custom annotations', async () => {
   expectMatchList(result2.message.text, ['monokle.io/namespace', 'minikube, kube-system']);
 });
 
-// location when there is no metadata or metadata.labels path
-
 it('should detect missing recommended labels even with no metadata at all (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/no-metadata');
 
