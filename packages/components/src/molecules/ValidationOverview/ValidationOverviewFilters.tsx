@@ -4,22 +4,17 @@ import {useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {DEFAULT_FILTERS_VALUE} from './constants';
 import {ValidationOverviewFiltersType} from './types';
-import {getDefaultPluginsFilterOptions, uppercaseFirstLetter} from './utils';
+import {uppercaseFirstLetter} from './utils';
 
 const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props => {
   const {onSearch, onFiltersChange, filtersValue, searchValue, activePlugins} = props;
 
   const [active, setActive] = useState(false);
 
-  const activePluginsOptions = useMemo(() => {
-    if (!activePlugins) {
-      return getDefaultPluginsFilterOptions();
-    }
-
-    return activePlugins.map(plugin => {
-      return {name: plugin, label: uppercaseFirstLetter(plugin).replaceAll('-', ' ')};
-    });
-  }, [activePlugins]);
+  const activePluginsOptions = useMemo(
+    () => activePlugins.map(plugin => ({name: plugin, label: uppercaseFirstLetter(plugin).replaceAll('-', ' ')})),
+    [activePlugins]
+  );
 
   return (
     <Filter

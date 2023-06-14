@@ -1,9 +1,9 @@
-import {ValidationResponse, ValidationResult, CORE_PLUGINS} from '@monokle/validation';
+import {ValidationResponse, ValidationResult} from '@monokle/validation';
 
 export type ValidationOverviewType = {
   status: 'uninitialized' | 'loading' | 'error' | 'loaded';
   validationResponse: ValidationResponse;
-  activePlugins?: typeof CORE_PLUGINS[number][];
+  activePlugins?: string[];
   containerClassName?: string;
   containerStyle?: React.CSSProperties;
   customMessage?: string;
@@ -18,9 +18,9 @@ export type ValidationOverviewType = {
 };
 
 export type ValidationOverviewFiltersType = {
+  activePlugins: string[];
   filtersValue: ValidationFiltersValueType;
   searchValue: string;
-  activePlugins?: typeof CORE_PLUGINS[number][];
   onFiltersChange: (filters: ValidationFiltersValueType) => void;
   onSearch: (searchValue: string) => void;
 };

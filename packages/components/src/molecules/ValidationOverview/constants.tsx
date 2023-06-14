@@ -14,3 +14,12 @@ export const newErrorsTextMap: Record<string, string> = {
   'k8s-schema': 'K8s Schema changed.',
   rule: 'Rule changed.',
 };
+
+export const CORE_PLUGINS = [
+  'pod-security-standards',
+  'practices',
+  'kubernetes-schema',
+  'yaml-syntax',
+  'resource-links',
+  'open-policy-agent',
+];
