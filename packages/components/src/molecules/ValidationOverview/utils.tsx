@@ -1,6 +1,7 @@
 import {Icon} from '@/atoms';
 import {Colors} from '@/styles/Colors';
 import {
+  CORE_PLUGINS,
   getFileId,
   getFileLocation,
   getResourceLocation,
@@ -232,4 +233,8 @@ export const getValidationList = (problems: ProblemsType, collapsedHeadersKey: s
 
 export const uppercaseFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const getDefaultPluginsFilterOptions = () => {
+  return CORE_PLUGINS.map(plugin => ({name: plugin, label: uppercaseFirstLetter(plugin).replaceAll('-', '')}));
 };

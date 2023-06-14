@@ -1,14 +1,25 @@
 import {Filter, FilterButton, FilterField, ProblemIcon} from '@/atoms';
 import {Select} from 'antd';
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {DEFAULT_FILTERS_VALUE} from './constants';
 import {ValidationOverviewFiltersType} from './types';
+import {getDefaultPluginsFilterOptions, uppercaseFirstLetter} from './utils';
 
 const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props => {
-  const {onSearch, onFiltersChange, filtersValue, searchValue} = props;
+  const {onSearch, onFiltersChange, filtersValue, searchValue, activePlugins} = props;
 
   const [active, setActive] = useState(false);
+
+  const activePluginsOptions = useMemo(() => {
+    if (!activePlugins) {
+      return getDefaultPluginsFilterOptions();
+    }
+
+    return activePlugins.map(plugin => {
+      return {name: plugin, label: uppercaseFirstLetter(plugin).replaceAll('-', ' ')};
+    });
+  }, [activePlugins]);
 
   return (
     <Filter
@@ -28,18 +39,11 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
           onChange={value => onFiltersChange({...filtersValue, 'tool-component': value})}
           placeholder="Select tool component"
         >
-          <Select.Option key="open-policy-agent" value="open-policy-agent">
-            Open policy agent
-          </Select.Option>
-          <Select.Option key="kubernetes-schema" value="kubernetes-schema">
-            Kubernetes schema
-          </Select.Option>
-          <Select.Option key="resource-links" value="resource-links">
-            Resource links
-          </Select.Option>
-          <Select.Option key="yaml-syntax" value="yaml-syntax">
-            Yaml syntax
-          </Select.Option>
+          {activePluginsOptions.map(option => (
+            <Select.Option key={option.name} value={option.name}>
+              {option.label}
+            </Select.Option>
+          ))}
         </Select>
       </FilterField>
 
