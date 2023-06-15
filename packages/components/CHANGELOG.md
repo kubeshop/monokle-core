@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.5.5
+
+### Patch Changes
+
+- f0abc0e: Release new version for components package
+
 ## 1.5.4
 
 ### Patch Changes
