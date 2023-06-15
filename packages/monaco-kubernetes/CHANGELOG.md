@@ -1,5 +1,12 @@
 # monaco-kubernetes
 
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies [7d12c6f]
+  - @monokle/validation@0.21.0
+
 ## 0.2.7
 
 ### Patch Changes
