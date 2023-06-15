@@ -79,29 +79,25 @@ export class MetadataValidator extends AbstractPlugin {
     return ruleName.endsWith('-labels') || ruleName.endsWith('-label');
   }
 
-  // We have special behavior for different rules (https://github.com/kubeshop/monokle-saas/issues/722):
-  // MTD-recommended-labels does not allow config parameters (meaning label names or values cannot be configured).
-  // MTD-custom-labels and MTD-custom-annotations allows to define labels/annotations expected names with config parameters.
-  // MTD-*-(label|annotation) (dynamic rules) allow to define expected values with config parameters.
   private validateResource(resource: Resource, rule: RuleMetadataWithConfig) {
-    const isLabelRule = this.isLabelRule(rule.name);
-    const allowsNamesList = rule.id === 'MTD-custom-labels' || rule.id === 'MTD-custom-annotations';
-    const allowsValuesList = rule.name.endsWith('-label') || rule.name.endsWith('-annotation');
-
-    const expectedValues = allowsValuesList ? rule.configuration?.parameters ?? [] : [];
-    const valuesMap = (isLabelRule ? resource.content?.metadata?.labels : resource.content?.metadata?.annotations) ?? {};
-
-    let expectedNames = (allowsNamesList ? rule.configuration?.parameters : rule.defaultConfiguration?.parameters) ?? [];
-    if (allowsValuesList && rule.defaultConfiguration?.parameters?.name) {
-      expectedNames = [rule.defaultConfiguration?.parameters?.name];
+    let invalidKeys: string[] = [];
+    let expectedValues: string[] = [];
+    if (rule.id === 'MTD-recommended-labels') {
+      invalidKeys = this.validateRecommendedLabels(resource, rule);
+    } else if (rule.id === 'MTD-custom-labels') {
+      invalidKeys = this.validateCustomLabels(resource, rule);
+    } else if (rule.id === 'MTD-custom-annotations') {
+      invalidKeys = this.validateCustomAnnotations(resource, rule);
+    } else if (rule.name.endsWith('-label') || rule.name.endsWith('-annotation')) {
+      invalidKeys = this.validateDynamicRule(resource, rule);
+      expectedValues = rule.configuration?.parameters ?? [];
     }
-
-    const invalidKeys = this.validateMap(valuesMap, expectedNames, expectedValues);
 
     if (!invalidKeys.length) {
       return [];
     }
 
+    const isLabelRule = this.isLabelRule(rule.name);
     const expectedValuesText = expectedValues.length ? `, expected values: ${expectedValues.join(', ')}` : '';
 
     return invalidKeys.map(key => this.adaptToValidationResult(
@@ -111,6 +107,38 @@ export class MetadataValidator extends AbstractPlugin {
         `Missing valid '${key}' ${isLabelRule ? 'label' : 'annotation'} in '${resource.kind}'${expectedValuesText}.`
       )
     ).filter(isDefined)
+  }
+
+  private validateRecommendedLabels (resource: Resource, rule: RuleMetadataWithConfig) {
+    return this.validateMap(
+      resource.content?.metadata?.labels ?? [],
+      rule.defaultConfiguration?.parameters ?? [],
+      []
+    );
+  }
+
+  private validateCustomLabels(resource: Resource, rule: RuleMetadataWithConfig) {
+    return this.validateMap(
+      resource.content?.metadata?.labels ?? [],
+      rule.configuration?.parameters ?? [],
+      []
+    );
+  }
+
+  private validateCustomAnnotations(resource: Resource, rule: RuleMetadataWithConfig) {
+    return this.validateMap(
+      resource.content?.metadata?.annotations ?? [],
+      rule.configuration?.parameters ?? [],
+      []
+    );
+  }
+
+  private validateDynamicRule(resource: Resource, rule: RuleMetadataWithConfig) {
+    return this.validateMap(
+      (this.isLabelRule(rule.name) ? resource.content?.metadata?.labels : resource.content?.metadata?.annotations) ?? [],
+      [rule.defaultConfiguration?.parameters?.name],
+      rule.configuration?.parameters ?? []
+    );
   }
 
   private validateMap(actualMap: {[key: string]: any}, expectedKeys: string[], expectedValues: string[]): string[] {
