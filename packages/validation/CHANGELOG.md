@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.20.1
+
+### Patch Changes
+
+- 1b15e70: Fixed Node exports
+
 ## 0.20.0
 
 ### Minor Changes
