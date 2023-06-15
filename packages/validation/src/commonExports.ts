@@ -1,4 +1,4 @@
-// This file contains the common exports for both node and browser
+// This file contains the common exports for both node and browser.
 
 export * from './common/sarif.js';
 export * from './common/types.js';

@@ -1,5 +1,5 @@
 /**
- * Modify the commonExports.ts file if you want to export something for both node and browser environments
+ * Modify the commonExports.ts file if you want to export something for both node and browser environments.
  */
 export * from './commonExports.js';
 
