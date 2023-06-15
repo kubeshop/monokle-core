@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.5.4
+
+### Patch Changes
+
+- f08b200: Add validation filters count + refactor styling
+
 ## 1.5.3
 
 ### Patch Changes
