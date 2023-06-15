@@ -142,10 +142,13 @@ export abstract class AbstractPlugin implements Plugin {
   }
 
   async configure(config: {rules?: RuleMap; settings?: any}): Promise<void> {
+    this.preconfigureRules(config.rules);
     this.configureRules(config.rules);
     await this.configurePlugin(config.settings);
     this.configured = true;
   }
+
+  protected preconfigureRules(rules: RuleMap = {}) {}
 
   protected configureRules(rules: RuleMap = {}) {
     this._ruleConfig.clear();

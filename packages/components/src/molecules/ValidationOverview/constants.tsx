@@ -22,4 +22,5 @@ export const CORE_PLUGINS = [
   'yaml-syntax',
   'resource-links',
   'open-policy-agent',
+  'metadata',
 ];

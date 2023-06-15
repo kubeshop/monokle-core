@@ -9,6 +9,7 @@ import {RemoteWasmLoader} from './wasmLoader/RemoteWasmLoader.browser.js';
 import {OpenPolicyAgentValidator} from './validators/open-policy-agent/validator.js';
 import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
+import {MetadataValidator} from './validators/metadata/validator.js';
 import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
 
@@ -37,6 +38,8 @@ export function createExtensibleMonokleValidator(
         return new SimpleCustomValidator(labelPlugin.default, parser);
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
+      case 'metadata':
+        return new MetadataValidator(parser);
       case DEV_MODE_TOKEN:
         return new DevCustomValidator(parser);
       default:

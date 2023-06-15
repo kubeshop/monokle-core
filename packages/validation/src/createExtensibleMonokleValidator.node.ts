@@ -10,6 +10,7 @@ import {RemoteWasmLoader} from './wasmLoader/RemoteWasmLoader.node.js';
 import {OpenPolicyAgentValidator} from './validators/open-policy-agent/validator.js';
 import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
+import {MetadataValidator} from './validators/metadata/validator.js';
 import {bundlePluginCode, loadCustomPlugin} from './utils/loadCustomPlugin.node.js';
 import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
@@ -39,6 +40,8 @@ export function createExtensibleMonokleValidator(
         return new YamlValidator(parser);
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
+      case 'metadata':
+        return new MetadataValidator(parser);
       default:
         try {
           const customPlugin = await loadCustomPlugin(pluginName);
