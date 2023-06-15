@@ -1,10 +1,11 @@
 import {Filter, FilterButton, FilterField, ProblemIcon} from '@/atoms';
-import {Select} from 'antd';
+import {Badge, Select} from 'antd';
 import {useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {DEFAULT_FILTERS_VALUE} from './constants';
 import {ValidationOverviewFiltersType} from './types';
 import {uppercaseFirstLetter} from './utils';
+import {Colors} from '@/styles/Colors';
 
 const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props => {
   const {onSearch, onFiltersChange, filtersValue, searchValue, activePlugins} = props;
@@ -16,15 +17,30 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
     [activePlugins]
   );
 
+  const appliedFiltersCount = useMemo(
+    () =>
+      Object.entries(filtersValue)
+        .map(([key, value]) => {
+          return {filterName: key, filterValue: value};
+        })
+        .filter(filter => filter.filterValue && Object.values(filter.filterValue).length).length,
+    [filtersValue]
+  );
+
   return (
     <Filter
+      hasActiveFilters={appliedFiltersCount > 0}
       onClear={() => onFiltersChange(DEFAULT_FILTERS_VALUE)}
       height={200}
       active={active}
       style={{padding: 0}}
       search={searchValue}
       onSearch={value => onSearch(value)}
-      filterButton={<FilterButton active={active} onClick={() => setActive(!active)} />}
+      filterButton={
+        <CountBadge count={appliedFiltersCount} size="small" offset={[-4, 4]}>
+          <FilterButton active={active} onClick={() => setActive(!active)} />
+        </CountBadge>
+      }
       onToggle={() => setActive(!active)}
     >
       <FilterField name="Tool component">
@@ -67,6 +83,20 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
 };
 
 // Styled Components
+
+const CountBadge = styled(Badge)`
+  .ant-badge-count-sm {
+    font-size: 8px;
+    line-height: 12px;
+    color: ${Colors.grey2};
+    background-color: ${Colors.greenOkay};
+    border: unset;
+    height: 12px;
+    min-width: 12px;
+    border-radius: 6px;
+    box-shadow: none;
+  }
+`;
 
 const TypeFilterContainer = styled.div`
   display: flex;

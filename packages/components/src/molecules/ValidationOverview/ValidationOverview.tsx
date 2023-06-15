@@ -2,7 +2,7 @@ import {Colors} from '@/styles/Colors';
 import {CloseOutlined} from '@ant-design/icons';
 import {getRuleForResultV2} from '@monokle/validation';
 import {elementScroll, useVirtualizer} from '@tanstack/react-virtual';
-import {Select, Skeleton} from 'antd';
+import {Select, Skeleton, Tooltip} from 'antd';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import isEqual from 'react-fast-compare';
 import styled from 'styled-components';
@@ -14,6 +14,7 @@ import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
 import {BaseDataType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationOverviewType} from './types';
 import {useScroll} from './useScroll';
 import {getValidationList} from './utils';
+import {TOOLTIP_DELAY} from '@/constants';
 
 let baseData: BaseDataType = {
   baseCollapsedKeys: [],
@@ -50,6 +51,16 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       {value: 'show-by-rule', label: 'Show by rule', disabled: showOnlyByResource},
     ],
     [showOnlyByResource]
+  );
+
+  const newProblemsIntroducedText = useMemo(
+    () => (
+      <>
+        {newProblemsIntroducedType ? newErrorsTextMap[newProblemsIntroducedType] : customMessage ?? ''}{' '}
+        <b>{newProblems.resultsCount} errors</b> introduced.{' '}
+      </>
+    ),
+    [newProblemsIntroducedType, newProblems.resultsCount, customMessage]
   );
 
   const rowVirtualizer = useVirtualizer({
@@ -152,8 +163,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
               <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
             ) : (
               <NewErrorsMessage>
-                {newProblemsIntroducedType ? newErrorsTextMap[newProblemsIntroducedType] : customMessage ?? ''}{' '}
-                <b>{newProblems.resultsCount} errors</b> introduced.{' '}
+                <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={newProblemsIntroducedText}>
+                  <EllipsisSpan>{newProblemsIntroducedText}</EllipsisSpan>
+                </Tooltip>
+
                 <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
                 <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
               </NewErrorsMessage>
@@ -252,13 +265,13 @@ export default ValidationOverview;
 // Styled Components
 
 const ActionsContainer = styled.div<{$secondary?: boolean}>`
-  display: grid;
-  grid-template-columns: ${({$secondary}) => ($secondary ? 'max-content max-content' : '1fr max-content')};
-  /* grid-gap: 16px; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   ${({$secondary}) => {
     if ($secondary) {
-      return 'margin-top: 16px; justify-content: space-between; align-items: center;';
+      return 'margin-top: 16px;';
     }
   }}
 `;
@@ -275,6 +288,12 @@ const CloseIcon = styled(CloseOutlined)`
   }
 `;
 
+const EllipsisSpan = styled.div`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+`;
+
 const MainContainer = styled.div<{$height?: number; $width?: number}>`
   background-color: #191f21;
   height: ${({$height}) => ($height ? `${$height}px` : '100%')};
@@ -288,6 +307,9 @@ const NewErrorsMessage = styled.div`
   border-radius: 2px;
   padding: 1px 8px;
   color: ${Colors.red7};
+  display: flex;
+  align-items: center;
+  overflow: hidden;
 `;
 
 const NoErrorsMessage = styled.div`
@@ -315,6 +337,7 @@ const ShowNewErrorsButton = styled.span`
   margin-left: 6px;
   cursor: pointer;
   transition: all 0.3s;
+  white-space: nowrap;
 
   &:hover {
     color: ${Colors.blue6};
