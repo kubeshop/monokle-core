@@ -1,6 +1,6 @@
 import {Colors} from '@/styles/Colors';
 import {CloseOutlined} from '@ant-design/icons';
-import {getRuleForResultV2} from '@monokle/validation';
+import {CORE_PLUGINS, getRuleForResultV2} from '@monokle/validation';
 import {elementScroll, useVirtualizer} from '@tanstack/react-virtual';
 import {Select, Skeleton, Tooltip} from 'antd';
 import {useEffect, useMemo, useRef, useState} from 'react';
@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import HeaderRenderer from './HeaderRenderer';
 import ProblemRenderer from './ProblemRenderer';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
-import {CORE_PLUGINS, DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
+import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
 import {BaseDataType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationOverviewType} from './types';
 import {useScroll} from './useScroll';
@@ -23,7 +23,7 @@ let baseData: BaseDataType = {
 };
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {status, validationResponse, activePlugins = CORE_PLUGINS} = props;
+  const {status, validationResponse, activePlugins = [...CORE_PLUGINS]} = props;
   const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}} = props;
   const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource, filters} = props;
   const {onFiltersChange, onProblemSelect} = props;
