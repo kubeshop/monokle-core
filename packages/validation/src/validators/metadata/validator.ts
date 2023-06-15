@@ -109,39 +109,36 @@ export class MetadataValidator extends AbstractPlugin {
     ).filter(isDefined)
   }
 
-  private validateRecommendedLabels (resource: Resource, rule: RuleMetadataWithConfig) {
+  private validateRecommendedLabels(resource: Resource, rule: RuleMetadataWithConfig) {
     return this.validateMap(
-      resource.content?.metadata?.labels ?? [],
-      rule.defaultConfiguration?.parameters ?? [],
-      []
+      resource.content?.metadata?.labels,
+      rule.defaultConfiguration?.parameters
     );
   }
 
   private validateCustomLabels(resource: Resource, rule: RuleMetadataWithConfig) {
     return this.validateMap(
-      resource.content?.metadata?.labels ?? [],
-      rule.configuration?.parameters ?? [],
-      []
+      resource.content?.metadata?.labels,
+      rule.configuration?.parameters
     );
   }
 
   private validateCustomAnnotations(resource: Resource, rule: RuleMetadataWithConfig) {
     return this.validateMap(
-      resource.content?.metadata?.annotations ?? [],
-      rule.configuration?.parameters ?? [],
-      []
+      resource.content?.metadata?.annotations,
+      rule.configuration?.parameters
     );
   }
 
   private validateDynamicRule(resource: Resource, rule: RuleMetadataWithConfig) {
     return this.validateMap(
-      (this.isLabelRule(rule.name) ? resource.content?.metadata?.labels : resource.content?.metadata?.annotations) ?? [],
+      this.isLabelRule(rule.name) ? resource.content?.metadata?.labels : resource.content?.metadata?.annotations,
       [rule.defaultConfiguration?.parameters?.name],
-      rule.configuration?.parameters ?? []
+      rule.configuration?.parameters
     );
   }
 
-  private validateMap(actualMap: {[key: string]: any}, expectedKeys: string[], expectedValues: string[]): string[] {
+  private validateMap(actualMap: {[key: string]: any} = {}, expectedKeys: string[] = [], expectedValues: string[] = []): string[] {
     if (!expectedKeys.length) {
       return [];
     }
