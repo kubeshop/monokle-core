@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.20.0
+
+### Minor Changes
+
+- d249885: introduce metadata validation plugin
+
 ## 0.19.2
 
 ### Patch Changes
