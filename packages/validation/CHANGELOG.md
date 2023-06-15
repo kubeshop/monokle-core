@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.21.0
+
+### Minor Changes
+
+- 7d12c6f: Fix validation package version
+
 ## 0.20.1
 
 ### Patch Changes
