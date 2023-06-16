@@ -180,6 +180,43 @@ it('should detect missing recommended labels even with no metadata at all (MTD-r
   expect(hasErrors).toBe(6);
 });
 
+it('should have custom-* configurable rules', async () => {
+  const parser = new ResourceParser();
+  const validator = createDefaultMonokleValidator(parser);
+
+  await configureValidator(validator, {
+    'metadata/recommended-labels': false,
+    'metadata/custom-labels': 'err',
+    'metadata/custom-annotations': 'err'
+  });
+
+  Object.entries(validator.rules)[0][1].forEach(rule => {
+    if (rule.configuration.enabled) {
+      expect(rule.configurability).toBeDefined();
+    }
+  });
+});
+
+it('should generate dynamic configurable rules', async () => {
+  const parser = new ResourceParser();
+  const validator = createDefaultMonokleValidator(parser);
+
+  await configureValidator(validator, {
+    'metadata/recommended-labels': false,
+    'metadata/custom-labels': false,
+    'metadata/custom-annotations': false,
+    'metadata/app-annotation': 'err',
+    'metadata/hash-annotation': ['warn'],
+    'metadata/monokle.io__namespace-annotation': ['warn', ['minikube', 'kube-system']],
+  });
+
+  Object.entries(validator.rules)[0][1].forEach(rule => {
+    if (rule.configuration.enabled) {
+      expect(rule.configurability).toBeDefined();
+    }
+  });
+});
+
 async function processResourcesInFolder(path: string, rules?: RuleMap) {
   const files = await readDirectory(path);
   const resources = extractK8sResources(files);

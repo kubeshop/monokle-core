@@ -1,5 +1,5 @@
 import type {Document, ParsedNode} from 'yaml';
-import {RuleLevel, reportingDescriptorRelationship} from '../../node';
+import {RuleConfigurability, RuleLevel, reportingDescriptorRelationship} from '../../node';
 
 export type PluginInit = {
   /**
@@ -122,6 +122,7 @@ export type RuleAdvancedInit = {
   level?: RuleLevel;
   severity?: number;
   relationships?: reportingDescriptorRelationship[];
+  configurability?: RuleConfigurability;
 };
 
 /**

@@ -1,4 +1,4 @@
-import {RuleMetadata} from '../../common/sarif.js';
+import {RuleConfigurabilityType, RuleMetadata} from '../../common/sarif.js';
 
 export const METADATA_RULES: RuleMetadata[] = [
   {
@@ -42,6 +42,11 @@ export const METADATA_RULES: RuleMetadata[] = [
       enabled: false,
       level: 'warning',
     },
+    configurability: {
+      type: RuleConfigurabilityType.StringArray,
+      name: 'Required labels',
+      defaultValue: [],
+    },
   },
   {
     id: 'MTD-custom-annotations',
@@ -58,6 +63,11 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       enabled: false,
       level: 'warning',
+    },
+    configurability: {
+      type: RuleConfigurabilityType.StringArray,
+      name: 'Required annotations',
+      defaultValue: [],
     },
   },
 ];

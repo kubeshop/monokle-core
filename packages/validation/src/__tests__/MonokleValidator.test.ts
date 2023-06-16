@@ -10,7 +10,7 @@ import {extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
-import {SimpleCustomValidator} from '../node.js';
+import {RuleConfigurabilityType, SimpleCustomValidator} from '../node.js';
 import {defineRule} from '../custom.js';
 import {isDeployment} from '../validators/custom/schemas/deployment.apps.v1.js';
 
@@ -131,11 +131,16 @@ it('should allow rules to be configurable', async () => {
             advanced: {
               enabled: false,
               severity: 3,
+              configurability: {
+                type: RuleConfigurabilityType.Number,
+                name: 'Required replicas',
+                defaultValue: 1,
+              }
             },
             validate({resources, params}, {report}) {
               resources.filter(isDeployment).forEach(deployment => {
                 const replicaCount = deployment.spec?.replicas ?? 1;
-                const replicaThreshold = params ?? 1;
+                const replicaThreshold = params;
                 const valid = replicaCount > replicaThreshold;
                 if (valid) return;
                 report(deployment, {path: 'spec.replicas'});
