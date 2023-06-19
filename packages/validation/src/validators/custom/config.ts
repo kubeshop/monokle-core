@@ -122,7 +122,7 @@ export type RuleAdvancedInit = {
   level?: RuleLevel;
   severity?: number;
   relationships?: reportingDescriptorRelationship[];
-  configurability?: RuleConfigurability;
+  configurability?: RuleConfigurability & {defaultValue?: string | string[] | number | number[]};
 };
 
 /**

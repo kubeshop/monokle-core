@@ -57,8 +57,7 @@ export class MetadataValidator extends AbstractPlugin {
         },
         configurability: {
           type: RuleConfigurabilityType.StringArray,
-          name: `Allowed ${ruleTypeName} values`,
-          defaultValue: [],
+          name: `Allowed ${ruleTypeName} values`
         },
       });
     });

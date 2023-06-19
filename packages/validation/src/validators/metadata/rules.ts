@@ -41,11 +41,11 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       enabled: false,
       level: 'warning',
+      parameters: [],
     },
     configurability: {
       type: RuleConfigurabilityType.StringArray,
       name: 'Required labels',
-      defaultValue: [],
     },
   },
   {
@@ -63,11 +63,11 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       enabled: false,
       level: 'warning',
+      parameters: [],
     },
     configurability: {
       type: RuleConfigurabilityType.StringArray,
       name: 'Required annotations',
-      defaultValue: [],
     },
   },
 ];

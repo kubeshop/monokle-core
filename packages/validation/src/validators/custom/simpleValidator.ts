@@ -191,7 +191,12 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
         'security-severity': r.advanced?.severity,
       },
       relationships: r.advanced?.relationships,
-      configurability: r.advanced?.configurability,
+      configurability: r.advanced?.configurability
+        ? {
+          type: r.advanced.configurability.type,
+          name: r.advanced.configurability.name,
+        }
+      : undefined,
     };
   });
 }

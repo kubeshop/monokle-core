@@ -252,16 +252,15 @@ export type GitHubProperties = {
 };
 
 export enum RuleConfigurabilityType {
-  Number = 'number',
   String = 'string',
   StringArray = 'string[]',
+  Number = 'number',
   NumberArray = 'number[]',
 }
 
 export type RuleConfigurability = {
   type: RuleConfigurabilityType;
   name: string;
-  defaultValue: number | string | string[] | number[];
 }
 
 export type ValidationResult = {
