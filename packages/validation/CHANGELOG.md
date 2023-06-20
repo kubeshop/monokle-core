@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.21.1
+
+### Patch Changes
+
+- 113d03a: Added new customPluginLoader parameter
+
 ## 0.21.0
 
 ### Minor Changes
