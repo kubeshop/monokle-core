@@ -43,9 +43,11 @@ export const METADATA_RULES: RuleMetadata[] = [
       level: 'warning',
       parameters: [],
     },
-    configurability: {
-      type: RuleConfigurabilityType.StringArray,
-      name: 'Required labels',
+    properties: {
+      configurability: {
+        type: RuleConfigurabilityType.StringArray,
+        name: 'Required labels',
+      },
     },
   },
   {
@@ -65,9 +67,11 @@ export const METADATA_RULES: RuleMetadata[] = [
       level: 'warning',
       parameters: [],
     },
-    configurability: {
-      type: RuleConfigurabilityType.StringArray,
-      name: 'Required annotations',
+    properties: {
+      configurability: {
+        type: RuleConfigurabilityType.StringArray,
+        name: 'Required annotations',
+      },
     },
   },
 ];

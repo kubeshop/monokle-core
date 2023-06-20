@@ -192,7 +192,7 @@ it('should have custom-* configurable rules', async () => {
 
   Object.entries(validator.rules)[0][1].forEach(rule => {
     if (rule.configuration.enabled) {
-      expect(rule.configurability).toBeDefined();
+      expect(rule.properties?.configurability).toBeDefined();
     }
   });
 });
@@ -212,7 +212,7 @@ it('should generate dynamic configurable rules', async () => {
 
   Object.entries(validator.rules)[0][1].forEach(rule => {
     if (rule.configuration.enabled) {
-      expect(rule.configurability).toBeDefined();
+      expect(rule.properties?.configurability).toBeDefined();
     }
   });
 });

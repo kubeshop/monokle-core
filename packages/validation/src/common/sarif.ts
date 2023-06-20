@@ -111,11 +111,9 @@ export type RuleMetadata<TProperties = {}> = {
   /**
    * Optional, custom properties
    */
-  properties?: GitHubProperties & TProperties;
+  properties?: GitHubProperties & RuleConfigurability & TProperties;
 
   relationships?: reportingDescriptorRelationship[];
-
-  configurability?: RuleConfigurability;
 };
 
 export type RelationshipKind = 'superset' | 'relevant';
@@ -256,12 +254,16 @@ export enum RuleConfigurabilityType {
   StringArray = 'string[]',
   Number = 'number',
   NumberArray = 'number[]',
-}
+};
 
-export type RuleConfigurability = {
+export type RuleConfigurabilityProperties = {
   type: RuleConfigurabilityType;
   name: string;
-}
+};
+
+export type RuleConfigurability = {
+  configurability?: RuleConfigurabilityProperties;
+};
 
 export type ValidationResult = {
   ruleId: string;

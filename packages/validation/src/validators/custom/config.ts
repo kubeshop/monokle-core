@@ -1,5 +1,5 @@
 import type {Document, ParsedNode} from 'yaml';
-import {RuleConfigurability, RuleLevel, reportingDescriptorRelationship} from '../../node';
+import {RuleConfigurabilityProperties, RuleLevel, reportingDescriptorRelationship} from '../../node.js';
 
 export type PluginInit = {
   /**
@@ -122,7 +122,7 @@ export type RuleAdvancedInit = {
   level?: RuleLevel;
   severity?: number;
   relationships?: reportingDescriptorRelationship[];
-  configurability?: RuleConfigurability & {defaultValue?: string | string[] | number | number[]};
+  configurability?: RuleConfigurabilityProperties & {defaultValue?: string | string[] | number | number[]};
 };
 
 /**

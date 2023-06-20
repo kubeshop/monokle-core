@@ -210,7 +210,7 @@ it('should be valid SARIF', async () => {
 
   const validator = createDefaultMonokleValidator(parser);
   processRefs(resources, parser);
-  await configureValidator(validator);
+  await configureValidator(validator, {metadata: true});
   const response = await validator.validate({resources});
 
   const ajv = new Ajv({
@@ -234,13 +234,14 @@ it('should be valid SARIF', async () => {
   expect(validateSarif.errors?.length ?? 0).toBe(0);
 });
 
-function configureValidator(validator: MonokleValidator) {
+function configureValidator(validator: MonokleValidator, additionalPlugins: {[key: string]: boolean} = {}) {
   return validator.preload({
     plugins: {
       'yaml-syntax': true,
       'resource-links': true,
       'kubernetes-schema': true,
       'open-policy-agent': true,
+      ...additionalPlugins,
     },
     settings: {
       'kubernetes-schema': {
