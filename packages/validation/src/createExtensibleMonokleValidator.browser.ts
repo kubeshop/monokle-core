@@ -45,7 +45,14 @@ export function createExtensibleMonokleValidator(
       case DEV_MODE_TOKEN:
         return new DevCustomValidator(parser);
       default:
-        return await customPluginLoader(pluginName, parser);
+        try {
+          const customPlugin = await customPluginLoader(pluginName, parser);
+          return customPlugin;
+        } catch (err) {
+          throw new Error(
+            err instanceof Error ? `plugin_not_found: ${err.message}` : `plugin_not_found: ${String(err)}`
+          );
+        }
     }
   });
 }
