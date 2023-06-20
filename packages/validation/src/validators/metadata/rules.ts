@@ -1,4 +1,4 @@
-import {RuleConfigurabilityType, RuleMetadata} from '../../common/sarif.js';
+import {RuleConfigMetadataType, RuleMetadata} from '../../common/sarif.js';
 
 export const METADATA_RULES: RuleMetadata[] = [
   {
@@ -48,8 +48,8 @@ export const METADATA_RULES: RuleMetadata[] = [
       },
     },
     properties: {
-      configurability: {
-        type: RuleConfigurabilityType.StringArray,
+      configMetadata: {
+        type: RuleConfigMetadataType.StringArray,
         name: 'Required labels',
       },
     },
@@ -74,8 +74,8 @@ export const METADATA_RULES: RuleMetadata[] = [
       },
     },
     properties: {
-      configurability: {
-        type: RuleConfigurabilityType.StringArray,
+      configMetadata: {
+        type: RuleConfigMetadataType.StringArray,
         name: 'Required annotations',
       },
     },

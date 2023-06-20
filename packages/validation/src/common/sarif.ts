@@ -111,7 +111,7 @@ export type RuleMetadata<TProperties = {}> = {
   /**
    * Optional, custom properties
    */
-  properties?: GitHubProperties & RuleConfigurability & TProperties;
+  properties?: GitHubProperties & RuleConfigMetadata & TProperties;
 
   relationships?: reportingDescriptorRelationship[];
 };
@@ -167,7 +167,7 @@ export type RuleConfig = {
    *
    * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Ref508894764
    */
-  parameters?: PropertyBag & { configValue?: RuleConfigurabilityAllowedValues };
+  parameters?: PropertyBag & { configValue?: RuleConfigMetadataAllowedValues };
 };
 
 export type RuleLevel = 'warning' | 'error';
@@ -259,20 +259,20 @@ export type GitHubProperties = {
 };
 
 /**
- * These are custom types related to the configurability of rules.
+ * These are custom types related to the config metadata of rules.
  */
-export type RuleConfigurability = {
-  configurability?: RuleConfigurabilityProperties;
+export type RuleConfigMetadata = {
+  configMetadata?: RuleConfigMetadataProperties;
 };
 
-export type RuleConfigurabilityProperties = {
-  type: RuleConfigurabilityType;
+export type RuleConfigMetadataProperties = {
+  type: RuleConfigMetadataType;
   name: string;
 };
 
-export type RuleConfigurabilityAllowedValues = string | string[] | number | number[];
+export type RuleConfigMetadataAllowedValues = string | string[] | number | number[];
 
-export enum RuleConfigurabilityType {
+export enum RuleConfigMetadataType {
   String = 'string',
   StringArray = 'string[]',
   Number = 'number',

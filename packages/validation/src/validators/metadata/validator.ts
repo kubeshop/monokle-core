@@ -2,7 +2,7 @@ import difference from 'lodash/difference.js';
 import intersection from 'lodash/intersection.js';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
-import {RuleConfigurabilityType, ValidationResult} from '../../common/sarif.js';
+import {RuleConfigMetadataType, ValidationResult} from '../../common/sarif.js';
 import {Incremental, Resource} from '../../common/types.js';
 import {METADATA_RULES} from './rules.js';
 import {createLocations} from '../../utils/createLocations.js';
@@ -56,8 +56,8 @@ export class MetadataValidator extends AbstractPlugin {
           parameters: {name: ruleNormalizedName}
         },
         properties: {
-          configurability: {
-            type: RuleConfigurabilityType.StringArray,
+          configMetadata: {
+            type: RuleConfigMetadataType.StringArray,
             name: `Allowed ${ruleTypeName} values`
           },
         }

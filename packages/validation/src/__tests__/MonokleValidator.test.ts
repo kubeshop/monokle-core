@@ -10,7 +10,7 @@ import {extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
-import {RuleConfigurabilityType, SimpleCustomValidator} from '../node.js';
+import {RuleConfigMetadataType, SimpleCustomValidator} from '../node.js';
 import {defineRule} from '../custom.js';
 import {isDeployment} from '../validators/custom/schemas/deployment.apps.v1.js';
 
@@ -131,8 +131,8 @@ it('should allow rules to be configurable', async () => {
             advanced: {
               enabled: false,
               severity: 3,
-              configurability: {
-                type: RuleConfigurabilityType.Number,
+              configMetadata: {
+                type: RuleConfigMetadataType.Number,
                 name: 'Required replicas',
                 defaultValue: 1,
               }
