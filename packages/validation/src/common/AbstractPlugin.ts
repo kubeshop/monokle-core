@@ -193,7 +193,11 @@ export abstract class AbstractPlugin implements Plugin {
       const enabled =
         typeof severity === 'boolean' ? severity : typeof severity === 'string' ? true : defaultConfig.enabled;
       const level = typeof severity === 'string' ? (severity === 'err' ? 'error' : 'warning') : defaultConfig.level;
-      const parameters = config ?? defaultConfig.parameters;
+
+      const parameters = {
+        ...defaultConfig.parameters,
+        ...(config ? { configValue: config } : {})
+      };
 
       this._ruleConfig.set(ruleId, {
         ...defaultConfig,

@@ -1,5 +1,5 @@
 import type {Document, ParsedNode} from 'yaml';
-import {RuleLevel, reportingDescriptorRelationship} from '../../node';
+import {RuleConfigMetadataProperties, RuleConfigMetadataAllowedValues, RuleLevel, reportingDescriptorRelationship} from '../../node.js';
 
 export type PluginInit = {
   /**
@@ -122,6 +122,7 @@ export type RuleAdvancedInit = {
   level?: RuleLevel;
   severity?: number;
   relationships?: reportingDescriptorRelationship[];
+  configMetadata?: RuleConfigMetadataProperties & {defaultValue?: RuleConfigMetadataAllowedValues};
 };
 
 /**

@@ -111,7 +111,7 @@ export type RuleMetadata<TProperties = {}> = {
   /**
    * Optional, custom properties
    */
-  properties?: GitHubProperties & TProperties;
+  properties?: GitHubProperties & RuleConfigMetadata & TProperties;
 
   relationships?: reportingDescriptorRelationship[];
 };
@@ -164,8 +164,10 @@ export type RuleConfig = {
 
   /**
    * The parameters for this rule.
+   *
+   * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Ref508894764
    */
-  parameters?: any;
+  parameters?: PropertyBag & { configValue?: RuleConfigMetadataAllowedValues };
 };
 
 export type RuleLevel = 'warning' | 'error';
@@ -195,6 +197,13 @@ export type ValidationPolicyRule = {
   id: string;
   defaultConfiguration: RuleConfig;
 };
+
+/**
+ * Object like SARIF key-value type.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Ref493408960
+ */
+export type PropertyBag = Record<string, any>;
 
 /**
  * These are custom properties used by GitHub.
@@ -247,6 +256,27 @@ export type GitHubProperties = {
    * Recommended.
    */
   'security-severity'?: number;
+};
+
+/**
+ * These are custom types related to the config metadata of rules.
+ */
+export type RuleConfigMetadata = {
+  configMetadata?: RuleConfigMetadataProperties;
+};
+
+export type RuleConfigMetadataProperties = {
+  type: RuleConfigMetadataType;
+  name: string;
+};
+
+export type RuleConfigMetadataAllowedValues = string | string[] | number | number[];
+
+export enum RuleConfigMetadataType {
+  String = 'string',
+  StringArray = 'string[]',
+  Number = 'number',
+  NumberArray = 'number[]',
 };
 
 export type ValidationResult = {

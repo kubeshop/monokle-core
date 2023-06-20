@@ -1,4 +1,4 @@
-import {RuleMetadata} from '../../common/sarif.js';
+import {RuleConfigMetadataType, RuleMetadata} from '../../common/sarif.js';
 
 export const METADATA_RULES: RuleMetadata[] = [
   {
@@ -16,14 +16,16 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       level: 'error',
       // Based on https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
-      parameters: [
-        'app.kubernetes.io/name',
-        'app.kubernetes.io/instance',
-        'app.kubernetes.io/version',
-        'app.kubernetes.io/component',
-        'app.kubernetes.io/part-of',
-        'app.kubernetes.io/managed',
-      ]
+      parameters: {
+        configValue: [
+          'app.kubernetes.io/name',
+          'app.kubernetes.io/instance',
+          'app.kubernetes.io/version',
+          'app.kubernetes.io/component',
+          'app.kubernetes.io/part-of',
+          'app.kubernetes.io/managed',
+        ]
+      },
     },
   },
   {
@@ -41,6 +43,15 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       enabled: false,
       level: 'warning',
+      parameters: {
+        configValue: [],
+      },
+    },
+    properties: {
+      configMetadata: {
+        type: RuleConfigMetadataType.StringArray,
+        name: 'Required labels',
+      },
     },
   },
   {
@@ -58,6 +69,15 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       enabled: false,
       level: 'warning',
+      parameters: {
+        configValue: [],
+      },
+    },
+    properties: {
+      configMetadata: {
+        type: RuleConfigMetadataType.StringArray,
+        name: 'Required annotations',
+      },
     },
   },
 ];

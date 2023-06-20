@@ -10,7 +10,7 @@ import {extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
-import {SimpleCustomValidator} from '../node.js';
+import {RuleConfigMetadataType, SimpleCustomValidator} from '../node.js';
 import {defineRule} from '../custom.js';
 import {isDeployment} from '../validators/custom/schemas/deployment.apps.v1.js';
 
@@ -131,11 +131,16 @@ it('should allow rules to be configurable', async () => {
             advanced: {
               enabled: false,
               severity: 3,
+              configMetadata: {
+                type: RuleConfigMetadataType.Number,
+                name: 'Required replicas',
+                defaultValue: 1,
+              }
             },
             validate({resources, params}, {report}) {
               resources.filter(isDeployment).forEach(deployment => {
                 const replicaCount = deployment.spec?.replicas ?? 1;
-                const replicaThreshold = params ?? 1;
+                const replicaThreshold = params;
                 const valid = replicaCount > replicaThreshold;
                 if (valid) return;
                 report(deployment, {path: 'spec.replicas'});
@@ -205,7 +210,7 @@ it('should be valid SARIF', async () => {
 
   const validator = createDefaultMonokleValidator(parser);
   processRefs(resources, parser);
-  await configureValidator(validator);
+  await configureValidator(validator, {metadata: true});
   const response = await validator.validate({resources});
 
   const ajv = new Ajv({
@@ -229,13 +234,14 @@ it('should be valid SARIF', async () => {
   expect(validateSarif.errors?.length ?? 0).toBe(0);
 });
 
-function configureValidator(validator: MonokleValidator) {
+function configureValidator(validator: MonokleValidator, additionalPlugins: {[key: string]: boolean} = {}) {
   return validator.preload({
     plugins: {
       'yaml-syntax': true,
       'resource-links': true,
       'kubernetes-schema': true,
       'open-policy-agent': true,
+      ...additionalPlugins,
     },
     settings: {
       'kubernetes-schema': {
