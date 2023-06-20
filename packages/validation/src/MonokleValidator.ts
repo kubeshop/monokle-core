@@ -12,8 +12,10 @@ import invariant from './utils/invariant.js';
 import {isDefined} from './utils/isDefined.js';
 import {NSA_TAXONOMY} from './taxonomies/nsa.js';
 import {CIS_TAXONOMY} from './taxonomies/cis.js';
+import {ResourceParser} from './common/resourceParser.js';
 
 export type PluginLoader = (name: string) => Promise<Plugin>;
+export type CustomPluginLoader = (name: string, parser: ResourceParser) => Promise<Plugin>;
 
 export function createMonokleValidator(loader: PluginLoader, fallback?: PluginMap) {
   return new MonokleValidator(loader, fallback);

@@ -3,6 +3,8 @@
  */
 export * from './commonExports.js';
 
+export * from './pluginLoaders/index.node.js';
+
 export * from './createExtensibleMonokleValidator.node.js';
 export * from './createDefaultMonokleValidator.node.js';
 export * from './config/index.node.js';

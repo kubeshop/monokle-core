@@ -2,7 +2,7 @@ import fs from 'fs';
 import requireFromString from 'require-from-string';
 
 import {ResourceParser} from './common/resourceParser.js';
-import {MonokleValidator} from './MonokleValidator.js';
+import {CustomPluginLoader, MonokleValidator} from './MonokleValidator.js';
 import {SimpleCustomValidator} from './validators/custom/simpleValidator.js';
 import {SchemaLoader} from './validators/kubernetes-schema/schemaLoader.js';
 import {KubernetesSchemaValidator} from './validators/kubernetes-schema/validator.js';
@@ -11,16 +11,18 @@ import {OpenPolicyAgentValidator} from './validators/open-policy-agent/validator
 import {ResourceLinksValidator} from './validators/resource-links/validator.js';
 import {YamlValidator} from './validators/yaml-syntax/validator.js';
 import {MetadataValidator} from './validators/metadata/validator.js';
-import {bundlePluginCode, loadCustomPlugin} from './utils/loadCustomPlugin.node.js';
+import {bundlePluginCode} from './utils/loadCustomPlugin.node.js';
 import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
+import {requireFromStringCustomPluginLoader} from './pluginLoaders/requireFromStringLoader.node.js';
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
  */
 export function createExtensibleMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
+  schemaLoader: SchemaLoader = new SchemaLoader(),
+  customPluginLoader: CustomPluginLoader = requireFromStringCustomPluginLoader
 ) {
   return new MonokleValidator(async (pluginName: string) => {
     switch (pluginName) {
@@ -43,12 +45,7 @@ export function createExtensibleMonokleValidator(
       case 'metadata':
         return new MetadataValidator(parser);
       default:
-        try {
-          const customPlugin = await loadCustomPlugin(pluginName);
-          return new SimpleCustomValidator(customPlugin, parser);
-        } catch (err) {
-          throw new Error(`plugin_not_found: $err`);
-        }
+        return await customPluginLoader(pluginName, parser);
     }
   });
 }

@@ -1,5 +1,5 @@
 import {ResourceParser} from './common/resourceParser.js';
-import {MonokleValidator} from './MonokleValidator.js';
+import {CustomPluginLoader, MonokleValidator} from './MonokleValidator.js';
 import {DEV_MODE_TOKEN} from './validators/custom/constants.js';
 import {DevCustomValidator} from './validators/custom/devValidator.js';
 import {SimpleCustomValidator} from './validators/custom/simpleValidator.js';
@@ -12,13 +12,15 @@ import {YamlValidator} from './validators/yaml-syntax/validator.js';
 import {MetadataValidator} from './validators/metadata/validator.js';
 import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
+import {dynamicImportCustomPluginLoader} from './pluginLoaders/dynamicImportLoader.js';
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
  */
 export function createExtensibleMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
+  schemaLoader: SchemaLoader = new SchemaLoader(),
+  customPluginLoader: CustomPluginLoader = dynamicImportCustomPluginLoader
 ) {
   return new MonokleValidator(async (pluginName: string) => {
     switch (pluginName) {
@@ -43,15 +45,7 @@ export function createExtensibleMonokleValidator(
       case DEV_MODE_TOKEN:
         return new DevCustomValidator(parser);
       default:
-        try {
-          const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
-          const customPlugin = await import(/* @vite-ignore */ url);
-          return new SimpleCustomValidator(customPlugin.default, parser);
-        } catch (err) {
-          throw new Error(
-            err instanceof Error ? `plugin_not_found: ${err.message}` : `plugin_not_found: ${String(err)}`
-          );
-        }
+        return await customPluginLoader(pluginName, parser);
     }
   });
 }
