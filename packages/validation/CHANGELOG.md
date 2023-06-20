@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.22.0
+
+### Minor Changes
+
+- 4314a87: extend rules definition with config metadata
+
 ## 0.21.1
 
 ### Patch Changes

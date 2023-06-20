@@ -34,7 +34,7 @@
   "devDependencies": {
     "@ant-design/icons": "4.7.0",
     "@babel/core": "7.17.8",
-    "@monokle/validation": "0.21.1",
+    "@monokle/validation": "0.22.0",
     "@rjsf/antd": "5.0.0-beta.11",
     "@storybook/addon-actions": "6.5.16",
     "@storybook/addon-essentials": "6.5.16",
