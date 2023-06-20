@@ -16,14 +16,16 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       level: 'error',
       // Based on https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
-      parameters: [
-        'app.kubernetes.io/name',
-        'app.kubernetes.io/instance',
-        'app.kubernetes.io/version',
-        'app.kubernetes.io/component',
-        'app.kubernetes.io/part-of',
-        'app.kubernetes.io/managed',
-      ]
+      parameters: {
+        configValue: [
+          'app.kubernetes.io/name',
+          'app.kubernetes.io/instance',
+          'app.kubernetes.io/version',
+          'app.kubernetes.io/component',
+          'app.kubernetes.io/part-of',
+          'app.kubernetes.io/managed',
+        ]
+      },
     },
   },
   {
@@ -41,7 +43,9 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       enabled: false,
       level: 'warning',
-      parameters: [],
+      parameters: {
+        configValue: [],
+      },
     },
     properties: {
       configurability: {
@@ -65,7 +69,9 @@ export const METADATA_RULES: RuleMetadata[] = [
     defaultConfiguration: {
       enabled: false,
       level: 'warning',
-      parameters: [],
+      parameters: {
+        configValue: [],
+      },
     },
     properties: {
       configurability: {

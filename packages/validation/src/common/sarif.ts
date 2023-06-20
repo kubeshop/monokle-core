@@ -164,8 +164,10 @@ export type RuleConfig = {
 
   /**
    * The parameters for this rule.
+   *
+   * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Ref508894764
    */
-  parameters?: any;
+  parameters?: PropertyBag & { configValue?: RuleConfigurabilityAllowedValues };
 };
 
 export type RuleLevel = 'warning' | 'error';
@@ -195,6 +197,13 @@ export type ValidationPolicyRule = {
   id: string;
   defaultConfiguration: RuleConfig;
 };
+
+/**
+ * Object like SARIF key-value type.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Ref493408960
+ */
+export type PropertyBag = Record<string, any>;
 
 /**
  * These are custom properties used by GitHub.
@@ -249,11 +258,11 @@ export type GitHubProperties = {
   'security-severity'?: number;
 };
 
-export enum RuleConfigurabilityType {
-  String = 'string',
-  StringArray = 'string[]',
-  Number = 'number',
-  NumberArray = 'number[]',
+/**
+ * These are custom types related to the configurability of rules.
+ */
+export type RuleConfigurability = {
+  configurability?: RuleConfigurabilityProperties;
 };
 
 export type RuleConfigurabilityProperties = {
@@ -261,8 +270,13 @@ export type RuleConfigurabilityProperties = {
   name: string;
 };
 
-export type RuleConfigurability = {
-  configurability?: RuleConfigurabilityProperties;
+export type RuleConfigurabilityAllowedValues = string | string[] | number | number[];
+
+export enum RuleConfigurabilityType {
+  String = 'string',
+  StringArray = 'string[]',
+  Number = 'number',
+  NumberArray = 'number[]',
 };
 
 export type ValidationResult = {

@@ -59,7 +59,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
             resources: dirtyResources,
             allResources: resources,
             settings: this._settings,
-            params: rule.properties?.configurability ? ruleConfig.parameters : undefined,
+            params: rule.properties?.configurability ? ruleConfig.parameters?.configValue : undefined,
           },
           {
             parse: res => {
@@ -185,7 +185,9 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
       defaultConfiguration: {
         enabled: r.advanced?.enabled,
         level: r.advanced?.level,
-        parameters: r.advanced?.configurability?.defaultValue,
+        parameters: {
+          configValue: r.advanced?.configurability?.defaultValue,
+        },
       },
       properties: {
         'security-severity': r.advanced?.severity,

@@ -96,7 +96,7 @@ export class MetadataValidator extends AbstractPlugin {
       invalidKeys = this.validateCustomAnnotations(resource, rule);
     } else if (rule.name.endsWith('-label') || rule.name.endsWith('-annotation')) {
       invalidKeys = this.validateDynamicRule(resource, rule);
-      expectedValues = rule.configuration?.parameters ?? [];
+      expectedValues = rule.configuration?.parameters?.configValue as string[] ?? [];
     }
 
     if (!invalidKeys.length) {
@@ -118,29 +118,29 @@ export class MetadataValidator extends AbstractPlugin {
   private validateRecommendedLabels(resource: Resource, rule: RuleMetadataWithConfig) {
     return this.validateMap(
       resource.content?.metadata?.labels,
-      rule.defaultConfiguration?.parameters
+      rule.defaultConfiguration?.parameters?.configValue as string[]
     );
   }
 
   private validateCustomLabels(resource: Resource, rule: RuleMetadataWithConfig) {
     return this.validateMap(
       resource.content?.metadata?.labels,
-      rule.configuration?.parameters
+      rule.configuration?.parameters?.configValue as string[]
     );
   }
 
   private validateCustomAnnotations(resource: Resource, rule: RuleMetadataWithConfig) {
     return this.validateMap(
       resource.content?.metadata?.annotations,
-      rule.configuration?.parameters
+      rule.configuration?.parameters?.configValue as string[]
     );
   }
 
   private validateDynamicRule(resource: Resource, rule: RuleMetadataWithConfig) {
     return this.validateMap(
       this.isLabelRule(rule.name) ? resource.content?.metadata?.labels : resource.content?.metadata?.annotations,
-      [rule.defaultConfiguration?.parameters?.name],
-      rule.configuration?.parameters
+      [rule.configuration?.parameters?.name],
+      rule.configuration?.parameters?.configValue as string[]
     );
   }
 
