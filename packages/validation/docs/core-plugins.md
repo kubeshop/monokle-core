@@ -7,7 +7,7 @@ There are several cores plugins:
 - [Common Practices](#common-practices) 
 - [Resource links](#resource-links)
 - [Metadata](#metadata)
-- [Open Policy Agent](#open-policy-agent)
+- [AquaSec Security](#open-policy-agent)
 - [YAML Syntax](#yaml-syntax)
 
 All plugins are enabled by default and all rules are enabled as a warning.
@@ -170,20 +170,21 @@ plugins:
 
 **Rules**
 
-| id                     | name                        | description                                                                                                                                                                                                                                                |
-|------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MTD-recommended-labels | metadata/recommended-labels | Recommended labels are missing - by default this checks for the following lables: `app.kubernetes.io/name`, `app.kubernetes.io/instance`,`app.kubernetes.io/version`,`app.kubernetes.io/component`,`app.kubernetes.io/part-of`,`app.kubernetes.io/managed` |
-| MTD-custom-labels      | metadata/custom-labels      | Custom labels are missing.                                                                                                                                                                                                                                 |
-| MTD-custom-annotations | metadata/custom-annotations | Custom annotations are missing.                                                                                                                                                                                                                            |
-| MTD-<name>-label       | metadata/<name>-label       | Validate the specified label as configured.                                                                                                                                                                                                                |
-| MTD-<name>-annotation  | metadata/<name>-annotation  | Validate the specified annotation as configured.                                                                                                                                                                                                           |
+| id                     | name                        | description                                                                                                                                                                                                                                     |
+|------------------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MTD-recommended-labels | metadata/recommended-labels | Recommended labels are missing - This checks for the following labels: `app.kubernetes.io/name`, `app.kubernetes.io/instance`,`app.kubernetes.io/version`,`app.kubernetes.io/component`,`app.kubernetes.io/part-of`,`app.kubernetes.io/managed` |
+| MTD-custom-labels      | metadata/custom-labels      | Custom labels are missing.                                                                                                                                                                                                                      |
+| MTD-custom-annotations | metadata/custom-annotations | Custom annotations are missing.                                                                                                                                                                                                                 |
+| MTD-<name>-label       | metadata/<name>-label       | Validate the specified label as configured.                                                                                                                                                                                                     |
+| MTD-<name>-annotation  | metadata/<name>-annotation  | Validate the specified annotation as configured.                                                                                                                                                                                                |
 
 
 ### Open Policy Agent
 
-A collection of security rules.
+A collection of security rules based on the work of the DefSec team at Aqua Security, a big shout-out to them  
+as full credit for these rules goes to them. You can find the source of their Rego policies [here](https://github.com/aquasecurity/defsec).
 
-Under the hood it compiles Rego policies into a WebAssembly module that handles the validation. A big shout out to the DefSec team at [Aqua Security](https://www.aquasec.com/) as full credit for these rules goes to them. You can find the source of their Rego policies [here](https://github.com/aquasecurity/defsec).
+Under the hood we compile the corresponding Rego policies into a WebAssembly module that handles the validation.
 
 There are no settings for this plugin.
 
