@@ -53,7 +53,10 @@ export class MetadataValidator extends AbstractPlugin {
           text: `Add required ${ruleTypeName}. You can hover the key for documentation.`
         },
         defaultConfiguration: {
-          parameters: {name: ruleNormalizedName}
+          parameters: {
+            name: ruleNormalizedName,
+            dynamic: true,
+          }
         },
         properties: {
           configMetadata: {
