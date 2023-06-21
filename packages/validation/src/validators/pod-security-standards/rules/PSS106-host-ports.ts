@@ -5,7 +5,7 @@ import {validatePodSpec} from '../../custom/utils.js';
 // TODO: add rule configuration with list of known ports.
 export const hostPorts = defineRule({
   id: 106,
-  description: 'Restrict host ports',
+  description: 'Restrict host ports.',
   fullDescription: `HostPorts should be disallowed entirely (recommended) or restricted to a known list.`,
   help: 'Do not use volumes.hostPort.',
   advanced: {

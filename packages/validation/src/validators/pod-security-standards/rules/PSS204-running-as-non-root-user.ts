@@ -5,7 +5,7 @@ import {validatePodSpec} from '../../custom/utils.js';
 
 export const runningAsNonRootUser = defineRule({
   id: 204,
-  description: 'Restrict running with a root user ID',
+  description: 'Restrict running with a root user ID.',
   fullDescription:
     'Containers must not set runAsUser to 0. It prevents the running image to run as a root user to ensure least privileges.',
   help: "Set 'securityContext.runAsUser' to non-zero value or leave it undefined.",
