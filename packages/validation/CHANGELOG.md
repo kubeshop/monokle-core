@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.0
+
+### Minor Changes
+
+- 7e161d6: Add 'dynamic' flag to rule definition
+
 ## 0.22.0
 
 ### Minor Changes
