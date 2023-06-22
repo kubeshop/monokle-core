@@ -163,11 +163,14 @@ export type RuleConfig = {
   rank?: number; // between [0, 100].
 
   /**
-   * The parameters for this rule.
+   * The custom parameters for this rule.
+   *
+   * The `configValue` property is used to store rule configuration.
+   * The `dynamic` property is used to indicate that the rule was added dynamically (e.g. see Metadata plugin).
    *
    * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Ref508894764
    */
-  parameters?: PropertyBag & { configValue?: RuleConfigMetadataAllowedValues };
+  parameters?: PropertyBag & { configValue?: RuleConfigMetadataAllowedValues, dynamic?: boolean };
 };
 
 export type RuleLevel = 'warning' | 'error';
