@@ -12,4 +12,4 @@ export * from './config/read.browser.js';
 export * from './wasmLoader/RemoteWasmLoader.browser.js';
 
 // This function is used in Node environments only, but it cannot be imported in Monokle Desktop if it's not defined here as well
-export const fetchBundleRequireCustomPlugin = async () => {};
+export const fetchBundleRequireCustomPlugin = async (pluginName: string): Promise<any> => {};
