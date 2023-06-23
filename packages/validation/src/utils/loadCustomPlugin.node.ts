@@ -19,21 +19,30 @@ export async function bundlePluginCode(code: string) {
   return output[0].code;
 }
 
+export async function fetchCustomPluginCode(pluginName: string) {
+  const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Error fetching ${url}: ${response.statusText}`);
+  }
+  return response.text();
+}
+
 export async function loadCustomPlugin(pluginName: string) {
   const filePath = path.join(process.cwd(), '.monokle-plugins', `${pluginName}-plugin.js`);
 
   const pluginCode = fs.existsSync(filePath)
     ? fs.readFileSync(filePath, {encoding: 'utf-8'})
-    : await (async () => {
-        const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Error fetching ${url}: ${response.statusText}`);
-        }
-        return response.text();
-      })();
+    : await fetchCustomPluginCode(pluginName);
 
   const code = await bundlePluginCode(pluginCode);
   const customPlugin = requireFromString(code, filePath);
+  return customPlugin;
+}
+
+export async function fetchBundleRequireCustomPlugin(pluginName: string) {
+  const pluginCode = await fetchCustomPluginCode(pluginName);
+  const bundledCode = await bundlePluginCode(pluginCode);
+  const customPlugin = requireFromString(bundledCode);
   return customPlugin;
 }
