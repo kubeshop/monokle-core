@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.1
+
+### Patch Changes
+
+- 0079d28: Additional exports for utility functions
+
 ## 0.23.0
 
 ### Minor Changes
