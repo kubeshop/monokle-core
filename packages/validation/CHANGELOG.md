@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.3
+
+### Patch Changes
+
+- 28bb741: Fix validation export type
+
 ## 0.23.2
 
 ### Patch Changes
