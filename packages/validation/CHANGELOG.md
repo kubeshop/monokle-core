@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.2
+
+### Patch Changes
+
+- c79028e: Fixed export of util function
+
 ## 0.23.1
 
 ### Patch Changes
