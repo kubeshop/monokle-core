@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.4
+
+### Patch Changes
+
+- 896c1bb: Fix invalid (but not breaking) imports
+
 ## 0.23.3
 
 ### Patch Changes
