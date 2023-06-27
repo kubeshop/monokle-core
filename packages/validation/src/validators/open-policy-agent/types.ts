@@ -1,5 +1,4 @@
-const {loadPolicy} = require('@open-policy-agent/opa-wasm');
-
+import {loadPolicy} from '@open-policy-agent/opa-wasm';
 import {RuleMetadata} from '../../common/sarif.js';
 
 export type LoadedPolicy = Awaited<ReturnType<typeof loadPolicy>>;
