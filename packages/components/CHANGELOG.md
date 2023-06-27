@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.5.6
+
+### Patch Changes
+
+- 54dd35f: Prop to select first error by default on audit pane open
+
 ## 1.5.5
 
 ### Patch Changes
