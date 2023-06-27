@@ -24,7 +24,7 @@ let baseData: BaseDataType = {
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {status, validationResponse, activePlugins = [...CORE_PLUGINS]} = props;
-  const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}} = props;
+  const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}, defaultSelectError = false} = props;
   const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource, filters} = props;
   const {onFiltersChange, onProblemSelect} = props;
 
@@ -134,6 +134,20 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       setSearchValue('');
     }
   }, [problems]);
+
+  useEffect(() => {
+    if (!validationList.length || !defaultSelectError || !onProblemSelect) {
+      return;
+    }
+
+    const firstErrorFound = validationList.find(item => item.type === 'problem');
+
+    if (!firstErrorFound || firstErrorFound.type !== 'problem') {
+      return;
+    }
+
+    onProblemSelect({problem: firstErrorFound.problem, selectedFrom: 'file'});
+  }, [validationList, defaultSelectError, onProblemSelect]);
 
   if (status === 'loading') {
     return <Skeleton active style={skeletonStyle} />;
