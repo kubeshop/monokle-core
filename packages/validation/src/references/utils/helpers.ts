@@ -6,7 +6,7 @@ import {
   Resource,
   ResourceRefsProcessingConfig,
 } from '../../common/types.js';
-import {RefMapper} from '../mappers';
+import {RefMapper} from '../mappers/mappers.js';
 import {getSiblingValue} from './GetSiblings.js';
 import {LineCounter, parseDocument} from 'yaml';
 import path from '../../utils/path.js';
