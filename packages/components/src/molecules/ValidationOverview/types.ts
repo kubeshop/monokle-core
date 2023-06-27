@@ -7,6 +7,7 @@ export type ValidationOverviewType = {
   containerClassName?: string;
   containerStyle?: React.CSSProperties;
   customMessage?: string;
+  defaultSelectError?: boolean;
   filters?: ValidationFiltersValueType;
   height?: number;
   newProblemsIntroducedType?: string;
