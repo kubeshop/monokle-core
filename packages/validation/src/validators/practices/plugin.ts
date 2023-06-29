@@ -18,7 +18,7 @@ import {noAutomountServiceAccountToken} from './rules/KBP106-noAutomountServiceA
 export default definePlugin({
   id: 'KBP',
   name: 'practices',
-  displayName: 'Practices',
+  displayName: 'Common Practices',
   description: 'Common practices you can use to further improve your Kubernetes deployments.',
   rules: {
     dropCapabilities,
