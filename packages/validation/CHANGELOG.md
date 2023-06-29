@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.5
+
+### Patch Changes
+
+- a9c990d: correct Pod Security Standards abbreviation
+
 ## 0.23.4
 
 ### Patch Changes

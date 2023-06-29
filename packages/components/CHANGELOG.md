@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.0
+
+### Minor Changes
+
+- 953eac8: Add audit pane action button + security frameworks filter
+
 ## 1.5.6
 
 ### Patch Changes
