@@ -45,6 +45,7 @@ export type BaseDataType = {
   baseCollapsedKeys: string[];
   baseGroupByFilterValue: GroupByFilterOptionType;
   baseGroupOnlyByResource: boolean;
+  baseSecurityFrameworkFilter: string;
 };
 
 export type HeaderNode = {

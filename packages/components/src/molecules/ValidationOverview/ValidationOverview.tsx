@@ -19,7 +19,7 @@ import {
   ValidationOverviewType,
 } from './types';
 import {useScroll} from './useScroll';
-import {getValidationList} from './utils';
+import {getValidationList, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
 import {Icon} from '@/atoms';
 
@@ -27,6 +27,7 @@ let baseData: BaseDataType = {
   baseCollapsedKeys: [],
   baseGroupByFilterValue: 'group-by-file',
   baseGroupOnlyByResource: false,
+  baseSecurityFrameworkFilter: 'all',
 };
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
@@ -44,9 +45,36 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   );
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
+  const [securityFrameworkFilter, setSecurityFrameworkFilter] = useState(baseData.baseSecurityFrameworkFilter);
 
   const {newProblems, problems} = useCurrentAndNewProblems(groupByFilterValue, validationResponse);
-  const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue, filtersValue);
+
+  const filteredProblems = useFilteredProblems(
+    problems,
+    newProblems,
+    showNewErrors,
+    searchValue,
+    filtersValue,
+    securityFrameworkFilter
+  );
+
+  const foundSecurityFrameworks = useMemo(() => {
+    const securityFrameworks = new Set<string>();
+
+    Object.values(problems).forEach(value => {
+      Object.values(value).forEach(validationResult => {
+        if (validationResult.taxa) {
+          validationResult.taxa.forEach(securityFramework => {
+            if (securityFramework) {
+              securityFrameworks.add(securityFramework.toolComponent.name);
+            }
+          });
+        }
+      });
+    });
+
+    return [...securityFrameworks];
+  }, [problems]);
 
   const validationList = useMemo(
     () => getValidationList(filteredProblems, collapsedHeadersKey),
@@ -66,6 +94,11 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       {value: 'group-by-rule', label: 'Group by rule', disabled: groupOnlyByResource},
     ],
     [groupOnlyByResource]
+  );
+
+  const securityFrameworksOptions = useMemo(
+    () => [{value: 'all', label: 'All'}, ...foundSecurityFrameworks.map(f => ({value: f, label: f}))],
+    [foundSecurityFrameworks]
   );
 
   const newProblemsIntroducedText = useMemo(
@@ -218,23 +251,42 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           </Tooltip>
         </ActionButtonsContainer>
 
-        <GroupByFilter
-          value={groupByFilterValue}
-          dropdownMatchSelectWidth={false}
-          bordered={false}
-          options={groupByFilterOptions}
-          onSelect={(value: any) => {
-            setGroupByFilterValue(value);
-            baseData.baseGroupByFilterValue = value;
-            baseData.baseCollapsedKeys = [];
-          }}
-        />
+        <div>
+          <SecurityFrameworkFilter
+            optionLabelProp="label"
+            labelInValue
+            value={{
+              value: securityFrameworkFilter,
+              label: `Frameworks: ${uppercaseFirstLetter(securityFrameworkFilter)}`,
+            }}
+            options={securityFrameworksOptions}
+            bordered={false}
+            onSelect={(value: any) => {
+              setSecurityFrameworkFilter(value.value);
+              baseData.baseSecurityFrameworkFilter = value.value;
+              baseData.baseCollapsedKeys = [];
+            }}
+          />
+          <GroupByFilter
+            value={groupByFilterValue}
+            dropdownMatchSelectWidth={false}
+            bordered={false}
+            options={groupByFilterOptions}
+            onSelect={(value: any) => {
+              setGroupByFilterValue(value);
+              baseData.baseGroupByFilterValue = value;
+              baseData.baseCollapsedKeys = [];
+            }}
+          />
+        </div>
       </ActionsContainer>
 
       {Object.keys(newProblems.data).length && showNewErrorsMessage && newProblemsIntroducedType !== 'initial' ? (
         <>
           {showNewErrors ? (
-            <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+            <div style={{marginBottom: '8px'}}>
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+            </div>
           ) : (
             <NewErrorsMessage>
               <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={newProblemsIntroducedText}>
@@ -300,6 +352,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                             });
                           }
                         }}
+                        setSecurityFrameworkFilter={(securityFramework: string) => {
+                          setSecurityFrameworkFilter(securityFramework);
+                          baseData.baseSecurityFrameworkFilter = securityFramework;
+                        }}
                       />
                     )}
                   </VirtualItem>
@@ -361,7 +417,10 @@ const ActionsContainer = styled.div<{$secondary?: boolean}>`
 
   ${({$secondary}) => {
     if ($secondary) {
-      return 'margin-top: 16px;';
+      return `
+        margin-top: 16px;
+        margin-bottom: 16px;
+      `;
     }
   }}
 `;
@@ -390,6 +449,7 @@ const MainContainer = styled.div<{$height?: number; $width?: number}>`
   width: ${({$width}) => ($width ? `${$width}px` : '100%')};
   display: flex;
   flex-direction: column;
+  font-family: 'Inter', sans-serif;
 `;
 
 const NewErrorsMessage = styled.div`
@@ -401,12 +461,23 @@ const NewErrorsMessage = styled.div`
   align-items: center;
   overflow: hidden;
   width: max-content;
+  margin: 4px 0px 8px 0px;
 `;
 
 const NoErrorsMessage = styled.div`
   color: ${Colors.grey9};
   padding: 16px;
   font-weight: 700;
+`;
+
+const SecurityFrameworkFilter = styled(Select)`
+  & .ant-select-arrow {
+    color: ${Colors.blue7};
+  }
+
+  & .ant-select-selection-item {
+    color: ${Colors.blue7} !important;
+  }
 `;
 
 const GroupByFilter = styled(Select)`
@@ -439,7 +510,6 @@ const ValidationList = styled.ul`
   height: 100%;
   overflow-y: auto;
   padding-left: 0px;
-  margin-top: 16px;
 `;
 
 const VirtualItem = styled.div`

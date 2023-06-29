@@ -73,7 +73,8 @@ export function useFilteredProblems(
   newProblems: NewProblemsType,
   showNewErrors: boolean,
   searchValue: string,
-  filtersValue: ValidationFiltersValueType
+  filtersValue: ValidationFiltersValueType,
+  securityFrameworkFilter: string
 ) {
   const [filteredProblems, setFilteredProblems] = useState<ProblemsType>({});
 
@@ -87,7 +88,7 @@ export function useFilteredProblems(
     }
 
     let currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
-    currentFilteredProblems = filterProblems(currentFilteredProblems, filtersValue);
+    currentFilteredProblems = filterProblems(currentFilteredProblems, filtersValue, securityFrameworkFilter);
 
     const sortedFilteredProblems = Object.keys(currentFilteredProblems)
       .sort()
@@ -97,7 +98,7 @@ export function useFilteredProblems(
       }, {} as any);
 
     setFilteredProblems(sortedFilteredProblems);
-  }, [problems, newProblems, showNewErrors, searchValue, filtersValue]);
+  }, [problems, newProblems, showNewErrors, searchValue, filtersValue, securityFrameworkFilter]);
 
   return filteredProblems;
 }
