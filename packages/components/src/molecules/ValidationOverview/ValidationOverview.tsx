@@ -121,7 +121,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       setCollapsedHeadersKey(keys);
       baseData.baseCollapsedKeys = [...keys];
     }
-  }, [isCollapsed]);
+  }, [isCollapsed, validationList]);
 
   const rowVirtualizer = useVirtualizer({
     count: validationList.length,
