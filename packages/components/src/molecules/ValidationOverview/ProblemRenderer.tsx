@@ -2,7 +2,7 @@ import {useMemo} from 'react';
 import styled from 'styled-components';
 import {Tooltip} from 'antd';
 import {Colors} from '@/styles/Colors';
-import {ProblemNode, ShowByFilterOptionType} from './types';
+import {ProblemNode, GroupByFilterOptionType} from './types';
 import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
@@ -12,22 +12,22 @@ import {iconMap} from './constants';
 type IProps = {
   node: ProblemNode;
   rule: RuleMetadata;
-  showByFilterValue: ShowByFilterOptionType;
+  groupByFilterValue: GroupByFilterOptionType;
   selectedProblem?: ValidationResult;
   onClick: () => void;
 };
 
 const ProblemRenderer: React.FC<IProps> = props => {
-  const {node, rule, selectedProblem, showByFilterValue, onClick} = props;
+  const {node, rule, selectedProblem, groupByFilterValue, onClick} = props;
 
   const isSelected = useMemo(
-    () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem, showByFilterValue) : false),
-    [selectedProblem, node.problem, showByFilterValue]
+    () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem, groupByFilterValue) : false),
+    [selectedProblem, node.problem, groupByFilterValue]
   );
 
   return (
-    <Row $isSelected={isSelected} $secondary={showByFilterValue === 'show-by-rule'} onClick={onClick}>
-      {showByFilterValue === 'show-by-rule' ? (
+    <Row $isSelected={isSelected} $secondary={groupByFilterValue === 'group-by-rule'} onClick={onClick}>
+      {groupByFilterValue === 'group-by-rule' ? (
         <>
           <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="File line">
             <ProblemStartLine $isSelected={isSelected}>
@@ -57,10 +57,13 @@ const ProblemRenderer: React.FC<IProps> = props => {
 
           <Tooltip
             mouseEnterDelay={TOOLTIP_DELAY}
-            title={showByFilterValue === 'show-by-file' ? 'File content line' : 'Resource content line'}
+            title={groupByFilterValue === 'group-by-file' ? 'File content line' : 'Resource content line'}
           >
             <ProblemStartLine $isSelected={isSelected}>
-              {node.problem.locations[showByFilterValue === 'show-by-file' ? 0 : 1].physicalLocation?.region?.startLine}
+              {
+                node.problem.locations[groupByFilterValue === 'group-by-file' ? 0 : 1].physicalLocation?.region
+                  ?.startLine
+              }
             </ProblemStartLine>
           </Tooltip>
 

@@ -1,18 +1,18 @@
 import {ValidationResult} from '@monokle/validation';
 import {useLayoutEffect, useRef} from 'react';
-import {ShowByFilterOptionType, ValidationListNode} from './types';
+import {GroupByFilterOptionType, ValidationListNode} from './types';
 import {isProblemSelected} from './utils';
 
 export function useScroll({
   scrollTo,
   list,
   selectedProblem,
-  showByFilterValue,
+  groupByFilterValue,
 }: {
   scrollTo: (index: number) => void;
   list: ValidationListNode[];
   selectedProblem: ValidationResult | undefined;
-  showByFilterValue: ShowByFilterOptionType;
+  groupByFilterValue: GroupByFilterOptionType;
 }) {
   const listRef = useRef(list);
   listRef.current = list;
@@ -25,7 +25,7 @@ export function useScroll({
     }
 
     const index = listRef.current.findIndex(
-      item => item.type === 'problem' && isProblemSelected(selectedProblem, item.problem, showByFilterValue)
+      item => item.type === 'problem' && isProblemSelected(selectedProblem, item.problem, groupByFilterValue)
     );
 
     if (index === -1) return;

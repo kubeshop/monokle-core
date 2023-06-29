@@ -12,7 +12,7 @@ export type ValidationOverviewType = {
   height?: number;
   newProblemsIntroducedType?: string;
   selectedProblem?: ValidationResult;
-  showOnlyByResource?: boolean;
+  groupOnlyByResource?: boolean;
   skeletonStyle?: React.CSSProperties;
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
   onFiltersChange?: (filters: ValidationFiltersValueType) => void;
@@ -37,12 +37,12 @@ export type ProblemsType = {
 
 export type NewProblemsType = {data: ProblemsType; resultsCount: number};
 
-export type ShowByFilterOptionType = 'show-by-file' | 'show-by-resource' | 'show-by-rule';
+export type GroupByFilterOptionType = 'group-by-file' | 'group-by-resource' | 'group-by-rule';
 
 export type BaseDataType = {
   baseCollapsedKeys: string[];
-  baseShowByFilterValue: ShowByFilterOptionType;
-  baseShowOnlyByResource: boolean;
+  baseGroupByFilterValue: GroupByFilterOptionType;
+  baseGroupOnlyByResource: boolean;
 };
 
 export type HeaderNode = {

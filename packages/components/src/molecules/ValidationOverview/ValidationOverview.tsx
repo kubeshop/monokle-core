@@ -11,31 +11,33 @@ import ProblemRenderer from './ProblemRenderer';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
-import {BaseDataType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationOverviewType} from './types';
+import {BaseDataType, GroupByFilterOptionType, ValidationFiltersValueType, ValidationOverviewType} from './types';
 import {useScroll} from './useScroll';
 import {getValidationList} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
 
 let baseData: BaseDataType = {
   baseCollapsedKeys: [],
-  baseShowByFilterValue: 'show-by-file',
-  baseShowOnlyByResource: false,
+  baseGroupByFilterValue: 'group-by-file',
+  baseGroupOnlyByResource: false,
 };
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {status, validationResponse, activePlugins = [...CORE_PLUGINS]} = props;
   const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}, defaultSelectError = false} = props;
-  const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource, filters} = props;
+  const {customMessage, newProblemsIntroducedType, selectedProblem, groupOnlyByResource, filters} = props;
   const {onFiltersChange, onProblemSelect} = props;
 
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<ValidationFiltersValueType>(filters || DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
-  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseData.baseShowByFilterValue);
+  const [groupByFilterValue, setGroupByFilterValue] = useState<GroupByFilterOptionType>(
+    baseData.baseGroupByFilterValue
+  );
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
 
-  const {newProblems, problems} = useCurrentAndNewProblems(showByFilterValue, validationResponse);
+  const {newProblems, problems} = useCurrentAndNewProblems(groupByFilterValue, validationResponse);
   const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue, filtersValue);
 
   const validationList = useMemo(
@@ -44,13 +46,13 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   );
   const ref = useRef<HTMLUListElement>(null);
 
-  const showByFilterOptions = useMemo(
+  const groupByFilterOptions = useMemo(
     () => [
-      {value: 'show-by-file', label: 'Show by file', disabled: showOnlyByResource},
-      {value: 'show-by-resource', label: 'Show by resource'},
-      {value: 'show-by-rule', label: 'Show by rule', disabled: showOnlyByResource},
+      {value: 'group-by-file', label: 'Group by file', disabled: groupOnlyByResource},
+      {value: 'group-by-resource', label: 'Group by resource'},
+      {value: 'group-by-rule', label: 'Group by rule', disabled: groupOnlyByResource},
     ],
-    [showOnlyByResource]
+    [groupOnlyByResource]
   );
 
   const newProblemsIntroducedText = useMemo(
@@ -72,7 +74,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
   useScroll({
     list: validationList,
-    showByFilterValue,
+    groupByFilterValue,
     selectedProblem,
     scrollTo: index =>
       rowVirtualizer.scrollToIndex(index, {
@@ -82,28 +84,28 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   });
 
   useEffect(() => {
-    if (typeof showOnlyByResource === 'undefined') {
+    if (typeof groupOnlyByResource === 'undefined') {
       return;
     }
 
-    if (showOnlyByResource === true) {
-      if (showByFilterValue !== 'show-by-resource') {
-        setShowByFilterValue('show-by-resource');
+    if (groupOnlyByResource === true) {
+      if (groupByFilterValue !== 'group-by-resource') {
+        setGroupByFilterValue('group-by-resource');
       }
 
-      if (baseData.baseShowOnlyByResource === false) {
+      if (baseData.baseGroupOnlyByResource === false) {
         baseData.baseCollapsedKeys = [];
       }
-    } else if (!showOnlyByResource) {
-      setShowByFilterValue(baseData.baseShowByFilterValue);
+    } else if (!groupOnlyByResource) {
+      setGroupByFilterValue(baseData.baseGroupByFilterValue);
 
-      if (baseData.baseShowOnlyByResource === true) {
+      if (baseData.baseGroupOnlyByResource === true) {
         baseData.baseCollapsedKeys = [];
       }
     }
 
-    baseData.baseShowOnlyByResource = showOnlyByResource;
-  }, [showOnlyByResource]);
+    baseData.baseGroupOnlyByResource = groupOnlyByResource;
+  }, [groupOnlyByResource]);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -190,14 +192,14 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           <div />
         )}
 
-        <ShowByFilter
-          value={showByFilterValue}
+        <GroupByFilter
+          value={groupByFilterValue}
           dropdownMatchSelectWidth={false}
           bordered={false}
-          options={showByFilterOptions}
+          options={groupByFilterOptions}
           onSelect={(value: any) => {
-            setShowByFilterValue(value);
-            baseData.baseShowByFilterValue = value;
+            setGroupByFilterValue(value);
+            baseData.baseGroupByFilterValue = value;
             baseData.baseCollapsedKeys = [];
           }}
         />
@@ -226,7 +228,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                     {node.type === 'header' ? (
                       <HeaderRenderer
                         node={node}
-                        showByFilterValue={showByFilterValue}
+                        groupByFilterValue={groupByFilterValue}
                         toggleCollapse={node => {
                           if (collapsedHeadersKey.includes(node.label)) {
                             const collapsedKeys = collapsedHeadersKey.filter(item => item !== node.label);
@@ -244,12 +246,12 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                         node={node}
                         rule={getRuleForResultV2(validationResponse.runs[0], node.problem)}
                         selectedProblem={selectedProblem}
-                        showByFilterValue={showByFilterValue}
+                        groupByFilterValue={groupByFilterValue}
                         onClick={() => {
                           if (onProblemSelect) {
                             onProblemSelect({
                               problem: node.problem,
-                              selectedFrom: showByFilterValue === 'show-by-resource' ? 'resource' : 'file',
+                              selectedFrom: groupByFilterValue === 'group-by-resource' ? 'resource' : 'file',
                             });
                           }
                         }}
@@ -332,7 +334,7 @@ const NoErrorsMessage = styled.div`
   font-weight: 700;
 `;
 
-const ShowByFilter = styled(Select)`
+const GroupByFilter = styled(Select)`
   margin-right: -10px;
 
   & .ant-select-arrow {

@@ -8,7 +8,7 @@ import {
   ValidationResponse,
   ValidationResult,
 } from '@monokle/validation';
-import {ProblemsType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationListNode} from './types';
+import {ProblemsType, GroupByFilterOptionType, ValidationFiltersValueType, ValidationListNode} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -168,7 +168,7 @@ export const getResourceName = (problem: ValidationResult) => getResourceLocatio
 export const isProblemSelected = (
   selectedProblem: ValidationResult,
   currentProblem: ValidationResult,
-  type: ShowByFilterOptionType
+  type: GroupByFilterOptionType
 ) => {
   const selectedFilePhysicalLocation = getFileLocation(selectedProblem).physicalLocation;
   const currentFileLocationPhysicalLocation = getFileLocation(currentProblem).physicalLocation;
@@ -182,11 +182,11 @@ export const isProblemSelected = (
     return false;
   }
 
-  if (type === 'show-by-file' || type === 'show-by-rule') {
+  if (type === 'group-by-file' || type === 'group-by-rule') {
     if (selectedFileURI === currentFileURI && selectedFileStartLine === currentFileStartLine) {
       return true;
     }
-  } else if (type === 'show-by-resource') {
+  } else if (type === 'group-by-resource') {
     if (
       getResourceName(selectedProblem) === getResourceName(currentProblem) &&
       selectedFileStartLine === currentFileStartLine
