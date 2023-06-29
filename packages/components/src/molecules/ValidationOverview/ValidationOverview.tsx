@@ -1,5 +1,5 @@
 import {Colors} from '@/styles/Colors';
-import {CloseOutlined} from '@ant-design/icons';
+import {ArrowsAltOutlined, CloseOutlined, ShrinkOutlined} from '@ant-design/icons';
 import {CORE_PLUGINS, getRuleForResultV2} from '@monokle/validation';
 import {elementScroll, useVirtualizer} from '@tanstack/react-virtual';
 import {Select, Skeleton, Tooltip} from 'antd';
@@ -11,7 +11,13 @@ import ProblemRenderer from './ProblemRenderer';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
-import {BaseDataType, GroupByFilterOptionType, ValidationFiltersValueType, ValidationOverviewType} from './types';
+import {
+  BaseDataType,
+  GroupByFilterOptionType,
+  HeaderNode,
+  ValidationFiltersValueType,
+  ValidationOverviewType,
+} from './types';
 import {useScroll} from './useScroll';
 import {getValidationList} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
@@ -45,6 +51,11 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     [collapsedHeadersKey, filteredProblems]
   );
   const ref = useRef<HTMLUListElement>(null);
+
+  const isCollapsed = useMemo(
+    () => collapsedHeadersKey.length === validationList.filter(i => i.type === 'header').length,
+    [collapsedHeadersKey, validationList]
+  );
 
   const groupByFilterOptions = useMemo(
     () => [
@@ -173,24 +184,23 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       />
 
       <ActionsContainer $secondary>
-        {Object.keys(newProblems.data).length && showNewErrorsMessage && newProblemsIntroducedType !== 'initial' ? (
-          <>
-            {showNewErrors ? (
-              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
-            ) : (
-              <NewErrorsMessage>
-                <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={newProblemsIntroducedText}>
-                  <EllipsisSpan>{newProblemsIntroducedText}</EllipsisSpan>
-                </Tooltip>
+        <ActionButtonsContainer>
+          <ActionButton
+            onClick={() => {
+              if (isCollapsed) {
+                setCollapsedHeadersKey([]);
+                baseData.baseCollapsedKeys = [];
+              } else {
+                const keys = (validationList.filter(i => i.type === 'header') as HeaderNode[]).map(i => i.label);
 
-                <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
-                <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
-              </NewErrorsMessage>
-            )}
-          </>
-        ) : (
-          <div />
-        )}
+                setCollapsedHeadersKey(keys);
+                baseData.baseCollapsedKeys = [...keys];
+              }
+            }}
+          >
+            {isCollapsed ? <ArrowsAltOutlined /> : <ShrinkOutlined />}
+          </ActionButton>
+        </ActionButtonsContainer>
 
         <GroupByFilter
           value={groupByFilterValue}
@@ -204,6 +214,25 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
           }}
         />
       </ActionsContainer>
+
+      {Object.keys(newProblems.data).length && showNewErrorsMessage && newProblemsIntroducedType !== 'initial' ? (
+        <>
+          {showNewErrors ? (
+            <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+          ) : (
+            <NewErrorsMessage>
+              <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={newProblemsIntroducedText}>
+                <EllipsisSpan>{newProblemsIntroducedText}</EllipsisSpan>
+              </Tooltip>
+
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
+              <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
+            </NewErrorsMessage>
+          )}
+        </>
+      ) : (
+        <div />
+      )}
 
       {validationList.length ? (
         <>
@@ -280,6 +309,31 @@ export default ValidationOverview;
 
 // Styled Components
 
+const ActionButtonsContainer = styled.div``;
+
+const ActionButton = styled.div`
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    & .anticon {
+      color: ${Colors.blue6};
+    }
+  }
+
+  & .anticon {
+    transition: all 0.2s ease-in;
+    color: ${Colors.blue7};
+    font-size: 16px;
+  }
+`;
+
 const ActionsContainer = styled.div<{$secondary?: boolean}>`
   display: flex;
   justify-content: space-between;
@@ -326,6 +380,7 @@ const NewErrorsMessage = styled.div`
   display: flex;
   align-items: center;
   overflow: hidden;
+  width: max-content;
 `;
 
 const NoErrorsMessage = styled.div`
