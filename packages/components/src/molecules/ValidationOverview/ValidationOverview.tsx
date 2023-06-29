@@ -1,9 +1,9 @@
 import {Colors} from '@/styles/Colors';
-import {ArrowsAltOutlined, CloseOutlined, ShrinkOutlined} from '@ant-design/icons';
+import {ArrowsAltOutlined, CloseOutlined, DownloadOutlined, ShrinkOutlined} from '@ant-design/icons';
 import {CORE_PLUGINS, getRuleForResultV2} from '@monokle/validation';
 import {elementScroll, useVirtualizer} from '@tanstack/react-virtual';
 import {Select, Skeleton, Tooltip} from 'antd';
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import isEqual from 'react-fast-compare';
 import styled from 'styled-components';
 import HeaderRenderer from './HeaderRenderer';
@@ -21,6 +21,7 @@ import {
 import {useScroll} from './useScroll';
 import {getValidationList} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
+import {Icon} from '@/atoms';
 
 let baseData: BaseDataType = {
   baseCollapsedKeys: [],
@@ -32,7 +33,8 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {status, validationResponse, activePlugins = [...CORE_PLUGINS]} = props;
   const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}, defaultSelectError = false} = props;
   const {customMessage, newProblemsIntroducedType, selectedProblem, groupOnlyByResource, filters} = props;
-  const {onFiltersChange, onProblemSelect} = props;
+  const {onFiltersChange, onProblemSelect, downloadSarifResponseCallback, triggerValidationSettingsRedirectCallback} =
+    props;
 
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<ValidationFiltersValueType>(filters || DEFAULT_FILTERS_VALUE);
@@ -75,6 +77,18 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     ),
     [newProblemsIntroducedType, newProblems.resultsCount, customMessage]
   );
+
+  const CollapseExpandHandler = useCallback(() => {
+    if (isCollapsed) {
+      setCollapsedHeadersKey([]);
+      baseData.baseCollapsedKeys = [];
+    } else {
+      const keys = (validationList.filter(i => i.type === 'header') as HeaderNode[]).map(i => i.label);
+
+      setCollapsedHeadersKey(keys);
+      baseData.baseCollapsedKeys = [...keys];
+    }
+  }, [isCollapsed]);
 
   const rowVirtualizer = useVirtualizer({
     count: validationList.length,
@@ -185,21 +199,23 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
       <ActionsContainer $secondary>
         <ActionButtonsContainer>
-          <ActionButton
-            onClick={() => {
-              if (isCollapsed) {
-                setCollapsedHeadersKey([]);
-                baseData.baseCollapsedKeys = [];
-              } else {
-                const keys = (validationList.filter(i => i.type === 'header') as HeaderNode[]).map(i => i.label);
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Go to Validation Settings">
+            <ActionButton onClick={triggerValidationSettingsRedirectCallback}>
+              <Icon name="validation-settings" />
+            </ActionButton>
+          </Tooltip>
 
-                setCollapsedHeadersKey(keys);
-                baseData.baseCollapsedKeys = [...keys];
-              }
-            }}
-          >
-            {isCollapsed ? <ArrowsAltOutlined /> : <ShrinkOutlined />}
-          </ActionButton>
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={`${isCollapsed ? 'Expand' : 'Collapse'} all`}>
+            <ActionButton onClick={CollapseExpandHandler}>
+              {isCollapsed ? <ArrowsAltOutlined /> : <ShrinkOutlined />}
+            </ActionButton>
+          </Tooltip>
+
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Download the SARIF response of your validation">
+            <ActionButton onClick={downloadSarifResponseCallback}>
+              <DownloadOutlined />
+            </ActionButton>
+          </Tooltip>
         </ActionButtonsContainer>
 
         <GroupByFilter
@@ -309,17 +325,21 @@ export default ValidationOverview;
 
 // Styled Components
 
-const ActionButtonsContainer = styled.div``;
+const ActionButtonsContainer = styled.div`
+  display: flex;
+  gap: 8px;
+`;
 
 const ActionButton = styled.div`
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: ${Colors.blue7};
 
   &:hover {
     & .anticon {

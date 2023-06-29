@@ -8,12 +8,14 @@ export type ValidationOverviewType = {
   containerStyle?: React.CSSProperties;
   customMessage?: string;
   defaultSelectError?: boolean;
+  downloadSarifResponseCallback?: () => void;
   filters?: ValidationFiltersValueType;
   height?: number;
   newProblemsIntroducedType?: string;
   selectedProblem?: ValidationResult;
   groupOnlyByResource?: boolean;
   skeletonStyle?: React.CSSProperties;
+  triggerValidationSettingsRedirectCallback?: () => void;
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
   onFiltersChange?: (filters: ValidationFiltersValueType) => void;
 };
