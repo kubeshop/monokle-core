@@ -1,4 +1,4 @@
-import {PSP_RELATIONS} from '../../../taxonomies/index.js';
+import {PSS_RELATIONS} from '../../../taxonomies/index.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -27,7 +27,7 @@ export const capabilities = defineRule({
   help: "Only use allowed values in 'securityContext.capabilities.add'.",
   advanced: {
     severity: 8,
-    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
+    relationships: [PSS_RELATIONS['baseline'], PSS_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

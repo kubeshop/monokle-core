@@ -1,4 +1,4 @@
-import {PSP_RELATIONS} from '../../../taxonomies/index.js';
+import {PSS_RELATIONS} from '../../../taxonomies/index.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodTemplate} from '../../custom/utils.js';
 
@@ -9,7 +9,7 @@ export const appArmor = defineRule({
   help: 'Do not customize AppArmor.',
   advanced: {
     severity: 5,
-    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
+    relationships: [PSS_RELATIONS['baseline'], PSS_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodTemplate(resources, (resource, pod, prefix) => {

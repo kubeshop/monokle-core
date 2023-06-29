@@ -1,4 +1,4 @@
-import {PSP_RELATIONS} from '../../../taxonomies/psp.js';
+import {PSS_RELATIONS} from '../../../taxonomies/pss.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -13,7 +13,7 @@ export const seccompStrict = defineRule({
   advanced: {
     enabled: false,
     severity: 5,
-    relationships: [PSP_RELATIONS['restricted']],
+    relationships: [PSS_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

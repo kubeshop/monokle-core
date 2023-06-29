@@ -1,5 +1,5 @@
 import {NSA_RELATIONS} from '../../../taxonomies/nsa.js';
-import {PSP_RELATIONS} from '../../../taxonomies/psp.js';
+import {PSS_RELATIONS} from '../../../taxonomies/pss.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -12,7 +12,7 @@ export const runningAsNonRoot = defineRule({
   advanced: {
     enabled: false,
     severity: 8,
-    relationships: [PSP_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
+    relationships: [PSS_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

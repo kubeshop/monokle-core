@@ -1,4 +1,4 @@
-import {PSP_RELATIONS} from '../../../taxonomies/index.js';
+import {PSS_RELATIONS} from '../../../taxonomies/index.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -8,7 +8,7 @@ export const hostNamespaces = defineRule({
   fullDescription: 'Sharing host namespaces is a critical privilege escalation.',
   advanced: {
     severity: 8,
-    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
+    relationships: [PSS_RELATIONS['baseline'], PSS_RELATIONS['restricted']],
   },
   help: "Do not set 'spec.host(Network|PID|IPC)'.",
   validate({resources}, {report}) {

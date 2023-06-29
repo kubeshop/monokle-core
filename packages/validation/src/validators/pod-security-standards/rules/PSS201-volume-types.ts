@@ -1,7 +1,7 @@
 import {Volume} from 'kubernetes-types/core/v1.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
-import {PSP_RELATIONS} from '../../../taxonomies/psp.js';
+import {PSS_RELATIONS} from '../../../taxonomies/pss.js';
 
 type VolumeType = keyof Volume;
 const ALLOWED: VolumeType[] = [
@@ -24,7 +24,7 @@ export const volumeTypes = defineRule({
   advanced: {
     enabled: false,
     severity: 3,
-    relationships: [PSP_RELATIONS['restricted']],
+    relationships: [PSS_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
