@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.1
+
+### Patch Changes
+
+- 0e4f8fe: Fix collapse/expand audit pane problems
+
 ## 1.6.0
 
 ### Minor Changes
