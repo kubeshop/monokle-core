@@ -8,12 +8,14 @@ export type ValidationOverviewType = {
   containerStyle?: React.CSSProperties;
   customMessage?: string;
   defaultSelectError?: boolean;
+  downloadSarifResponseCallback?: () => void;
   filters?: ValidationFiltersValueType;
   height?: number;
   newProblemsIntroducedType?: string;
   selectedProblem?: ValidationResult;
-  showOnlyByResource?: boolean;
+  groupOnlyByResource?: boolean;
   skeletonStyle?: React.CSSProperties;
+  triggerValidationSettingsRedirectCallback?: () => void;
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
   onFiltersChange?: (filters: ValidationFiltersValueType) => void;
 };
@@ -37,12 +39,13 @@ export type ProblemsType = {
 
 export type NewProblemsType = {data: ProblemsType; resultsCount: number};
 
-export type ShowByFilterOptionType = 'show-by-file' | 'show-by-resource' | 'show-by-rule';
+export type GroupByFilterOptionType = 'group-by-file' | 'group-by-resource' | 'group-by-rule';
 
 export type BaseDataType = {
   baseCollapsedKeys: string[];
-  baseShowByFilterValue: ShowByFilterOptionType;
-  baseShowOnlyByResource: boolean;
+  baseGroupByFilterValue: GroupByFilterOptionType;
+  baseGroupOnlyByResource: boolean;
+  baseSecurityFrameworkFilter: string;
 };
 
 export type HeaderNode = {

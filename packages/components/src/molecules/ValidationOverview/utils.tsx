@@ -8,7 +8,7 @@ import {
   ValidationResponse,
   ValidationResult,
 } from '@monokle/validation';
-import {ProblemsType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationListNode} from './types';
+import {ProblemsType, GroupByFilterOptionType, ValidationFiltersValueType, ValidationListNode} from './types';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -98,18 +98,23 @@ export const getFullyQualifiedName = (problem: ValidationResult) =>
   problem.locations[1].logicalLocations?.[0].fullyQualifiedName ||
   problem.locations[0].physicalLocation?.artifactLocation.uri;
 
-export const filterProblems = (problems: ProblemsType, filters: ValidationFiltersValueType) => {
-  if (!filters['tool-component'] && !filters['type']) {
-    return problems;
-  }
-
+export const filterProblems = (
+  problems: ProblemsType,
+  filters: ValidationFiltersValueType,
+  securityFrameworkFilter: string
+) => {
   return Object.fromEntries(
     Object.entries(problems || {})
       .map(([filePath, validationResults]) => {
         let filteredValidationResults = validationResults.filter(
           el =>
             (filters['type'] ? el.level === filters['type'] : true) &&
-            (filters['tool-component']?.length ? filters['tool-component'].includes(el.rule.toolComponent.name) : true)
+            (filters['tool-component']?.length
+              ? filters['tool-component'].includes(el.rule.toolComponent.name)
+              : true) &&
+            (securityFrameworkFilter !== 'all'
+              ? el.taxa?.find(t => t.toolComponent.name === securityFrameworkFilter)
+              : true)
         );
 
         if (filteredValidationResults.length > 0) {
@@ -168,7 +173,7 @@ export const getResourceName = (problem: ValidationResult) => getResourceLocatio
 export const isProblemSelected = (
   selectedProblem: ValidationResult,
   currentProblem: ValidationResult,
-  type: ShowByFilterOptionType
+  type: GroupByFilterOptionType
 ) => {
   const selectedFilePhysicalLocation = getFileLocation(selectedProblem).physicalLocation;
   const currentFileLocationPhysicalLocation = getFileLocation(currentProblem).physicalLocation;
@@ -182,11 +187,11 @@ export const isProblemSelected = (
     return false;
   }
 
-  if (type === 'show-by-file' || type === 'show-by-rule') {
+  if (type === 'group-by-file' || type === 'group-by-rule') {
     if (selectedFileURI === currentFileURI && selectedFileStartLine === currentFileStartLine) {
       return true;
     }
-  } else if (type === 'show-by-resource') {
+  } else if (type === 'group-by-resource') {
     if (
       getResourceName(selectedProblem) === getResourceName(currentProblem) &&
       selectedFileStartLine === currentFileStartLine

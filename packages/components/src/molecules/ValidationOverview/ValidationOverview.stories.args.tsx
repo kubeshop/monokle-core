@@ -66,6 +66,69 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           extensions: [
             {
+              name: 'kubernetes-schema',
+              rules: [
+                {
+                  id: 'K8S001',
+                  name: 'schema-violated',
+                  shortDescription: {
+                    text: 'The resource is formatted incorrectly.',
+                  },
+                  fullDescription: {
+                    text: 'The resource is violating the schema violation. The Kubernetes API will not accept this resource.',
+                  },
+                  help: {
+                    text: 'Check whether the property is used correctly. You can hover the key for documentation.',
+                  },
+                },
+                {
+                  id: 'K8S002',
+                  name: 'deprecation-violated',
+                  shortDescription: {
+                    text: 'The resource uses deprecated "apiVersion" value.',
+                  },
+                  fullDescription: {
+                    text: 'The resource is violating the deprecation violation. The Kubernetes API may not accept this resource or can behave unexpectedly.',
+                  },
+                  help: {
+                    text: 'Change "apiVersion" for up-to-date value. You can hover the key for documentation.',
+                  },
+                },
+                {
+                  id: 'K8S003',
+                  name: 'removal-violated',
+                  shortDescription: {
+                    text: 'The resource uses removed "apiVersion" value.',
+                  },
+                  fullDescription: {
+                    text: 'The resource is violating the removal violation. The Kubernetes API may not accept this resource or can behave unexpectedly.',
+                  },
+                  help: {
+                    text: 'Change "apiVersion" for up-to-date value. You can hover the key for documentation.',
+                  },
+                  defaultConfiguration: {
+                    level: 'error',
+                  },
+                },
+                {
+                  id: 'K8S004',
+                  name: 'strict-mode-violated',
+                  shortDescription: {
+                    text: 'The resource has unsupported or invalid "apiVersion" field value.',
+                  },
+                  fullDescription: {
+                    text: 'The resource is violating the strict-mode violation. The resource will not be validated against Kubernetes schema.',
+                  },
+                  help: {
+                    text: 'Not supported or invalid "apiVersion" value has been used. You can hover the key for documentation.',
+                  },
+                  defaultConfiguration: {
+                    enabled: false,
+                  },
+                },
+              ],
+            },
+            {
               name: 'yaml-syntax',
               rules: [
                 {
@@ -451,24 +514,6 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
               ],
             },
             {
-              name: 'kubernetes-schema',
-              rules: [
-                {
-                  id: 'K8S001',
-                  name: 'schema-violated',
-                  shortDescription: {
-                    text: 'The resource is formatted incorrectly.',
-                  },
-                  fullDescription: {
-                    text: 'The resource is violating the schema violation. The Kubernetes API will not accept this resource.',
-                  },
-                  help: {
-                    text: 'Check whether the property is used correctly. You can hover the key for documentation.',
-                  },
-                },
-              ],
-            },
-            {
               name: 'open-policy-agent',
               rules: [
                 {
@@ -583,7 +628,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                   id: 'KSV006',
                   name: 'no-mounted-docker-sock',
                   shortDescription: {
-                    text: 'Disallow mounteing the hostPath volume with docker.sock',
+                    text: 'Disallow mounting the Docker socket using hostPath volumes',
                   },
                   fullDescription: {
                     text: 'Mounting docker.sock from the host can give the container full root access to the host.',
@@ -931,13 +976,14 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                   help: {
                     text: 'Do not set spec.containers[*].securityContext.procMount and spec.initContainers[*].securityContext.procMount.',
                   },
+                  defaultConfiguration: {},
                   properties: {
                     'security-severity': 5,
                   },
                 },
                 {
                   id: 'KSV028',
-                  name: 'no-non-emphemeral-volumes',
+                  name: 'no-non-ephemeral-volumes',
                   shortDescription: {
                     text: 'Disallow use of non-ephemeral volume types',
                   },
@@ -992,6 +1038,160 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
         },
         results: [
           {
+            ruleId: 'K8S001',
+            rule: {
+              id: 'K8S001',
+              index: 0,
+              toolComponent: {
+                name: 'kubernetes-schema',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Value at /spec/replicas should be integer',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 8,
+                    startColumn: 13,
+                    endLine: 8,
+                    endColumn: 38,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 8,
+                    startColumn: 13,
+                    endLine: 8,
+                    endColumn: 38,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'K8S001',
+            rule: {
+              id: 'K8S001',
+              index: 0,
+              toolComponent: {
+                name: 'kubernetes-schema',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Value at /spec/ports/0/port should be integer',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 36,
+                    startColumn: 13,
+                    endLine: 36,
+                    endColumn: 38,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-1',
+                  },
+                  region: {
+                    startLine: 13,
+                    startColumn: 13,
+                    endLine: 13,
+                    endColumn: 38,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.service@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'K8S001',
+            rule: {
+              id: 'K8S001',
+              index: 0,
+              toolComponent: {
+                name: 'kubernetes-schema',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: "Value at /spec should have required property 'selector'",
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/production/add-cloud-sql.yaml',
+                  },
+                  region: {
+                    startLine: 6,
+                    startColumn: 3,
+                    endLine: 21,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1fcb4ebd5fbca7-0',
+                  },
+                  region: {
+                    startLine: 6,
+                    startColumn: 3,
+                    endLine: 21,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'Patch: happy-cms.deployment@kustomize-happy-cms/overlays/production/add-cloud-sql.yaml',
+                    name: 'Patch: happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
             ruleId: 'LNK001',
             rule: {
               id: 'LNK001',
@@ -1009,12 +1209,217 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'SRCROOT',
-                    uri: 'vanilla-panda-blog/service.yaml',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 32,
+                    startColumn: 10,
+                    endLine: 32,
+                    endColumn: 34,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-1',
                   },
                   region: {
                     startLine: 9,
                     startColumn: 10,
                     endLine: 9,
+                    endColumn: 34,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.service@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'LNK001',
+            rule: {
+              id: 'LNK001',
+              index: 0,
+              toolComponent: {
+                name: 'resource-links',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Unsatisfied resource link.',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/production/ingress.yaml',
+                  },
+                  region: {
+                    startLine: 17,
+                    startColumn: 23,
+                    endLine: 17,
+                    endColumn: 27,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1322959fc39a37-0',
+                  },
+                  region: {
+                    startLine: 17,
+                    startColumn: 23,
+                    endLine: 17,
+                    endColumn: 27,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'demo.ingress@kustomize-happy-cms/overlays/production/ingress.yaml',
+                    name: 'demo',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'LNK001',
+            rule: {
+              id: 'LNK001',
+              index: 0,
+              toolComponent: {
+                name: 'resource-links',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Unsatisfied resource link.',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/ingress.yaml',
+                  },
+                  region: {
+                    startLine: 17,
+                    startColumn: 23,
+                    endLine: 17,
+                    endColumn: 27,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '127ec267212d3a-0',
+                  },
+                  region: {
+                    startLine: 17,
+                    startColumn: 23,
+                    endLine: 17,
+                    endColumn: 27,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.ingress@kustomize-happy-cms/overlays/local/ingress.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'LNK001',
+            rule: {
+              id: 'LNK001',
+              index: 0,
+              toolComponent: {
+                name: 'resource-links',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Unsatisfied resource link.',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 56,
+                    startColumn: 23,
+                    endLine: 56,
+                    endColumn: 35,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 23,
+                    endLine: 27,
+                    endColumn: 35,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'LNK001',
+            rule: {
+              id: 'LNK001',
+              index: 0,
+              toolComponent: {
+                name: 'resource-links',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Unsatisfied resource link.',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 28,
+                    startColumn: 10,
+                    endLine: 28,
                     endColumn: 20,
                   },
                 },
@@ -1023,19 +1428,1856 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '047aedde-e54d-51fc-9ae7-860ea5c581bc',
+                    uri: '1a98a97e8da5d3-1',
                   },
                   region: {
-                    startLine: 9,
+                    startLine: 13,
                     startColumn: 10,
-                    endLine: 9,
+                    endLine: 13,
                     endColumn: 20,
                   },
                 },
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName: 'panda-blog.service@vanilla-panda-blog/service.yaml',
+                    fullyQualifiedName:
+                      'happy-cms-database-headless.service@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database-headless',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV001',
+            rule: {
+              id: 'KSV001',
+              index: 0,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+              {
+                id: 'CIS000',
+                index: 0,
+                toolComponent: {
+                  name: 'CIS',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Disallow the process from elevating its privileges on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV003',
+            rule: {
+              id: 'KSV003',
+              index: 2,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require default capabilities to be dropped on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV011',
+            rule: {
+              id: 'KSV011',
+              index: 8,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be limited on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV012',
+            rule: {
+              id: 'KSV012',
+              index: 9,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Requires the container to runs as non root user on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV013',
+            rule: {
+              id: 'KSV013',
+              index: 10,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow images with the latest tag on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 19,
+                    startColumn: 18,
+                    endLine: 19,
+                    endColumn: 33,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 19,
+                    startColumn: 18,
+                    endLine: 19,
+                    endColumn: 33,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV014',
+            rule: {
+              id: 'KSV014',
+              index: 11,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require a read-only root file system on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV015',
+            rule: {
+              id: 'KSV015',
+              index: 12,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be requested on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV016',
+            rule: {
+              id: 'KSV016',
+              index: 13,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be requested on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV018',
+            rule: {
+              id: 'KSV018',
+              index: 15,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be limited on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV020',
+            rule: {
+              id: 'KSV020',
+              index: 16,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low user ID on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV021',
+            rule: {
+              id: 'KSV021',
+              index: 17,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low group ID on container "blue-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'bundles/simple.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: 'c9cf721b174f5-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml',
+                    name: 'blue-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV001',
+            rule: {
+              id: 'KSV001',
+              index: 0,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+              {
+                id: 'CIS000',
+                index: 0,
+                toolComponent: {
+                  name: 'CIS',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Disallow the process from elevating its privileges on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV003',
+            rule: {
+              id: 'KSV003',
+              index: 2,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require default capabilities to be dropped on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV011',
+            rule: {
+              id: 'KSV011',
+              index: 8,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be limited on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV012',
+            rule: {
+              id: 'KSV012',
+              index: 9,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Requires the container to runs as non root user on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV013',
+            rule: {
+              id: 'KSV013',
+              index: 10,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow images with the latest tag on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 19,
+                    startColumn: 18,
+                    endLine: 19,
+                    endColumn: 34,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 19,
+                    startColumn: 18,
+                    endLine: 19,
+                    endColumn: 34,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV014',
+            rule: {
+              id: 'KSV014',
+              index: 11,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require a read-only root file system on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV015',
+            rule: {
+              id: 'KSV015',
+              index: 12,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be requested on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV016',
+            rule: {
+              id: 'KSV016',
+              index: 13,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be requested on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV018',
+            rule: {
+              id: 'KSV018',
+              index: 15,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be limited on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV020',
+            rule: {
+              id: 'KSV020',
+              index: 16,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low user ID on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV021',
+            rule: {
+              id: 'KSV021',
+              index: 17,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low group ID on container "happy-cms".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/base/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '177b0b6483e353-0',
+                  },
+                  region: {
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'happy-cms.deployment@kustomize-happy-cms/base/deployment.yaml',
+                    name: 'happy-cms',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV001',
+            rule: {
+              id: 'KSV001',
+              index: 0,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+              {
+                id: 'CIS000',
+                index: 0,
+                toolComponent: {
+                  name: 'CIS',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Disallow the process from elevating its privileges on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 53,
+                    startColumn: 13,
+                    endLine: 54,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 24,
+                    startColumn: 13,
+                    endLine: 25,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV003',
+            rule: {
+              id: 'KSV003',
+              index: 2,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require default capabilities to be dropped on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 53,
+                    startColumn: 13,
+                    endLine: 54,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 24,
+                    startColumn: 13,
+                    endLine: 25,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV011',
+            rule: {
+              id: 'KSV011',
+              index: 8,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be limited on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 49,
+                    startColumn: 11,
+                    endLine: 79,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 20,
+                    startColumn: 11,
+                    endLine: 50,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV012',
+            rule: {
+              id: 'KSV012',
+              index: 9,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Requires the container to runs as non root user on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 53,
+                    startColumn: 13,
+                    endLine: 54,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 24,
+                    startColumn: 13,
+                    endLine: 25,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV014',
+            rule: {
+              id: 'KSV014',
+              index: 11,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require a read-only root file system on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 53,
+                    startColumn: 13,
+                    endLine: 54,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 24,
+                    startColumn: 13,
+                    endLine: 25,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV015',
+            rule: {
+              id: 'KSV015',
+              index: 12,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be requested on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 49,
+                    startColumn: 11,
+                    endLine: 79,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 20,
+                    startColumn: 11,
+                    endLine: 50,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV016',
+            rule: {
+              id: 'KSV016',
+              index: 13,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be requested on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 49,
+                    startColumn: 11,
+                    endLine: 79,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 20,
+                    startColumn: 11,
+                    endLine: 50,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV018',
+            rule: {
+              id: 'KSV018',
+              index: 15,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be limited on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 49,
+                    startColumn: 11,
+                    endLine: 79,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 20,
+                    startColumn: 11,
+                    endLine: 50,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV020',
+            rule: {
+              id: 'KSV020',
+              index: 16,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low user ID on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 53,
+                    startColumn: 24,
+                    endLine: 53,
+                    endColumn: 28,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 24,
+                    startColumn: 24,
+                    endLine: 24,
+                    endColumn: 28,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV021',
+            rule: {
+              id: 'KSV021',
+              index: 17,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low group ID on container "postgresql".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 53,
+                    startColumn: 13,
+                    endLine: 54,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 24,
+                    startColumn: 13,
+                    endLine: 25,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV029',
+            rule: {
+              id: 'KSV029',
+              index: 23,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow setting runAsGroup to zero.',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'kustomize-happy-cms/overlays/local/database.yaml',
+                  },
+                  region: {
+                    startLine: 31,
+                    startColumn: 7,
+                    endLine: 31,
+                    endColumn: 18,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1a98a97e8da5d3-2',
+                  },
+                  region: {
+                    startLine: 2,
+                    startColumn: 7,
+                    endLine: 2,
+                    endColumn: 18,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName:
+                      'happy-cms-database.statefulset@kustomize-happy-cms/overlays/local/database.yaml',
+                    name: 'happy-cms-database',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV001',
+            rule: {
+              id: 'KSV001',
+              index: 0,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+              {
+                id: 'CIS000',
+                index: 0,
+                toolComponent: {
+                  name: 'CIS',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Disallow the process from elevating its privileges on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -1043,30 +3285,46 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
             ],
           },
           {
-            ruleId: 'K8S001',
+            ruleId: 'KSV001',
             rule: {
-              id: 'K8S001',
+              id: 'KSV001',
               index: 0,
               toolComponent: {
-                name: 'kubernetes-schema',
+                name: 'open-policy-agent',
               },
             },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+              {
+                id: 'CIS000',
+                index: 0,
+                toolComponent: {
+                  name: 'CIS',
+                },
+              },
+            ],
             level: 'warning',
             message: {
-              text: 'Value at /spec/template/spec/containers/0/ports/0/name should be string',
+              text: 'Disallow the process from elevating its privileges on container "panda-sidecar".',
             },
             locations: [
               {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'SRCROOT',
-                    uri: 'vanilla-panda-blog/deployment.yaml',
+                    uri: 'standalone/deployment.yaml',
                   },
                   region: {
-                    startLine: 21,
-                    startColumn: 21,
-                    endLine: 21,
-                    endColumn: 23,
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
                   },
                 },
               },
@@ -1074,19 +3332,1057 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '1ed543166bf16e-0',
                   },
                   region: {
-                    startLine: 21,
-                    startColumn: 21,
-                    endLine: 21,
-                    endColumn: 23,
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
                   },
                 },
                 logicalLocations: [
                   {
                     kind: 'resource',
-                    fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV003',
+            rule: {
+              id: 'KSV003',
+              index: 2,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require default capabilities to be dropped on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV003',
+            rule: {
+              id: 'KSV003',
+              index: 2,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require default capabilities to be dropped on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV011',
+            rule: {
+              id: 'KSV011',
+              index: 8,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be limited on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV011',
+            rule: {
+              id: 'KSV011',
+              index: 8,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            taxa: [
+              {
+                id: 'NSA001',
+                index: 0,
+                toolComponent: {
+                  name: 'NSA',
+                },
+              },
+            ],
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be limited on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 11,
+                    endLine: 34,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 11,
+                    endLine: 34,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV012',
+            rule: {
+              id: 'KSV012',
+              index: 9,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Requires the container to runs as non root user on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV012',
+            rule: {
+              id: 'KSV012',
+              index: 9,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Requires the container to runs as non root user on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV013',
+            rule: {
+              id: 'KSV013',
+              index: 10,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow images with the latest tag on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 23,
+                    startColumn: 18,
+                    endLine: 23,
+                    endColumn: 35,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 23,
+                    startColumn: 18,
+                    endLine: 23,
+                    endColumn: 35,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV013',
+            rule: {
+              id: 'KSV013',
+              index: 10,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow images with the latest tag on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 28,
+                    startColumn: 18,
+                    endLine: 28,
+                    endColumn: 38,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 28,
+                    startColumn: 18,
+                    endLine: 28,
+                    endColumn: 38,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV014',
+            rule: {
+              id: 'KSV014',
+              index: 11,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require a read-only root file system on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV014',
+            rule: {
+              id: 'KSV014',
+              index: 11,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require a read-only root file system on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV015',
+            rule: {
+              id: 'KSV015',
+              index: 12,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be requested on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 11,
+                    endLine: 34,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 11,
+                    endLine: 34,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV015',
+            rule: {
+              id: 'KSV015',
+              index: 12,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the CPU to be requested on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV016',
+            rule: {
+              id: 'KSV016',
+              index: 13,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be requested on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV016',
+            rule: {
+              id: 'KSV016',
+              index: 13,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be requested on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 11,
+                    endLine: 34,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 11,
+                    endLine: 34,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV018',
+            rule: {
+              id: 'KSV018',
+              index: 15,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be limited on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV018',
+            rule: {
+              id: 'KSV018',
+              index: 15,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Require the memory to be limited on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 11,
+                    endLine: 34,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 27,
+                    startColumn: 11,
+                    endLine: 34,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV020',
+            rule: {
+              id: 'KSV020',
+              index: 16,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low user ID on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 24,
+                    endLine: 30,
+                    endColumn: 27,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 24,
+                    endLine: 30,
+                    endColumn: 27,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV020',
+            rule: {
+              id: 'KSV020',
+              index: 16,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low user ID on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV021',
+            rule: {
+              id: 'KSV021',
+              index: 17,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low group ID on container "panda-sidecar".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 30,
+                    startColumn: 13,
+                    endLine: 31,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
+                    name: 'panda-blog',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            ruleId: 'KSV021',
+            rule: {
+              id: 'KSV021',
+              index: 17,
+              toolComponent: {
+                name: 'open-policy-agent',
+              },
+            },
+            level: 'warning',
+            message: {
+              text: 'Disallow running with a low group ID on container "panda-blog".',
+            },
+            locations: [
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'SRCROOT',
+                    uri: 'standalone/deployment.yaml',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+              },
+              {
+                physicalLocation: {
+                  artifactLocation: {
+                    uriBaseId: 'RESOURCE',
+                    uri: '1ed543166bf16e-0',
+                  },
+                  region: {
+                    startLine: 22,
+                    startColumn: 11,
+                    endLine: 27,
+                    endColumn: 1,
+                  },
+                },
+                logicalLocations: [
+                  {
+                    kind: 'resource',
+                    fullyQualifiedName: 'panda-blog.third-branch.deployment@standalone/deployment.yaml',
                     name: 'panda-blog',
                   },
                 ],
@@ -1130,10 +4426,10 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 39,
-                    endLine: 19,
-                    endColumn: 43,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
                   },
                 },
               },
@@ -1141,13 +4437,13 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 39,
-                    endLine: 19,
-                    endColumn: 43,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
+                    endColumn: 1,
                   },
                 },
                 logicalLocations: [
@@ -1181,9 +4477,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1192,12 +4488,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1241,9 +4537,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 16,
+                    startLine: 18,
                     startColumn: 11,
-                    endLine: 30,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1252,12 +4548,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 16,
+                    startLine: 18,
                     startColumn: 11,
-                    endLine: 30,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1292,9 +4588,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1303,12 +4599,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1343,9 +4639,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 17,
+                    startLine: 19,
                     startColumn: 18,
-                    endLine: 17,
+                    endLine: 19,
                     endColumn: 35,
                   },
                 },
@@ -1354,12 +4650,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 17,
+                    startLine: 19,
                     startColumn: 18,
-                    endLine: 17,
+                    endLine: 19,
                     endColumn: 35,
                   },
                 },
@@ -1394,9 +4690,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1405,12 +4701,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1445,9 +4741,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 16,
+                    startLine: 18,
                     startColumn: 11,
-                    endLine: 30,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1456,12 +4752,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 16,
+                    startLine: 18,
                     startColumn: 11,
-                    endLine: 30,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1496,9 +4792,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 16,
+                    startLine: 18,
                     startColumn: 11,
-                    endLine: 30,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1507,12 +4803,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 16,
+                    startLine: 18,
                     startColumn: 11,
-                    endLine: 30,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1547,9 +4843,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 16,
+                    startLine: 18,
                     startColumn: 11,
-                    endLine: 30,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1558,12 +4854,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 16,
+                    startLine: 18,
                     startColumn: 11,
-                    endLine: 30,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1598,9 +4894,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1609,12 +4905,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1649,9 +4945,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                     uri: 'vanilla-panda-blog/deployment.yaml',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },
@@ -1660,12 +4956,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 physicalLocation: {
                   artifactLocation: {
                     uriBaseId: 'RESOURCE',
-                    uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
+                    uri: '119ea841051bfd-0',
                   },
                   region: {
-                    startLine: 19,
-                    startColumn: 13,
-                    endLine: 20,
+                    startLine: 18,
+                    startColumn: 11,
+                    endLine: 23,
                     endColumn: 1,
                   },
                 },

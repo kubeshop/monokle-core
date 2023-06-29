@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import {Tooltip} from 'antd';
-import {HeaderNode, ShowByFilterOptionType} from './types';
+import {HeaderNode, GroupByFilterOptionType} from './types';
 import {TOOLTIP_DELAY} from '@/constants';
 import {Colors} from '@/styles/Colors';
 import {getRuleInfo, renderSeverityIcon} from './utils';
@@ -9,14 +9,14 @@ import {DownOutlined as RawDownOutlined, RightOutlined as RawRightOutlined} from
 
 type IProps = {
   node: HeaderNode;
-  showByFilterValue: ShowByFilterOptionType;
+  groupByFilterValue: GroupByFilterOptionType;
   toggleCollapse: (node: HeaderNode) => void;
 };
 
 const HeaderRenderer: React.FC<IProps> = props => {
-  const {node, showByFilterValue, toggleCollapse} = props;
+  const {node, groupByFilterValue, toggleCollapse} = props;
 
-  if (showByFilterValue === 'show-by-rule') {
+  if (groupByFilterValue === 'group-by-rule') {
     const {ruleDescription, severity, toolComponentName} = getRuleInfo(node.label);
 
     return (
@@ -43,7 +43,7 @@ const HeaderRenderer: React.FC<IProps> = props => {
     );
   }
 
-  if (showByFilterValue === 'show-by-resource') {
+  if (groupByFilterValue === 'group-by-resource') {
     return (
       <Container onClick={() => toggleCollapse(node)}>
         <Content>

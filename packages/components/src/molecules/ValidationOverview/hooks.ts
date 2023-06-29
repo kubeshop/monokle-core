@@ -2,7 +2,7 @@ import {ValidationResponse, ValidationResult} from '@monokle/validation';
 
 import {useEffect, useMemo, useState} from 'react';
 import isEqual from 'react-fast-compare';
-import {ValidationFiltersValueType, NewProblemsType, ProblemsType, ShowByFilterOptionType} from './types';
+import {ValidationFiltersValueType, NewProblemsType, ProblemsType, GroupByFilterOptionType} from './types';
 import {
   filterBySearchValue,
   filterProblems,
@@ -14,7 +14,7 @@ import {
 let baseValidationResults: ValidationResult[] = [];
 
 export function useCurrentAndNewProblems(
-  showByFilterValue: ShowByFilterOptionType,
+  groupByFilterValue: GroupByFilterOptionType,
   validationResponse: ValidationResponse
 ) {
   const [newProblems, setNewProblems] = useState<NewProblemsType>({
@@ -31,20 +31,20 @@ export function useCurrentAndNewProblems(
     let currentProblems: ProblemsType = {};
     let newProblems: ProblemsType = {};
 
-    if (showByFilterValue === 'show-by-resource') {
+    if (groupByFilterValue === 'group-by-resource') {
       newProblems = selectProblemsByResource(newResults, 'all');
       currentProblems = selectProblemsByResource(validationResults, 'all');
-    } else if (showByFilterValue === 'show-by-file') {
+    } else if (groupByFilterValue === 'group-by-file') {
       newProblems = selectProblemsByFilePath(newResults, 'all');
       currentProblems = selectProblemsByFilePath(validationResults, 'all');
-    } else if (showByFilterValue === 'show-by-rule') {
+    } else if (groupByFilterValue === 'group-by-rule') {
       newProblems = selectProblemsByRule(validationResponse, newResults, 'all');
       currentProblems = selectProblemsByRule(validationResponse, validationResults, 'all');
     }
 
     setNewProblems({data: newProblems, resultsCount: newResults.length});
     setProblems(currentProblems);
-  }, [showByFilterValue, validationResults]);
+  }, [groupByFilterValue, validationResults]);
 
   return {newProblems, problems};
 }
@@ -73,7 +73,8 @@ export function useFilteredProblems(
   newProblems: NewProblemsType,
   showNewErrors: boolean,
   searchValue: string,
-  filtersValue: ValidationFiltersValueType
+  filtersValue: ValidationFiltersValueType,
+  securityFrameworkFilter: string
 ) {
   const [filteredProblems, setFilteredProblems] = useState<ProblemsType>({});
 
@@ -87,7 +88,7 @@ export function useFilteredProblems(
     }
 
     let currentFilteredProblems = filterBySearchValue(showingProblems, searchValue);
-    currentFilteredProblems = filterProblems(currentFilteredProblems, filtersValue);
+    currentFilteredProblems = filterProblems(currentFilteredProblems, filtersValue, securityFrameworkFilter);
 
     const sortedFilteredProblems = Object.keys(currentFilteredProblems)
       .sort()
@@ -97,7 +98,7 @@ export function useFilteredProblems(
       }, {} as any);
 
     setFilteredProblems(sortedFilteredProblems);
-  }, [problems, newProblems, showNewErrors, searchValue, filtersValue]);
+  }, [problems, newProblems, showNewErrors, searchValue, filtersValue, securityFrameworkFilter]);
 
   return filteredProblems;
 }

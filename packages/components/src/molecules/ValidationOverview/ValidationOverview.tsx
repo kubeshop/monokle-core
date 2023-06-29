@@ -1,9 +1,9 @@
 import {Colors} from '@/styles/Colors';
-import {CloseOutlined} from '@ant-design/icons';
+import {ArrowsAltOutlined, CloseOutlined, DownloadOutlined, ShrinkOutlined} from '@ant-design/icons';
 import {CORE_PLUGINS, getRuleForResultV2} from '@monokle/validation';
 import {elementScroll, useVirtualizer} from '@tanstack/react-virtual';
 import {Select, Skeleton, Tooltip} from 'antd';
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import isEqual from 'react-fast-compare';
 import styled from 'styled-components';
 import HeaderRenderer from './HeaderRenderer';
@@ -11,32 +11,70 @@ import ProblemRenderer from './ProblemRenderer';
 import ValidationOverviewFilters from './ValidationOverviewFilters';
 import {DEFAULT_FILTERS_VALUE, newErrorsTextMap} from './constants';
 import {useCurrentAndNewProblems, useFilteredProblems} from './hooks';
-import {BaseDataType, ShowByFilterOptionType, ValidationFiltersValueType, ValidationOverviewType} from './types';
+import {
+  BaseDataType,
+  GroupByFilterOptionType,
+  HeaderNode,
+  ValidationFiltersValueType,
+  ValidationOverviewType,
+} from './types';
 import {useScroll} from './useScroll';
-import {getValidationList} from './utils';
+import {getValidationList, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
+import {Icon} from '@/atoms';
 
 let baseData: BaseDataType = {
   baseCollapsedKeys: [],
-  baseShowByFilterValue: 'show-by-file',
-  baseShowOnlyByResource: false,
+  baseGroupByFilterValue: 'group-by-file',
+  baseGroupOnlyByResource: false,
+  baseSecurityFrameworkFilter: 'all',
 };
 
 const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {status, validationResponse, activePlugins = [...CORE_PLUGINS]} = props;
   const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}, defaultSelectError = false} = props;
-  const {customMessage, newProblemsIntroducedType, selectedProblem, showOnlyByResource, filters} = props;
-  const {onFiltersChange, onProblemSelect} = props;
+  const {customMessage, newProblemsIntroducedType, selectedProblem, groupOnlyByResource, filters} = props;
+  const {onFiltersChange, onProblemSelect, downloadSarifResponseCallback, triggerValidationSettingsRedirectCallback} =
+    props;
 
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<ValidationFiltersValueType>(filters || DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
-  const [showByFilterValue, setShowByFilterValue] = useState<ShowByFilterOptionType>(baseData.baseShowByFilterValue);
+  const [groupByFilterValue, setGroupByFilterValue] = useState<GroupByFilterOptionType>(
+    baseData.baseGroupByFilterValue
+  );
   const [showNewErrors, setShowNewErrors] = useState(false);
   const [showNewErrorsMessage, setShowNewErrorsMessage] = useState(true);
+  const [securityFrameworkFilter, setSecurityFrameworkFilter] = useState(baseData.baseSecurityFrameworkFilter);
 
-  const {newProblems, problems} = useCurrentAndNewProblems(showByFilterValue, validationResponse);
-  const filteredProblems = useFilteredProblems(problems, newProblems, showNewErrors, searchValue, filtersValue);
+  const {newProblems, problems} = useCurrentAndNewProblems(groupByFilterValue, validationResponse);
+
+  const filteredProblems = useFilteredProblems(
+    problems,
+    newProblems,
+    showNewErrors,
+    searchValue,
+    filtersValue,
+    securityFrameworkFilter
+  );
+
+  const foundSecurityFrameworks = useMemo(() => {
+    const securityFrameworks = new Set<string>();
+
+    Object.values(problems).forEach(value => {
+      Object.values(value).forEach(validationResult => {
+        if (validationResult.taxa) {
+          validationResult.taxa.forEach(securityFramework => {
+            if (securityFramework) {
+              securityFrameworks.add(securityFramework.toolComponent.name);
+            }
+          });
+        }
+      });
+    });
+
+    return [...securityFrameworks];
+  }, [problems]);
 
   const validationList = useMemo(
     () => getValidationList(filteredProblems, collapsedHeadersKey),
@@ -44,13 +82,23 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   );
   const ref = useRef<HTMLUListElement>(null);
 
-  const showByFilterOptions = useMemo(
+  const isCollapsed = useMemo(
+    () => collapsedHeadersKey.length === validationList.filter(i => i.type === 'header').length,
+    [collapsedHeadersKey, validationList]
+  );
+
+  const groupByFilterOptions = useMemo(
     () => [
-      {value: 'show-by-file', label: 'Show by file', disabled: showOnlyByResource},
-      {value: 'show-by-resource', label: 'Show by resource'},
-      {value: 'show-by-rule', label: 'Show by rule', disabled: showOnlyByResource},
+      {value: 'group-by-file', label: 'Group by file', disabled: groupOnlyByResource},
+      {value: 'group-by-resource', label: 'Group by resource'},
+      {value: 'group-by-rule', label: 'Group by rule', disabled: groupOnlyByResource},
     ],
-    [showOnlyByResource]
+    [groupOnlyByResource]
+  );
+
+  const securityFrameworksOptions = useMemo(
+    () => [{value: 'all', label: 'All'}, ...foundSecurityFrameworks.map(f => ({value: f, label: f}))],
+    [foundSecurityFrameworks]
   );
 
   const newProblemsIntroducedText = useMemo(
@@ -63,6 +111,18 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     [newProblemsIntroducedType, newProblems.resultsCount, customMessage]
   );
 
+  const CollapseExpandHandler = useCallback(() => {
+    if (isCollapsed) {
+      setCollapsedHeadersKey([]);
+      baseData.baseCollapsedKeys = [];
+    } else {
+      const keys = (validationList.filter(i => i.type === 'header') as HeaderNode[]).map(i => i.label);
+
+      setCollapsedHeadersKey(keys);
+      baseData.baseCollapsedKeys = [...keys];
+    }
+  }, [isCollapsed]);
+
   const rowVirtualizer = useVirtualizer({
     count: validationList.length,
     estimateSize: () => 36,
@@ -72,7 +132,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
 
   useScroll({
     list: validationList,
-    showByFilterValue,
+    groupByFilterValue,
     selectedProblem,
     scrollTo: index =>
       rowVirtualizer.scrollToIndex(index, {
@@ -82,28 +142,28 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   });
 
   useEffect(() => {
-    if (typeof showOnlyByResource === 'undefined') {
+    if (typeof groupOnlyByResource === 'undefined') {
       return;
     }
 
-    if (showOnlyByResource === true) {
-      if (showByFilterValue !== 'show-by-resource') {
-        setShowByFilterValue('show-by-resource');
+    if (groupOnlyByResource === true) {
+      if (groupByFilterValue !== 'group-by-resource') {
+        setGroupByFilterValue('group-by-resource');
       }
 
-      if (baseData.baseShowOnlyByResource === false) {
+      if (baseData.baseGroupOnlyByResource === false) {
         baseData.baseCollapsedKeys = [];
       }
-    } else if (!showOnlyByResource) {
-      setShowByFilterValue(baseData.baseShowByFilterValue);
+    } else if (!groupOnlyByResource) {
+      setGroupByFilterValue(baseData.baseGroupByFilterValue);
 
-      if (baseData.baseShowOnlyByResource === true) {
+      if (baseData.baseGroupOnlyByResource === true) {
         baseData.baseCollapsedKeys = [];
       }
     }
 
-    baseData.baseShowOnlyByResource = showOnlyByResource;
-  }, [showOnlyByResource]);
+    baseData.baseGroupOnlyByResource = groupOnlyByResource;
+  }, [groupOnlyByResource]);
 
   useEffect(() => {
     if (!showNewErrorsMessage) {
@@ -149,6 +209,11 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     onProblemSelect({problem: firstErrorFound.problem, selectedFrom: 'file'});
   }, [validationList, defaultSelectError, onProblemSelect]);
 
+  useEffect(() => {
+    baseData.baseCollapsedKeys = [];
+    setCollapsedHeadersKey([]);
+  }, [securityFrameworkFilter, filtersValue]);
+
   if (status === 'loading') {
     return <Skeleton active style={skeletonStyle} />;
   }
@@ -161,8 +226,6 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
         searchValue={searchValue}
         onFiltersChange={filters => {
           setFiltersValue(filters);
-          setCollapsedHeadersKey([]);
-          baseData.baseCollapsedKeys = [];
           if (onFiltersChange) {
             onFiltersChange(filters);
           }
@@ -171,37 +234,74 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
       />
 
       <ActionsContainer $secondary>
-        {Object.keys(newProblems.data).length && showNewErrorsMessage && newProblemsIntroducedType !== 'initial' ? (
-          <>
-            {showNewErrors ? (
-              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
-            ) : (
-              <NewErrorsMessage>
-                <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={newProblemsIntroducedText}>
-                  <EllipsisSpan>{newProblemsIntroducedText}</EllipsisSpan>
-                </Tooltip>
+        <ActionButtonsContainer>
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Go to Validation Settings">
+            <ActionButton onClick={triggerValidationSettingsRedirectCallback}>
+              <Icon name="validation-settings" />
+            </ActionButton>
+          </Tooltip>
 
-                <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
-                <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
-              </NewErrorsMessage>
-            )}
-          </>
-        ) : (
-          <div />
-        )}
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={`${isCollapsed ? 'Expand' : 'Collapse'} all`}>
+            <ActionButton onClick={CollapseExpandHandler}>
+              {isCollapsed ? <ArrowsAltOutlined /> : <ShrinkOutlined />}
+            </ActionButton>
+          </Tooltip>
 
-        <ShowByFilter
-          value={showByFilterValue}
-          dropdownMatchSelectWidth={false}
-          bordered={false}
-          options={showByFilterOptions}
-          onSelect={(value: any) => {
-            setShowByFilterValue(value);
-            baseData.baseShowByFilterValue = value;
-            baseData.baseCollapsedKeys = [];
-          }}
-        />
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Download the SARIF response of your validation">
+            <ActionButton onClick={downloadSarifResponseCallback}>
+              <DownloadOutlined />
+            </ActionButton>
+          </Tooltip>
+        </ActionButtonsContainer>
+
+        <div>
+          <SecurityFrameworkFilter
+            optionLabelProp="label"
+            labelInValue
+            value={{
+              value: securityFrameworkFilter,
+              label: `Frameworks: ${uppercaseFirstLetter(securityFrameworkFilter)}`,
+            }}
+            options={securityFrameworksOptions}
+            bordered={false}
+            onSelect={(value: any) => {
+              setSecurityFrameworkFilter(value.value);
+              baseData.baseSecurityFrameworkFilter = value.value;
+            }}
+          />
+          <GroupByFilter
+            value={groupByFilterValue}
+            dropdownMatchSelectWidth={false}
+            bordered={false}
+            options={groupByFilterOptions}
+            onSelect={(value: any) => {
+              setGroupByFilterValue(value);
+              baseData.baseGroupByFilterValue = value;
+            }}
+          />
+        </div>
       </ActionsContainer>
+
+      {Object.keys(newProblems.data).length && showNewErrorsMessage && newProblemsIntroducedType !== 'initial' ? (
+        <>
+          {showNewErrors ? (
+            <div style={{marginBottom: '8px'}}>
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(false)}>Show all</ShowNewErrorsButton>
+            </div>
+          ) : (
+            <NewErrorsMessage>
+              <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={newProblemsIntroducedText}>
+                <EllipsisSpan>{newProblemsIntroducedText}</EllipsisSpan>
+              </Tooltip>
+
+              <ShowNewErrorsButton onClick={() => setShowNewErrors(true)}>Show only those</ShowNewErrorsButton>
+              <CloseIcon onClick={() => setShowNewErrorsMessage(false)} />
+            </NewErrorsMessage>
+          )}
+        </>
+      ) : (
+        <div />
+      )}
 
       {validationList.length ? (
         <>
@@ -226,7 +326,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                     {node.type === 'header' ? (
                       <HeaderRenderer
                         node={node}
-                        showByFilterValue={showByFilterValue}
+                        groupByFilterValue={groupByFilterValue}
                         toggleCollapse={node => {
                           if (collapsedHeadersKey.includes(node.label)) {
                             const collapsedKeys = collapsedHeadersKey.filter(item => item !== node.label);
@@ -244,14 +344,18 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                         node={node}
                         rule={getRuleForResultV2(validationResponse.runs[0], node.problem)}
                         selectedProblem={selectedProblem}
-                        showByFilterValue={showByFilterValue}
+                        groupByFilterValue={groupByFilterValue}
                         onClick={() => {
                           if (onProblemSelect) {
                             onProblemSelect({
                               problem: node.problem,
-                              selectedFrom: showByFilterValue === 'show-by-resource' ? 'resource' : 'file',
+                              selectedFrom: groupByFilterValue === 'group-by-resource' ? 'resource' : 'file',
                             });
                           }
+                        }}
+                        setSecurityFrameworkFilter={(securityFramework: string) => {
+                          setSecurityFrameworkFilter(securityFramework);
+                          baseData.baseSecurityFrameworkFilter = securityFramework;
                         }}
                       />
                     )}
@@ -278,6 +382,35 @@ export default ValidationOverview;
 
 // Styled Components
 
+const ActionButtonsContainer = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const ActionButton = styled.div`
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: ${Colors.blue7};
+
+  &:hover {
+    & .anticon {
+      color: ${Colors.blue6};
+    }
+  }
+
+  & .anticon {
+    transition: all 0.2s ease-in;
+    color: ${Colors.blue7};
+    font-size: 16px;
+  }
+`;
+
 const ActionsContainer = styled.div<{$secondary?: boolean}>`
   display: flex;
   justify-content: space-between;
@@ -285,7 +418,10 @@ const ActionsContainer = styled.div<{$secondary?: boolean}>`
 
   ${({$secondary}) => {
     if ($secondary) {
-      return 'margin-top: 16px;';
+      return `
+        margin-top: 16px;
+        margin-bottom: 16px;
+      `;
     }
   }}
 `;
@@ -314,6 +450,7 @@ const MainContainer = styled.div<{$height?: number; $width?: number}>`
   width: ${({$width}) => ($width ? `${$width}px` : '100%')};
   display: flex;
   flex-direction: column;
+  font-family: 'Inter', sans-serif;
 `;
 
 const NewErrorsMessage = styled.div`
@@ -324,6 +461,8 @@ const NewErrorsMessage = styled.div`
   display: flex;
   align-items: center;
   overflow: hidden;
+  width: max-content;
+  margin: 4px 0px 8px 0px;
 `;
 
 const NoErrorsMessage = styled.div`
@@ -332,7 +471,17 @@ const NoErrorsMessage = styled.div`
   font-weight: 700;
 `;
 
-const ShowByFilter = styled(Select)`
+const SecurityFrameworkFilter = styled(Select)`
+  & .ant-select-arrow {
+    color: ${Colors.blue7};
+  }
+
+  & .ant-select-selection-item {
+    color: ${Colors.blue7} !important;
+  }
+`;
+
+const GroupByFilter = styled(Select)`
   margin-right: -10px;
 
   & .ant-select-arrow {
@@ -362,7 +511,6 @@ const ValidationList = styled.ul`
   height: 100%;
   overflow-y: auto;
   padding-left: 0px;
-  margin-top: 16px;
 `;
 
 const VirtualItem = styled.div`

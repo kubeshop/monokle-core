@@ -1,8 +1,8 @@
 import {useMemo} from 'react';
 import styled from 'styled-components';
-import {Tooltip} from 'antd';
+import {Tag, Tooltip} from 'antd';
 import {Colors} from '@/styles/Colors';
-import {ProblemNode, ShowByFilterOptionType} from './types';
+import {ProblemNode, GroupByFilterOptionType} from './types';
 import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
@@ -12,22 +12,23 @@ import {iconMap} from './constants';
 type IProps = {
   node: ProblemNode;
   rule: RuleMetadata;
-  showByFilterValue: ShowByFilterOptionType;
+  groupByFilterValue: GroupByFilterOptionType;
   selectedProblem?: ValidationResult;
   onClick: () => void;
+  setSecurityFrameworkFilter: (value: string) => void;
 };
 
 const ProblemRenderer: React.FC<IProps> = props => {
-  const {node, rule, selectedProblem, showByFilterValue, onClick} = props;
+  const {node, rule, selectedProblem, groupByFilterValue, onClick, setSecurityFrameworkFilter} = props;
 
   const isSelected = useMemo(
-    () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem, showByFilterValue) : false),
-    [selectedProblem, node.problem, showByFilterValue]
+    () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem, groupByFilterValue) : false),
+    [selectedProblem, node.problem, groupByFilterValue]
   );
 
   return (
-    <Row $isSelected={isSelected} $secondary={showByFilterValue === 'show-by-rule'} onClick={onClick}>
-      {showByFilterValue === 'show-by-rule' ? (
+    <Row $isSelected={isSelected} $secondary={groupByFilterValue === 'group-by-rule'} onClick={onClick}>
+      {groupByFilterValue === 'group-by-rule' ? (
         <>
           <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="File line">
             <ProblemStartLine $isSelected={isSelected}>
@@ -57,15 +58,35 @@ const ProblemRenderer: React.FC<IProps> = props => {
 
           <Tooltip
             mouseEnterDelay={TOOLTIP_DELAY}
-            title={showByFilterValue === 'show-by-file' ? 'File content line' : 'Resource content line'}
+            title={groupByFilterValue === 'group-by-file' ? 'File content line' : 'Resource content line'}
           >
             <ProblemStartLine $isSelected={isSelected}>
-              {node.problem.locations[showByFilterValue === 'show-by-file' ? 0 : 1].physicalLocation?.region?.startLine}
+              {
+                node.problem.locations[groupByFilterValue === 'group-by-file' ? 0 : 1].physicalLocation?.region
+                  ?.startLine
+              }
             </ProblemStartLine>
           </Tooltip>
 
           <ProblemIcon level={node.problem.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
-          <TextEllipsis style={{fontSize: '13px'}} text={node.problem.message.text} />
+
+          <ProblemText>{node.problem.message.text}</ProblemText>
+
+          {node.problem.taxa?.length ? (
+            <TagsContainer>
+              {node.problem.taxa.map(framework => (
+                <SecurityFrameworkTag
+                  key={framework.toolComponent.name}
+                  onClick={e => {
+                    e.stopPropagation();
+                    setSecurityFrameworkFilter(framework.toolComponent.name);
+                  }}
+                >
+                  {framework.toolComponent.name}
+                </SecurityFrameworkTag>
+              ))}
+            </TagsContainer>
+          ) : null}
         </>
       )}
     </Row>
@@ -83,6 +104,12 @@ const ProblemStartLine = styled.div<{$isSelected: boolean}>`
   font-size: 13px;
 `;
 
+const ProblemText = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
 const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`
   display: flex;
   align-items: center;
@@ -92,6 +119,7 @@ const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`
   color: ${({$isSelected, $secondary}) => ($isSelected ? Colors.grey1 : $secondary ? Colors.grey8 : Colors.whitePure)};
   background-color: ${({$isSelected}) => ($isSelected ? Colors.blue9 : 'transparent')};
   transition: all 0.15s ease-in;
+  flex-wrap: nowrap;
 
   & .anticon {
     color: ${({$isSelected}) => ($isSelected ? Colors.grey1 : Colors.grey8)};
@@ -100,5 +128,22 @@ const Row = styled.div<{$isSelected: boolean; $secondary: boolean}>`
   &:hover {
     cursor: pointer;
     background-color: ${({$isSelected}) => ($isSelected ? Colors.blue8 : 'rgba(141, 207, 248, 0.15)')};
+  }
+`;
+
+const TagsContainer = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+`;
+
+const SecurityFrameworkTag = styled(Tag)`
+  color: ${Colors.grey8};
+  background-color: ${Colors.grey4};
+  border: none;
+  font-size: 12px;
+  padding: 0px 8px;
+
+  &:hover {
+    color: ${Colors.grey9};
   }
 `;
