@@ -1,4 +1,4 @@
-import {PSP_RELATIONS} from '../../../taxonomies/index.js';
+import {PSS_RELATIONS} from '../../../taxonomies/index.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -12,7 +12,7 @@ export const selinux = defineRule({
   help: 'Use an allowed SELinux type and do not customize the user.',
   advanced: {
     severity: 5,
-    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted']],
+    relationships: [PSS_RELATIONS['baseline'], PSS_RELATIONS['restricted']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

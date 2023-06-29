@@ -1,4 +1,4 @@
-import {NSA_RELATIONS, PSP_RELATIONS} from '../../../taxonomies/index.js';
+import {NSA_RELATIONS, PSS_RELATIONS} from '../../../taxonomies/index.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -10,7 +10,7 @@ export const hostPorts = defineRule({
   help: 'Do not use volumes.hostPort.',
   advanced: {
     severity: 8,
-    relationships: [PSP_RELATIONS['baseline'], PSP_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
+    relationships: [PSS_RELATIONS['baseline'], PSS_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {
