@@ -209,11 +209,6 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     onProblemSelect({problem: firstErrorFound.problem, selectedFrom: 'file'});
   }, [validationList, defaultSelectError, onProblemSelect]);
 
-  useEffect(() => {
-    baseData.baseCollapsedKeys = [];
-    setCollapsedHeadersKey([]);
-  }, [securityFrameworkFilter, filtersValue]);
-
   if (status === 'loading') {
     return <Skeleton active style={skeletonStyle} />;
   }
@@ -226,6 +221,9 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
         searchValue={searchValue}
         onFiltersChange={filters => {
           setFiltersValue(filters);
+          baseData.baseCollapsedKeys = [];
+          setCollapsedHeadersKey([]);
+
           if (onFiltersChange) {
             onFiltersChange(filters);
           }
@@ -267,14 +265,19 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
             onSelect={(value: any) => {
               setSecurityFrameworkFilter(value.value);
               baseData.baseSecurityFrameworkFilter = value.value;
+              baseData.baseCollapsedKeys = [];
+              setCollapsedHeadersKey([]);
             }}
           />
+
           <GroupByFilter
             value={groupByFilterValue}
             dropdownMatchSelectWidth={false}
             bordered={false}
             options={groupByFilterOptions}
             onSelect={(value: any) => {
+              baseData.baseCollapsedKeys = [];
+              setCollapsedHeadersKey([]);
               setGroupByFilterValue(value);
               baseData.baseGroupByFilterValue = value;
             }}
@@ -354,6 +357,8 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                           }
                         }}
                         setSecurityFrameworkFilter={(securityFramework: string) => {
+                          baseData.baseCollapsedKeys = [];
+                          setCollapsedHeadersKey([]);
                           setSecurityFrameworkFilter(securityFramework);
                           baseData.baseSecurityFrameworkFilter = securityFramework;
                         }}
