@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.2
+
+### Patch Changes
+
+- 1825d88: Keep collapsed keys when activity changes
+
 ## 1.6.1
 
 ### Patch Changes
