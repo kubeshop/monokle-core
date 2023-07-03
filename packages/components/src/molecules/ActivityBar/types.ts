@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 
 export type ActivityType<ActivityName> = {
   component: JSX.Element;
   name: ActivityName;
   tooltip: string | JSX.Element;
-  type: "fullscreen" | "panel";
+  type: 'fullscreen' | 'panel' | 'two-columns';
   walkthrough?: JSX.Element;
   icon: (selected: boolean) => JSX.Element;
-  useBadge: () => { count: number; dot?: boolean; size?: "small" | "default" } | undefined;
+  useBadge: () => {count: number; dot?: boolean; size?: 'small' | 'default'} | undefined;
   isVisible?: () => boolean;
 };
 
