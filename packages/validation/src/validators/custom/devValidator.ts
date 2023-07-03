@@ -29,6 +29,7 @@ export class DevCustomValidator implements Plugin {
     settings?: any;
   };
   private _debug: boolean = false;
+  protected _toolComponentIndex: number = -1;
 
   constructor(private parser: ResourceParser) {
     this.hmr();
@@ -122,6 +123,14 @@ export class DevCustomValidator implements Plugin {
     }
 
     return this._currentValidator.toolComponent;
+  }
+
+  get toolComponentIndex(): number {
+    return this._toolComponentIndex;
+  }
+
+  set toolComponentIndex(value: number) {
+    this._toolComponentIndex = value;
   }
 
   get rules(): RuleMetadataWithConfig[] {

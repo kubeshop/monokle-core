@@ -309,7 +309,7 @@ export type ValidationResult = {
  */
 export type ToolComponentReference = {
   name: string;
-  index: number;
+  index?: number;
 };
 
 /**
