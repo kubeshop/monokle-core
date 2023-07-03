@@ -190,6 +190,12 @@ export interface Plugin {
   get toolComponent(): ToolPlugin;
 
   /**
+   * The SARIF tool component index.
+   */
+  get toolComponentIndex(): number;
+  set toolComponentIndex(value: number);
+
+  /**
    * The rules of this plugin.
    */
   get rules(): RuleMetadataWithConfig[];

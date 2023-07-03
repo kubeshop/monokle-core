@@ -17,6 +17,7 @@ export abstract class AbstractPlugin implements Plugin {
   protected _metadata: PluginMetadata;
   public configured = false;
 
+  protected _toolComponentIndex: number = -1;
   protected _enabled: boolean = true;
 
   protected _rules: RuleMetadata[] = [];
@@ -61,6 +62,14 @@ export abstract class AbstractPlugin implements Plugin {
     const name = this.name;
     const rules = this._rules;
     return {name, rules};
+  }
+
+  get toolComponentIndex(): number {
+    return this._toolComponentIndex;
+  }
+
+  set toolComponentIndex(value: number) {
+    this._toolComponentIndex = value;
   }
 
   get name(): string {
@@ -133,6 +142,7 @@ export abstract class AbstractPlugin implements Plugin {
         index: index ?? 0,
         toolComponent: {
           name: this.name,
+          index: this.toolComponentIndex,
         },
       },
       taxa,

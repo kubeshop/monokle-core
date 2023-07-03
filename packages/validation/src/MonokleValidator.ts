@@ -257,6 +257,8 @@ export class MonokleValidator implements Validator {
       extensions: validators.map(v => v.toolComponent),
     };
 
+    validators.forEach((v, index) => v.toolComponentIndex = index);
+
     await nextTick();
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
