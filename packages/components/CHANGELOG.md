@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.3
+
+### Patch Changes
+
+- adf8db2: Add two-columns type for activity
+
 ## 1.6.2
 
 ### Patch Changes

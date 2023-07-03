@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.6
+
+### Patch Changes
+
+- d685240: Add missing '...toolComponent.index' to SARIF output
+
 ## 0.23.5
 
 ### Patch Changes
