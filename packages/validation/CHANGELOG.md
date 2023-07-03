@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.7
+
+### Patch Changes
+
+- dbc44fa: Make '...toolComponent.index' optional
+
 ## 0.23.6
 
 ### Patch Changes
