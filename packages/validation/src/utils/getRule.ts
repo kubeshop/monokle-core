@@ -21,7 +21,7 @@ export function getRuleForResultV2(run: ValidationRun | undefined, result: Valid
   const toolPluginIndex = result.rule.toolComponent.index;
   const toolPluginName = result.rule.toolComponent.name;
   const extensions = run?.tool.extensions ?? [];
-  const plugin = extensions[toolPluginIndex] ?? extensions.find(plugin => plugin.name === toolPluginName);
+  const plugin = toolPluginIndex && extensions[toolPluginIndex] ? extensions.find(plugin => plugin.name === toolPluginName) : undefined;
   const ruleIndex = result.rule.index;
   const rule = plugin?.rules[ruleIndex];
   invariant(rule, 'rule not found');
