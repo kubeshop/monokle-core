@@ -7,7 +7,7 @@ const ALLOWED_STRING = ALLOWED.join(', ');
 
 export const selinux = defineRule({
   id: 108,
-  description: 'Restrict usage of SELinux .',
+  description: 'Restrict usage of SELinux.',
   fullDescription: `Setting the SELinux type is restricted, and setting a custom SELinux user or role option is forbidden. Allowed SELinux types are ${ALLOWED_STRING}`,
   help: 'Use an allowed SELinux type and do not customize the user.',
   advanced: {

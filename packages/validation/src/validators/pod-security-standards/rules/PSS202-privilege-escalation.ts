@@ -4,7 +4,7 @@ import {validatePodSpec} from '../../custom/utils.js';
 
 export const privilegeEscalation = defineRule({
   id: 202,
-  description: 'Disallow the process from elevating its privileges',
+  description: 'Disallow the process from elevating its privileges.',
   fullDescription:
     'Privilege escalation (such as via set-user-ID or set-group-ID file mode) should not be allowed. A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.',
   help: "Set 'securityContext.allowPrivilegeEscalation' to 'false'.",

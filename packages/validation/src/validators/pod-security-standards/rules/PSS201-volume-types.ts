@@ -18,7 +18,7 @@ const ALLOWED_STRING = ALLOWED.join(', ');
 
 export const volumeTypes = defineRule({
   id: 201,
-  description: 'Restrict use of volume types',
+  description: 'Restrict use of volume types.',
   fullDescription: `The restricted policy only permits the following volume types. The allowed values are ${ALLOWED_STRING}`,
   help: "Set 'spec.volumes[*]' to an allowed volume type.",
   advanced: {

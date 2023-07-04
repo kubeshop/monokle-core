@@ -24,10 +24,16 @@ Monokle Validation is a TypeScript library to validate your Kubernetes resources
 
 ## Core plugins
 
-- YAML Syntax validates that your manifests have correct YAML syntax.
-- Kubernetes Schema validates that your resources and CRDs are well-defined in the schema for their resource kind.
-- Resource links validates that reference to other Kubernetes resources are valid.
-- Open Policy agent validates security policies to reduce your attack surface.
+The validation engine comes with a number of core plugins to provide you with comprehensive
+validation possibilities for K8s configurations out of the box:
+
+- **Pod Security Standards** validation for secure deployments
+- **Kubernetes Schema** validation to ensure your resource are compliant with their schemas and a target K8s version
+- **Resource links** validates that reference to other Kubernetes resources are valid.
+- **Metadata** validation for standard and custom labels/annotations
+- **Common practices** validation for basic configuration sanity
+- **Security policies** based on OPA (Open Policy Agent) to reduce your attack surface.
+- **YAML Syntax** validates that your manifests have correct YAML syntax.
 
 Learn more about each Core Plugin in the [Core Plugins Documentation](docs/core-plugins.md)
 

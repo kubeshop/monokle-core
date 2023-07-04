@@ -5,7 +5,7 @@ import {validatePodSpec} from '../../custom/utils.js';
 
 export const runningAsNonRoot = defineRule({
   id: 203,
-  description: 'Requires the container to runs as non root user',
+  description: 'Requires the container to runs as non root user.',
   fullDescription:
     'Containers must be required to run as non-root users. It forces the running image to run as a non-root user to ensure least privileges.',
   help: "Set 'securityContext.runAsNonRoot' to true.",
