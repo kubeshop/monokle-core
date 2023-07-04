@@ -2,16 +2,15 @@
 
 There are several cores plugins:
 
-- [Kubernetes Schema](#kubernetes-schema) - includes deprecation/violation 
-- [Pod Security Standards](#pod-security-standards) - as defined by K8s
-- [Common Practices](#common-practices) 
-- [Resource links](#resource-links)
-- [Metadata](#metadata)
-- [AquaSec Security](#open-policy-agent)
+- [Kubernetes Schema](#kubernetes-schema) - ensure your resource are compliant with their schemas and a target K8s version.
+- [Pod Security Standards](#pod-security-standards) - as defined by K8s.
+- [Common Practices](#common-practices) - common best practices for resource definitions.
+- [Resource links](#resource-links) - ensure integrity across resource references.
+- [Metadata](#metadata) - validate resource metadata.
+- [Security Policies](#security-policies) - security best practices.
 - [YAML Syntax](#yaml-syntax)
 
 All plugins are enabled by default and all rules are enabled as a warning.
-
 
 ### Kubernetes Schema
 
@@ -179,12 +178,13 @@ plugins:
 | MTD-<name>-annotation  | metadata/<name>-annotation  | Validate the specified annotation as configured.                                                                                                                                                                                                |
 
 
-### Open Policy Agent
+### Security Policies
 
 A collection of security rules based on the work of the DefSec team at Aqua Security, a big shout-out to them  
 as full credit for these rules goes to them. You can find the source of their Rego policies [here](https://github.com/aquasecurity/defsec).
 
-Under the hood we compile the corresponding Rego policies into a WebAssembly module that handles the validation.
+Security Policies are implemented using Open Policy Agent (OPA) and written in Rego. Under the hood we compile the 
+corresponding Rego policies into a WebAssembly module that handles the validation.
 
 There are no settings for this plugin.
 

@@ -38,9 +38,9 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
       {
         id: 'KSV',
         name: 'open-policy-agent',
-        displayName: 'Open Policy Agent',
+        displayName: 'Security Policies (OPA)',
         description:
-          'Open Policy Agent Policy-based control. Flexible, fine-grained control for administrators across the stack.',
+          'Security policies using Open Policy Agent (OPA). Flexible, fine-grained control for administrators across the stack.',
         icon: 'open-policy-agent',
         learnMoreUrl: 'https://github.com/open-policy-agent/opa',
       },

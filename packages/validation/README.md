@@ -32,7 +32,7 @@ validation possibilities for K8s configurations out of the box:
 - **Resource links** validates that reference to other Kubernetes resources are valid.
 - **Metadata** validation for standard and custom labels/annotations
 - **Common practices** validation for basic configuration sanity
-- **AquaSec security policies** based on OPA (Open Policy Agent) to reduce your attack surface.
+- **Security policies** based on OPA (Open Policy Agent) to reduce your attack surface.
 - **YAML Syntax** validates that your manifests have correct YAML syntax.
 
 Learn more about each Core Plugin in the [Core Plugins Documentation](docs/core-plugins.md)
