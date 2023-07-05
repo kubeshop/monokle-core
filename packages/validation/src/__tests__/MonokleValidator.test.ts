@@ -10,7 +10,7 @@ import {extractK8sResources, readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
-import {RuleConfigMetadataType, SimpleCustomValidator} from '../node.js';
+import {RuleConfigMetadataType, SimpleCustomValidator, readConfig} from '../node.js';
 import {defineRule} from '../custom.js';
 import {isDeployment} from '../validators/custom/schemas/deployment.apps.v1.js';
 
@@ -232,6 +232,29 @@ it('should be valid SARIF', async () => {
   });
 
   expect(validateSarif.errors?.length ?? 0).toBe(0);
+});
+
+it('should correctly read config file #1', async () => {
+  const config = await readConfig('src/__tests__/resources/config1.yaml');
+
+  expect(config).toHaveProperty('plugins');
+  expect(config).toHaveProperty('settings');
+
+  const ks = (config?.settings ?? {})['kubernetes-schema'];
+  expect(ks?.schemaVersion).toBe('v1.27.1');
+});
+
+it('should correctly read config file #2', async () => {
+  const config = await readConfig('src/__tests__/resources/config2.yaml');
+
+  expect(config).toHaveProperty('plugins');
+  expect(config).toHaveProperty('rules');
+
+  const rule1 = (config?.rules ?? {})['open-policy-agent/no-elevated-process'];
+  expect(rule1).toBe(false);
+
+  const rule2 = (config?.rules ?? {})['open-policy-agent/no-sys-admin'];
+  expect(rule2).toBe(true);
 });
 
 function configureValidator(validator: MonokleValidator, additionalPlugins: {[key: string]: boolean} = {}) {

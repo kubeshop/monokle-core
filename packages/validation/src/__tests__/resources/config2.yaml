@@ -1,0 +1,8 @@
+plugins:
+  open-policy-agent: true
+  yaml-syntax: true
+rules:
+  open-policy-agent/no-elevated-process: false
+  open-policy-agent/app-armor: false
+  open-policy-agent/drop-capabilities: false
+  open-policy-agent/no-sys-admin: true
