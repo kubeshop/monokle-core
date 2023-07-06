@@ -25,7 +25,7 @@ export type PluginMap = Record<string, boolean>;
 export type Config = {
   plugins?: PluginMap;
   rules?: RuleMap;
-  settings?: any;
+  settings?: Record<string, any>;
 };
 
 export const configSchema: ZodType<Config> = z.object({
@@ -33,6 +33,7 @@ export const configSchema: ZodType<Config> = z.object({
   version: z.string().optional(),
   plugins: z.record(z.boolean()).optional(),
   rules: z.record(z.boolean().or(z.enum(['warn', 'err']))).optional(),
+  settings: z.record(z.any()).optional(),
 });
 
 /**

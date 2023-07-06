@@ -1,0 +1,8 @@
+plugins:
+  yaml-syntax: false
+  open-policy-agent: false
+  kubernetes-schema: true
+  pod-security-standards: true
+settings:
+  kubernetes-schema:
+    schemaVersion: v1.27.1
