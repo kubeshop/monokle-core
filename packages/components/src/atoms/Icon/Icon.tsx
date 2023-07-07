@@ -59,6 +59,9 @@ import {
   Secret,
   Image,
   PluginDefault,
+  ClusterValidation,
+  ClusterHelm,
+  ClusterSettings,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -75,6 +78,9 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   'all-projects': AllProjects,
   checked: Checked,
   'cluster-dashboard': ClusterDashboard,
+  'cluster-validation': ClusterValidation,
+  'cluster-helm': ClusterHelm,
+  'cluster-settings': ClusterSettings,
   collapse: Collapse,
   compare: Compare,
   crds: CRDs,
