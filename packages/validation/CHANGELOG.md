@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.8
+
+### Patch Changes
+
+- f538ec4: Fixed 'readConfig()' function to parse settings
+
 ## 0.23.7
 
 ### Patch Changes
