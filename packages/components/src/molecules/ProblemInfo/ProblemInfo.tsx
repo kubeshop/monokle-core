@@ -116,7 +116,7 @@ const ProblemInfoContainer = styled.div`
   max-height: 330px;
   overflow-y: auto;
   font-family: 'Inter', sans-serif;
-  background: rgba(255, 255, 255, 0.05);
+  background: transparent;
 `;
 
 const ProblemInfoContent = styled(Descriptions)`
