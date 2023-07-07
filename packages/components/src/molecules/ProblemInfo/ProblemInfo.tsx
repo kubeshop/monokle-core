@@ -1,62 +1,94 @@
 import {Colors} from '@/styles/Colors';
 import {getFileLocation} from '@monokle/validation';
-import {Descriptions} from 'antd';
+import {Button, Descriptions, Tooltip} from 'antd';
 import {useMemo} from 'react';
 import styled from 'styled-components';
 import {ProblemInfoType} from './types';
+import {renderToolComponentName} from './utils';
+import {ArrowRightOutlined, SettingOutlined} from '@ant-design/icons';
+import {TOOLTIP_DELAY} from '@/constants';
+import {renderSeverityIcon} from '../ValidationOverview/utils';
+import {Icon, ProblemIcon} from '@/atoms';
+import {iconMap} from '../ValidationOverview/constants';
+import {SecurityFrameworkTag} from '../ValidationOverview/ProblemRenderer';
 
 const ProblemInfo: React.FC<ProblemInfoType> = props => {
-  const {containerClassName = '', containerStyle = {}, problem, rule, onLocationClick, onHelpURLClick} = props;
+  const {containerClassName = '', containerStyle = {}, problem, rule} = props;
+  const {onSettingsClick, onHelpURLClick, onLocationClick} = props;
 
   const errorLocation = useMemo(() => getFileLocation(problem), [problem]);
+  const title = useMemo(
+    () => (problem.message.text.endsWith('.') ? problem.message.text.slice(0, -1) : problem.message.text),
+    [problem.message.text]
+  );
 
   return (
     <ProblemInfoContainer className={containerClassName} style={containerStyle}>
-      <ProblemInfoContent title="Info" column={1} colon={false}>
-        <Descriptions.Item label="Rule ID">{rule.id}</Descriptions.Item>
+      <TitleContainer>
+        {title}
 
-        <Descriptions.Item label="Rule name">{rule.name}</Descriptions.Item>
+        <IconsContainer>
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Problem type">
+            <div>
+              <ProblemIcon level={problem.level ?? 'error'} style={{fontSize: '8px'}} />
+            </div>
+          </Tooltip>
 
-        <Descriptions.Item label="Rule description">
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={renderToolComponentName(problem.rule.toolComponent.name)}>
+            {iconMap[problem.rule.toolComponent.name] ?? (
+              <Icon name="plugin-default" style={{fontSize: '13px', color: Colors.grey8}} />
+            )}
+          </Tooltip>
+
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Severity">
+            {renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, false)}
+          </Tooltip>
+
+          {problem.taxa?.length
+            ? problem.taxa.map(framework => (
+                <SecurityFrameworkTag key={framework.toolComponent.name} style={{marginRight: '0px', marginTop: '2px'}}>
+                  {framework.toolComponent.name}
+                </SecurityFrameworkTag>
+              ))
+            : null}
+        </IconsContainer>
+
+        <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Rule setup">
+          <Button type="link" icon={<SettingOutlined />} onClick={onSettingsClick} />
+        </Tooltip>
+      </TitleContainer>
+
+      <TopInfoContainer>
+        {renderToolComponentName(problem.rule.toolComponent.name)} <span>|</span> {rule.name} <span>|</span> {rule.id}
+      </TopInfoContainer>
+
+      <ProblemInfoContent title={null} column={1} colon={false}>
+        <Descriptions.Item label="Description">
           {rule.fullDescription?.text || rule.shortDescription.text}
         </Descriptions.Item>
 
-        <Descriptions.Item label="Tool component">{problem.rule.toolComponent.name}</Descriptions.Item>
-
-        <Descriptions.Item label="Problem">{problem.message.text}</Descriptions.Item>
-
-        {problem.level && (
-          <Descriptions.Item label="Severity">
-            {problem.level.charAt(0).toUpperCase() + problem.level.slice(1)}
-          </Descriptions.Item>
-        )}
-
-        <Descriptions.Item label="Location">
-          <LinkItem
-            $clickable={Boolean(onLocationClick)}
-            onClick={() => {
-              if (!onLocationClick) return;
-              onLocationClick(errorLocation);
-            }}
-          >
-            {errorLocation.physicalLocation?.artifactLocation.uri}
-          </LinkItem>
-        </Descriptions.Item>
-
-        <Descriptions.Item label="Hint">{rule.help.text}</Descriptions.Item>
-
-        {rule.helpUri && (
-          <Descriptions.Item label="Hint URL">
-            <LinkItem
-              $clickable
+        <Descriptions.Item label="Hint">
+          {rule.help.text}{' '}
+          {rule.helpUri && (
+            <MoreLink
               onClick={() => {
                 onHelpURLClick(rule.helpUri ?? '');
               }}
             >
-              {rule.helpUri}
-            </LinkItem>
-          </Descriptions.Item>
-        )}
+              More <ArrowRightOutlined />
+            </MoreLink>
+          )}
+        </Descriptions.Item>
+
+        <Descriptions.Item label="Location">
+          {errorLocation.physicalLocation?.artifactLocation.uri}
+
+          {onLocationClick && (
+            <MoreLink onClick={() => onLocationClick(errorLocation)}>
+              <ArrowRightOutlined />
+            </MoreLink>
+          )}
+        </Descriptions.Item>
       </ProblemInfoContent>
     </ProblemInfoContainer>
   );
@@ -66,44 +98,30 @@ export default ProblemInfo;
 
 // Styled Components
 
-const LinkItem = styled.div<{$clickable: boolean}>`
-  ${({$clickable}) => {
-    if ($clickable) {
-      return `
-            cursor: pointer;
-            color:${Colors.blue7};
-            transition: color 0.2s ease-in;
+const IconsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
 
-            &:hover {
-                color: ${Colors.blue6}
-            }
-        `;
-    }
-  }}
+const MoreLink = styled.span`
+  cursor: pointer;
+  margin-left: 8px;
 `;
 
 const ProblemInfoContainer = styled.div`
   padding: 15px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
   width: 100%;
   max-height: 330px;
   overflow-y: auto;
+  font-family: 'Inter', sans-serif;
+  background: transparent;
 `;
 
 const ProblemInfoContent = styled(Descriptions)`
-  .ant-descriptions-header {
-    margin-bottom: 12px;
-  }
-
-  .ant-descriptions-title {
-    color: ${Colors.whitePure};
-    font-size: 14px;
-    font-weight: 600;
-  }
-
   .ant-descriptions-item {
-    padding-bottom: 4px !important;
+    padding-bottom: 8px !important;
   }
 
   .ant-descriptions-item-label {
@@ -112,6 +130,30 @@ const ProblemInfoContent = styled(Descriptions)`
   }
 
   .ant-descriptions-item-content {
-    color: ${Colors.whitePure};
+    color: ${Colors.grey9};
+  }
+`;
+
+const TitleContainer = styled.div`
+  font-weight: 700;
+  color: ${Colors.grey9};
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  & .ant-btn-icon-only {
+    margin-left: auto;
+  }
+`;
+
+const TopInfoContainer = styled.div`
+  display: flex;
+  color: ${Colors.grey7};
+  margin-bottom: 8px;
+
+  & > span {
+    margin: 0 8px;
+    font-weight: 300;
   }
 `;

@@ -4,6 +4,7 @@ export const LocationClickProblemInfoArgs: ProblemInfoType = {
   onLocationClick: location => {
     console.log('Location:', location);
   },
+  onSettingsClick: () => {},
   onHelpURLClick: url => {
     console.log('URL:', url);
   },
@@ -25,51 +26,25 @@ export const LocationClickProblemInfoArgs: ProblemInfoType = {
     },
   },
   problem: {
-    ruleId: 'KSV003',
-    rule: {
-      index: 2,
-      toolComponent: {
-        name: 'open-policy-agent',
-      },
-    },
+    ruleId: 'KBP106',
+    rule: {id: 'KBP106', index: 14, toolComponent: {name: 'practices'}},
+    taxa: [{id: 'NSA001', index: 0, toolComponent: {name: 'NSA'}}],
     level: 'error',
-    message: {
-      text: 'Require default capabilities to be dropped on container "panda-blog".',
-    },
+    message: {text: 'Disallow automounting the service account token'},
     locations: [
       {
         physicalLocation: {
-          artifactLocation: {
-            uriBaseId: 'SRCROOT',
-            uri: 'vanilla-panda-blog/deployment.yaml',
-          },
-          region: {
-            startLine: 16,
-            startColumn: 11,
-            endLine: 28,
-            endColumn: 1,
-          },
+          artifactLocation: {uriBaseId: 'SRCROOT', uri: 'bundles/simple.yaml'},
+          region: {startLine: 16, startColumn: 11, endLine: 16, endColumn: 13},
         },
       },
       {
         physicalLocation: {
-          artifactLocation: {
-            uriBaseId: 'RESOURCE',
-            uri: '31fc266e-be6e-527a-8292-469fe956c0d6',
-          },
-          region: {
-            startLine: 16,
-            startColumn: 11,
-            endLine: 28,
-            endColumn: 1,
-          },
+          artifactLocation: {uriBaseId: 'RESOURCE', uri: 'c9cf721b174f5-0'},
+          region: {startLine: 16, startColumn: 11, endLine: 16, endColumn: 13},
         },
         logicalLocations: [
-          {
-            kind: 'resource',
-            fullyQualifiedName: 'panda-blog.deployment@vanilla-panda-blog/deployment.yaml',
-            name: 'panda-blog',
-          },
+          {kind: 'resource', fullyQualifiedName: 'blue-cms.deployment@bundles/simple.yaml', name: 'blue-cms'},
         ],
       },
     ],
@@ -80,6 +55,7 @@ export const MainProblemInfoArgs: ProblemInfoType = {
   onHelpURLClick: url => {
     console.log('URL:', url);
   },
+  onSettingsClick: () => {},
   rule: {
     id: 'KSV011',
     name: 'cpu-limit',
@@ -101,6 +77,7 @@ export const MainProblemInfoArgs: ProblemInfoType = {
   problem: {
     ruleId: 'KSV011',
     rule: {
+      id: '1',
       index: 8,
       toolComponent: {
         name: 'open-policy-agent',
