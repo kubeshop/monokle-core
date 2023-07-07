@@ -62,6 +62,7 @@ import {
   ClusterValidation,
   ClusterHelm,
   ClusterSettings,
+  ClusterConnected,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -78,6 +79,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   'all-projects': AllProjects,
   checked: Checked,
   'cluster-dashboard': ClusterDashboard,
+  'cluster-connected': ClusterConnected,
   'cluster-validation': ClusterValidation,
   'cluster-helm': ClusterHelm,
   'cluster-settings': ClusterSettings,

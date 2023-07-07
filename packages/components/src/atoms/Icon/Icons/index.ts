@@ -1,6 +1,7 @@
 export {default as AllProjects} from './AllProjects';
 export {default as Checked} from './Checked';
 export {default as ClusterDashboard} from './ClusterDashboard';
+export {default as ClusterConnected} from './ClusterConnected';
 export {default as ClusterHelm} from './ClusterHelm';
 export {default as ClusterValidation} from './ClusterValidation';
 export {default as ClusterSettings} from './ClusterSettings';
