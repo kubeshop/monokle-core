@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.6
+
+### Patch Changes
+
+- 18dfd2d: Refactor problem info component
+
 ## 1.6.5
 
 ### Patch Changes
