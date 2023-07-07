@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.5
+
+### Patch Changes
+
+- b316ce1: added cluster connected icon
+
 ## 1.6.4
 
 ### Patch Changes

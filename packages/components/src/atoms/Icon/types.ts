@@ -2,6 +2,7 @@ export type IconNames =
   | 'all-projects'
   | 'checked'
   | 'cluster-dashboard'
+  | 'cluster-connected'
   | 'cluster-validation'
   | 'cluster-helm'
   | 'cluster-settings'
