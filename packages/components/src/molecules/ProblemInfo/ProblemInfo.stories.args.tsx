@@ -4,6 +4,7 @@ export const LocationClickProblemInfoArgs: ProblemInfoType = {
   onLocationClick: location => {
     console.log('Location:', location);
   },
+  onSettingsClick: () => {},
   onHelpURLClick: url => {
     console.log('URL:', url);
   },
@@ -54,6 +55,7 @@ export const MainProblemInfoArgs: ProblemInfoType = {
   onHelpURLClick: url => {
     console.log('URL:', url);
   },
+  onSettingsClick: () => {},
   rule: {
     id: 'KSV011',
     name: 'cpu-limit',

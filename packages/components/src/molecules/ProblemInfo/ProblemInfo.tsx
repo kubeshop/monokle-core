@@ -1,17 +1,22 @@
 import {Colors} from '@/styles/Colors';
 import {getFileLocation} from '@monokle/validation';
-import {Descriptions} from 'antd';
+import {Button, Descriptions, Tooltip} from 'antd';
 import {useMemo} from 'react';
 import styled from 'styled-components';
 import {ProblemInfoType} from './types';
 import {renderToolComponentName} from './utils';
-import {ArrowRightOutlined} from '@ant-design/icons';
+import {ArrowRightOutlined, SettingOutlined} from '@ant-design/icons';
+import {TOOLTIP_DELAY} from '@/constants';
+import {renderSeverityIcon} from '../ValidationOverview/utils';
+import {Icon, ProblemIcon} from '@/atoms';
+import {iconMap} from '../ValidationOverview/constants';
+import {SecurityFrameworkTag} from '../ValidationOverview/ProblemRenderer';
 
 const ProblemInfo: React.FC<ProblemInfoType> = props => {
-  const {containerClassName = '', containerStyle = {}, problem, rule, onLocationClick, onHelpURLClick} = props;
+  const {containerClassName = '', containerStyle = {}, problem, rule} = props;
+  const {onSettingsClick, onHelpURLClick, onLocationClick} = props;
 
   const errorLocation = useMemo(() => getFileLocation(problem), [problem]);
-
   const title = useMemo(
     () => (problem.message.text.endsWith('.') ? problem.message.text.slice(0, -1) : problem.message.text),
     [problem.message.text]
@@ -19,7 +24,39 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
 
   return (
     <ProblemInfoContainer className={containerClassName} style={containerStyle}>
-      <TitleContainer>{title}</TitleContainer>
+      <TitleContainer>
+        {title}
+
+        <IconsContainer>
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Problem type">
+            <div>
+              <ProblemIcon level={problem.level ?? 'error'} style={{fontSize: '8px'}} />
+            </div>
+          </Tooltip>
+
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={renderToolComponentName(problem.rule.toolComponent.name)}>
+            {iconMap[problem.rule.toolComponent.name] ?? (
+              <Icon name="plugin-default" style={{fontSize: '13px', color: Colors.grey8}} />
+            )}
+          </Tooltip>
+
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Severity">
+            {renderSeverityIcon(rule.properties?.['security-severity'] ?? 1, false)}
+          </Tooltip>
+
+          {problem.taxa?.length
+            ? problem.taxa.map(framework => (
+                <SecurityFrameworkTag key={framework.toolComponent.name} style={{marginRight: '0px', marginTop: '2px'}}>
+                  {framework.toolComponent.name}
+                </SecurityFrameworkTag>
+              ))
+            : null}
+        </IconsContainer>
+
+        <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Rule setup">
+          <Button type="link" icon={<SettingOutlined />} onClick={onSettingsClick} />
+        </Tooltip>
+      </TitleContainer>
 
       <TopInfoContainer>
         {renderToolComponentName(problem.rule.toolComponent.name)} <span>|</span> {rule.name} <span>|</span> {rule.id}
@@ -29,12 +66,6 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
         <Descriptions.Item label="Description">
           {rule.fullDescription?.text || rule.shortDescription.text}
         </Descriptions.Item>
-
-        {/* {problem.level && (
-          <Descriptions.Item label="Severity">
-            {problem.level.charAt(0).toUpperCase() + problem.level.slice(1)}
-          </Descriptions.Item>
-        )} */}
 
         <Descriptions.Item label="Hint">
           {rule.help.text}{' '}
@@ -67,15 +98,15 @@ export default ProblemInfo;
 
 // Styled Components
 
-const TopInfoContainer = styled.div`
+const IconsContainer = styled.div`
   display: flex;
-  color: ${Colors.grey7};
-  margin-bottom: 4px;
+  align-items: center;
+  gap: 12px;
+`;
 
-  & > span {
-    margin: 0 8px;
-    font-weight: 300;
-  }
+const MoreLink = styled.span`
+  cursor: pointer;
+  margin-left: 8px;
 `;
 
 const ProblemInfoContainer = styled.div`
@@ -90,7 +121,7 @@ const ProblemInfoContainer = styled.div`
 
 const ProblemInfoContent = styled(Descriptions)`
   .ant-descriptions-item {
-    padding-bottom: 4px !important;
+    padding-bottom: 8px !important;
   }
 
   .ant-descriptions-item-label {
@@ -107,9 +138,22 @@ const TitleContainer = styled.div`
   font-weight: 700;
   color: ${Colors.grey9};
   margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  & .ant-btn-icon-only {
+    margin-left: auto;
+  }
 `;
 
-const MoreLink = styled.span`
-  cursor: pointer;
-  margin-left: 8px;
+const TopInfoContainer = styled.div`
+  display: flex;
+  color: ${Colors.grey7};
+  margin-bottom: 8px;
+
+  & > span {
+    margin: 0 8px;
+    font-weight: 300;
+  }
 `;

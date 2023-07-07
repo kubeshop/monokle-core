@@ -136,7 +136,7 @@ const TagsContainer = styled.div`
   flex-wrap: nowrap;
 `;
 
-const SecurityFrameworkTag = styled(Tag)`
+export const SecurityFrameworkTag = styled(Tag)`
   color: ${Colors.grey8};
   background-color: ${Colors.grey4};
   border: none;
