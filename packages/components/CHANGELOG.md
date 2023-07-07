@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.4
+
+### Patch Changes
+
+- 928e710: add cluster icons
+
 ## 1.6.3
 
 ### Patch Changes
