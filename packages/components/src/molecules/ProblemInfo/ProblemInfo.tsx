@@ -67,7 +67,7 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
           {rule.fullDescription?.text || rule.shortDescription.text}
         </Descriptions.Item>
 
-        <Descriptions.Item label="Hint">
+        <Descriptions.Item label="Remediation">
           {rule.help.text}{' '}
           {rule.helpUri && (
             <MoreLink
