@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.7
+
+### Patch Changes
+
+- 1a7d89a: Change Hint to Remediation
+
 ## 1.6.6
 
 ### Patch Changes
