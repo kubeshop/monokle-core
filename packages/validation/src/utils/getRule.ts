@@ -18,10 +18,10 @@ export function getRuleForResult(response: ValidationResponse, result: Validatio
 }
 
 export function getRuleForResultV2(run: ValidationRun | undefined, result: ValidationResult): RuleMetadata {
-  const toolPluginIndex = result.rule.toolComponent.index;
+  const toolPluginIndex = result.rule.toolComponent.index ?? -1;
   const toolPluginName = result.rule.toolComponent.name;
   const extensions = run?.tool.extensions ?? [];
-  const plugin = toolPluginIndex && extensions[toolPluginIndex] ? extensions.find(plugin => plugin.name === toolPluginName) : undefined;
+  const plugin = extensions[toolPluginIndex] ?? extensions.find(plugin => plugin.name === toolPluginName);
   const ruleIndex = result.rule.index;
   const rule = plugin?.rules[ruleIndex];
   invariant(rule, 'rule not found');
