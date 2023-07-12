@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.23.9
+
+### Patch Changes
+
+- 2771579: Fix `toolComponent` index check in `getRuleForResultV2()` function
+
 ## 0.23.8
 
 ### Patch Changes
