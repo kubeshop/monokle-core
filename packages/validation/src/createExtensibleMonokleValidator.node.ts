@@ -15,6 +15,7 @@ import {bundlePluginCode} from './utils/loadCustomPlugin.node.js';
 import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
 import {requireFromStringCustomPluginLoader} from './pluginLoaders/requireFromStringLoader.node.js';
+import {CUSTOM_PLUGINS_URL_BASE} from './constants.js';
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
@@ -24,8 +25,8 @@ export function createExtensibleMonokleValidator(
   schemaLoader: SchemaLoader = new SchemaLoader(),
   customPluginLoader: CustomPluginLoader = requireFromStringCustomPluginLoader
 ) {
-  return new MonokleValidator(async (pluginName: string) => {
-    switch (pluginName) {
+  return new MonokleValidator(async (pluginNameOrUrl: string, settings?: Record<string, any>) => {
+    switch (pluginNameOrUrl) {
       case 'pod-security-standards':
         return new SimpleCustomValidator(pssPlugin, parser);
       case 'practices':
@@ -46,8 +47,14 @@ export function createExtensibleMonokleValidator(
         return new MetadataValidator(parser);
       default:
         try {
-          const customPlugin = await customPluginLoader(pluginName, parser);
-          return customPlugin;
+          let nameOrUrl = pluginNameOrUrl;
+          if (settings?.pluginUrl) {
+            nameOrUrl = settings.pluginUrl;
+          } else if (settings?.ref) {
+            nameOrUrl = `${CUSTOM_PLUGINS_URL_BASE}/${settings.ref}/plugin.js`;
+          }
+          const validator = await customPluginLoader(nameOrUrl, parser);
+          return validator;
         } catch (err) {
           throw new Error(
             err instanceof Error ? `plugin_not_found: ${err.message}` : `plugin_not_found: ${String(err)}`

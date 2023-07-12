@@ -26,3 +26,5 @@ export const CORE_PLUGINS = [
   'open-policy-agent',
   'metadata',
 ] as const;
+
+export const CUSTOM_PLUGINS_URL_BASE = 'https://plugins.monokle.com/validation';
