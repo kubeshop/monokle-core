@@ -13,6 +13,7 @@ import {MetadataValidator} from './validators/metadata/validator.js';
 import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
 import {dynamicImportCustomPluginLoader} from './pluginLoaders/dynamicImportLoader.js';
+import {CUSTOM_PLUGINS_URL_BASE} from './constants.js';
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
@@ -22,7 +23,7 @@ export function createExtensibleMonokleValidator(
   schemaLoader: SchemaLoader = new SchemaLoader(),
   customPluginLoader: CustomPluginLoader = dynamicImportCustomPluginLoader
 ) {
-  return new MonokleValidator(async (pluginName: string) => {
+  return new MonokleValidator(async (pluginName: string, settings?: Record<string, any>) => {
     switch (pluginName) {
       case 'pod-security-standards':
         return new SimpleCustomValidator(pssPlugin, parser);
@@ -46,8 +47,18 @@ export function createExtensibleMonokleValidator(
         return new DevCustomValidator(parser);
       default:
         try {
-          const customPlugin = await customPluginLoader(pluginName, parser);
-          return customPlugin;
+          if (settings?.pluginUrl) {
+            const customPlugin = await import(/* @vite-ignore */ settings.pluginUrl);
+            return new SimpleCustomValidator(customPlugin.default, parser);
+          }
+          if (settings?.ref) {
+            const customPlugin = await import(
+              /* @vite-ignore */ `${CUSTOM_PLUGINS_URL_BASE}/${settings.ref}/plugin.js`
+            );
+            return new SimpleCustomValidator(customPlugin.default, parser);
+          }
+          const validator = await customPluginLoader(pluginName, parser);
+          return validator;
         } catch (err) {
           throw new Error(
             err instanceof Error ? `plugin_not_found: ${err.message}` : `plugin_not_found: ${String(err)}`

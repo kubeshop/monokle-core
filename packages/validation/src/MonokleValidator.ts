@@ -14,7 +14,7 @@ import {NSA_TAXONOMY} from './taxonomies/nsa.js';
 import {CIS_TAXONOMY} from './taxonomies/cis.js';
 import {ResourceParser} from './common/resourceParser.js';
 
-export type PluginLoader = (name: string) => Promise<Plugin>;
+export type PluginLoader = (name: string, settings?: Record<string, any>) => Promise<Plugin>;
 export type CustomPluginLoader = (name: string, parser: ResourceParser) => Promise<Plugin>;
 
 export function createMonokleValidator(loader: PluginLoader, fallback?: PluginMap) {
@@ -178,7 +178,7 @@ export class MonokleValidator implements Validator {
       const loading = await Promise.allSettled(
         missingPlugins.map(async p => {
           try {
-            const validator = await this._loader(p);
+            const validator = await this._loader(p, config.settings?.[p]);
             return validator;
           } catch (err) {
             const msg = err instanceof Error ? err.message : 'reason unknown';

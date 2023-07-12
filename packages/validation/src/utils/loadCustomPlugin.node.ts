@@ -4,6 +4,7 @@ import fetch from 'isomorphic-fetch';
 import requireFromString from 'require-from-string';
 import virtual from '@rollup/plugin-virtual';
 import {rollup} from 'rollup';
+import {CUSTOM_PLUGINS_URL_BASE} from '../constants';
 
 export async function bundlePluginCode(code: string) {
   const bundle = await rollup({
@@ -19,8 +20,8 @@ export async function bundlePluginCode(code: string) {
   return output[0].code;
 }
 
-export async function fetchCustomPluginCode(pluginName: string) {
-  const url = `https://plugins.monokle.com/validation/${pluginName}/latest.js`;
+export async function fetchCustomPluginCode(pluginName: string, pluginUrl?: string) {
+  const url = pluginUrl ?? `${CUSTOM_PLUGINS_URL_BASE}/${pluginName}/latest.js`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Error fetching ${url}: ${response.statusText}`);
@@ -28,12 +29,19 @@ export async function fetchCustomPluginCode(pluginName: string) {
   return response.text();
 }
 
-export async function loadCustomPlugin(pluginName: string) {
-  const filePath = path.join(process.cwd(), '.monokle-plugins', `${pluginName}-plugin.js`);
-
-  const pluginCode = fs.existsSync(filePath)
-    ? fs.readFileSync(filePath, {encoding: 'utf-8'})
-    : await fetchCustomPluginCode(pluginName);
+export async function loadCustomPlugin(pluginNameOrUrl: string) {
+  let pluginCode: string;
+  let filePath: string;
+  try {
+    const urlObj = new URL(pluginNameOrUrl);
+    filePath = urlObj.pathname;
+    pluginCode = await fetchCustomPluginCode('custom-plugin', pluginNameOrUrl);
+  } catch (error) {
+    filePath = path.join(process.cwd(), '.monokle-plugins', `${pluginNameOrUrl}-plugin.js`);
+    pluginCode = fs.existsSync(filePath)
+      ? fs.readFileSync(filePath, {encoding: 'utf-8'})
+      : await fetchCustomPluginCode(pluginNameOrUrl);
+  }
 
   const code = await bundlePluginCode(pluginCode);
   const customPlugin = requireFromString(code, filePath);
