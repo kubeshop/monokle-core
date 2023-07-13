@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.24.0
+
+### Minor Changes
+
+- 7314d5c: load custom plugins using `settings.[plugin-name].pluginUrl`
+
 ## 0.23.9
 
 ### Patch Changes
