@@ -30,7 +30,9 @@ export const volumeTypes = defineRule({
     validatePodSpec(resources, (resource, pod, prefix) => {
       pod.volumes?.forEach((volume, index) => {
         Object.keys(volume).forEach(key => {
-          const valid = !ALLOWED.includes(key as VolumeType);
+          if (key === 'name') return;
+
+          const valid = ALLOWED.includes(key as VolumeType);
           if (valid) return;
           report(resource, {
             path: `${prefix}.volumes.${index}.${key}`,
