@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: demo
+    spec:
+      containers:
+        - name: demo
+          image: demo:latest
+          volumeMounts:
+            - name: configuration
+              subPath: data.js
+              mountPath: /usr/share/data.js
+      volumes:
+        - name: configuration
+          azureFile:
+            secretName: 'test'
+            shareName: 'test'
