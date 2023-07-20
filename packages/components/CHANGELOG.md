@@ -1,5 +1,12 @@
 # @monokle/components
 
+## 1.6.8
+
+### Patch Changes
+
+- 72dd427: update styled-components peer dependency versions
+- c4560e1: update peer dependency for framer-motion to allow wider compatibility
+
 ## 1.6.7
 
 ### Patch Changes
