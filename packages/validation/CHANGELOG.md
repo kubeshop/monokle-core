@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.24.1
+
+### Patch Changes
+
+- 9c55446: Fix volume-types rule
+
 ## 0.24.0
 
 ### Minor Changes
