@@ -80,7 +80,7 @@
     "jspdf": "^2.5.1",
     "react": "^18.0 || ^17.0 || ^16.0",
     "react-dom": "^18.0 || ^17.0 || ^16.0",
-    "styled-components": "^5.0.0",
+    "styled-components": "^5.0.0 || ^6.0.0",
     "use-debounced-effect": "2.0.1"
   },
   "dependencies": {
