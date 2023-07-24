@@ -209,7 +209,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     onProblemSelect({problem: firstErrorFound.problem, selectedFrom: 'file'});
   }, [validationList, defaultSelectError, onProblemSelect]);
 
-  if (status === 'loading') {
+  if (status === 'loading' && !validationList?.length) {
     return <Skeleton active style={skeletonStyle} />;
   }
 
