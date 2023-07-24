@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.6.9
+
+### Patch Changes
+
+- 41a8c25: fix validation overview "flashing" renders
+
 ## 1.6.8
 
 ### Patch Changes
