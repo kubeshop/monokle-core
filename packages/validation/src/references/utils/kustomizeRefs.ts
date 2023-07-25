@@ -3,7 +3,7 @@ import {isScalar, isSeq} from 'yaml';
 import {NodeWrapper} from '../../common/NodeWrapper.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {Resource, ResourceRef, ResourceRefType} from '../../common/types.js';
-import {KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND} from '../../constants.js';
+import { KUSTOMIZATION_API_GROUP, KUSTOMIZATION_COMPONENT_KIND, KUSTOMIZATION_KIND } from "../../constants.js";
 import {linkResources} from './createResourceRef.js';
 import {findChildren, findResourceById, getResourcesForPath, isFolderPath} from './helpers.js';
 
@@ -33,7 +33,9 @@ function linkParentKustomization(
  */
 
 export function isKustomizationResource(r: Resource | undefined) {
-  return r && r.kind === KUSTOMIZATION_KIND && (!r.apiVersion || r.apiVersion.startsWith(KUSTOMIZATION_API_GROUP));
+  return r &&
+    (r.kind === KUSTOMIZATION_KIND || r.kind === KUSTOMIZATION_COMPONENT_KIND) &&
+    (!r.apiVersion || r.apiVersion.startsWith(KUSTOMIZATION_API_GROUP));
 }
 
 /**
@@ -254,12 +256,17 @@ export function getScalarNodes(resource: Resource, nodePath: string, parser: Res
     const name = names[ix];
 
     parents.forEach(parent => {
-      const child = parent.get(name, true);
-      if (child) {
-        if (isSeq<any>(child)) {
-          nextParents = nextParents.concat(child.items);
-        } else {
-          nextParents.push(child);
+      if( isScalar( parent )){
+         nextParents.push( parent );
+      }
+      else {
+        const child = parent.get(name, true);
+        if (child) {
+          if (isSeq<any>(child)) {
+            nextParents = nextParents.concat(child.items);
+          } else {
+            nextParents.push(child);
+          }
         }
       }
     });

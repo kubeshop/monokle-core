@@ -16,6 +16,7 @@ export const FALLBACK_REGION: Region = {
 };
 
 export const KUSTOMIZATION_KIND = 'Kustomization';
+export const KUSTOMIZATION_COMPONENT_KIND = 'Component';
 export const KUSTOMIZATION_API_GROUP = 'kustomize.config.k8s.io';
 export const CORE_PLUGINS = [
   'pod-security-standards',
