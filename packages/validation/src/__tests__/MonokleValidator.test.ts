@@ -77,6 +77,11 @@ it('should support patches and additionalValuesFiles', async () => {
   expect(hasErrors).toBe(2);
 });
 
+it('should support Kustomize Components', async () => {
+  const {resources, response} = await processResourcesInFolder('src/__tests__/resources/kustomize-components');
+  expect( resources.length ).toBe( 3 );
+});
+
 it('should support ownerRefs', async () => {
   const {resources, response} = await processResourcesInFolder('src/__tests__/resources/owner-references');
 
