@@ -187,6 +187,10 @@ export const isProblemSelected = (
     return false;
   }
 
+  if (selectedProblem.message.text !== currentProblem.message.text) {
+    return false;
+  }
+
   if (type === 'group-by-file' || type === 'group-by-rule') {
     if (selectedFileURI === currentFileURI && selectedFileStartLine === currentFileStartLine) {
       return true;
