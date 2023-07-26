@@ -18,6 +18,9 @@ export type ValidationOverviewType = {
   triggerValidationSettingsRedirectCallback?: () => void;
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
   onFiltersChange?: (filters: ValidationFiltersValueType) => void;
+  onSearchCallback?: (searchValue: string) => void;
+  onSecurityFrameworkFilterChange?: (securityFramework: string, from: 'dropdown' | 'tag') => void;
+  onGroupByFilterChange?: (groupByFilterValue: GroupByFilterOptionType) => void;
 };
 
 export type ValidationOverviewFiltersType = {
