@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.7.0
+
+### Minor Changes
+
+- 34d1eef: Colapsible Middle pane + tooltip for PaneCloseIcon
+
 ## 1.6.9
 
 ### Patch Changes
