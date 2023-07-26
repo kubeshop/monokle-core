@@ -1,6 +1,6 @@
 import {Resource, ResourceRefsProcessingConfig, ResourceRefType} from '../common/types.js';
 import {NAME_REFNODE_PATH} from '../constants.js';
-import {RefMapper} from './mappers';
+import {RefMapper} from './mappers.js';
 
 import {createImageRef} from './utils/createImageRef.js';
 import {createResourceRef, linkResources} from './utils/createResourceRef.js';

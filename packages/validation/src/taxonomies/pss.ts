@@ -1,4 +1,4 @@
-import {Taxonomy, reportingDescriptorRelationship} from '../common/sarif';
+import {Taxonomy, reportingDescriptorRelationship} from '../common/sarif.js';
 
 /**
  * Pod Security Standards.

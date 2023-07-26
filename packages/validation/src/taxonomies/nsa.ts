@@ -1,4 +1,4 @@
-import {Taxonomy, reportingDescriptorRelationship} from '../common/sarif';
+import {Taxonomy, reportingDescriptorRelationship} from '../common/sarif.js';
 
 type NSA_TAXA_NAMES = 'kubernetes-pod-security' | 'networking' | 'auth' | 'threat-detection' | 'app-practices';
 
