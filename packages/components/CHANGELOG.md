@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.7.1
+
+### Patch Changes
+
+- 8efcb1f: Add callback for problems search/filter/group
+
 ## 1.7.0
 
 ### Minor Changes
