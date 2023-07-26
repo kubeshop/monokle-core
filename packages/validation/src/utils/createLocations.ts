@@ -1,11 +1,17 @@
 import toLower from 'lodash/toLower.js';
-import {Location, Region} from '../common/sarif.js';
+import {Location, LogicalLocation, Region} from '../common/sarif.js';
 import {Resource} from '../common/types.js';
 import {FALLBACK_REGION} from '../constants.js';
+import {YamlPath} from '../common/types.js';
 
-export function createLocations(resource: Resource, region: Region = FALLBACK_REGION): [Location, Location] {
+export function createLocations(
+  resource: Resource,
+  region: Region = FALLBACK_REGION,
+  path?: YamlPath
+): [Location, Location] {
   // SARIF expects relative paths without leading path separator '/'.
   const filePath = resource.filePath.startsWith('/') ? resource.filePath.substring(1) : resource.filePath;
+  const logicalLocations = createLogicalLocations(resource, path);
 
   return [
     {
@@ -29,15 +35,29 @@ export function createLocations(resource: Resource, region: Region = FALLBACK_RE
         },
         region,
       },
-      logicalLocations: [
-        {
-          kind: 'resource',
-          fullyQualifiedName: createFullyQualifiedName(resource),
-          name: resource.name,
-        },
-      ],
+      logicalLocations,
     },
   ];
+}
+
+function createLogicalLocations(resource: Resource, path?: YamlPath): LogicalLocation[] {
+  const logicalLocations: LogicalLocation[] = [
+    {
+      kind: 'resource',
+      fullyQualifiedName: createFullyQualifiedName(resource),
+      name: resource.name,
+    },
+  ];
+
+  if (path) {
+    logicalLocations.push({
+      kind: 'element',
+      name: String(path.at(-1)),
+      fullyQualifiedName: path.join('.'),
+    });
+  }
+
+  return logicalLocations;
 }
 
 function createFullyQualifiedName(resource: Resource) {

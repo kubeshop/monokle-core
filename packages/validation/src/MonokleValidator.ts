@@ -1,18 +1,19 @@
 import clone from 'lodash/clone.js';
 import difference from 'lodash/difference.js';
+import uniqueId from 'lodash/uniqueId.js';
 import isEqual from 'react-fast-compare';
-import type {Tool, ValidationResponse, ValidationRun} from './common/sarif.js';
+import {ResourceParser} from './common/resourceParser.js';
+import type {BaseLineState, Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
 import type {CustomSchema, Incremental, Plugin, Resource} from './common/types.js';
 import {Config, PluginMap} from './config/parse.js';
+import {CIS_TAXONOMY} from './taxonomies/cis.js';
+import {NSA_TAXONOMY} from './taxonomies/nsa.js';
 import {PluginMetadataWithConfig, PluginName, RuleMetadataWithConfig, Validator} from './types.js';
 import {nextTick, throwIfAborted} from './utils/abort.js';
 import {extractSchema, findDefaultVersion} from './utils/customResourceDefinitions.js';
 import {PluginLoadError} from './utils/error.js';
 import invariant from './utils/invariant.js';
 import {isDefined} from './utils/isDefined.js';
-import {NSA_TAXONOMY} from './taxonomies/nsa.js';
-import {CIS_TAXONOMY} from './taxonomies/cis.js';
-import {ResourceParser} from './common/resourceParser.js';
 
 export type PluginLoader = (name: string, settings?: Record<string, any>) => Promise<Plugin>;
 export type CustomPluginLoader = (name: string, parser: ResourceParser) => Promise<Plugin>;
@@ -238,10 +239,12 @@ export class MonokleValidator implements Validator {
   async validate({
     resources,
     incremental,
+    baseline,
     abortSignal: externalAbortSignal,
   }: {
     resources: Resource[];
     incremental?: Incremental;
+    baseline?: ValidationResponse;
     abortSignal?: AbortSignal;
   }): Promise<ValidationResponse> {
     if (this._loading === undefined) {
@@ -257,7 +260,7 @@ export class MonokleValidator implements Validator {
       extensions: validators.map(v => v.toolComponent),
     };
 
-    validators.forEach((v, index) => v.toolComponentIndex = index);
+    validators.forEach((v, index) => (v.toolComponentIndex = index));
 
     await nextTick();
     throwIfAborted(loadAbortSignal, externalAbortSignal);
@@ -278,16 +281,64 @@ export class MonokleValidator implements Validator {
     }
 
     const run: ValidationRun = {
+      automationDetails: {guid: uniqueId()},
       tool,
       results,
       taxonomies: [NSA_TAXONOMY, CIS_TAXONOMY],
     };
 
-    return {
+    const result: ValidationResponse = {
       $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
       version: '2.1.0',
       runs: [run],
     };
+
+    if (baseline) {
+      this.compareWithBaseline(result, baseline);
+    }
+
+    return result;
+  }
+
+  /**
+   * Compares the validation result with a baseline.
+   *
+   * @remarks comparison uses fingerprints.
+   * @remark enhances the result with baseline guid & state.
+   */
+  private compareWithBaseline(result: ValidationResponse, baseline: ValidationResponse): void {
+    for (const run of result.runs) {
+      const baselineRun = baseline.runs.find(r => r.tool.driver.name === run.tool.driver.name);
+      if (!baselineRun) continue;
+      this.compareRunWithBaseline(run, baselineRun);
+    }
+  }
+
+  private compareRunWithBaseline(run: ValidationRun, baseline: ValidationRun): void {
+    run.baselineGuid = baseline.automationDetails.guid;
+
+    const hashmap = new Map<string, ValidationResult | undefined>();
+    for (const result of baseline.results) {
+      const fingerprint = result.fingerprints?.['monokleHash/v1'];
+      if (!fingerprint) continue;
+      hashmap.set(fingerprint, result);
+    }
+
+    for (const result of run.results) {
+      const fingerprint = result.fingerprints?.['monokleHash/v1'];
+      if (!fingerprint) continue;
+      if (hashmap.has(fingerprint)) {
+        result.baselineState = 'unchanged';
+        hashmap.set(fingerprint, undefined);
+      } else {
+        result.baselineState = 'new';
+      }
+    }
+
+    for (const result of hashmap.values()) {
+      if (!result) continue;
+      run.results.push({...result, baselineState: 'absent'});
+    }
   }
 
   private preprocessCustomResourceDefinitions(resources: Resource[]) {

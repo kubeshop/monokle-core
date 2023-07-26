@@ -4,8 +4,9 @@ import {NOT_CONFIGURED_ERR_MSG} from '../constants.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import invariant from '../utils/invariant.js';
 import {getResourceId} from '../utils/sarif.js';
-import {ValidationResult, RuleMetadata, RuleConfig, ValidationRun, ToolPlugin} from './sarif.js';
+import {ValidationResult, RuleMetadata, RuleConfig, ToolPlugin} from './sarif.js';
 import {Incremental, Resource, Plugin, PluginMetadata, CustomSchema} from './types.js';
+import {fingerprint} from '../utils/fingerprint.js';
 
 const DEFAULT_RULE_CONFIG: RuleConfig = {
   enabled: true,
@@ -134,8 +135,7 @@ export abstract class AbstractPlugin implements Plugin {
     const ruleConfig = this.getRuleConfig(ruleId);
     const rule = this.rules[index];
     const taxa = rule.relationships?.map(r => r.target);
-
-    return {
+    const result = {
       ruleId,
       rule: {
         id: ruleId,
@@ -149,6 +149,10 @@ export abstract class AbstractPlugin implements Plugin {
       level: ruleConfig.level,
       ...args,
     };
+
+    result.fingerprints = fingerprint(result);
+
+    return result;
   }
 
   async configure(config: {rules?: RuleMap; settings?: any}): Promise<void> {
@@ -206,7 +210,7 @@ export abstract class AbstractPlugin implements Plugin {
 
       const parameters = {
         ...defaultConfig.parameters,
-        ...(config ? { configValue: config } : {})
+        ...(config ? {configValue: config} : {}),
       };
 
       this._ruleConfig.set(ruleId, {

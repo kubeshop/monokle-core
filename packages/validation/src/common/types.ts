@@ -3,7 +3,9 @@ import {RuleMap} from '../config/parse.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import {ResourceSchema} from '../validators/kubernetes-schema/schemaLoader.js';
 import {ResourceParser} from './resourceParser.js';
-import {ToolPlugin, ValidationPolicy, ValidationResult, ValidationRun} from './sarif.js';
+import {ToolPlugin, ValidationPolicy, ValidationResult} from './sarif.js';
+
+export type YamlPath = Array<string | number>;
 
 /* * * * * * * * * * * * * * * * *
  * The common resource type

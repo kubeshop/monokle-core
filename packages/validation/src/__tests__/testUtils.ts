@@ -5,7 +5,7 @@ import {readFile as readFileFromFs} from 'fs/promises';
 import chunkArray from 'lodash/chunk.js';
 import {LineCounter, parseAllDocuments, parseDocument} from 'yaml';
 import {Resource, ValidationResult} from '../index.js';
-import { expect } from 'vitest';
+import {expect} from 'vitest';
 
 export const KUSTOMIZATION_KIND = 'Kustomization';
 export const KUSTOMIZATION_API_GROUP = 'kustomize.config.k8s.io';
@@ -202,3 +202,17 @@ export function expectResult(result: ValidationResult, ruleId: string, level: st
   expect(result.level).toBe(level);
   expect(result.message.text).toContain(resource);
 }
+
+export const PRACTICES_ALL_DISABLED = {
+  'practices/no-latest-image': false,
+  'practices/no-sys-admin': false,
+  'practices/no-mounted-docker-sock': false,
+  'practices/no-writable-fs': false,
+  'practices/drop-capabilities': false,
+  'practices/no-low-user-id': false,
+  'practices/no-low-group-id': false,
+  'practices/no-automounted-service-account-token': false,
+  'practices/no-pod-create': false,
+  'practices/no-pod-execute': false,
+  'practices/no-root-group': false,
+};
