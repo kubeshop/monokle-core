@@ -16,6 +16,9 @@ export type RuleValue = PrimitiveRuleValue | ArrayRuleValue | ObjectRuleValue;
 export type PrimitiveRuleValue = boolean | 'warn' | 'err' | undefined;
 export type ArrayRuleValue = [PrimitiveRuleValue] | [PrimitiveRuleValue, any];
 export type ObjectRuleValue = {severity: PrimitiveRuleValue; config: any};
+export type Settings = Record<string, any> & {
+  debug?: boolean;
+};
 
 /**
  * The validators that will be loaded.
@@ -25,7 +28,7 @@ export type PluginMap = Record<string, boolean>;
 export type Config = {
   plugins?: PluginMap;
   rules?: RuleMap;
-  settings?: Record<string, any>;
+  settings?: Settings;
 };
 
 export const configSchema: ZodType<Config> = z.object({

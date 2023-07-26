@@ -8,7 +8,7 @@ import {z} from 'zod';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {Region, ValidationResult, RuleMetadata} from '../../common/sarif.js';
-import {Incremental, Resource} from '../../common/types.js';
+import {Incremental, Resource, YamlPath} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {OPEN_POLICY_AGENT_RULES} from './rules.js';
@@ -25,8 +25,6 @@ const Settings = z.object({
 });
 
 const CONTROLLER_KINDS = ['Deployment', 'StatefulSet', 'Job', 'DaemonSet', 'ReplicaSet', 'ReplicationController'];
-
-type YamlPath = Array<string | number>;
 
 export class OpenPolicyAgentValidator extends AbstractPlugin {
   static toolName = 'open-policy-agent';

@@ -112,7 +112,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
     const node = determineClosestNodeForPath(parsedDoc, path);
     const region = node?.range ? this._parser.parseErrorRegion(resource, node.range) : undefined;
 
-    const locations = createLocations(resource, region);
+    const locations = createLocations(resource, region, path);
 
     return this.createValidationResult(rule.id, {
       message: {
@@ -192,11 +192,11 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
       properties: {
         'security-severity': r.advanced?.severity,
         configMetadata: r.advanced?.configMetadata
-        ? {
-          type: r.advanced.configMetadata.type,
-          name: r.advanced.configMetadata.name,
-        }
-      : undefined,
+          ? {
+              type: r.advanced.configMetadata.type,
+              name: r.advanced.configMetadata.name,
+            }
+          : undefined,
       },
       relationships: r.advanced?.relationships,
     };

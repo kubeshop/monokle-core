@@ -15,6 +15,8 @@ export type ValidationRun = {
   invocations?: ValidationInvocation[];
   results: ValidationResult[];
   taxonomies?: Taxonomy[];
+  automationDetails: RunAutomationDetails;
+  baselineGuid?: string;
 };
 
 /**
@@ -40,6 +42,10 @@ export type Taxon = {
 export type Tool = {
   driver: ToolComponent;
   extensions?: ToolPlugin[];
+};
+
+export type RunAutomationDetails = {
+  guid: string;
 };
 
 /**
@@ -170,7 +176,7 @@ export type RuleConfig = {
    *
    * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Ref508894764
    */
-  parameters?: PropertyBag & { configValue?: RuleConfigMetadataAllowedValues, dynamic?: boolean };
+  parameters?: PropertyBag & {configValue?: RuleConfigMetadataAllowedValues; dynamic?: boolean};
 };
 
 export type RuleLevel = 'warning' | 'error';
@@ -280,7 +286,7 @@ export enum RuleConfigMetadataType {
   StringArray = 'string[]',
   Number = 'number',
   NumberArray = 'number[]',
-};
+}
 
 export type ValidationResult = {
   ruleId: string;
@@ -290,6 +296,8 @@ export type ValidationResult = {
   message: {
     text: string;
   };
+  fingerprints?: FingerPrints;
+  baselineState?: BaseLineState;
 
   /**
    * The location of the error.
@@ -302,6 +310,17 @@ export type ValidationResult = {
    * @hint use getFileLocation and getResourceLocation from utils/sarif.ts
    */
   locations: [Location, Location];
+};
+
+export type BaseLineState = 'new' | 'unchanged' | 'updated' | 'absent';
+
+/**
+ * Fingerprints provide stable identifiers for results based on evolving hashing algorithms.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541092
+ */
+export type FingerPrints = {
+  'monokleHash/v1': string;
 };
 
 /**
@@ -340,8 +359,14 @@ export type Region = {
   endColumn: number;
 };
 
-export type LogicalLocation = {
-  kind: 'resource';
-  name?: string;
-  fullyQualifiedName?: string;
-};
+export type LogicalLocation =
+  | {
+      kind: 'resource'; // custom value for our split resources
+      name?: string; // the name of the resource
+      fullyQualifiedName?: string; // the name with file
+    }
+  | {
+      kind: 'element'; // recommended value for location within XML or HTML documents
+      name?: string; // the property at the leaf of the path
+      fullyQualifiedName?: string; // the full path
+    };
