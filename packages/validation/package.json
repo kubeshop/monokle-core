@@ -1,6 +1,6 @@
 {
   "name": "@monokle/validation",
-  "version": "0.24.1",
+  "version": "0.24.2",
   "description": "Kubernetes resource validation",
   "author": "Kubeshop",
   "license": "MIT",
