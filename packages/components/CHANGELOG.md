@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.7.2
+
+### Patch Changes
+
+- f97b589: Fix selected problem logic
+
 ## 1.7.1
 
 ### Patch Changes
