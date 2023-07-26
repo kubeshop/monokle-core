@@ -1,5 +1,12 @@
 # @monokle/validation
 
+## 0.24.2
+
+### Patch Changes
+
+- 006894a: fix imports
+- 88eb61b: fix folder import
+
 ## 0.24.1
 
 ### Patch Changes
