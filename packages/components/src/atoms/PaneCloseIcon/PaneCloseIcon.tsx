@@ -3,6 +3,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 import {LeftOutlined} from '@ant-design/icons';
+import {Tooltip} from 'antd';
+import {TOOLTIP_DELAY} from '@/constants';
 
 export type PaneCloseIconType = {
   onClick: () => void;
@@ -11,21 +13,24 @@ export type PaneCloseIconType = {
   containerStyle?: React.CSSProperties;
   iconClassName?: string;
   iconStyle?: React.CSSProperties;
+  tooltipTitle?: string;
 };
 
 const PaneCloseIcon: React.FC<PaneCloseIconType> = props => {
   const {containerId = 'pane-close', containerStyle = {}, iconStyle = {}, onClick} = props;
-  const {containerClassName = '', iconClassName = ''} = props;
+  const {containerClassName = '', iconClassName = '', tooltipTitle} = props;
 
   return (
-    <StyledPaneCloseIconContainer
-      className={containerClassName}
-      id={containerId}
-      style={{...containerStyle}}
-      onClick={onClick}
-    >
-      <StyledLeftOutlined className={iconClassName} style={{...iconStyle}} />
-    </StyledPaneCloseIconContainer>
+    <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={tooltipTitle} placement="right">
+      <StyledPaneCloseIconContainer
+        className={containerClassName}
+        id={containerId}
+        style={{...containerStyle}}
+        onClick={onClick}
+      >
+        <StyledLeftOutlined className={iconClassName} style={{...iconStyle}} />
+      </StyledPaneCloseIconContainer>
+    </Tooltip>
   );
 };
 

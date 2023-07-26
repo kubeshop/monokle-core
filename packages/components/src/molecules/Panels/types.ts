@@ -2,14 +2,19 @@ import React from 'react';
 
 export type ResizableColumnsPanelType = {
   right: React.ReactNode;
-  center?: React.ReactNode;
+  middle?: React.ReactNode;
   defaultSizes?: number[];
   isLeftActive?: boolean;
+  isMiddleActive?: boolean;
   left?: React.ReactNode;
+  leftPaneTooltipTitle?: string;
+  middlePaneTooltipTitle?: string;
   leftClosable?: boolean;
+  middleClosable?: boolean;
   minPaneWidth?: number;
   paneCloseIconStyle?: React.CSSProperties;
   onCloseLeftPane?: () => void;
+  onCloseMiddlePane?: () => void;
   onDragEnd?: (sizes: number[]) => void;
 };
 
