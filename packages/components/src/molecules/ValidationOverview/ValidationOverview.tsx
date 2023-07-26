@@ -36,6 +36,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {customMessage, newProblemsIntroducedType, selectedProblem, groupOnlyByResource, filters} = props;
   const {onFiltersChange, onProblemSelect, downloadSarifResponseCallback, triggerValidationSettingsRedirectCallback} =
     props;
+  const {onSearchCallback, onSecurityFrameworkFilterChange, onGroupByFilterChange} = props;
 
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<ValidationFiltersValueType>(filters || DEFAULT_FILTERS_VALUE);
@@ -228,7 +229,13 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
             onFiltersChange(filters);
           }
         }}
-        onSearch={value => setSearchValue(value)}
+        onSearch={value => {
+          setSearchValue(value);
+
+          if (onSearchCallback) {
+            onSearchCallback(value);
+          }
+        }}
       />
 
       <ActionsContainer $secondary>
@@ -267,6 +274,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
               baseData.baseSecurityFrameworkFilter = value.value;
               baseData.baseCollapsedKeys = [];
               setCollapsedHeadersKey([]);
+
+              if (onSecurityFrameworkFilterChange) {
+                onSecurityFrameworkFilterChange(value.value, 'dropdown');
+              }
             }}
           />
 
@@ -280,6 +291,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
               setCollapsedHeadersKey([]);
               setGroupByFilterValue(value);
               baseData.baseGroupByFilterValue = value;
+
+              if (onGroupByFilterChange) {
+                onGroupByFilterChange(value);
+              }
             }}
           />
         </div>
@@ -361,6 +376,10 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                           setCollapsedHeadersKey([]);
                           setSecurityFrameworkFilter(securityFramework);
                           baseData.baseSecurityFrameworkFilter = securityFramework;
+
+                          if (onSecurityFrameworkFilterChange) {
+                            onSecurityFrameworkFilterChange(securityFramework, 'tag');
+                          }
                         }}
                       />
                     )}
