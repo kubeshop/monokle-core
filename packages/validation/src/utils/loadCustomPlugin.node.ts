@@ -4,7 +4,7 @@ import fetch from 'isomorphic-fetch';
 import requireFromString from 'require-from-string';
 import virtual from '@rollup/plugin-virtual';
 import {rollup} from 'rollup';
-import {CUSTOM_PLUGINS_URL_BASE} from '../constants';
+import {CUSTOM_PLUGINS_URL_BASE} from '../constants.js';
 
 export async function bundlePluginCode(code: string) {
   const bundle = await rollup({

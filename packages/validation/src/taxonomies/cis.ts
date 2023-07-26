@@ -1,4 +1,4 @@
-import {Taxonomy, reportingDescriptorRelationship} from '../common/sarif';
+import {Taxonomy, reportingDescriptorRelationship} from '../common/sarif.js';
 
 type CIS_TAXA_NAMES = 'general';
 

@@ -1,4 +1,4 @@
-import { Deprecations } from "./validator";
+import { Deprecations } from "./validator.js";
 
 // Based on:
 // - https://kubernetes.io/docs/reference/using-api/deprecation-guide/#removed-apis-by-release
