@@ -3,7 +3,7 @@ import {z} from 'zod';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {ValidationResult} from '../../common/sarif.js';
-import {CustomSchema, Incremental, Resource} from '../../common/types.js';
+import {CustomSchema, Incremental, Resource, ValidateOptions} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {KNOWN_RESOURCE_KINDS} from '../../utils/knownResourceKinds.js';
@@ -70,7 +70,7 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     KNOWN_RESOURCE_KINDS.forEach(kind => this.getResourceValidator(kind));
   }
 
-  async doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
+  async doValidate(resources: Resource[], {incremental}: ValidateOptions): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;
 
@@ -83,7 +83,12 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       const deprecationError = validate(resource, this._settings.schemaVersion);
       if (deprecationError) {
         const ruleId = deprecationError.type === 'removal' ? 'K8S003' : 'K8S002';
-        const asValidationError = this.adaptToValidationResult(resource, [deprecationError.path], ruleId, deprecationError.message);
+        const asValidationError = this.adaptToValidationResult(
+          resource,
+          [deprecationError.path],
+          ruleId,
+          deprecationError.message
+        );
         isDefined(asValidationError) && results.push(asValidationError);
       }
 
@@ -91,9 +96,9 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       const hasApiVersion = resource.apiVersion && resource.apiVersion.length > 0;
       if (resourceErrors === undefined || !hasApiVersion) {
         const errorKey = resource.apiVersion !== undefined ? 'apiVersion' : 'kind';
-        const errorText = hasApiVersion ?
-          `Invalid or unsupported "apiVersion" value for "${resource.kind}".` :
-          `Missing "apiVersion" field for "${resource.kind}".`;
+        const errorText = hasApiVersion
+          ? `Invalid or unsupported "apiVersion" value for "${resource.kind}".`
+          : `Missing "apiVersion" field for "${resource.kind}".`;
         const validationResult = this.adaptToValidationResult(resource, [errorKey], 'K8S004', errorText);
         isDefined(validationResult) && results.push(validationResult);
       }
@@ -129,12 +134,16 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
     validate(resource.content);
 
     const errors = validate.errors ?? [];
-    const results = errors.map(err => this.adaptToValidationResult(
-      resource,
-      err.dataPath.substring(1).split('/'),
-      'K8S001',
-      err.message ? `Value at ${err.dataPath} ${err.message}` : ''
-    )).filter(isDefined);
+    const results = errors
+      .map(err =>
+        this.adaptToValidationResult(
+          resource,
+          err.dataPath.substring(1).split('/'),
+          'K8S001',
+          err.message ? `Value at ${err.dataPath} ${err.message}` : ''
+        )
+      )
+      .filter(isDefined);
 
     return results;
   }
@@ -149,7 +158,9 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
   ): Promise<ValidateFunction | undefined> {
     const apiVersion = (typeof resourceOrResourceKind === 'string' ? '' : resourceOrResourceKind.apiVersion) ?? '';
     const kind = typeof resourceOrResourceKind === 'string' ? resourceOrResourceKind : resourceOrResourceKind.kind;
-    const key = matchResourceSchema(kind, apiVersion, this.definitions || []) ?? `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`;
+    const key =
+      matchResourceSchema(kind, apiVersion, this.definitions || []) ??
+      `${(resourceOrResourceKind as Resource).apiVersion}-${kind}`;
     const keyRef = `#/definitions/${key}`;
 
     try {

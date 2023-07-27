@@ -1,7 +1,8 @@
 import {ResourceParser} from '../../common/resourceParser.js';
 import {ToolPlugin, ValidationResult, ValidationRun} from '../../common/sarif.js';
-import {CustomSchema, Incremental, Plugin, PluginMetadata, Resource} from '../../common/types.js';
+import {CustomSchema, Incremental, Plugin, PluginMetadata, Resource, ValidateOptions} from '../../common/types.js';
 import {RuleMap} from '../../config/parse.js';
+import {Suppressor} from '../../sarif/suppressions/index.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../../types.js';
 import {DEV_MODE_TOKEN} from './constants.js';
 import {SimpleCustomValidator} from './simpleValidator.js';
@@ -185,11 +186,11 @@ export class DevCustomValidator implements Plugin {
       settings: config.settings,
     });
   }
-  validate(resources: Resource[], incremental?: Incremental | undefined): Promise<ValidationResult[]> {
+  validate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]> {
     if (!this._currentValidator) {
       return Promise.resolve([]);
     }
-    return this._currentValidator?.validate(resources, incremental);
+    return this._currentValidator?.validate(resources, options);
   }
 
   clear(): Promise<void> {

@@ -3,6 +3,7 @@
  */
 export * from './commonExports.js';
 
+export * from './sarif/suppressions/index.js';
 export * from './pluginLoaders/index.js';
 
 export * from './createExtensibleMonokleValidator.browser.js';

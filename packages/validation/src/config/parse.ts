@@ -18,6 +18,8 @@ export type ArrayRuleValue = [PrimitiveRuleValue] | [PrimitiveRuleValue, any];
 export type ObjectRuleValue = {severity: PrimitiveRuleValue; config: any};
 export type Settings = Record<string, any> & {
   debug?: boolean;
+  noInSourceSuppressions?: boolean;
+  noExternalSuppressions?: boolean;
 };
 
 /**

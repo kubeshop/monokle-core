@@ -2,7 +2,7 @@ import {YAMLError} from 'yaml';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {ValidationResult} from '../../common/sarif.js';
-import {Incremental, Resource} from '../../common/types.js';
+import {Resource, ValidateOptions} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {YAML_RULES, YAML_RULE_MAP} from './rules.js';
@@ -22,7 +22,7 @@ export class YamlValidator extends AbstractPlugin {
     );
   }
 
-  async doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
+  async doValidate(resources: Resource[], {incremental}: ValidateOptions): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
 
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;
@@ -55,13 +55,15 @@ export class YamlValidator extends AbstractPlugin {
 
     const textWithoutLocation = err.message.split(' at line').at(0) ?? err.message;
 
-    return this.isRuleEnabled(ruleId)
-      ? this.createValidationResult(ruleId, {
-          message: {
-            text: textWithoutLocation,
-          },
-          locations,
-        })
-      : undefined;
+    if (!this.isRuleEnabled(ruleId)) {
+      return undefined;
+    }
+
+    return this.createValidationResult(ruleId, {
+      message: {
+        text: textWithoutLocation,
+      },
+      locations,
+    });
   }
 }
