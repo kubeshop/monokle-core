@@ -18,7 +18,7 @@ it('should have fingerprints & baseline', async () => {
     },
   });
 
-  const files = await readDirectory('./src/__tests__/sarif/assets');
+  const files = await readDirectory('./src/__tests__/resources/basic-deployment');
   const resourceBad = extractK8sResources(files);
   const badResponse = await validator.validate({resources: resourceBad});
 
@@ -43,12 +43,6 @@ it('should have fingerprints & baseline', async () => {
     incremental: {resourceIds: [resourceBad[0].id]},
     baseline: badResponse,
   });
-
-  editedResponse.runs.forEach(r =>
-    r.results.forEach(result => {
-      console.error(result.ruleId, result.fingerprints?.['monokleHash/v1']);
-    })
-  );
 
   const run = editedResponse.runs[0];
   expect(run.baselineGuid).toBeDefined();

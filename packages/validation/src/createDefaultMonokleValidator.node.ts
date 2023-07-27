@@ -14,12 +14,14 @@ import {MonokleValidator} from './MonokleValidator.js';
 import {bundlePluginCode} from './utils/loadCustomPlugin.node.js';
 import practicesPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
+import {AnnotationSuppressor, Suppressor} from './sarif/suppressions/index.js';
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
+  schemaLoader: SchemaLoader = new SchemaLoader(),
+  suppressors: Suppressor[] = [new AnnotationSuppressor()]
 ) {
-  return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader));
+  return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader), suppressors);
 }
 
 export function createDefaultPluginLoader(

@@ -58,6 +58,20 @@ export type RunAutomationDetails = {
 export type Artifact = ConfigurationArtifact;
 
 /**
+ * A request to suppress a result.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541171
+ */
+export type Suppression = {
+  guid?: string;
+  kind: SuppressionKind;
+  status: SuppressionStatus;
+  justification?: string;
+};
+export type SuppressionKind = 'inSource' | 'external';
+export type SuppressionStatus = 'underReview' | 'accept' | 'rejected'; // todo accepted!?
+
+/**
  * A Monokle Validation configuration file.
  *
  * @remark Store as JSON instead YAML as it's more machine-friendly.
@@ -298,6 +312,7 @@ export type ValidationResult = {
   };
   fingerprints?: FingerPrints;
   baselineState?: BaseLineState;
+  suppressions?: Suppression[];
 
   /**
    * The location of the error.

@@ -4,7 +4,7 @@ import {Document, isNode, Node, ParsedNode} from 'yaml';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {ValidationResult, RuleMetadata} from '../../common/sarif.js';
-import {Incremental, PluginMetadata, Resource} from '../../common/types.js';
+import {PluginMetadata, Resource, ValidateOptions} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {PluginInit, ReportArgs, Resource as PlainResource, RuleInit} from './config.js';
@@ -33,15 +33,15 @@ export class SimpleCustomValidator extends AbstractPlugin {
     this._settings = rawSettings;
   }
 
-  async doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
+  async doValidate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
     const resourceMap = keyBy(resources, r => r.id);
 
     const clonedResources: PlainResourceWithId[] = resources.map(r =>
       JSON.parse(JSON.stringify({...r.content, _id: r.id}))
     );
-    const dirtyResources = incremental
-      ? clonedResources.filter(r => incremental.resourceIds.includes(r._id))
+    const dirtyResources = options.incremental
+      ? clonedResources.filter(r => options.incremental?.resourceIds.includes(r._id))
       : clonedResources;
 
     for (const rule of this.rules) {
@@ -68,7 +68,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
             },
             report: (res, args) => {
               const resource = resourceMap[(res as PlainResourceWithId)._id];
-              const result = this.adaptToValidationResult(rule, resource, args);
+              const result = this.adaptToValidationResult(rule, resource, args, options);
               if (!result) return;
               results.push(result);
             },
@@ -104,7 +104,8 @@ export class SimpleCustomValidator extends AbstractPlugin {
   private adaptToValidationResult(
     rule: RuleMetadata,
     resource: Resource,
-    args: ReportArgs
+    args: ReportArgs,
+    options: ValidateOptions
   ): ValidationResult | undefined {
     const {parsedDoc} = this._parser.parse(resource);
 

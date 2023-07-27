@@ -3,7 +3,7 @@ import difference from 'lodash/difference.js';
 import uniqueId from 'lodash/uniqueId.js';
 import isEqual from 'react-fast-compare';
 import {ResourceParser} from './common/resourceParser.js';
-import type {BaseLineState, Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
+import type {Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
 import type {CustomSchema, Incremental, Plugin, Resource} from './common/types.js';
 import {Config, PluginMap} from './config/parse.js';
 import {CIS_TAXONOMY} from './taxonomies/cis.js';
@@ -14,12 +14,14 @@ import {extractSchema, findDefaultVersion} from './utils/customResourceDefinitio
 import {PluginLoadError} from './utils/error.js';
 import invariant from './utils/invariant.js';
 import {isDefined} from './utils/isDefined.js';
+import {AnnotationSuppressor, Suppressor} from './sarif/suppressions/index.js';
+import {SuppressEngine} from './sarif/suppressions/engine.js';
 
 export type PluginLoader = (name: string, settings?: Record<string, any>) => Promise<Plugin>;
-export type CustomPluginLoader = (name: string, parser: ResourceParser) => Promise<Plugin>;
+export type CustomPluginLoader = (name: string, parser: ResourceParser, suppressor?: Suppressor) => Promise<Plugin>;
 
-export function createMonokleValidator(loader: PluginLoader, fallback?: PluginMap) {
-  return new MonokleValidator(loader, fallback);
+export function createMonokleValidator(loader: PluginLoader, suppressors: Suppressor[], fallback?: PluginMap) {
+  return new MonokleValidator(loader, suppressors, fallback);
 }
 
 /**
@@ -31,6 +33,8 @@ const DEFAULT_PLUGIN_MAP = {
   'yaml-syntax': true,
   'kubernetes-schema': true,
 };
+
+const DEFAULT_SUPPRESSORS = [new AnnotationSuppressor()];
 
 type ValidateParams = {
   /**
@@ -83,9 +87,15 @@ export class MonokleValidator implements Validator {
   _plugins: Plugin[] = [];
   _failedPlugins: string[] = [];
   _customSchemas: Set<string> = new Set();
+  private _suppressor: SuppressEngine;
 
-  constructor(loader: PluginLoader, fallback: PluginMap = DEFAULT_PLUGIN_MAP) {
+  constructor(
+    loader: PluginLoader,
+    suppressors: Suppressor[] = DEFAULT_SUPPRESSORS,
+    fallback: PluginMap = DEFAULT_PLUGIN_MAP
+  ) {
     this._loader = loader;
+    this._suppressor = new SuppressEngine(suppressors);
     this._fallback = {plugins: fallback};
     this._config = this._fallback;
   }
@@ -291,7 +301,9 @@ export class MonokleValidator implements Validator {
 
     this.preprocessCustomResourceDefinitions(resources);
 
-    const allRuns = await Promise.allSettled(validators.map(v => v.validate(resources, incremental)));
+    new SuppressEngine().preload();
+
+    const allRuns = await Promise.allSettled(validators.map(v => v.validate(resources, {incremental})));
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
     const results = allRuns
@@ -320,6 +332,11 @@ export class MonokleValidator implements Validator {
     if (baseline) {
       this.compareWithBaseline(result, baseline);
     }
+
+    await this._suppressor.suppress(result, resources, {
+      noInSourceSuppressions: this._config?.settings?.noInSourceSuppressions,
+      noExternalSuppressions: this._config?.settings?.noExternalSuppressions,
+    });
 
     return result;
   }

@@ -4,6 +4,7 @@ import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import {ResourceSchema} from '../validators/kubernetes-schema/schemaLoader.js';
 import {ResourceParser} from './resourceParser.js';
 import {ToolPlugin, ValidationPolicy, ValidationResult} from './sarif.js';
+import {Suppressor} from '../sarif/suppressions/types.js';
 
 export type YamlPath = Array<string | number>;
 
@@ -173,6 +174,10 @@ export type PluginConfig = {
   enabled?: boolean;
 };
 
+export type ValidateOptions = {
+  incremental?: Incremental;
+};
+
 export interface Plugin {
   /**
    * The name of this plugin.
@@ -232,7 +237,7 @@ export interface Plugin {
   registerCustomSchema(schema: CustomSchema): Promise<void> | void;
   unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): Promise<void> | void;
 
-  validate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]>;
+  validate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]>;
 
   clear(): Promise<void>;
   unload(): Promise<void>;

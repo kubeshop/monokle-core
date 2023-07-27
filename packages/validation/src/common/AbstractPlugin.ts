@@ -5,7 +5,7 @@ import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import invariant from '../utils/invariant.js';
 import {getResourceId} from '../utils/sarif.js';
 import {ValidationResult, RuleMetadata, RuleConfig, ToolPlugin} from './sarif.js';
-import {Incremental, Resource, Plugin, PluginMetadata, CustomSchema} from './types.js';
+import {Incremental, Resource, Plugin, PluginMetadata, CustomSchema, ValidateOptions} from './types.js';
 import {fingerprint} from '../utils/fingerprint.js';
 
 const DEFAULT_RULE_CONFIG: RuleConfig = {
@@ -123,7 +123,7 @@ export abstract class AbstractPlugin implements Plugin {
 
   protected createValidationResult(
     ruleId: string,
-    args: Omit<ValidationResult, 'ruleId' | 'rule'>
+    args: Omit<ValidationResult, 'ruleId' | 'rule' | 'suppressions'>
   ): ValidationResult | undefined {
     const index = this._ruleReverseLookup.get(ruleId);
     invariant(index !== undefined, 'rules misconfigured');
@@ -145,6 +145,7 @@ export abstract class AbstractPlugin implements Plugin {
           index: this.toolComponentIndex,
         },
       },
+      suppressions: [],
       taxa,
       level: ruleConfig.level,
       ...args,
@@ -235,13 +236,13 @@ export abstract class AbstractPlugin implements Plugin {
     return;
   }
 
-  async validate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
+  async validate(resources: Resource[], options: ValidateOptions = {}): Promise<ValidationResult[]> {
     invariant(this.configured, NOT_CONFIGURED_ERR_MSG(this.name));
 
-    let results = await this.doValidate(resources, incremental);
+    let results = await this.doValidate(resources, options);
 
-    if (incremental) {
-      results = this.merge(this._previous, results, incremental);
+    if (options.incremental) {
+      results = this.merge(this._previous, results, options.incremental);
     }
 
     this._previous = results;
@@ -249,7 +250,7 @@ export abstract class AbstractPlugin implements Plugin {
     return results;
   }
 
-  protected abstract doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]>;
+  protected abstract doValidate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]>;
 
   protected getRuleConfig(ruleId: string): RuleConfig {
     const ruleConfig = this._ruleConfig.get(ruleId);

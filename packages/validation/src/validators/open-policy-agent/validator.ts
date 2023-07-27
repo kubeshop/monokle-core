@@ -8,7 +8,7 @@ import {z} from 'zod';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {Region, ValidationResult, RuleMetadata} from '../../common/sarif.js';
-import {Incremental, Resource, YamlPath} from '../../common/types.js';
+import {Resource, ValidateOptions, YamlPath} from '../../common/types.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {OPEN_POLICY_AGENT_RULES} from './rules.js';
@@ -55,7 +55,7 @@ export class OpenPolicyAgentValidator extends AbstractPlugin {
     this.validator = await loadPolicy(wasm);
   }
 
-  async doValidate(resources: Resource[], incremental?: Incremental): Promise<ValidationResult[]> {
+  async doValidate(resources: Resource[], {incremental}: ValidateOptions): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
 
     const dirtyResources = incremental ? resources.filter(r => incremental.resourceIds.includes(r.id)) : resources;

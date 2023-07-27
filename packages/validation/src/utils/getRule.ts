@@ -1,4 +1,11 @@
-import {RuleMetadata, Taxonomy, ValidationResponse, ValidationResult, ValidationRun} from '../common/sarif.js';
+import {
+  RuleMetadata,
+  Taxonomy,
+  ToolComponent,
+  ValidationResponse,
+  ValidationResult,
+  ValidationRun,
+} from '../common/sarif.js';
 import invariant from './invariant.js';
 import {getResourceId} from './sarif.js';
 
@@ -18,14 +25,19 @@ export function getRuleForResult(response: ValidationResponse, result: Validatio
 }
 
 export function getRuleForResultV2(run: ValidationRun | undefined, result: ValidationResult): RuleMetadata {
+  const plugin = getPluginForResult(run, result);
+  const ruleIndex = result.rule.index;
+  const rule = plugin?.rules?.[ruleIndex];
+  invariant(rule, 'rule not found');
+  return rule as RuleMetadata;
+}
+
+export function getPluginForResult(run: ValidationRun | undefined, result: ValidationResult): ToolComponent {
   const toolPluginIndex = result.rule.toolComponent.index ?? -1;
   const toolPluginName = result.rule.toolComponent.name;
   const extensions = run?.tool.extensions ?? [];
   const plugin = extensions[toolPluginIndex] ?? extensions.find(plugin => plugin.name === toolPluginName);
-  const ruleIndex = result.rule.index;
-  const rule = plugin?.rules[ruleIndex];
-  invariant(rule, 'rule not found');
-  return rule as RuleMetadata;
+  return plugin;
 }
 
 export function getTaxonomiesForRule(run: ValidationRun, rule: RuleMetadata): Taxonomy[] {
