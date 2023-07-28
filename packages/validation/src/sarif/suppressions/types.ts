@@ -1,5 +1,5 @@
-import {Suppression, SuppressionKind, ValidationResult, ValidationRun} from '../../common/sarif';
-import {Resource} from '../../common/types';
+import {Suppression, SuppressionKind, ValidationResult, ValidationRun} from '../../common/sarif.js';
+import {Resource} from '../../common/types.js';
 
 export type ResourceApi = {
   getResource: () => Resource | undefined;

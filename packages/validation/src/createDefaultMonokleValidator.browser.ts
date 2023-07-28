@@ -10,12 +10,12 @@ import {MetadataValidator} from './validators/metadata/validator.js';
 import {MonokleValidator} from './MonokleValidator.js';
 import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
-import {AnnotationSuppressor, Suppressor} from './sarif/suppressions/index.js';
+import {Suppressor} from './sarif/suppressions/index.js';
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
   schemaLoader: SchemaLoader = new SchemaLoader(),
-  suppressors: Suppressor[] = [new AnnotationSuppressor()]
+  suppressors?: Suppressor[]
 ) {
   return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader), suppressors);
 }

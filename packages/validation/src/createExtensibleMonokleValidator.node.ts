@@ -16,7 +16,7 @@ import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
 import {requireFromStringCustomPluginLoader} from './pluginLoaders/requireFromStringLoader.node.js';
 import {CUSTOM_PLUGINS_URL_BASE} from './constants.js';
-import {AnnotationSuppressor, Suppressor} from './sarif/suppressions/index.js';
+import {Suppressor} from './sarif/suppressions/index.js';
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
@@ -24,7 +24,7 @@ import {AnnotationSuppressor, Suppressor} from './sarif/suppressions/index.js';
 export function createExtensibleMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
   schemaLoader: SchemaLoader = new SchemaLoader(),
-  suppressors: Suppressor[] = [new AnnotationSuppressor()],
+  suppressors: Suppressor[] | undefined = undefined,
   customPluginLoader: CustomPluginLoader = requireFromStringCustomPluginLoader
 ) {
   return new MonokleValidator(async (pluginNameOrUrl: string, settings?: Record<string, any>) => {

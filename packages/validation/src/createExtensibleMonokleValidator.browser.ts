@@ -15,7 +15,6 @@ import pssPlugin from './validators/pod-security-standards/plugin.js';
 import {dynamicImportCustomPluginLoader} from './pluginLoaders/dynamicImportLoader.js';
 import {CUSTOM_PLUGINS_URL_BASE} from './constants.js';
 import {Suppressor} from './sarif/suppressions/types.js';
-import {AnnotationSuppressor} from './sarif/suppressions/plugins/AnnotationSuppressor.js';
 
 /**
  * Creates a Monokle validator that can dynamically fetch custom plugins.
@@ -23,7 +22,7 @@ import {AnnotationSuppressor} from './sarif/suppressions/plugins/AnnotationSuppr
 export function createExtensibleMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
   schemaLoader: SchemaLoader = new SchemaLoader(),
-  suppressors: Suppressor[] = [new AnnotationSuppressor()],
+  suppressors: Suppressor[] | undefined = undefined,
   customPluginLoader: CustomPluginLoader = dynamicImportCustomPluginLoader
 ) {
   return new MonokleValidator(async (pluginName: string, settings?: Record<string, any>) => {
