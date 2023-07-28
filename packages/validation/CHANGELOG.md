@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.25.0
+
+### Minor Changes
+
+- 80f938d: Add SARIF baseline comparison and in source suppressions
+
 ## 0.24.2
 
 ### Patch Changes
