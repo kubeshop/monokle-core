@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.25.1
+
+### Patch Changes
+
+- db65010: remove react-fast-compare to fix build
+
 ## 0.25.0
 
 ### Minor Changes
