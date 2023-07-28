@@ -1,7 +1,7 @@
 import clone from 'lodash/clone.js';
 import difference from 'lodash/difference.js';
 import uniqueId from 'lodash/uniqueId.js';
-import isEqual from 'react-fast-compare';
+import isEqual from 'lodash/isEqual.js';
 import {ResourceParser} from './common/resourceParser.js';
 import type {Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
 import type {CustomSchema, Incremental, Plugin, Resource} from './common/types.js';
