@@ -20,7 +20,7 @@ import {SuppressEngine} from './sarif/suppressions/engine.js';
 export type PluginLoader = (name: string, settings?: Record<string, any>) => Promise<Plugin>;
 export type CustomPluginLoader = (name: string, parser: ResourceParser, suppressor?: Suppressor) => Promise<Plugin>;
 
-export function createMonokleValidator(loader: PluginLoader, suppressors: Suppressor[], fallback?: PluginMap) {
+export function createMonokleValidator(loader: PluginLoader, suppressors?: Suppressor[], fallback?: PluginMap) {
   return new MonokleValidator(loader, suppressors, fallback);
 }
 
@@ -28,10 +28,10 @@ export function createMonokleValidator(loader: PluginLoader, suppressors: Suppre
  * The plugins that will be loaded by default.
  */
 const DEFAULT_PLUGIN_MAP = {
-  'open-policy-agent': true,
-  'resource-links': true,
-  'yaml-syntax': true,
   'kubernetes-schema': true,
+  'yaml-syntax': true,
+  'pod-security-standards': true,
+  'resource-links': true,
 };
 
 const DEFAULT_SUPPRESSORS = [new AnnotationSuppressor()];
