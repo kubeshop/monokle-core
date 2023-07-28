@@ -60,6 +60,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
     version: '2.1.0',
     runs: [
       {
+        automationDetails: {
+          guid: '123',
+        },
         tool: {
           driver: {
             name: 'monokle',
@@ -1097,6 +1100,12 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
                 name: 'kubernetes-schema',
               },
             },
+            suppressions: [
+              {
+                kind: 'inSource',
+                status: 'accepted',
+              },
+            ],
             level: 'warning',
             message: {
               text: 'Value at /spec/ports/0/port should be integer',

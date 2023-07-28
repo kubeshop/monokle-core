@@ -34,6 +34,7 @@ export type ValidationOverviewFiltersType = {
 export type ValidationFiltersValueType = {
   'tool-component'?: string[];
   type?: 'error' | 'warning';
+  showSuppressed?: boolean;
 };
 
 export type ProblemsType = {
