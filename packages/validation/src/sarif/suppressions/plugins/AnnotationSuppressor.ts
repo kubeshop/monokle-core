@@ -18,7 +18,7 @@ export class AnnotationSuppressor implements Suppressor {
       return [];
     }
 
-    const annotations = resource.content.metadata.annotations;
+    const annotations = resource.content?.metadata?.annotations;
 
     if (!annotations) {
       return [];
