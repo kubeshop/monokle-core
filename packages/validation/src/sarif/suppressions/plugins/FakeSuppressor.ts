@@ -19,6 +19,6 @@ export class FakeSuppressor implements Suppressor {
       return [];
     }
 
-    return [{kind: 'external', status: 'accept', justification: 'Suppressed by john.doe on 6th June.'}];
+    return [{kind: 'external', status: 'accepted', justification: 'Suppressed by john.doe on 6th June.'}];
   }
 }
