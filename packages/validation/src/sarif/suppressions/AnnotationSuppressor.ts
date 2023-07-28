@@ -24,7 +24,7 @@ export class AnnotationSuppressor implements Suppressor {
 
     const suppression: Suppression = {
       kind: 'inSource',
-      status: 'accept',
+      status: 'accepted',
     };
 
     if (value !== 'false' && value !== 'true') {

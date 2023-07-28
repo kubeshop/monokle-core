@@ -69,7 +69,7 @@ export type Suppression = {
   justification?: string;
 };
 export type SuppressionKind = 'inSource' | 'external';
-export type SuppressionStatus = 'underReview' | 'accept' | 'rejected'; // todo accepted!?
+export type SuppressionStatus = 'underReview' | 'accepted' | 'rejected';
 
 /**
  * A Monokle Validation configuration file.
