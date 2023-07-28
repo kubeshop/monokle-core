@@ -2,7 +2,7 @@ import {Document, isPair, isScalar, isSeq, Scalar, visit} from 'yaml';
 import {getRefMappers} from './getRefMappers.js';
 import {RefNode, Resource, ResourceRefsProcessingConfig} from '../../common/types.js';
 import {REF_PATH_SEPARATOR, NAME_REFNODE_PATH} from '../../constants.js';
-import isEqual from 'react-fast-compare';
+import isEqual from 'lodash/isEqual.js';
 
 const resourceRefNodesCache = new Map<string, Record<string, RefNode[] | undefined>>();
 
