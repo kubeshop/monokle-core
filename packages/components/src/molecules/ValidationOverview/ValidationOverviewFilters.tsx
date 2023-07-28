@@ -1,5 +1,5 @@
 import {Filter, FilterButton, FilterField, ProblemIcon} from '@/atoms';
-import {Badge, Select} from 'antd';
+import {Badge, Select, Space, Switch} from 'antd';
 import {useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {DEFAULT_FILTERS_VALUE} from './constants';
@@ -43,6 +43,17 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
       }
       onToggle={() => setActive(!active)}
     >
+      <FilterField name="Suppressions">
+        <Space>
+          <Switch
+            checked={filtersValue['showSuppressed']}
+            size="small"
+            onChange={value => onFiltersChange({showSuppressed: Boolean(value)})}
+          />
+          <div>Show suppressed problems</div>
+        </Space>
+      </FilterField>
+
       <FilterField name="Tool component">
         <Select
           mode="multiple"
@@ -83,7 +94,6 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
 };
 
 // Styled Components
-
 const CountBadge = styled(Badge)`
   .ant-badge-count-sm {
     font-size: 8px;

@@ -1,7 +1,12 @@
 import {Icon} from '@/atoms';
 import {Colors} from '@/styles/Colors';
+import {ValidationFiltersValueType} from './types';
 
-export const DEFAULT_FILTERS_VALUE = {'tool-component': undefined, type: undefined};
+export const DEFAULT_FILTERS_VALUE: ValidationFiltersValueType = {
+  showSuppressed: true,
+  'tool-component': undefined,
+  type: undefined,
+};
 
 export const iconMap: Record<string, JSX.Element> = {
   'kubernetes-schema': <Icon name="validation-k8s-schema" style={{fontSize: '13px', color: Colors.grey8}} />,

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {Tag, Tooltip} from 'antd';
 import {Colors} from '@/styles/Colors';
 import {ProblemNode, GroupByFilterOptionType} from './types';
-import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
+import {getFileLocation, isSuppressed, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
 import {Icon, ProblemIcon, TextEllipsis} from '@/atoms';
@@ -25,6 +25,7 @@ const ProblemRenderer: React.FC<IProps> = props => {
     () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem, groupByFilterValue) : false),
     [selectedProblem, node.problem, groupByFilterValue]
   );
+  const suppressed = isSuppressed(node.problem);
 
   return (
     <Row $isSelected={isSelected} $secondary={groupByFilterValue === 'group-by-rule'} onClick={onClick}>
@@ -70,7 +71,7 @@ const ProblemRenderer: React.FC<IProps> = props => {
 
           <ProblemIcon level={node.problem.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
 
-          <ProblemText>{node.problem.message.text}</ProblemText>
+          <ProblemText $isSuppressed={suppressed}>{node.problem.message.text}</ProblemText>
 
           {node.problem.taxa?.length ? (
             <TagsContainer>
@@ -104,7 +105,9 @@ const ProblemStartLine = styled.div<{$isSelected: boolean}>`
   font-size: 13px;
 `;
 
-const ProblemText = styled.div`
+const ProblemText = styled.div<{$isSuppressed: boolean}>`
+  color: ${({$isSuppressed}) => ($isSuppressed ? Colors.grey6 : Colors.grey8)};
+  text-decoration: ${({$isSuppressed}) => ($isSuppressed ? 'line-through' : 'none')};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

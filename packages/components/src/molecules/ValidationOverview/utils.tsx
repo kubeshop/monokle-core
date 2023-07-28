@@ -9,6 +9,7 @@ import {
   ValidationResult,
 } from '@monokle/validation';
 import {ProblemsType, GroupByFilterOptionType, ValidationFiltersValueType, ValidationListNode} from './types';
+import {isSuppressed} from '@monokle/validation';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -103,19 +104,23 @@ export const filterProblems = (
   filters: ValidationFiltersValueType,
   securityFrameworkFilter: string
 ) => {
+  const suppressionFilter = filters.showSuppressed ? () => true : (problem: ValidationResult) => !isSuppressed(problem);
+
   return Object.fromEntries(
     Object.entries(problems || {})
       .map(([filePath, validationResults]) => {
-        let filteredValidationResults = validationResults.filter(
-          el =>
-            (filters['type'] ? el.level === filters['type'] : true) &&
-            (filters['tool-component']?.length
-              ? filters['tool-component'].includes(el.rule.toolComponent.name)
-              : true) &&
-            (securityFrameworkFilter !== 'all'
-              ? el.taxa?.find(t => t.toolComponent.name === securityFrameworkFilter)
-              : true)
-        );
+        let filteredValidationResults = validationResults
+          .filter(suppressionFilter)
+          .filter(
+            el =>
+              (filters['type'] ? el.level === filters['type'] : true) &&
+              (filters['tool-component']?.length
+                ? filters['tool-component'].includes(el.rule.toolComponent.name)
+                : true) &&
+              (securityFrameworkFilter !== 'all'
+                ? el.taxa?.find(t => t.toolComponent.name === securityFrameworkFilter)
+                : true)
+          );
 
         if (filteredValidationResults.length > 0) {
           return [filePath, filteredValidationResults];
