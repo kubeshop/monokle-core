@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.25.2
+
+### Patch Changes
+
+- 4e16e2e: Fix annotations query
+
 ## 0.25.1
 
 ### Patch Changes
