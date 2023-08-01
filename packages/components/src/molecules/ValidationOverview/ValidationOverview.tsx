@@ -37,6 +37,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
   const {onFiltersChange, onProblemSelect, downloadSarifResponseCallback, triggerValidationSettingsRedirectCallback} =
     props;
   const {onSearchCallback, onSecurityFrameworkFilterChange, onGroupByFilterChange} = props;
+  const {onProblemSuppress, onConfigureRule, onProblemAutofix} = props;
 
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<ValidationFiltersValueType>(filters || DEFAULT_FILTERS_VALUE);
@@ -381,6 +382,9 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
                             onSecurityFrameworkFilterChange(securityFramework, 'tag');
                           }
                         }}
+                        onConfigureRuleHandler={onConfigureRule}
+                        onProblemSuppressHandler={onProblemSuppress}
+                        onAutofixHandler={onProblemAutofix}
                       />
                     )}
                   </VirtualItem>

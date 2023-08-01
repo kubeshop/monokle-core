@@ -14,7 +14,7 @@ import {SecurityFrameworkTag} from '../ValidationOverview/ProblemRenderer';
 
 const ProblemInfo: React.FC<ProblemInfoType> = props => {
   const {containerClassName = '', containerStyle = {}, problem, rule} = props;
-  const {onSettingsClick, onHelpURLClick, onLocationClick} = props;
+  const {onConfigureRule, onHelpURLClick, onLocationClick} = props;
 
   const errorLocation = useMemo(() => getFileLocation(problem), [problem]);
   const title = useMemo(
@@ -53,8 +53,13 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
             : null}
         </IconsContainer>
 
-        <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Rule setup">
-          <Button type="link" icon={<SettingOutlined />} onClick={onSettingsClick} />
+        <Tooltip
+          mouseEnterDelay={TOOLTIP_DELAY}
+          title="Enable / disable rule, change priority, access all the rules in this plugin."
+        >
+          <Button type="link" icon={<SettingOutlined />} onClick={onConfigureRule}>
+            Configure rule
+          </Button>
         </Tooltip>
       </TitleContainer>
 
@@ -142,7 +147,7 @@ const TitleContainer = styled.div`
   align-items: center;
   gap: 20px;
 
-  & .ant-btn-icon-only {
+  & .ant-btn-link {
     margin-left: auto;
   }
 `;
