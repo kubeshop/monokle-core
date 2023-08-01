@@ -147,7 +147,7 @@ const TitleContainer = styled.div`
   align-items: center;
   gap: 20px;
 
-  & .ant-btn-icon-only {
+  & .ant-btn-link {
     margin-left: auto;
   }
 `;

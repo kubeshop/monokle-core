@@ -4,6 +4,9 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
   status: 'loaded',
   height: 800,
   newProblemsIntroducedType: 'k8s-schema',
+  onConfigureRule: problem => {
+    console.log('Problem:', problem);
+  },
   selectedProblem: {
     ruleId: 'KSV001',
     rule: {

@@ -21,6 +21,9 @@ export type ValidationOverviewType = {
   onSearchCallback?: (searchValue: string) => void;
   onSecurityFrameworkFilterChange?: (securityFramework: string, from: 'dropdown' | 'tag') => void;
   onGroupByFilterChange?: (groupByFilterValue: GroupByFilterOptionType) => void;
+  onConfigureRule: (problem: ValidationResult) => void;
+  onProblemSuppress?: (problem: ValidationResult) => void;
+  onProblemAutofix?: (problem: ValidationResult) => void;
 };
 
 export type ValidationOverviewFiltersType = {

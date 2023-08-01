@@ -9,10 +9,10 @@ export const DEFAULT_FILTERS_VALUE: ValidationFiltersValueType = {
 };
 
 export const iconMap: Record<string, JSX.Element> = {
-  'kubernetes-schema': <Icon name="validation-k8s-schema" style={{fontSize: '13px', color: Colors.grey8}} />,
-  'open-policy-agent': <Icon name="validation-opa" style={{fontSize: '13px', color: Colors.grey8}} />,
-  'resource-links': <Icon name="validation-resource-links" style={{fontSize: '13px', color: Colors.grey8}} />,
-  'yaml-syntax': <Icon name="validation-yaml-syntax" style={{fontSize: '13px', color: Colors.grey8}} />,
+  'kubernetes-schema': <Icon name="validation-k8s-schema" style={{fontSize: '13px'}} />,
+  'open-policy-agent': <Icon name="validation-opa" style={{fontSize: '13px'}} />,
+  'resource-links': <Icon name="validation-resource-links" style={{fontSize: '13px'}} />,
+  'yaml-syntax': <Icon name="validation-yaml-syntax" style={{fontSize: '13px'}} />,
 };
 
 export const newErrorsTextMap: Record<string, string> = {
