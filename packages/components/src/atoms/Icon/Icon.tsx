@@ -63,6 +63,7 @@ import {
   ClusterHelm,
   ClusterSettings,
   ClusterConnected,
+  MagicWand,
 } from './Icons';
 import {Colors} from '@/styles/Colors';
 
@@ -73,6 +74,7 @@ type IconProps = {
   className?: string;
   onMouseEnter?: React.MouseEventHandler;
   onMouseLeave?: React.MouseEventHandler;
+  onClick?: React.MouseEventHandler<HTMLSpanElement>;
 };
 
 const icons: Record<IconNames, React.ComponentType<any>> = {
@@ -98,6 +100,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
   'k8s-schema': K8sSchema,
   kubernetes: Kubernetes,
   kustomize: Kustomize,
+  'magic-wand': MagicWand,
   'opa-status': OPAStatus,
   'open-policy-agent': OpenPolicyAgent,
   outgoingRefs: OutgoingRefs,
@@ -138,7 +141,7 @@ const icons: Record<IconNames, React.ComponentType<any>> = {
 };
 
 const Icon: React.FC<IconProps> = props => {
-  const {name, style, color, onMouseEnter, onMouseLeave, className} = props;
+  const {name, style, color, onMouseEnter, onMouseLeave, className, onClick} = props;
 
   const finalStyle: React.CSSProperties = useMemo(() => {
     const customStyle = style || {};
@@ -156,6 +159,7 @@ const Icon: React.FC<IconProps> = props => {
       style={finalStyle}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onClick={onClick}
     />
   );
 };

@@ -23,6 +23,7 @@ export type IconNames =
   | 'outgoingRefs'
   | 'warning'
   | 'error'
+  | 'magic-wand'
   | 'open-policy-agent'
   | 'plugin-default'
   | 'problem-icon'

@@ -19,6 +19,7 @@ export {default as Kustomize} from './Kustomize';
 export {default as Kubernetes} from './Kubernetes';
 export {default as Images} from './Images';
 export {default as IncomingRefs} from './IncomingRefs';
+export {default as MagicWand} from './MagicWand';
 export {default as OPAStatus} from './OPAStatus';
 export {default as OpenPolicyAgent} from './OpenPolicyAgent';
 export {default as OutgoingRefs} from './OutgoingRefs';
