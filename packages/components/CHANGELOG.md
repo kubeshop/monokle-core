@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 1.8.1
+
+### Patch Changes
+
+- acb0f4b: Add problem actions + refactor problem info + fixes for stylings
+
 ## 1.8.0
 
 ### Minor Changes
