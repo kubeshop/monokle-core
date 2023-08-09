@@ -14,6 +14,8 @@ export type StoreAuth = {
   };
 };
 
+export type AuthMethod = 'device code' | 'token';
+
 export type ApiUserProjectRepo = {
   id: string;
   projectId: number;

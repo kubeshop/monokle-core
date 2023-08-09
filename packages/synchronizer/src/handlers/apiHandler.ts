@@ -1,0 +1,86 @@
+import normalizeUrl from 'normalize-url';
+import fetch from 'node-fetch';
+import type {ApiPolicyData, ApiUserData} from '../types';
+
+const getUserQuery = `
+  query getUser {
+    me {
+      id
+      email
+      projects {
+        project {
+          id
+          slug
+          name
+          repositories {
+            id
+            projectId
+            provider
+            owner
+            name
+            prChecks
+            canEnablePrChecks
+          }
+        }
+      }
+    }
+  }
+`;
+
+const getPolicyQuery = `
+  query getPolicy($slug: String!) {
+    getProject(input: { slug: $slug }) {
+      id
+      policy {
+        id
+        json
+      }
+    }
+  }
+`;
+
+export class ApiHandler {
+  constructor(private apiUrl: string) {}
+
+  async getUser(accessToken: string): Promise<ApiUserData | undefined> {
+    return this.queryApi(getUserQuery, accessToken);
+  }
+
+  async getPolicy(slug: string, accessToken: string): Promise<ApiPolicyData | undefined> {
+    return this.queryApi(getPolicyQuery, accessToken, {slug});
+  }
+
+  private async queryApi<OUT>(query: string, token: string, variables = {}): Promise<OUT | undefined> {
+    const apiEndpointUrl = normalizeUrl(`${this.apiUrl}/graphql`);
+
+    console.log('apiEndpointUrl', apiEndpointUrl);
+
+    try {
+      const response = await fetch(apiEndpointUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          query,
+          variables,
+        }),
+      });
+
+      console.log('response', response.status, response.statusText);
+
+      if (!response.ok) {
+        console.error(
+          `Connection error. Cannot fetch data from ${apiEndpointUrl}. Error '${response.statusText}' (${response.status}).`
+        );
+        return undefined;
+      }
+
+      return response.json() as Promise<OUT>;
+    } catch (err: any) {
+      console.error(`Connection error. Cannot fetch data from ${apiEndpointUrl}. Error '${err.message}.`);
+      return undefined;
+    }
+  }
+}
