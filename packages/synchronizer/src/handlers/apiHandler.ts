@@ -1,6 +1,5 @@
 import normalizeUrl from 'normalize-url';
 import fetch from 'node-fetch';
-import type {ApiPolicyData, ApiUserData} from '../types';
 
 const getUserQuery = `
   query getUser {
@@ -38,6 +37,49 @@ const getPolicyQuery = `
     }
   }
 `;
+
+export type ApiUserProjectRepo = {
+  id: string;
+  projectId: number;
+  provider: string;
+  owner: string;
+  name: string;
+  prChecks: boolean;
+  canEnablePrChecks: boolean;
+};
+
+export type ApiUserProject = {
+  id: number;
+  slug: string;
+  name: string;
+  repositories: ApiUserProjectRepo[];
+};
+
+export type ApiUserData = {
+  data: {
+    me: {
+      id: number;
+      email: string;
+      projects: [
+        {
+          project: ApiUserProject;
+        }
+      ];
+    };
+  };
+};
+
+export type ApiPolicyData = {
+  data: {
+    getProject: {
+      id: number;
+      policy: {
+        id: string;
+        json: any;
+      };
+    };
+  };
+};
 
 export class ApiHandler {
   constructor(private apiUrl: string) {}

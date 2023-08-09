@@ -1,4 +1,4 @@
-import {StoreAuth} from '../types';
+import type {StoreAuth} from '../handlers/storageHandler';
 
 export class User {
   private _email: string | null = null;
@@ -7,11 +7,11 @@ export class User {
   private _isAuthenticated: boolean = false;
 
   constructor(data: StoreAuth | null) {
-    this._isAuthenticated = Boolean(data);
+    this._isAuthenticated = Boolean(data?.auth && data.auth.token.access_token);
 
-    if (data) {
-      this._email = data.auth?.email ?? null;
-      this._token = data.auth?.token?.access_token ?? null;
+    if (this._isAuthenticated) {
+      this._email = data!.auth!.email;
+      this._token = data!.auth!.token.access_token!;
       this._data = data;
     }
   }

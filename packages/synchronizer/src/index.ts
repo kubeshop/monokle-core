@@ -1,5 +1,7 @@
-export * from './constants';
-export * from './types';
+export * from './handlers/apiHandler';
+export * from './handlers/deviceFlowHandler';
+export * from './handlers/storageHandler';
 
-export * from './utils/store';
-export * from './utils/git';
+export * from './utils/authenticator';
+
+export * from './createDefaultAuthenticator';

@@ -1,20 +1,22 @@
 import {EventEmitter} from 'events';
-import {User} from './User';
-import type {AuthMethod, Token} from '../types';
-import {DeviceFlowHandle, BaseClient} from 'openid-client';
+import {User} from '../models/user';
 import {StorageHandler} from '../handlers/storageHandler';
 import {ApiHandler} from '../handlers/apiHandler';
 import {DeviceFlowHandler} from '../handlers/deviceFlowHandler';
+import type {Token} from '../handlers/storageHandler';
+import type {DeviceFlowHandle} from '../handlers/deviceFlowHandler';
 
-type AuthenticatorConfig = {
+export type AuthMethod = 'device code' | 'token';
+
+export type AuthenticatorConfig = {
   allowedMethods?: AuthMethod[];
   customStoragePath?: string;
 };
 
-type AuthenticatorLoginResponse = {
+export type AuthenticatorLoginResponse = {
   onDone: Promise<User>;
   method: AuthMethod;
-  handle?: DeviceFlowHandle<BaseClient>;
+  handle?: DeviceFlowHandle;
 };
 
 export class Authenticator extends EventEmitter {

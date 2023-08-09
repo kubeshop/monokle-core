@@ -1,14 +1,23 @@
-import {Issuer, DeviceFlowHandle, BaseClient} from 'openid-client';
+import {
+  Issuer,
+  DeviceFlowHandle as DeviceFlowHandleOpenId,
+  TokenSet as TokenSetOpenId,
+  BaseClient,
+} from 'openid-client';
 import {DEVICE_FLOW_CLIENT_ID} from '../constants';
 
-const IDP_URL = 'https://api.dev.monokle.com/identity'; // @TODO Should later use 'globals.remotePolicyUrl'.
+const IDP_URL = 'https://api.dev.monokle.com/identity'; // @TODO should be configurable
+
+export type DeviceFlowHandle = DeviceFlowHandleOpenId<BaseClient>;
+
+export type TokenSet = TokenSetOpenId;
 
 export class DeviceFlowHandler {
   private _currentClient: BaseClient | undefined;
 
   constructor() {}
 
-  async initializeAuthFlow(): Promise<DeviceFlowHandle<BaseClient>> {
+  async initializeAuthFlow(): Promise<DeviceFlowHandle> {
     const client = await this.getClient();
     const handle = await client.deviceAuthorization({
       scope: 'openid profile offline_access',
@@ -21,7 +30,7 @@ export class DeviceFlowHandler {
     return handle;
   }
 
-  async pollAuthFlow(handle: DeviceFlowHandle<BaseClient>) {
+  async pollAuthFlow(handle: DeviceFlowHandle) {
     const token = await handle.poll();
 
     console.log('DeviceFlow: Token', token);

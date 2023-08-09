@@ -5,7 +5,21 @@ import {existsSync, readFileSync} from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
 import {CONFIG_FILE_AUTH, CONFIG_FOLDER} from '../constants';
-import type {StoreAuth, Token} from '../types';
+import type {TokenSet} from './deviceFlowHandler';
+
+export type AccessToken = {
+  access_token: string;
+  token_type: 'access_token';
+};
+
+export type Token = AccessToken | TokenSet;
+
+export type StoreAuth = {
+  auth?: {
+    email: string;
+    token: Token;
+  };
+};
 
 // @TODO make file paths and names configurable instead of using globals
 export class StorageHandler {
