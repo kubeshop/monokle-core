@@ -15,7 +15,7 @@ export class DeviceFlowHandler {
 
   constructor(
     private idpUrl: string = DEFAULT_DEVICE_FLOW_IDP_URL,
-    private clientId: string = DEFAULT_DEVICE_FLOW_CLIENT_ID,
+    private clientId: string = DEFAULT_DEVICE_FLOW_CLIENT_ID
   ) {}
 
   async initializeAuthFlow(): Promise<DeviceFlowHandle> {

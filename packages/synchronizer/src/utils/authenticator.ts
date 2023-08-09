@@ -25,7 +25,7 @@ export class Authenticator extends EventEmitter {
   constructor(
     private storageHandler: StorageHandler,
     private apiHandler: ApiHandler,
-    private deviceFlowHandler: DeviceFlowHandler,
+    private deviceFlowHandler: DeviceFlowHandler
   ) {
     super();
 

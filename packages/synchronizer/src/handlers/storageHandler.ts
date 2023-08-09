@@ -22,10 +22,9 @@ export type StoreAuth = {
 };
 
 export class StorageHandler {
-
   constructor(
-    private configFolderPath: string = (envPaths(DEFAULT_STORAGE_CONFIG_FOLDER, {suffix: ''})).config,
-    private configAuthFile: string = DEFAULT_STORAGE_CONFIG_FILE_AUTH,
+    private configFolderPath: string = envPaths(DEFAULT_STORAGE_CONFIG_FOLDER, {suffix: ''}).config,
+    private configAuthFile: string = DEFAULT_STORAGE_CONFIG_FILE_AUTH
   ) {}
 
   getStoreAuthSync(): StoreAuth | undefined {
