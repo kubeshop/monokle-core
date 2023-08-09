@@ -5,7 +5,7 @@ import {Authenticator} from './utils/authenticator.js';
 
 export function createDefaultMonokleAuthenticator(
   storageHandler: StorageHandler = new StorageHandler(),
-  apiHandler: ApiHandler = new ApiHandler('@TODO url'),
+  apiHandler: ApiHandler = new ApiHandler(),
   deviceFlowHandler: DeviceFlowHandler = new DeviceFlowHandler()
 ) {
   return new Authenticator(storageHandler, apiHandler, deviceFlowHandler);

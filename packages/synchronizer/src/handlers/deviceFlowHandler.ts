@@ -4,9 +4,7 @@ import {
   TokenSet as TokenSetOpenId,
   BaseClient,
 } from 'openid-client';
-import {DEVICE_FLOW_CLIENT_ID} from '../constants.js';
-
-const IDP_URL = 'https://api.dev.monokle.com/identity'; // @TODO should be configurable
+import {DEFAULT_DEVICE_FLOW_IDP_URL, DEFAULT_DEVICE_FLOW_CLIENT_ID} from '../constants.js';
 
 export type DeviceFlowHandle = DeviceFlowHandleOpenId<BaseClient>;
 
@@ -15,7 +13,10 @@ export type TokenSet = TokenSetOpenId;
 export class DeviceFlowHandler {
   private _currentClient: BaseClient | undefined;
 
-  constructor() {}
+  constructor(
+    private idpUrl: string = DEFAULT_DEVICE_FLOW_IDP_URL,
+    private clientId: string = DEFAULT_DEVICE_FLOW_CLIENT_ID,
+  ) {}
 
   async initializeAuthFlow(): Promise<DeviceFlowHandle> {
     const client = await this.getClient();
@@ -45,10 +46,10 @@ export class DeviceFlowHandler {
 
   private async getClient(): Promise<BaseClient> {
     if (!this._currentClient) {
-      const monokleIssuer = await Issuer.discover(IDP_URL);
+      const monokleIssuer = await Issuer.discover(this.idpUrl);
 
       this._currentClient = new monokleIssuer.Client({
-        client_id: DEVICE_FLOW_CLIENT_ID,
+        client_id: this.clientId,
         client_secret: '',
       });
     }

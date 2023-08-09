@@ -4,7 +4,7 @@ import {mkdirp} from 'mkdirp';
 import {existsSync, readFileSync} from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
-import {CONFIG_FILE_AUTH, CONFIG_FOLDER} from '../constants.js';
+import {DEFAULT_STORAGE_CONFIG_FILE_AUTH, DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants.js';
 import type {TokenSet} from './deviceFlowHandler.js';
 
 export type AccessToken = {
@@ -21,29 +21,27 @@ export type StoreAuth = {
   };
 };
 
-// @TODO make file paths and names configurable instead of using globals
 export class StorageHandler {
+
   constructor(
-    private configPath: string = '',
+    private configFolderPath: string = (envPaths(DEFAULT_STORAGE_CONFIG_FOLDER, {suffix: ''})).config,
+    private configAuthFile: string = DEFAULT_STORAGE_CONFIG_FILE_AUTH,
   ) {}
 
-  async getStoreAuth(): Promise<StoreAuth | undefined> {
-    const configPath = this.getStoreConfigPath(CONFIG_FILE_AUTH);
-    return this.getStoreData(configPath);
+  getStoreAuthSync(): StoreAuth | undefined {
+    return this.readStoreDataSync(this.getStoreConfigPath());
   }
 
-  getStoreAuthSync(): StoreAuth | undefined {
-    const configPath = this.getStoreConfigPath(CONFIG_FILE_AUTH);
-    return this.getStoreDataSync(configPath);
+  async getStoreAuth(): Promise<StoreAuth | undefined> {
+    return this.readStoreData(this.getStoreConfigPath());
   }
 
   async emptyStoreAuth(): Promise<boolean> {
-    const configPath = this.getStoreConfigPath(CONFIG_FILE_AUTH);
-    return this.writeStoreData(configPath, '');
+    return this.writeStoreData(this.getStoreConfigPath(), '');
   }
 
   async setStoreAuth(email: string, token: Token): Promise<boolean> {
-    const configPath = this.getStoreConfigPath(CONFIG_FILE_AUTH);
+    const configPath = this.getStoreConfigPath();
     const configDoc = new Document();
     configDoc.contents = {
       auth: {
@@ -55,19 +53,17 @@ export class StorageHandler {
     return this.writeStoreData(configPath, configDoc.toString());
   }
 
-  private getStoreConfigPath(file: string): string {
-    const paths = envPaths(CONFIG_FOLDER, {suffix: ''});
-    const configPath = normalize(join(this.configPath ?? paths.config, file));
-    return configPath;
+  private getStoreConfigPath(): string {
+    return normalize(join(this.configFolderPath, this.configAuthFile));
   }
 
-  private async getStoreData(file: string) {
+  private readStoreDataSync(file: string) {
     if (!existsSync(file)) {
       return undefined;
     }
 
     try {
-      const data = await readFile(file, 'utf8');
+      const data = readFileSync(file, 'utf8');
       const config = parse(data);
       return config;
     } catch (err) {
@@ -76,13 +72,13 @@ export class StorageHandler {
     }
   }
 
-  private getStoreDataSync(file: string) {
+  private async readStoreData(file: string) {
     if (!existsSync(file)) {
       return undefined;
     }
 
     try {
-      const data = readFileSync(file, 'utf8');
+      const data = await readFile(file, 'utf8');
       const config = parse(data);
       return config;
     } catch (err) {

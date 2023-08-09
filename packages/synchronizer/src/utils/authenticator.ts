@@ -8,11 +8,6 @@ import type {DeviceFlowHandle} from '../handlers/deviceFlowHandler.js';
 
 export type AuthMethod = 'device code' | 'token';
 
-export type AuthenticatorConfig = {
-  allowedMethods?: AuthMethod[];
-  customStoragePath?: string;
-};
-
 export type AuthenticatorLoginResponse = {
   onDone: Promise<User>;
   method: AuthMethod;
@@ -31,7 +26,6 @@ export class Authenticator extends EventEmitter {
     private storageHandler: StorageHandler,
     private apiHandler: ApiHandler,
     private deviceFlowHandler: DeviceFlowHandler,
-    private config: AuthenticatorConfig = {}
   ) {
     super();
 
@@ -43,6 +37,7 @@ export class Authenticator extends EventEmitter {
 
   get user() {
     // we want to have synchronous file reading/checking here (recheck auth file on every request?)
+    // above will be useful only when auth.yaml file gets added/deleted by external action
     return this._user;
   }
 

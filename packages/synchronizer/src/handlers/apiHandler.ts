@@ -1,5 +1,6 @@
 import normalizeUrl from 'normalize-url';
 import fetch from 'node-fetch';
+import { DEFAULT_API_URL } from '../constants.js';
 
 const getUserQuery = `
   query getUser {
@@ -82,7 +83,8 @@ export type ApiPolicyData = {
 };
 
 export class ApiHandler {
-  constructor(private apiUrl: string) {}
+
+  constructor(private apiUrl: string = DEFAULT_API_URL) {}
 
   async getUser(accessToken: string): Promise<ApiUserData | undefined> {
     return this.queryApi(getUserQuery, accessToken);
