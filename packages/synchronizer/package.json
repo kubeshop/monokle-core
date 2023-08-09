@@ -18,6 +18,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "npm run build && mocha",
+    "test:cc": "npm run build && c8 mocha",
     "test:snapshot": "vitest --update",
     "build": "rimraf lib && tsc --build tsconfig.build.json",
     "format:all": "prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx}\""
@@ -50,6 +51,7 @@
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
     "@types/sinon": "^10.0.16",
+    "c8": "^8.0.1",
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
     "sinon": "^15.2.0"

@@ -36,8 +36,10 @@ export class Authenticator extends EventEmitter {
   }
 
   get user() {
-    // we want to have synchronous file reading/checking here (recheck auth file on every request?)
+    // @TODO we want to have synchronous file reading/checking here (recheck auth file on every request?)
     // above will be useful only when auth.yaml file gets added/deleted by external action
+    //
+    // @TODO what about token refresh logic? may be a part of synchronizer too?
     return this._user;
   }
 

@@ -20,23 +20,14 @@ export class DeviceFlowHandler {
 
   async initializeAuthFlow(): Promise<DeviceFlowHandle> {
     const client = await this.getClient();
-    const handle = await client.deviceAuthorization({
+
+    return client.deviceAuthorization({
       scope: 'openid profile offline_access',
     });
-
-    console.log('DeviceFlow: User Code: ', handle.user_code);
-    console.log('DeviceFlow: Verification URI: ', handle.verification_uri);
-    console.log('DeviceFlow: Verification URI (complete): ', handle.verification_uri_complete);
-
-    return handle;
   }
 
   async pollAuthFlow(handle: DeviceFlowHandle) {
-    const token = await handle.poll();
-
-    console.log('DeviceFlow: Token', token);
-
-    return token;
+    return handle.poll();
   }
 
   async refreshAuthFlow(refreshToken: string) {
