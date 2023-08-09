@@ -1,10 +1,10 @@
 import {EventEmitter} from 'events';
-import {User} from '../models/user';
-import {StorageHandler} from '../handlers/storageHandler';
-import {ApiHandler} from '../handlers/apiHandler';
-import {DeviceFlowHandler} from '../handlers/deviceFlowHandler';
-import type {Token} from '../handlers/storageHandler';
-import type {DeviceFlowHandle} from '../handlers/deviceFlowHandler';
+import {User} from '../models/user.js';
+import {StorageHandler} from '../handlers/storageHandler.js';
+import {ApiHandler} from '../handlers/apiHandler.js';
+import {DeviceFlowHandler} from '../handlers/deviceFlowHandler.js';
+import type {Token} from '../handlers/storageHandler.js';
+import type {DeviceFlowHandle} from '../handlers/deviceFlowHandler.js';
 
 export type AuthMethod = 'device code' | 'token';
 
@@ -17,6 +17,11 @@ export type AuthenticatorLoginResponse = {
   onDone: Promise<User>;
   method: AuthMethod;
   handle?: DeviceFlowHandle;
+};
+
+export type AuthenticatorLoginEvent = {
+  method: AuthMethod;
+  user: User;
 };
 
 export class Authenticator extends EventEmitter {
@@ -72,7 +77,10 @@ export class Authenticator extends EventEmitter {
   private async onInit() {
     setTimeout(() => {
       if (this._user.isAuthenticated) {
-        this.emit('login', 'token', this._user);
+        this.emit('login', {
+          method: this._user.data?.auth?.token.token_type === 'bearer' ? 'device code' : 'token',
+          user: this._user,
+        });
       }
     }, 0);
   }
@@ -86,7 +94,10 @@ export class Authenticator extends EventEmitter {
     const donePromise: Promise<User> = new Promise((resolve, reject) => {
       this.setUserData(tokenData)
         .then(() => {
-          this.emit('login', 'token', this._user);
+          this.emit('login', {
+            method: 'token',
+            user: this._user,
+          });
           resolve(this._user);
         })
         .catch(err => {
@@ -110,7 +121,10 @@ export class Authenticator extends EventEmitter {
           return this.setUserData(tokenSet);
         })
         .then(() => {
-          this.emit('login', 'token', this._user);
+          this.emit('login', {
+            method: 'device code',
+            user: this._user,
+          });
           resolve(this._user);
         })
         .catch(err => {

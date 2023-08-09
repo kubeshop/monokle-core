@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --segfault-retry=3",
+    "test": "npm run build && mocha",
     "test:snapshot": "vitest --update",
     "build": "rimraf lib && tsc --build tsconfig.build.json",
     "format:all": "prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx}\""
@@ -45,5 +45,13 @@
     "openid-client": "^5.4.3",
     "simple-git": "^3.19.1",
     "yaml": "^2.3.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1",
+    "@types/sinon": "^10.0.16",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "sinon": "^15.2.0"
   }
 }

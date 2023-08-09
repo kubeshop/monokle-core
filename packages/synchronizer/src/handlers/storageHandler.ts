@@ -4,8 +4,8 @@ import {mkdirp} from 'mkdirp';
 import {existsSync, readFileSync} from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
-import {CONFIG_FILE_AUTH, CONFIG_FOLDER} from '../constants';
-import type {TokenSet} from './deviceFlowHandler';
+import {CONFIG_FILE_AUTH, CONFIG_FOLDER} from '../constants.js';
+import type {TokenSet} from './deviceFlowHandler.js';
 
 export type AccessToken = {
   access_token: string;
@@ -23,7 +23,9 @@ export type StoreAuth = {
 
 // @TODO make file paths and names configurable instead of using globals
 export class StorageHandler {
-  constructor() {}
+  constructor(
+    private configPath: string = '',
+  ) {}
 
   async getStoreAuth(): Promise<StoreAuth | undefined> {
     const configPath = this.getStoreConfigPath(CONFIG_FILE_AUTH);
@@ -55,7 +57,7 @@ export class StorageHandler {
 
   private getStoreConfigPath(file: string): string {
     const paths = envPaths(CONFIG_FOLDER, {suffix: ''});
-    const configPath = normalize(join(process.env.MONOKLE_TEST_CONFIG_PATH ?? paths.config, file));
+    const configPath = normalize(join(this.configPath ?? paths.config, file));
     return configPath;
   }
 

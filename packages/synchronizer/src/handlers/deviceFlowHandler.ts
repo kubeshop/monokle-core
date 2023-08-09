@@ -4,7 +4,7 @@ import {
   TokenSet as TokenSetOpenId,
   BaseClient,
 } from 'openid-client';
-import {DEVICE_FLOW_CLIENT_ID} from '../constants';
+import {DEVICE_FLOW_CLIENT_ID} from '../constants.js';
 
 const IDP_URL = 'https://api.dev.monokle.com/identity'; // @TODO should be configurable
 

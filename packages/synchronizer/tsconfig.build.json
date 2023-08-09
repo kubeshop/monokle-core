@@ -4,7 +4,6 @@
     "node_modules",
     "lib",
     "src/utils/testing/**",
-    "src/__tests__/**",
     "**/*.test.ts"
   ],
   "include": ["src"]
