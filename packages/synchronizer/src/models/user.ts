@@ -1,12 +1,12 @@
-import type {StoreAuth} from '../handlers/storageHandler';
+import type {StorageAuthFormat} from '../handlers/storageHandlerAuth.js';
 
 export class User {
   private _email: string | null = null;
   private _token: string | null = null;
-  private _data: StoreAuth | null = null;
+  private _data: StorageAuthFormat | null = null;
   private _isAuthenticated: boolean = false;
 
-  constructor(data: StoreAuth | null) {
+  constructor(data: StorageAuthFormat | null) {
     this._isAuthenticated = Boolean(data?.auth && data.auth.token.access_token);
 
     if (this._isAuthenticated) {

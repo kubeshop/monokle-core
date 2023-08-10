@@ -1,9 +1,9 @@
 import {EventEmitter} from 'events';
 import {User} from '../models/user.js';
-import {StorageHandler} from '../handlers/storageHandler.js';
+import {StorageHandlerAuth} from '../handlers/storageHandlerAuth.js';
 import {ApiHandler} from '../handlers/apiHandler.js';
 import {DeviceFlowHandler} from '../handlers/deviceFlowHandler.js';
-import type {Token} from '../handlers/storageHandler.js';
+import type {Token} from '../handlers/storageHandlerAuth.js';
 import type {DeviceFlowHandle} from '../handlers/deviceFlowHandler.js';
 
 export type AuthMethod = 'device code' | 'token';
@@ -23,13 +23,13 @@ export class Authenticator extends EventEmitter {
   private _user: User;
 
   constructor(
-    private storageHandler: StorageHandler,
+    private storageHandler: StorageHandlerAuth,
     private apiHandler: ApiHandler,
     private deviceFlowHandler: DeviceFlowHandler
   ) {
     super();
 
-    const storeData = this.storageHandler.getStoreAuthSync();
+    const storeData = this.storageHandler.getStoreDataSync();
     this._user = new User(storeData ?? null);
 
     this.onInit();
@@ -61,7 +61,7 @@ export class Authenticator extends EventEmitter {
   }
 
   async logout() {
-    const success = await this.storageHandler.emptyStoreAuth();
+    const success = await this.storageHandler.emptyStoreData();
 
     if (!success) {
       throw new Error('Failed to logout.');
@@ -75,7 +75,7 @@ export class Authenticator extends EventEmitter {
   async refreshToken() {
     const authData = this._user.data?.auth;
 
-    if(authData?.token.token_type !== 'bearer') {
+    if (authData?.token.token_type !== 'bearer') {
       return;
     }
 
@@ -84,7 +84,7 @@ export class Authenticator extends EventEmitter {
     }
 
     const expiresAtDate = new Date(authData.token.expires_at * 1000);
-    const diffMinutes = expiresAtDate.getTime() - (new Date()).getTime();
+    const diffMinutes = expiresAtDate.getTime() - new Date().getTime();
     if (diffMinutes < 5) {
       const newTokenData = await this.deviceFlowHandler.refreshAuthFlow(authData.token.refresh_token);
       return this.setUserData(newTokenData);
@@ -159,9 +159,14 @@ export class Authenticator extends EventEmitter {
   private async setUserData(token: Token) {
     const userApiData = await this.apiHandler.getUser(token.access_token!);
 
-    await this.storageHandler.setStoreAuth(userApiData?.data.me.email ?? '', token);
+    await this.storageHandler.setStoreData({
+      auth: {
+        email: userApiData?.data.me.email ?? '',
+        token,
+      },
+    });
 
-    const userData = await this.storageHandler.getStoreAuth();
+    const userData = await this.storageHandler.getStoreData();
 
     this._user = new User(userData ?? null);
   }

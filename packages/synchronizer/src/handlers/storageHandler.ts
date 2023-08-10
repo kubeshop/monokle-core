@@ -1,59 +1,34 @@
-import envPaths from 'env-paths';
 import {Document, parse} from 'yaml';
 import {mkdirp} from 'mkdirp';
 import {existsSync, readFileSync} from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
-import {DEFAULT_STORAGE_CONFIG_FILE_AUTH, DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants.js';
-import type {TokenSet} from './deviceFlowHandler.js';
 
-export type AccessToken = {
-  access_token: string;
-  token_type: 'access_token';
-};
+export class StorageHandler<DATA_FORMAT> {
+  constructor(private storageFolderPath: string) {}
 
-export type Token = AccessToken | TokenSet;
-
-export type StoreAuth = {
-  auth?: {
-    email: string;
-    token: Token;
-  };
-};
-
-export class StorageHandler {
-  constructor(
-    private configFolderPath: string = envPaths(DEFAULT_STORAGE_CONFIG_FOLDER, {suffix: ''}).config,
-    private configAuthFile: string = DEFAULT_STORAGE_CONFIG_FILE_AUTH
-  ) {}
-
-  getStoreAuthSync(): StoreAuth | undefined {
-    return this.readStoreDataSync(this.getStoreConfigPath());
+  getStoreDataSync(fileName: string): DATA_FORMAT | undefined {
+    return this.readStoreDataSync(this.getStoreConfigPath(fileName));
   }
 
-  async getStoreAuth(): Promise<StoreAuth | undefined> {
-    return this.readStoreData(this.getStoreConfigPath());
+  async getStoreData(fileName: string): Promise<DATA_FORMAT | undefined> {
+    return this.readStoreData(this.getStoreConfigPath(fileName));
   }
 
-  async emptyStoreAuth(): Promise<boolean> {
-    return this.writeStoreData(this.getStoreConfigPath(), '');
+  async emptyStoreData(fileName: string): Promise<boolean> {
+    return this.writeStoreData(this.getStoreConfigPath(fileName), '');
   }
 
-  async setStoreAuth(email: string, token: Token): Promise<boolean> {
-    const configPath = this.getStoreConfigPath();
+  async setStoreData(data: DATA_FORMAT, fileName: string): Promise<boolean> {
+    const configPath = this.getStoreConfigPath(fileName);
     const configDoc = new Document();
-    configDoc.contents = {
-      auth: {
-        email,
-        token: token,
-      },
-    } as any;
+    configDoc.contents = data as any;
 
     return this.writeStoreData(configPath, configDoc.toString());
   }
 
-  private getStoreConfigPath(): string {
-    return normalize(join(this.configFolderPath, this.configAuthFile));
+  private getStoreConfigPath(fileName: string): string {
+    return normalize(join(this.storageFolderPath, fileName));
   }
 
   private readStoreDataSync(file: string) {

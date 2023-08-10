@@ -4,16 +4,15 @@ import {rm, mkdir, cp} from 'fs/promises';
 import sinon from 'sinon';
 import {assert} from 'chai';
 import {createDefaultMonokleAuthenticator} from '../createDefaultAuthenticator.js';
-import {StorageHandler} from '../handlers/storageHandler.js';
-import { ApiHandler } from '../handlers/apiHandler.js';
-import { DeviceFlowHandler } from '../handlers/deviceFlowHandler.js';
+import {StorageHandlerAuth} from '../handlers/storageHandlerAuth.js';
+import {ApiHandler} from '../handlers/apiHandler.js';
+import {DeviceFlowHandler} from '../handlers/deviceFlowHandler.js';
 import type {AuthenticatorLoginEvent} from '../utils/authenticator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 describe('Authenticator Tests', () => {
-
   before(async () => {
     await cleanupTmpConfigDir();
   });
@@ -23,10 +22,9 @@ describe('Authenticator Tests', () => {
   });
 
   describe('Initialization', () => {
-
     it('should return empty user data on init when no auth file present', async () => {
       const storagePath = await createTmpConfigDir();
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath));
+      const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
       const user = authenticator.user;
 
@@ -37,7 +35,7 @@ describe('Authenticator Tests', () => {
 
     it('should return user data on init when auth file present (token method)', async () => {
       const storagePath = await createTmpConfigDir('token');
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath));
+      const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
       const user = authenticator.user;
 
@@ -49,7 +47,7 @@ describe('Authenticator Tests', () => {
 
     it('should return user data on init when auth file present (device code method)', async () => {
       const storagePath = await createTmpConfigDir('deviceflow');
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath));
+      const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
       const user = authenticator.user;
 
@@ -61,7 +59,7 @@ describe('Authenticator Tests', () => {
 
     it('should trigger login event on init when auth file present (token method)', async () => {
       const storagePath = await createTmpConfigDir('token');
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath));
+      const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
       return new Promise(resolve => {
         authenticator.on('login', (evt: AuthenticatorLoginEvent) => {
@@ -77,7 +75,7 @@ describe('Authenticator Tests', () => {
 
     it('should trigger login event on init when auth file present (device code method)', async () => {
       const storagePath = await createTmpConfigDir('deviceflow');
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath));
+      const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
       return new Promise(resolve => {
         authenticator.on('login', (evt: AuthenticatorLoginEvent) => {
@@ -108,21 +106,23 @@ describe('Authenticator Tests', () => {
           me: {
             id: 123,
             email: 'user3@kubeshop.io',
-            projects: [{
-              project: {
-                id: 1230,
-                slug: 'user3-proj',
-                name: 'User3 Project',
-                repositories: []
-              }
-            }],
+            projects: [
+              {
+                project: {
+                  id: 1230,
+                  slug: 'user3-proj',
+                  name: 'User3 Project',
+                  repositories: [],
+                },
+              },
+            ],
           },
         },
       });
       stubs.push(getUserStub);
 
       const storagePath = await createTmpConfigDir();
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath), apiHandler);
+      const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath), apiHandler);
 
       const loginResponse = await authenticator.login('token', 'USER3_ACCESS_TOKEN');
       const user = await loginResponse.onDone;
@@ -140,14 +140,16 @@ describe('Authenticator Tests', () => {
           me: {
             id: 124,
             email: 'user4@kubeshop.io',
-            projects: [{
-              project: {
-                id: 1240,
-                slug: 'user4-proj',
-                name: 'User4 Project',
-                repositories: []
-              }
-            }],
+            projects: [
+              {
+                project: {
+                  id: 1240,
+                  slug: 'user4-proj',
+                  name: 'User4 Project',
+                  repositories: [],
+                },
+              },
+            ],
           },
         },
       });
@@ -160,20 +162,25 @@ describe('Authenticator Tests', () => {
             user_code: 'FOO-BAR',
             verification_uri: 'https://app.monokle.com/device',
             verification_uri_complete: 'https://app.monokle.com/device?code=FOO-BAR',
-            poll: () => Promise.resolve({
-              access_token: 'USER4_ACCESS_TOKEN',
-              token_type: 'bearer',
-              expires_at: 1691579288,
-              id_token: 'USER4_ID_TOKEN',
-              refresh_token: 'USER4_REFRESH_TOKEN',
-            }),
-          }
+            poll: () =>
+              Promise.resolve({
+                access_token: 'USER4_ACCESS_TOKEN',
+                token_type: 'bearer',
+                expires_at: 1691579288,
+                id_token: 'USER4_ID_TOKEN',
+                refresh_token: 'USER4_REFRESH_TOKEN',
+              }),
+          };
         },
       });
       stubs.push(deviceFlowClientStub);
 
       const storagePath = await createTmpConfigDir();
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath), apiHandler, deviceFlowHandler);
+      const authenticator = createDefaultMonokleAuthenticator(
+        new StorageHandlerAuth(storagePath),
+        apiHandler,
+        deviceFlowHandler
+      );
 
       const loginResponse = await authenticator.login('device code');
 
@@ -191,7 +198,7 @@ describe('Authenticator Tests', () => {
   describe('Logout', () => {
     it('should logout ', async () => {
       const storagePath = await createTmpConfigDir('token');
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath));
+      const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
       await authenticator.logout();
 
@@ -204,7 +211,7 @@ describe('Authenticator Tests', () => {
 
     it('should trigger logout event on logout', async () => {
       const storagePath = await createTmpConfigDir('token');
-      const authenticator = createDefaultMonokleAuthenticator(new StorageHandler(storagePath));
+      const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
       return new Promise(resolve => {
         authenticator.on('logout', () => {
@@ -217,7 +224,6 @@ describe('Authenticator Tests', () => {
       });
     });
   });
-
 });
 
 async function createTmpConfigDir(copyAuthFixture = '') {
