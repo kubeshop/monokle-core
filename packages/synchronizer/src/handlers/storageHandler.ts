@@ -4,34 +4,35 @@ import {existsSync, readFileSync} from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
 
-export class StorageHandler<DATA_FORMAT> {
+export abstract class StorageHandler<DATA_FORMAT> {
   constructor(private storageFolderPath: string) {}
 
   getStoreDataSync(fileName: string): DATA_FORMAT | undefined {
-    return this.readStoreDataSync(this.getStoreConfigPath(fileName));
+    return this.readStoreDataSync(this.getStoreDataFilePath(fileName));
   }
 
   async getStoreData(fileName: string): Promise<DATA_FORMAT | undefined> {
-    return this.readStoreData(this.getStoreConfigPath(fileName));
+    return this.readStoreData(this.getStoreDataFilePath(fileName));
   }
 
   async emptyStoreData(fileName: string): Promise<boolean> {
-    return this.writeStoreData(this.getStoreConfigPath(fileName), '');
+    return this.writeStoreData(this.getStoreDataFilePath(fileName), '');
   }
 
-  async setStoreData(data: DATA_FORMAT, fileName: string): Promise<boolean> {
-    const configPath = this.getStoreConfigPath(fileName);
+  async setStoreData(data: DATA_FORMAT, fileName: string): Promise<string | undefined> {
+    const configPath = this.getStoreDataFilePath(fileName);
     const configDoc = new Document();
     configDoc.contents = data as any;
 
-    return this.writeStoreData(configPath, configDoc.toString());
+    const result = await this.writeStoreData(configPath, configDoc.toString());
+    return result ? configPath : undefined;
   }
 
-  private getStoreConfigPath(fileName: string): string {
+  getStoreDataFilePath(fileName: string): string {
     return normalize(join(this.storageFolderPath, fileName));
   }
 
-  private readStoreDataSync(file: string) {
+  protected readStoreDataSync(file: string) {
     if (!existsSync(file)) {
       return undefined;
     }
@@ -46,7 +47,7 @@ export class StorageHandler<DATA_FORMAT> {
     }
   }
 
-  private async readStoreData(file: string) {
+  protected async readStoreData(file: string) {
     if (!existsSync(file)) {
       return undefined;
     }
@@ -61,7 +62,7 @@ export class StorageHandler<DATA_FORMAT> {
     }
   }
 
-  private async writeStoreData(file: string, data: string) {
+  protected async writeStoreData(file: string, data: string) {
     const dir = dirname(file);
 
     try {

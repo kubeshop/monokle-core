@@ -83,7 +83,11 @@ export type ApiPolicyData = {
 };
 
 export class ApiHandler {
-  constructor(private apiUrl: string = DEFAULT_API_URL) {}
+  constructor(private _apiUrl: string = DEFAULT_API_URL) {}
+
+  get apiUrl() {
+    return normalizeUrl(this._apiUrl);
+  }
 
   async getUser(accessToken: string): Promise<ApiUserData | undefined> {
     return this.queryApi(getUserQuery, accessToken);
@@ -91,6 +95,18 @@ export class ApiHandler {
 
   async getPolicy(slug: string, accessToken: string): Promise<ApiPolicyData | undefined> {
     return this.queryApi(getPolicyQuery, accessToken, {slug});
+  }
+
+  generateDeepLink(path: string) {
+    if (this.apiUrl.includes('.monokle.com')) {
+      return normalizeUrl(`https://app.monokle.com/${path}`);
+    } else if (this.apiUrl.includes('.monokle.io')) {
+      return normalizeUrl(`https://saas.monokle.io/${path}`);
+    }
+
+    // For any custom base urls we just append the path.
+    // @TODO this might need adjustment in the future for self-hosted solutions.
+    return normalizeUrl(`${this.apiUrl}/${path}`);
   }
 
   private async queryApi<OUT>(query: string, token: string, variables = {}): Promise<OUT | undefined> {
