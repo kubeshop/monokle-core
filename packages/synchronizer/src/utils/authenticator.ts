@@ -36,15 +36,16 @@ export class Authenticator extends EventEmitter {
   }
 
   get user() {
-    // @TODO we want to have synchronous file reading/checking here (recheck auth file on every request?)
-    // above will be useful only when auth.yaml file gets added/deleted by external action
-    //
-    // @TODO what about token refresh logic? may be a part of synchronizer too?
     return this._user;
   }
 
   get methods(): AuthMethod[] {
     return ['device code', 'token'];
+  }
+
+  async getUser() {
+    await this.refreshToken();
+    return this.user;
   }
 
   async login(method: AuthMethod): Promise<AuthenticatorLoginResponse>;
@@ -69,6 +70,25 @@ export class Authenticator extends EventEmitter {
     this._user = new User(null);
 
     this.emit('logout');
+  }
+
+  async refreshToken() {
+    const authData = this._user.data?.auth;
+
+    if(authData?.token.token_type !== 'bearer') {
+      return;
+    }
+
+    if (!authData.token.refresh_token || !authData.token.expires_at) {
+      return;
+    }
+
+    const expiresAtDate = new Date(authData.token.expires_at * 1000);
+    const diffMinutes = expiresAtDate.getTime() - (new Date()).getTime();
+    if (diffMinutes < 5) {
+      const newTokenData = await this.deviceFlowHandler.refreshAuthFlow(authData.token.refresh_token);
+      return this.setUserData(newTokenData);
+    }
   }
 
   private async onInit() {
