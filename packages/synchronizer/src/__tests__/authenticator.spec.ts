@@ -3,7 +3,7 @@ import {fileURLToPath} from 'url';
 import {rm, mkdir, cp} from 'fs/promises';
 import sinon from 'sinon';
 import {assert} from 'chai';
-import {createDefaultMonokleAuthenticator} from '../createDefaultAuthenticator.js';
+import {createDefaultMonokleAuthenticator} from '../createDefaultMonokleAuthenticator.js';
 import {StorageHandlerAuth} from '../handlers/storageHandlerAuth.js';
 import {ApiHandler} from '../handlers/apiHandler.js';
 import {DeviceFlowHandler} from '../handlers/deviceFlowHandler.js';
