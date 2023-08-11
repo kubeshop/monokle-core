@@ -112,8 +112,6 @@ export class ApiHandler {
   private async queryApi<OUT>(query: string, token: string, variables = {}): Promise<OUT | undefined> {
     const apiEndpointUrl = normalizeUrl(`${this.apiUrl}/graphql`);
 
-    console.log('apiEndpointUrl', apiEndpointUrl);
-
     try {
       const response = await fetch(apiEndpointUrl, {
         method: 'POST',
@@ -126,8 +124,6 @@ export class ApiHandler {
           variables,
         }),
       });
-
-      console.log('response', response.status, response.statusText);
 
       if (!response.ok) {
         console.error(
