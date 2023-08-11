@@ -4,24 +4,25 @@
   "description": "Kubernetes resource validation",
   "author": "Kubeshop",
   "license": "MIT",
-  "type": "module",
   "sideEffects": false,
-  "main": "lib/index.js",
-  "source": "src/index.ts",
-  "module": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "typings": "lib/index.d.ts",
+  "main": "lib/cjs/index.js",
+  "module": "lib/mjs/index.js",
   "exports": {
     ".": {
-      "node": "./lib/node.js",
-      "module": "./lib/index.js",
-      "default": "./lib/index.js"
+      "node": "./lib/mjs/node.js",
+      "module": "./lib/mjs/index.js",
+      "default": "./lib/mjs/index.js",
+      "import": "./lib/mjs/index.js",
+      "require": "./lib/cjs/index.js"
     },
     "./custom": {
-      "types": "./lib/custom.d.ts",
-      "module": "./lib/custom.js"
+      "types": "./lib/mjs/custom.d.ts",
+      "module": "./lib/mjs/custom.js"
     }
   },
+  "source": "src/index.ts",
+  "types": "lib/mjs/index.d.ts",
+  "typings": "lib/mjs/index.d.ts",
   "files": [
     "lib/**"
   ],
@@ -29,7 +30,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --segfault-retry=3",
     "test:snapshot": "vitest --update",
-    "build": "rimraf lib && tsc --build tsconfig.build.json",
+    "build": "rimraf lib && tsc --build tsconfig.build.mjs.json && tsc --build tsconfig.build.cjs.json && node ./scripts/fixup.js",
     "format:all": "prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx}\""
   },
   "repository": {

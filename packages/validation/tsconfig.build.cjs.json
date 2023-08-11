@@ -7,5 +7,10 @@
     "src/__tests__/**",
     "**/*.test.ts"
   ],
-  "include": ["src"]
+  "include": ["src"],
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "lib/cjs",
+    "target": "ES2015"
+  }
 }
