@@ -5,7 +5,7 @@ import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
 
 export abstract class StorageHandler<DATA_FORMAT> {
-  constructor(private storageFolderPath: string) {}
+  constructor(private _storageFolderPath: string) {}
 
   getStoreDataSync(fileName: string): DATA_FORMAT | undefined {
     return this.readStoreDataSync(this.getStoreDataFilePath(fileName));
@@ -29,7 +29,7 @@ export abstract class StorageHandler<DATA_FORMAT> {
   }
 
   getStoreDataFilePath(fileName: string): string {
-    return normalize(join(this.storageFolderPath, fileName));
+    return normalize(join(this._storageFolderPath, fileName));
   }
 
   protected readStoreDataSync(file: string) {

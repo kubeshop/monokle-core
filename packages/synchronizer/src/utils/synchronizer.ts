@@ -21,9 +21,9 @@ export class Synchronizer extends EventEmitter {
   private _pullPromise: Promise<PolicyData> | undefined;
 
   constructor(
-    private storageHandler: StorageHandlerPolicy,
-    private apiHandler: ApiHandler,
-    private gitHandler: GitHandler
+    private _storageHandler: StorageHandlerPolicy,
+    private _apiHandler: ApiHandler,
+    private _gitHandler: GitHandler
   ) {
     super();
   }
@@ -78,7 +78,7 @@ export class Synchronizer extends EventEmitter {
     };
 
     try {
-      const userData = await this.apiHandler.getUser(accessToken);
+      const userData = await this._apiHandler.getUser(accessToken);
       if (!userData?.data?.me) {
         throw new Error('Cannot fetch user data, make sure you are authenticated and have internet access.');
       }
@@ -101,15 +101,15 @@ export class Synchronizer extends EventEmitter {
 
       const repoProject = repoMainProject ?? repoFirstProject;
       if (!repoProject) {
-        const projectUrl = this.apiHandler.generateDeepLink(`/dashboard/projects`);
+        const projectUrl = this._apiHandler.generateDeepLink(`/dashboard/projects`);
         throw new Error(
           `The '${repoId}' repository does not belong to any project in Monokle Cloud. Configure it on ${projectUrl}.`
         );
       }
 
-      const repoPolicy = await this.apiHandler.getPolicy(repoProject.project.slug, accessToken);
+      const repoPolicy = await this._apiHandler.getPolicy(repoProject.project.slug, accessToken);
 
-      const policyUrl = this.apiHandler.generateDeepLink(`/dashboard/projects/${repoProject.project.slug}/policy`);
+      const policyUrl = this._apiHandler.generateDeepLink(`/dashboard/projects/${repoProject.project.slug}/policy`);
       if (!repoPolicy?.data?.getProject?.policy) {
         throw new Error(
           `The '${repoId}' repository project does not have policy defined. Configure it on ${policyUrl}.`
@@ -119,7 +119,7 @@ export class Synchronizer extends EventEmitter {
       const policyContent: StoragePolicyFormat = repoPolicy.data.getProject.policy.json;
 
       const comment = [
-        ` This is remote policy downloaded from ${this.apiHandler.apiUrl}.`,
+        ` This is remote policy downloaded from ${this._apiHandler.apiUrl}.`,
         ` You can adjust it on ${policyUrl}.`,
       ].join('\n');
 
@@ -142,7 +142,7 @@ export class Synchronizer extends EventEmitter {
   }
 
   private async getRootGitData(rootPath: string) {
-    const repoData = await this.gitHandler.getRepoRemoteData(rootPath);
+    const repoData = await this._gitHandler.getRepoRemoteData(rootPath);
     if (!repoData) {
       throw new Error(`The '${rootPath}' is not a git repository or does not have any remotes.`);
     }
@@ -152,16 +152,16 @@ export class Synchronizer extends EventEmitter {
 
   private getPolicyPath(repoData: RepoRemoteData) {
     const fileName = `${repoData.provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
-    return this.storageHandler.getStoreDataFilePath(fileName);
+    return this._storageHandler.getStoreDataFilePath(fileName);
   }
 
   private async storePolicy(policyContent: StoragePolicyFormat, repoData: RepoRemoteData, comment: string) {
     const fileName = `${repoData.provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
-    return this.storageHandler.setStoreData(policyContent, fileName, comment);
+    return this._storageHandler.setStoreData(policyContent, fileName, comment);
   }
 
   private async readPolicy(repoData: RepoRemoteData) {
     const fileName = `${repoData.provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
-    return this.storageHandler.getStoreData(fileName);
+    return this._storageHandler.getStoreData(fileName);
   }
 }

@@ -23,13 +23,13 @@ export class Authenticator extends EventEmitter {
   private _user: User;
 
   constructor(
-    private storageHandler: StorageHandlerAuth,
-    private apiHandler: ApiHandler,
-    private deviceFlowHandler: DeviceFlowHandler
+    private _storageHandler: StorageHandlerAuth,
+    private _apiHandler: ApiHandler,
+    private _deviceFlowHandler: DeviceFlowHandler
   ) {
     super();
 
-    const storeData = this.storageHandler.getStoreDataSync();
+    const storeData = this._storageHandler.getStoreDataSync();
     this._user = new User(storeData ?? null);
 
     this.onInit();
@@ -61,7 +61,7 @@ export class Authenticator extends EventEmitter {
   }
 
   async logout() {
-    const success = await this.storageHandler.emptyStoreData();
+    const success = await this._storageHandler.emptyStoreData();
 
     if (!success) {
       throw new Error('Failed to logout.');
@@ -86,7 +86,7 @@ export class Authenticator extends EventEmitter {
     const expiresAtDate = new Date(authData.token.expires_at * 1000);
     const diffMinutes = expiresAtDate.getTime() - new Date().getTime();
     if (diffMinutes < 5) {
-      const newTokenData = await this.deviceFlowHandler.refreshAuthFlow(authData.token.refresh_token);
+      const newTokenData = await this._deviceFlowHandler.refreshAuthFlow(authData.token.refresh_token);
       return this.setUserData(newTokenData);
     }
   }
@@ -129,10 +129,10 @@ export class Authenticator extends EventEmitter {
   }
 
   private async loginWithDeviceCode(): Promise<AuthenticatorLoginResponse> {
-    const handle = await this.deviceFlowHandler.initializeAuthFlow();
+    const handle = await this._deviceFlowHandler.initializeAuthFlow();
 
     const donePromise: Promise<User> = new Promise((resolve, reject) => {
-      this.deviceFlowHandler
+      this._deviceFlowHandler
         .pollAuthFlow(handle)
         .then(tokenSet => {
           return this.setUserData(tokenSet);
@@ -157,16 +157,16 @@ export class Authenticator extends EventEmitter {
   }
 
   private async setUserData(token: Token) {
-    const userApiData = await this.apiHandler.getUser(token.access_token!);
+    const userApiData = await this._apiHandler.getUser(token.access_token!);
 
-    await this.storageHandler.setStoreData({
+    await this._storageHandler.setStoreData({
       auth: {
         email: userApiData?.data.me.email ?? '',
         token,
       },
     });
 
-    const userData = await this.storageHandler.getStoreData();
+    const userData = await this._storageHandler.getStoreData();
 
     this._user = new User(userData ?? null);
   }

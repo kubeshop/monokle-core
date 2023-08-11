@@ -18,29 +18,29 @@ export type StorageAuthFormat = {
 };
 
 export class StorageHandlerAuth extends StorageHandler<StorageAuthFormat> {
-  private defaultFileName: string;
+  private _defaultFileName: string;
 
   constructor(
     storageFolderPath: string = envPaths(DEFAULT_STORAGE_CONFIG_FOLDER, {suffix: ''}).config,
     defaultFileName: string = DEFAULT_STORAGE_CONFIG_FILE_AUTH
   ) {
     super(storageFolderPath);
-    this.defaultFileName = defaultFileName;
+    this._defaultFileName = defaultFileName;
   }
 
   getStoreDataSync() {
-    return super.getStoreDataSync(this.defaultFileName);
+    return super.getStoreDataSync(this._defaultFileName);
   }
 
   async getStoreData() {
-    return super.getStoreData(this.defaultFileName);
+    return super.getStoreData(this._defaultFileName);
   }
 
   async emptyStoreData() {
-    return super.emptyStoreData(this.defaultFileName);
+    return super.emptyStoreData(this._defaultFileName);
   }
 
   async setStoreData(data: StorageAuthFormat) {
-    return super.setStoreData(data, this.defaultFileName);
+    return super.setStoreData(data, this._defaultFileName);
   }
 }

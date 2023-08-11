@@ -103,7 +103,7 @@ describe('Synchronizer Tests', () => {
       const storagePath = await createTmpConfigDir();
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
-      const queryApiStub = sinon.stub((synchronizer as any).apiHandler, 'queryApi').callsFake(async (...args) => {
+      const queryApiStub = sinon.stub((synchronizer as any)._apiHandler, 'queryApi').callsFake(async (...args) => {
         const query = args[0] as string;
 
         if (query.includes('query getUser')) {
@@ -202,7 +202,7 @@ describe('Synchronizer Tests', () => {
       const storagePath = await createTmpConfigDir();
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
-      const queryApiStub = sinon.stub((synchronizer as any).apiHandler, 'queryApi').callsFake(async (...args) => {
+      const queryApiStub = sinon.stub((synchronizer as any)._apiHandler, 'queryApi').callsFake(async (...args) => {
         const query = args[0] as string;
 
         if (query.includes('query getUser')) {
