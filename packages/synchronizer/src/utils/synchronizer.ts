@@ -28,13 +28,17 @@ export class Synchronizer extends EventEmitter {
     super();
   }
 
-  async getPolicy(rootPath: string, accessToken: string, forceRefetch: boolean): Promise<PolicyData>;
-  async getPolicy(repoData: RepoRemoteData, accessToken: string, forceRefetch: boolean): Promise<PolicyData>;
+  async getPolicy(rootPath: string, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
+  async getPolicy(repoData: RepoRemoteData, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
   async getPolicy(
     repoDataOrRootPath: RepoRemoteData | string,
-    accessToken: string,
-    forceRefetch = false
+    forceRefetch = false,
+    accessToken = '',
   ): Promise<PolicyData> {
+    if (forceRefetch && (!accessToken || accessToken?.length === 0)) {
+      throw new Error('Cannot force refetch without access token.');
+    }
+
     const repoData =
       typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
 
@@ -42,12 +46,13 @@ export class Synchronizer extends EventEmitter {
       await this.synchronize(repoData, accessToken);
     }
 
-    const policyContent = await this.readPolicy(repoData);
+    const policyContent = await this.readPolicy(repoData) ?? {};
+    const isValidPolicy = Object.keys(policyContent).length > 0;
 
     return {
-      valid: Boolean(policyContent),
-      path: this.getPolicyPath(repoData),
-      policy: policyContent ?? {},
+      valid: isValidPolicy,
+      path: isValidPolicy ? this.getPolicyPath(repoData) : '',
+      policy: policyContent,
     };
   }
 
