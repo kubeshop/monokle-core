@@ -33,7 +33,7 @@ export class Synchronizer extends EventEmitter {
   async getPolicy(
     repoDataOrRootPath: RepoRemoteData | string,
     forceRefetch = false,
-    accessToken = '',
+    accessToken = ''
   ): Promise<PolicyData> {
     if (forceRefetch && (!accessToken || accessToken?.length === 0)) {
       throw new Error('Cannot force refetch without access token.');
@@ -46,7 +46,7 @@ export class Synchronizer extends EventEmitter {
       await this.synchronize(repoData, accessToken);
     }
 
-    const policyContent = await this.readPolicy(repoData) ?? {};
+    const policyContent = (await this.readPolicy(repoData)) ?? {};
     const isValidPolicy = Object.keys(policyContent).length > 0;
 
     return {

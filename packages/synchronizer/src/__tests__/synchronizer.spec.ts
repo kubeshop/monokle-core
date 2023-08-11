@@ -99,7 +99,7 @@ describe('Synchronizer Tests', () => {
       }
     });
 
-    it('refetches policy when forceRefetch set', async() => {
+    it('refetches policy when forceRefetch set', async () => {
       const storagePath = await createTmpConfigDir();
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
@@ -120,14 +120,14 @@ describe('Synchronizer Tests', () => {
                       name: 'User5 Project',
                       repositories: [
                         {
-                          id: "user5-proj-policy-id",
+                          id: 'user5-proj-policy-id',
                           projectId: 5000,
-                          provider: "GITHUB",
-                          owner: "kubeshop",
-                          name: "monokle-core",
+                          provider: 'GITHUB',
+                          owner: 'kubeshop',
+                          name: 'monokle-core',
                           prChecks: false,
-                          canEnablePrChecks: true
-                          }
+                          canEnablePrChecks: true,
+                        },
                       ],
                     },
                   },
@@ -143,28 +143,28 @@ describe('Synchronizer Tests', () => {
               getProject: {
                 id: 5000,
                 policy: {
-                  id: "user5-proj-policy-id",
+                  id: 'user5-proj-policy-id',
                   json: {
                     plugins: {
-                      "pod-security-standards": true,
-                      "yaml-syntax": false,
-                      "resource-links": false,
-                      "kubernetes-schema": false,
-                      practices: true
+                      'pod-security-standards': true,
+                      'yaml-syntax': false,
+                      'resource-links': false,
+                      'kubernetes-schema': false,
+                      practices: true,
                     },
                     rules: {
-                      "pod-security-standards/host-process": "err",
+                      'pod-security-standards/host-process': 'err',
                     },
                     settings: {
-                      "kubernetes-schema": {
-                        schemaVersion: "v1.27.1"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+                      'kubernetes-schema': {
+                        schemaVersion: 'v1.27.1',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          };
         }
 
         return {};
@@ -219,14 +219,14 @@ describe('Synchronizer Tests', () => {
                       name: 'User5 Project',
                       repositories: [
                         {
-                          id: "user5-proj-policy-id",
+                          id: 'user5-proj-policy-id',
                           projectId: 5000,
-                          provider: "GITHUB",
-                          owner: "kubeshop",
-                          name: "monokle-core",
+                          provider: 'GITHUB',
+                          owner: 'kubeshop',
+                          name: 'monokle-core',
                           prChecks: false,
-                          canEnablePrChecks: true
-                          }
+                          canEnablePrChecks: true,
+                        },
                       ],
                     },
                   },
@@ -242,28 +242,28 @@ describe('Synchronizer Tests', () => {
               getProject: {
                 id: 5000,
                 policy: {
-                  id: "user5-proj-policy-id",
+                  id: 'user5-proj-policy-id',
                   json: {
                     plugins: {
-                      "pod-security-standards": true,
-                      "yaml-syntax": false,
-                      "resource-links": false,
-                      "kubernetes-schema": false,
-                      practices: true
+                      'pod-security-standards': true,
+                      'yaml-syntax': false,
+                      'resource-links': false,
+                      'kubernetes-schema': false,
+                      practices: true,
                     },
                     rules: {
-                      "pod-security-standards/host-process": "err",
+                      'pod-security-standards/host-process': 'err',
                     },
                     settings: {
-                      "kubernetes-schema": {
-                        schemaVersion: "v1.27.1"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+                      'kubernetes-schema': {
+                        schemaVersion: 'v1.27.1',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          };
         }
 
         return {};
@@ -278,7 +278,7 @@ describe('Synchronizer Tests', () => {
       };
 
       const result = new Promise(resolve => {
-        synchronizer.on('synchronize', (policy) => {
+        synchronizer.on('synchronize', policy => {
           assert.isObject(policy);
           assert.isTrue(policy.valid);
           assert.isNotEmpty(policy.path);
