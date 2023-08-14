@@ -61,32 +61,38 @@ describe('Authenticator Tests', () => {
       const storagePath = await createTmpConfigDir('token');
       const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
-      return new Promise(resolve => {
-        authenticator.on('login', (evt: AuthenticatorLoginEvent) => {
-          assert.equal(evt.method, 'token');
-          assert.isTrue(evt.user.isAuthenticated);
-          assert.equal(evt.user.email, 'user1@kubeshop.io');
-          assert.equal(evt.user.token, 'USER1_ACCESS_TOKEN');
+      return race(
+        new Promise(resolve => {
+          authenticator.on('login', (evt: AuthenticatorLoginEvent) => {
+            assert.equal(evt.method, 'token');
+            assert.isTrue(evt.user.isAuthenticated);
+            assert.equal(evt.user.email, 'user1@kubeshop.io');
+            assert.equal(evt.user.token, 'USER1_ACCESS_TOKEN');
 
-          resolve();
-        });
-      });
+            resolve();
+          });
+        }),
+        'Login event not triggered.'
+      );
     });
 
     it('should trigger login event on init when auth file present (device code method)', async () => {
       const storagePath = await createTmpConfigDir('deviceflow');
       const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
-      return new Promise(resolve => {
-        authenticator.on('login', (evt: AuthenticatorLoginEvent) => {
-          assert.equal(evt.method, 'device code');
-          assert.isTrue(evt.user.isAuthenticated);
-          assert.equal(evt.user.email, 'user2@kubeshop.io');
-          assert.equal(evt.user.token, 'USER2_ACCESS_TOKEN');
+      return race(
+        new Promise(resolve => {
+          authenticator.on('login', (evt: AuthenticatorLoginEvent) => {
+            assert.equal(evt.method, 'device code');
+            assert.isTrue(evt.user.isAuthenticated);
+            assert.equal(evt.user.email, 'user2@kubeshop.io');
+            assert.equal(evt.user.token, 'USER2_ACCESS_TOKEN');
 
-          resolve();
-        });
-      });
+            resolve();
+          });
+        }),
+        'Login event not triggered.'
+      );
     });
   });
 
@@ -213,15 +219,17 @@ describe('Authenticator Tests', () => {
       const storagePath = await createTmpConfigDir('token');
       const authenticator = createDefaultMonokleAuthenticator(new StorageHandlerAuth(storagePath));
 
-      return new Promise(resolve => {
-        authenticator.on('logout', () => {
-          assert.ok(true);
+      return race(
+        new Promise(resolve => {
+          authenticator.on('logout', () => {
+            assert.ok(true);
+            resolve();
+          });
 
-          resolve();
-        });
-
-        authenticator.logout();
-      });
+          authenticator.logout();
+        }),
+        'Logout event not triggered.'
+      );
     });
   });
 });
@@ -249,4 +257,19 @@ async function cleanupTmpConfigDir() {
   const testTmpDir = resolve(testDir, './tmp');
 
   await rm(testTmpDir, {recursive: true, force: true});
+}
+
+async function race(successPromise: Promise<void>, errorMsg: string) {
+  let isSuccess = false;
+
+  return Promise.race([
+    successPromise.then(() => {
+      isSuccess = true;
+    }),
+    new Promise(() => setTimeout(() => {
+      if (!isSuccess){
+        assert.fail(errorMsg);
+      }
+    }, 250)),
+  ]);
 }

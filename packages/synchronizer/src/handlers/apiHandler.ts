@@ -112,30 +112,24 @@ export class ApiHandler {
   private async queryApi<OUT>(query: string, token: string, variables = {}): Promise<OUT | undefined> {
     const apiEndpointUrl = normalizeUrl(`${this.apiUrl}/graphql`);
 
-    try {
-      const response = await fetch(apiEndpointUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          query,
-          variables,
-        }),
-      });
+    const response = await fetch(apiEndpointUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        query,
+        variables,
+      }),
+    });
 
-      if (!response.ok) {
-        console.error(
-          `Connection error. Cannot fetch data from ${apiEndpointUrl}. Error '${response.statusText}' (${response.status}).`
-        );
-        return undefined;
-      }
-
-      return response.json() as Promise<OUT>;
-    } catch (err: any) {
-      console.error(`Connection error. Cannot fetch data from ${apiEndpointUrl}. Error '${err.message}.`);
-      return undefined;
+    if (!response.ok) {
+      throw new Error(
+        `Connection error. Cannot fetch data from ${apiEndpointUrl}. Error '${response.statusText}' (${response.status}).`
+      );
     }
+
+    return response.json() as Promise<OUT>;
   }
 }

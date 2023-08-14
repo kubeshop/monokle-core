@@ -2,7 +2,7 @@
 
 Monokle Synchronizer is a TypeScript library to provide integration with Monokle Cloud in local environments.
 
-This package exposes to main utils - `Authenticator` and `Synchronizer` which can be used for authenticating with Monokle Cloud and then synchronizing remote policies to local environment.
+This package exposes two main utils - `Authenticator` and `Synchronizer` which can be used for authenticating with Monokle Cloud and then synchronizing remote policies to local environment.
 
 ## Authenticator
 
@@ -135,4 +135,4 @@ Every time policy is synchronized (both via `synchronize()` call or `getPolicy()
 
 ## Error handling
 
-Most of the `Authenitcator` and `Synchronizer` top level methods will just throw errors when something unexpected happens, so it's a good idea to have some error handling in place.
+Most of the `Authenticator` and `Synchronizer` top level methods will just throw errors when something unexpected happens, so it's a good idea to have some error handling in place.

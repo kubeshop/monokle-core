@@ -4,14 +4,14 @@ import {existsSync, readFileSync} from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
 
-export abstract class StorageHandler<DATA_FORMAT> {
+export abstract class StorageHandler<TData> {
   constructor(private _storageFolderPath: string) {}
 
-  getStoreDataSync(fileName: string): DATA_FORMAT | undefined {
+  getStoreDataSync(fileName: string): TData | undefined {
     return this.readStoreDataSync(this.getStoreDataFilePath(fileName));
   }
 
-  async getStoreData(fileName: string): Promise<DATA_FORMAT | undefined> {
+  async getStoreData(fileName: string): Promise<TData | undefined> {
     return this.readStoreData(this.getStoreDataFilePath(fileName));
   }
 
@@ -19,7 +19,7 @@ export abstract class StorageHandler<DATA_FORMAT> {
     return this.writeStoreData(this.getStoreDataFilePath(fileName), '');
   }
 
-  async setStoreData(data: DATA_FORMAT, fileName: string): Promise<string | undefined> {
+  async setStoreData(data: TData, fileName: string): Promise<string | undefined> {
     const configPath = this.getStoreDataFilePath(fileName);
     const configDoc = new Document();
     configDoc.contents = data as any;
@@ -41,9 +41,8 @@ export abstract class StorageHandler<DATA_FORMAT> {
       const data = readFileSync(file, 'utf8');
       const config = parse(data);
       return config;
-    } catch (err) {
-      console.error('Failed to read configuration from ' + file);
-      return undefined;
+    } catch (err: any) {
+      throw new Error(`Failed to read configuration from '${file}' with error: ${err.message}`);
     }
   }
 
@@ -56,9 +55,8 @@ export abstract class StorageHandler<DATA_FORMAT> {
       const data = await readFile(file, 'utf8');
       const config = parse(data);
       return config;
-    } catch (err) {
-      console.error('Failed to read configuration from ' + file);
-      return undefined;
+    } catch (err: any) {
+      throw new Error(`Failed to read configuration from '${file}' with error: ${err.message}`);
     }
   }
 

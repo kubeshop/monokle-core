@@ -277,20 +277,23 @@ describe('Synchronizer Tests', () => {
         name: 'monokle-core',
       };
 
-      const result = new Promise(resolve => {
-        synchronizer.on('synchronize', policy => {
-          assert.isObject(policy);
-          assert.isTrue(policy.valid);
-          assert.isNotEmpty(policy.path);
-          assert.match(policy.path, /github-kubeshop-monokle-core.policy.yaml$/);
-          assert.isNotEmpty(policy.policy);
-          assert.isNotEmpty(policy.policy.plugins);
-          assert.isNotEmpty(policy.policy.rules);
-          assert.isNotEmpty(policy.policy.settings);
+      const result = race(
+        new Promise(resolve => {
+          synchronizer.on('synchronize', policy => {
+            assert.isObject(policy);
+            assert.isTrue(policy.valid);
+            assert.isNotEmpty(policy.path);
+            assert.match(policy.path, /github-kubeshop-monokle-core.policy.yaml$/);
+            assert.isNotEmpty(policy.policy);
+            assert.isNotEmpty(policy.policy.plugins);
+            assert.isNotEmpty(policy.policy.rules);
+            assert.isNotEmpty(policy.policy.settings);
 
-          resolve(policy);
-        });
-      });
+            resolve(policy);
+          });
+        }),
+        'Synchronize event not triggered',
+      );
 
       await synchronizer.getPolicy(repoData, true, 'SAMPLE_ACCESS_TOKEN');
 
@@ -318,4 +321,19 @@ async function cleanupTmpConfigDir() {
   const testTmpDir = resolve(testDir, './tmp');
 
   await rm(testTmpDir, {recursive: true, force: true});
+}
+
+async function race(successPromise: Promise<void>, errorMsg: string) {
+  let isSuccess = false;
+
+  return Promise.race([
+    successPromise.then(() => {
+      isSuccess = true;
+    }),
+    new Promise(() => setTimeout(() => {
+      if (!isSuccess){
+        assert.fail(errorMsg);
+      }
+    }, 250)),
+  ]);
 }
