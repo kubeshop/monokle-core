@@ -70,6 +70,10 @@ export class Synchronizer extends EventEmitter {
     return this._pullPromise;
   }
 
+  generateDeepLink(path: string) {
+    return this._apiHandler.generateDeepLink(path)
+  }
+
   private async fetchPolicy(repoData: RepoRemoteData, accessToken: string) {
     const policyData = {
       valid: false,
@@ -101,7 +105,7 @@ export class Synchronizer extends EventEmitter {
 
       const repoProject = repoMainProject ?? repoFirstProject;
       if (!repoProject) {
-        const projectUrl = this._apiHandler.generateDeepLink(`/dashboard/projects`);
+        const projectUrl = this.generateDeepLink(`/dashboard/projects`);
         throw new Error(
           `The '${repoId}' repository does not belong to any project in Monokle Cloud. Configure it on ${projectUrl}.`
         );
@@ -109,7 +113,7 @@ export class Synchronizer extends EventEmitter {
 
       const repoPolicy = await this._apiHandler.getPolicy(repoProject.project.slug, accessToken);
 
-      const policyUrl = this._apiHandler.generateDeepLink(`/dashboard/projects/${repoProject.project.slug}/policy`);
+      const policyUrl = this.generateDeepLink(`/dashboard/projects/${repoProject.project.slug}/policy`);
       if (!repoPolicy?.data?.getProject?.policy) {
         throw new Error(
           `The '${repoId}' repository project does not have policy defined. Configure it on ${policyUrl}.`
