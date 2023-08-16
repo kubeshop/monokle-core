@@ -1,6 +1,6 @@
 import {Issuer} from 'openid-client';
-import {DEFAULT_DEVICE_FLOW_IDP_URL, DEFAULT_DEVICE_FLOW_CLIENT_ID} from '../constants.js';
-import type {BaseClient, DeviceFlowHandle as DeviceFlowHandleOpenId, TokenSet as TokenSetOpenId} from 'openid-client';
+import {DEFAULT_DEVICE_FLOW_IDP_URL, DEFAULT_DEVICE_FLOW_CLIENT_ID, DEFAULT_DEVICE_FLOW_CLIENT_SECRET, DEFAULT_DEVICE_FLOW_ALG, DEFAULT_DEVICE_FLOW_CLIENT_SCOPE} from '../constants.js';
+import type {BaseClient, ClientMetadata, DeviceFlowHandle as DeviceFlowHandleOpenId, TokenSet as TokenSetOpenId} from 'openid-client';
 
 export type DeviceFlowHandle = DeviceFlowHandleOpenId<BaseClient>;
 
@@ -11,14 +11,19 @@ export class DeviceFlowHandler {
 
   constructor(
     private _idpUrl: string = DEFAULT_DEVICE_FLOW_IDP_URL,
-    private _clientId: string = DEFAULT_DEVICE_FLOW_CLIENT_ID
+    private _clientMetadata: ClientMetadata = {
+      client_id: DEFAULT_DEVICE_FLOW_CLIENT_ID,
+      client_secret: DEFAULT_DEVICE_FLOW_CLIENT_SECRET,
+      id_token_signed_response_alg: DEFAULT_DEVICE_FLOW_ALG,
+    },
+    private _clientScope: string = DEFAULT_DEVICE_FLOW_CLIENT_SCOPE,
   ) {}
 
   async initializeAuthFlow(): Promise<DeviceFlowHandle> {
     const client = await this.getClient();
 
     return client.deviceAuthorization({
-      scope: 'openid profile offline_access',
+      scope: this._clientScope,
     });
   }
 
@@ -34,11 +39,7 @@ export class DeviceFlowHandler {
   private async getClient(): Promise<BaseClient> {
     if (!this._currentClient) {
       const monokleIssuer = await Issuer.discover(this._idpUrl);
-
-      this._currentClient = new monokleIssuer.Client({
-        client_id: this._clientId,
-        client_secret: '',
-      });
+      this._currentClient = new monokleIssuer.Client(this._clientMetadata);
     }
 
     return this._currentClient;
