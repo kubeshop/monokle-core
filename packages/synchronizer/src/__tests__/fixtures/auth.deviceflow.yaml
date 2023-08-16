@@ -1,0 +1,8 @@
+auth:
+  email: user2@kubeshop.io
+  token:
+    access_token: 'USER2_ACCESS_TOKEN'
+    token_type: bearer
+    expires_at: 1691579288
+    id_token: 'USER2_ID_TOKEN'
+    refresh_token: 'USER2_REFRESH_TOKEN'

@@ -1,0 +1,60 @@
+{
+  "name": "@monokle/synchronizer",
+  "version": "0.0.1",
+  "description": "Monokle Cloud synchronizer",
+  "author": "Kubeshop",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "source": "src/index.ts",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "typings": "lib/index.d.ts",
+  "exports": "./lib/index.js",
+  "files": [
+    "lib/**"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && mocha",
+    "test:cc": "npm run build && c8 mocha",
+    "test:snapshot": "vitest --update",
+    "build": "rimraf lib && tsc --build tsconfig.build.json",
+    "format:all": "prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kubeshop/monokle-core.git"
+  },
+  "keywords": [
+    "monokle",
+    "cloud",
+    "kubernetes",
+    "validation",
+    "policy"
+  ],
+  "bugs": {
+    "url": "https://github.com/kubeshop/monokle-core/issues"
+  },
+  "homepage": "https://github.com/kubeshop/monokle-core/tree/main/packages/synchronizer",
+  "dependencies": {
+    "@monokle/validation": "*",
+    "env-paths": "^3.0.0",
+    "mkdirp": "^3.0.1",
+    "node-fetch": "^3.3.2",
+    "normalize-url": "^8.0.0",
+    "openid-client": "^5.4.3",
+    "simple-git": "^3.19.1",
+    "yaml": "^2.3.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1",
+    "@types/sinon": "^10.0.16",
+    "c8": "^8.0.1",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "sinon": "^15.2.0"
+  }
+}

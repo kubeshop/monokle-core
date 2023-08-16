@@ -1,0 +1,8 @@
+plugins:
+  open-policy-agent: false
+  resource-links: true
+  yaml-syntax: true
+  kubernetes-schema: true
+  pod-security-standards: true
+  practices: true
+  metadata: false
