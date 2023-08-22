@@ -15,6 +15,7 @@
     "skipLibCheck": true,
     "removeComments": false,
     "strict": true,
+    "emitDeclarationOnly": true
   },
   "exclude": ["node_modules", "lib"],
   "include": ["src"]
