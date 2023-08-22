@@ -71,7 +71,7 @@ export class Synchronizer extends EventEmitter {
   }
 
   generateDeepLink(path: string) {
-    return this._apiHandler.generateDeepLink(path)
+    return this._apiHandler.generateDeepLink(path);
   }
 
   private async fetchPolicy(repoData: RepoRemoteData, accessToken: string) {

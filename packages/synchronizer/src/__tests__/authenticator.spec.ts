@@ -266,10 +266,12 @@ async function race(successPromise: Promise<void>, errorMsg: string) {
     successPromise.then(() => {
       isSuccess = true;
     }),
-    new Promise(() => setTimeout(() => {
-      if (!isSuccess){
-        assert.fail(errorMsg);
-      }
-    }, 250)),
+    new Promise(() =>
+      setTimeout(() => {
+        if (!isSuccess) {
+          assert.fail(errorMsg);
+        }
+      }, 250)
+    ),
   ]);
 }
