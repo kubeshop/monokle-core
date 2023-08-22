@@ -13,11 +13,6 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
-    alias: {
-      'node:os': 'os',
-      'node:path': 'path',
-      'node:process': 'process',
-    },
   },
   module: {
     rules: [
