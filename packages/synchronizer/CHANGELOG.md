@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.3.0
+
+### Minor Changes
+
+- f85b47d: Changed default device flow handler configuration to prod env
+
 ## 0.2.0
 
 ### Minor Changes
