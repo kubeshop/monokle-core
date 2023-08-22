@@ -1,10 +1,10 @@
 import {EventEmitter} from 'events';
-import {User} from '../models/user.js';
-import {StorageHandlerAuth} from '../handlers/storageHandlerAuth.js';
-import {ApiHandler} from '../handlers/apiHandler.js';
-import {DeviceFlowHandler} from '../handlers/deviceFlowHandler.js';
-import type {Token} from '../handlers/storageHandlerAuth.js';
-import type {DeviceFlowHandle} from '../handlers/deviceFlowHandler.js';
+import {User} from '../models/user';
+import {StorageHandlerAuth} from '../handlers/storageHandlerAuth';
+import {ApiHandler} from '../handlers/apiHandler';
+import {DeviceFlowHandler} from '../handlers/deviceFlowHandler';
+import type {Token} from '../handlers/storageHandlerAuth';
+import type {DeviceFlowHandle} from '../handlers/deviceFlowHandler';
 
 export type AuthMethod = 'device code' | 'token';
 

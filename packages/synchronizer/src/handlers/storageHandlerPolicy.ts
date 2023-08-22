@@ -1,7 +1,7 @@
 import envPaths from 'env-paths';
 import {Document} from 'yaml';
-import {StorageHandler} from './storageHandler.js';
-import {DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants.js';
+import {StorageHandler} from './storageHandler';
+import {DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants';
 import type {Config} from '@monokle/validation';
 
 export type StoragePolicyFormat = Config;

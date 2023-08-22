@@ -1,16 +1,16 @@
-export * from './handlers/apiHandler.js';
-export * from './handlers/deviceFlowHandler.js';
-export * from './handlers/gitHandler.js';
-export * from './handlers/storageHandler.js';
-export * from './handlers/storageHandlerAuth.js';
-export * from './handlers/storageHandlerPolicy.js';
+export * from './handlers/apiHandler';
+export * from './handlers/deviceFlowHandler';
+export * from './handlers/gitHandler';
+export * from './handlers/storageHandler';
+export * from './handlers/storageHandlerAuth';
+export * from './handlers/storageHandlerPolicy';
 
-export * from './models/user.js';
+export * from './models/user';
 
-export * from './utils/authenticator.js';
-export * from './utils/synchronizer.js';
+export * from './utils/authenticator';
+export * from './utils/synchronizer';
 
-export * from './constants.js';
+export * from './constants';
 
-export * from './createDefaultMonokleAuthenticator.js';
-export * from './createDefaultMonokleSynchronizer.js';
+export * from './createDefaultMonokleAuthenticator';
+export * from './createDefaultMonokleSynchronizer';

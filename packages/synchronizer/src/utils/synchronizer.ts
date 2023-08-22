@@ -1,9 +1,9 @@
 import {EventEmitter} from 'events';
-import {StorageHandlerPolicy} from '../handlers/storageHandlerPolicy.js';
-import {ApiHandler} from '../handlers/apiHandler.js';
-import {GitHandler} from '../handlers/gitHandler.js';
-import type {StoragePolicyFormat} from '../handlers/storageHandlerPolicy.js';
-import type {RepoRemoteData} from '../handlers/gitHandler.js';
+import {StorageHandlerPolicy} from '../handlers/storageHandlerPolicy';
+import {ApiHandler} from '../handlers/apiHandler';
+import {GitHandler} from '../handlers/gitHandler';
+import type {StoragePolicyFormat} from '../handlers/storageHandlerPolicy';
+import type {RepoRemoteData} from '../handlers/gitHandler';
 
 export type RepoRemoteInputData = {
   provider: string;
@@ -71,7 +71,7 @@ export class Synchronizer extends EventEmitter {
   }
 
   generateDeepLink(path: string) {
-    return this._apiHandler.generateDeepLink(path)
+    return this._apiHandler.generateDeepLink(path);
   }
 
   private async fetchPolicy(repoData: RepoRemoteData, accessToken: string) {

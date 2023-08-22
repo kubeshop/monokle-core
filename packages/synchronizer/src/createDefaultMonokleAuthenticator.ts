@@ -1,7 +1,7 @@
-import {ApiHandler} from './handlers/apiHandler.js';
-import {DeviceFlowHandler} from './handlers/deviceFlowHandler.js';
-import {StorageHandlerAuth} from './handlers/storageHandlerAuth.js';
-import {Authenticator} from './utils/authenticator.js';
+import {ApiHandler} from './handlers/apiHandler';
+import {DeviceFlowHandler} from './handlers/deviceFlowHandler';
+import {StorageHandlerAuth} from './handlers/storageHandlerAuth';
+import {Authenticator} from './utils/authenticator';
 
 export function createDefaultMonokleAuthenticator(
   storageHandler: StorageHandlerAuth = new StorageHandlerAuth(),

@@ -3,11 +3,11 @@ import {fileURLToPath} from 'url';
 import {rm, mkdir, cp} from 'fs/promises';
 import sinon from 'sinon';
 import {assert} from 'chai';
-import {createDefaultMonokleAuthenticator} from '../createDefaultMonokleAuthenticator.js';
-import {StorageHandlerAuth} from '../handlers/storageHandlerAuth.js';
-import {ApiHandler} from '../handlers/apiHandler.js';
-import {DeviceFlowHandler} from '../handlers/deviceFlowHandler.js';
-import type {AuthenticatorLoginEvent} from '../utils/authenticator.js';
+import {createDefaultMonokleAuthenticator} from '../createDefaultMonokleAuthenticator';
+import {StorageHandlerAuth} from '../handlers/storageHandlerAuth';
+import {ApiHandler} from '../handlers/apiHandler';
+import {DeviceFlowHandler} from '../handlers/deviceFlowHandler';
+import type {AuthenticatorLoginEvent} from '../utils/authenticator';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -266,10 +266,12 @@ async function race(successPromise: Promise<void>, errorMsg: string) {
     successPromise.then(() => {
       isSuccess = true;
     }),
-    new Promise(() => setTimeout(() => {
-      if (!isSuccess){
-        assert.fail(errorMsg);
-      }
-    }, 250)),
+    new Promise(() =>
+      setTimeout(() => {
+        if (!isSuccess) {
+          assert.fail(errorMsg);
+        }
+      }, 250)
+    ),
   ]);
 }

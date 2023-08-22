@@ -1,7 +1,7 @@
-import {ApiHandler} from './handlers/apiHandler.js';
-import {GitHandler} from './handlers/gitHandler.js';
-import {StorageHandlerPolicy} from './handlers/storageHandlerPolicy.js';
-import {Synchronizer} from './utils/synchronizer.js';
+import {ApiHandler} from './handlers/apiHandler';
+import {GitHandler} from './handlers/gitHandler';
+import {StorageHandlerPolicy} from './handlers/storageHandlerPolicy';
+import {Synchronizer} from './utils/synchronizer';
 
 export function createDefaultMonokleSynchronizer(
   storageHandler: StorageHandlerPolicy = new StorageHandlerPolicy(),

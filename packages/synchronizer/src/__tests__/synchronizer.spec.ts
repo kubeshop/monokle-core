@@ -3,8 +3,8 @@ import {fileURLToPath} from 'url';
 import {rm, mkdir, cp} from 'fs/promises';
 import sinon from 'sinon';
 import {assert} from 'chai';
-import {createDefaultMonokleSynchronizer} from '../createDefaultMonokleSynchronizer.js';
-import {StorageHandlerPolicy} from '../handlers/storageHandlerPolicy.js';
+import {createDefaultMonokleSynchronizer} from '../createDefaultMonokleSynchronizer';
+import {StorageHandlerPolicy} from '../handlers/storageHandlerPolicy';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -292,7 +292,7 @@ describe('Synchronizer Tests', () => {
             resolve(policy);
           });
         }),
-        'Synchronize event not triggered',
+        'Synchronize event not triggered'
       );
 
       await synchronizer.getPolicy(repoData, true, 'SAMPLE_ACCESS_TOKEN');
@@ -330,10 +330,12 @@ async function race(successPromise: Promise<void>, errorMsg: string) {
     successPromise.then(() => {
       isSuccess = true;
     }),
-    new Promise(() => setTimeout(() => {
-      if (!isSuccess){
-        assert.fail(errorMsg);
-      }
-    }, 250)),
+    new Promise(() =>
+      setTimeout(() => {
+        if (!isSuccess) {
+          assert.fail(errorMsg);
+        }
+      }, 250)
+    ),
   ]);
 }

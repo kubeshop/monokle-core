@@ -1,4 +1,4 @@
-import type {StorageAuthFormat} from '../handlers/storageHandlerAuth.js';
+import type {StorageAuthFormat} from '../handlers/storageHandlerAuth';
 
 export class User {
   private _email: string | null = null;

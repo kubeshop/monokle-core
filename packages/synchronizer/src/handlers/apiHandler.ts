@@ -1,6 +1,6 @@
 import normalizeUrl from 'normalize-url';
 import fetch from 'node-fetch';
-import {DEFAULT_API_URL} from '../constants.js';
+import {DEFAULT_API_URL} from '../constants';
 
 const getUserQuery = `
   query getUser {
