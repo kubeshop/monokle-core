@@ -99,7 +99,7 @@ const policy = await authenticator.getPolicy('/home/kubeshope/...');
 
 // By repo data
 const policy = await authenticator.getPolicy({
-  provider: 'github',
+  provider: 'github.com',
   remote: 'origin',
   owner: 'kubeshop',
   name: 'monokle-core',

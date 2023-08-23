@@ -1,3 +1,4 @@
+import gitUrlParse from 'git-url-parse';
 import {simpleGit} from 'simple-git';
 import type {RemoteWithRefs} from 'simple-git';
 
@@ -20,18 +21,18 @@ export class GitHandler {
     }
 
     const url = remote.refs.push;
-    // With generic git support in Cloud, this should also become generic. The same for 'provider' field.
-    const match = url.match(/github\.com(\/|:)([^\/]+)\/([^\/]+)\.git/);
-    if (!match) {
+    try {
+      const urlParts = gitUrlParse(url);
+
+      return {
+        provider: urlParts.source,
+        remote: remote.name,
+        owner: urlParts.owner,
+        name: urlParts.name,
+      };
+    } catch (err: any) {
       return undefined;
     }
-
-    return {
-      provider: 'github',
-      remote: remote.name,
-      owner: match[2],
-      name: match[3],
-    };
   }
 
   async isGitRepo(folderPath: string) {
