@@ -1,5 +1,14 @@
 # @monokle/synchronizer
 
+## 0.3.1
+
+### Patch Changes
+
+- f65c476: Migrated to '@monokle/types'
+- 9b6ba48: Fixed invalid git URL parsing
+- Updated dependencies [d085cd3]
+  - @monokle/types@0.2.0
+
 ## 0.3.0
 
 ### Minor Changes
