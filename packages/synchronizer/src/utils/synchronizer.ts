@@ -1,3 +1,4 @@
+import slugify from 'slugify';
 import {EventEmitter} from 'events';
 import {StorageHandlerPolicy} from '../handlers/storageHandlerPolicy.js';
 import {ApiHandler} from '../handlers/apiHandler.js';
@@ -155,17 +156,26 @@ export class Synchronizer extends EventEmitter {
   }
 
   private getPolicyPath(repoData: RepoRemoteData) {
-    const fileName = `${repoData.provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
-    return this._storageHandler.getStoreDataFilePath(fileName);
+    return this._storageHandler.getStoreDataFilePath(this.getPolicyFileName(repoData));
   }
 
   private async storePolicy(policyContent: StoragePolicyFormat, repoData: RepoRemoteData, comment: string) {
-    const fileName = `${repoData.provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
-    return this._storageHandler.setStoreData(policyContent, fileName, comment);
+    return this._storageHandler.setStoreData(policyContent, this.getPolicyFileName(repoData), comment);
   }
 
   private async readPolicy(repoData: RepoRemoteData) {
-    const fileName = `${repoData.provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
-    return this._storageHandler.getStoreData(fileName);
+    return this._storageHandler.getStoreData(this.getPolicyFileName(repoData));
+  }
+
+  private getPolicyFileName(repoData: RepoRemoteData) {
+    const provider = slugify(repoData.provider, {
+      replacement: '_',
+      lower: true,
+      strict: true,
+      locale: 'en',
+      trim: true
+    });
+
+    return `${provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
   }
 }

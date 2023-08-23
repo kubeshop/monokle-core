@@ -42,7 +42,7 @@ describe('Synchronizer Tests', () => {
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
       const policy = await synchronizer.getPolicy({
-        provider: 'github',
+        provider: 'github.com',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -55,7 +55,7 @@ describe('Synchronizer Tests', () => {
     });
 
     it('returns policy if there is policy file (from path)', async () => {
-      const storagePath = await createTmpConfigDir('github-kubeshop-monokle-core.policy.yaml');
+      const storagePath = await createTmpConfigDir('githubcom-kubeshop-monokle-core.policy.yaml');
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
       const policy = await synchronizer.getPolicy(storagePath);
@@ -63,16 +63,16 @@ describe('Synchronizer Tests', () => {
       assert.isObject(policy);
       assert.isTrue(policy.valid);
       assert.isNotEmpty(policy.path);
-      assert.match(policy.path, /github-kubeshop-monokle-core.policy.yaml$/);
+      assert.match(policy.path, /githubcom-kubeshop-monokle-core.policy.yaml$/);
       assert.isNotEmpty(policy.policy);
     });
 
     it('returns policy if there is policy file (from git data)', async () => {
-      const storagePath = await createTmpConfigDir('github-kubeshop-monokle-core.policy.yaml');
+      const storagePath = await createTmpConfigDir('githubcom-kubeshop-monokle-core.policy.yaml');
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
       const policy = await synchronizer.getPolicy({
-        provider: 'github',
+        provider: 'github.com',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -81,7 +81,7 @@ describe('Synchronizer Tests', () => {
       assert.isObject(policy);
       assert.isTrue(policy.valid);
       assert.isNotEmpty(policy.path);
-      assert.match(policy.path, /github-kubeshop-monokle-core.policy.yaml$/);
+      assert.match(policy.path, /githubcom-kubeshop-monokle-core.policy.yaml$/);
       assert.isNotEmpty(policy.policy);
       assert.isNotEmpty(policy.policy.plugins);
     });
@@ -172,7 +172,7 @@ describe('Synchronizer Tests', () => {
       stubs.push(queryApiStub);
 
       const repoData = {
-        provider: 'github',
+        provider: 'github.com',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -187,7 +187,7 @@ describe('Synchronizer Tests', () => {
       assert.isObject(newPolicy);
       assert.isTrue(newPolicy.valid);
       assert.isNotEmpty(newPolicy.path);
-      assert.match(newPolicy.path, /github-kubeshop-monokle-core.policy.yaml$/);
+      assert.match(newPolicy.path, /githubcom-kubeshop-monokle-core.policy.yaml$/);
       assert.isNotEmpty(newPolicy.policy);
       assert.isNotEmpty(newPolicy.policy.plugins);
       assert.isNotEmpty(newPolicy.policy.rules);
@@ -271,7 +271,7 @@ describe('Synchronizer Tests', () => {
       stubs.push(queryApiStub);
 
       const repoData = {
-        provider: 'github',
+        provider: 'github.com',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -283,7 +283,7 @@ describe('Synchronizer Tests', () => {
             assert.isObject(policy);
             assert.isTrue(policy.valid);
             assert.isNotEmpty(policy.path);
-            assert.match(policy.path, /github-kubeshop-monokle-core.policy.yaml$/);
+            assert.match(policy.path, /githubcom-kubeshop-monokle-core.policy.yaml$/);
             assert.isNotEmpty(policy.policy);
             assert.isNotEmpty(policy.policy.plugins);
             assert.isNotEmpty(policy.policy.rules);
