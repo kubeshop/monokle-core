@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "lib",
+    "src/utils/testing/**",
+    "src/__tests__/**",
+    "**/*.test.ts"
+  ],
+  "include": ["src"],
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "lib/cjs",
+    "target": "ES2015"
+  }
+}
