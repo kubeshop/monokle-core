@@ -6,5 +6,8 @@
     "src/utils/testing/**",
     "**/*.test.ts"
   ],
-  "include": ["src"]
+  "include": ["src"],
+  "compilerOptions": {
+    "outDir": "lib/mjs",
+  }
 }

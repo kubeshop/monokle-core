@@ -1,0 +1,8 @@
+{
+  "name": "@monokle/types",
+  "version": "0.1.0",
+  "types": "./index.d.ts",
+  "scripts": {
+    "build": "echo 'Types only package' && exit 0"
+  }
+}

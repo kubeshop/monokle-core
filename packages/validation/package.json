@@ -60,6 +60,7 @@
     "vitest": "0.29.2"
   },
   "dependencies": {
+    "@monokle/types": "*",
     "@open-policy-agent/opa-wasm": "1.8.0",
     "@rollup/plugin-virtual": "3.0.1",
     "ajv": "6.12.6",

@@ -305,7 +305,7 @@ describe('Synchronizer Tests', () => {
 async function createTmpConfigDir(copyPolicyFixture = '') {
   const testDir = resolve(__dirname, './');
   const testTmpDir = resolve(testDir, './tmp');
-  const fixturesSourceDir = resolve(testDir, '../../src/__tests__/fixtures');
+  const fixturesSourceDir = resolve(testDir, '../../../src/__tests__/fixtures');
 
   await mkdir(testTmpDir, {recursive: true});
 
