@@ -1,5 +1,13 @@
 # @monokle/validation
 
+## 0.25.3
+
+### Patch Changes
+
+- f65c476: Migrated to '@monokle/types'
+- Updated dependencies [d085cd3]
+  - @monokle/types@0.2.0
+
 ## 0.25.2
 
 ### Patch Changes
