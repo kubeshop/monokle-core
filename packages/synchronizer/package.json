@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/kubeshop/monokle-core/tree/main/packages/synchronizer",
   "dependencies": {
-    "@monokle/validation": "*",
+    "@monokle/types": "*",
     "env-paths": "^3.0.0",
     "git-url-parse": "^13.1.0",
     "mkdirp": "^3.0.1",

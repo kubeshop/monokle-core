@@ -1,37 +1,25 @@
 import * as z from 'zod';
 import {ZodType} from 'zod';
+import type {
+  ValidationArrayRuleValue,
+  ValidationConfig,
+  ValidationObjectRuleValue,
+  ValidationPluginMap,
+  ValidationPrimitiveRuleValue,
+  ValidationRuleMap,
+  ValidationRuleValue,
+  ValidationSettings,
+} from '@monokle/types';
 
-/**
- * A record that configures rules by their human-readable name.
- *
- * @example
- * ```yaml
- * rules:
- * - "open-policy-agent/no-latest-image": "warn"
- * ```
- */
-export type RuleMap = Record<string, RuleValue>;
-
-export type RuleValue = PrimitiveRuleValue | ArrayRuleValue | ObjectRuleValue;
-export type PrimitiveRuleValue = boolean | 'warn' | 'err' | undefined;
-export type ArrayRuleValue = [PrimitiveRuleValue] | [PrimitiveRuleValue, any];
-export type ObjectRuleValue = {severity: PrimitiveRuleValue; config: any};
-export type Settings = Record<string, any> & {
-  debug?: boolean;
-  noInSourceSuppressions?: boolean;
-  noExternalSuppressions?: boolean;
-};
-
-/**
- * The validators that will be loaded.
- */
-export type PluginMap = Record<string, boolean>;
-
-export type Config = {
-  plugins?: PluginMap;
-  rules?: RuleMap;
-  settings?: Settings;
-};
+// Re-export common types for backwards compatibility.
+export type RuleMap = ValidationRuleMap;
+export type RuleValue = ValidationRuleValue;
+export type PrimitiveRuleValue = ValidationPrimitiveRuleValue;
+export type ArrayRuleValue = ValidationArrayRuleValue;
+export type ObjectRuleValue = ValidationObjectRuleValue;
+export type Settings = ValidationSettings;
+export type PluginMap = ValidationPluginMap;
+export type Config = ValidationConfig;
 
 export const configSchema: ZodType<Config> = z.object({
   name: z.string().optional(),
