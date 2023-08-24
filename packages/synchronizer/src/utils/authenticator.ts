@@ -72,7 +72,7 @@ export class Authenticator extends EventEmitter {
     this.emit('logout');
   }
 
-  async refreshToken() {
+  async refreshToken(force = false) {
     const authData = this._user.data?.auth;
     const tokenData = authData?.token;
 
@@ -92,7 +92,7 @@ export class Authenticator extends EventEmitter {
 
     const expiresAtDateMs = new Date(tokenSetData.expires_at * 1000);
     const diffMinutes = (expiresAtDateMs.getTime() - new Date().getTime()) / 1000 / 60;
-    if (diffMinutes < 5) {
+    if (diffMinutes < 5 || force) {
       const newTokenData = await this._deviceFlowHandler.refreshAuthFlow(tokenSetData.refresh_token);
       return this.setUserData(newTokenData);
     }
