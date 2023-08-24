@@ -15,7 +15,7 @@ export abstract class StorageHandler<TData> {
     return this.readStoreData(this.getStoreDataFilePath(fileName));
   }
 
-  async emptyStoreData(fileName: string): Promise<boolean> {
+  async emptyStoreData(fileName: string): Promise<void> {
     return this.writeStoreData(this.getStoreDataFilePath(fileName), '');
   }
 
@@ -24,8 +24,8 @@ export abstract class StorageHandler<TData> {
     const configDoc = new Document();
     configDoc.contents = data as any;
 
-    const result = await this.writeStoreData(configPath, configDoc.toString());
-    return result ? configPath : undefined;
+    await this.writeStoreData(configPath, configDoc.toString());
+    return configPath;
   }
 
   getStoreDataFilePath(fileName: string): string {
@@ -66,9 +66,8 @@ export abstract class StorageHandler<TData> {
     try {
       await mkdirp(dir);
       await writeFile(file, data);
-      return true;
-    } catch (err) {
-      return false;
+    } catch (err: any) {
+      throw new Error(`Failed to write configuration to '${file}' with error: ${err.message} and data: ${data}`,);
     }
   }
 }

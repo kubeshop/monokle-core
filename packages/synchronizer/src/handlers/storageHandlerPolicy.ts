@@ -11,7 +11,7 @@ export class StorageHandlerPolicy extends StorageHandler<StoragePolicyFormat> {
     super(storageFolderPath);
   }
 
-  async setStoreData(data: StoragePolicyFormat, fileName: string, comment?: string): Promise<string | undefined> {
+  async setStoreData(data: StoragePolicyFormat, fileName: string, comment?: string): Promise<string> {
     const configPath = this.getStoreDataFilePath(fileName);
     const configDoc = new Document();
     configDoc.contents = data as any;
@@ -20,7 +20,11 @@ export class StorageHandlerPolicy extends StorageHandler<StoragePolicyFormat> {
       configDoc.commentBefore = comment;
     }
 
-    const result = await this.writeStoreData(configPath, configDoc.toString());
-    return result ? configPath : undefined;
+    try {
+      await this.writeStoreData(configPath, configDoc.toString());
+      return configPath;
+    } catch (err: any) {
+      throw new Error(`Failed to write configuration to '${configPath}' with error: ${err.message}`);
+    }
   }
 }

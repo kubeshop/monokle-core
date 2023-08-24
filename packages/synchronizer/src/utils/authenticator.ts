@@ -61,18 +61,18 @@ export class Authenticator extends EventEmitter {
   }
 
   async logout() {
-    const success = await this._storageHandler.emptyStoreData();
+    try {
+      await this._storageHandler.emptyStoreData();
 
-    if (!success) {
-      throw new Error('Failed to logout.');
+      this._user = new User(null);
+
+      this.emit('logout');
+    } catch (err: any) {
+      throw new Error(`Failed to logout with error: ${err.message}`);
     }
-
-    this._user = new User(null);
-
-    this.emit('logout');
   }
 
-  async refreshToken() {
+  async refreshToken(force = false) {
     const authData = this._user.data?.auth;
     const tokenData = authData?.token;
 
@@ -92,7 +92,7 @@ export class Authenticator extends EventEmitter {
 
     const expiresAtDateMs = new Date(tokenSetData.expires_at * 1000);
     const diffMinutes = (expiresAtDateMs.getTime() - new Date().getTime()) / 1000 / 60;
-    if (diffMinutes < 5) {
+    if (diffMinutes < 5 || force) {
       const newTokenData = await this._deviceFlowHandler.refreshAuthFlow(tokenSetData.refresh_token);
       return this.setUserData(newTokenData);
     }
