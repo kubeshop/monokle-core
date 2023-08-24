@@ -1,5 +1,15 @@
 # @monokle/synchronizer
 
+## 0.5.0
+
+### Minor Changes
+
+- e62281c: Added option to force refresh token
+
+### Patch Changes
+
+- a8cb9f9: Imporved error handling
+
 ## 0.4.0
 
 ### Minor Changes
