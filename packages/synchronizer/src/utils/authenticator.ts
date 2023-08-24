@@ -61,15 +61,15 @@ export class Authenticator extends EventEmitter {
   }
 
   async logout() {
-    const success = await this._storageHandler.emptyStoreData();
+    try {
+      await this._storageHandler.emptyStoreData();
 
-    if (!success) {
-      throw new Error('Failed to logout.');
+      this._user = new User(null);
+
+      this.emit('logout');
+    } catch (err: any) {
+      throw new Error(`Failed to logout with error: ${err.message}`);
     }
-
-    this._user = new User(null);
-
-    this.emit('logout');
   }
 
   async refreshToken(force = false) {
