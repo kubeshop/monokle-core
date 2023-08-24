@@ -7,7 +7,8 @@ import 'isomorphic-fetch';
 import {ResourceParser} from '../common/resourceParser.js';
 import {Config, RuleMap} from '../config/parse.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
-import {extractK8sResources, readDirectory} from './testUtils.js';
+import {extractK8sResources} from '@monokle/parser';
+import {readDirectory} from './testUtils.js';
 
 it('should detect invalid volume types', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/pss-1', {

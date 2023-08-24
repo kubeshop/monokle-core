@@ -4,7 +4,8 @@ import {processRefs} from '../references/process.js';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
-import {expectResult, extractK8sResources, readDirectory} from './testUtils.js';
+import {extractK8sResources} from '@monokle/parser';
+import {readDirectory, expectResult} from './testUtils.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
 

@@ -2,7 +2,8 @@ import 'isomorphic-fetch';
 import {expect, it} from 'vitest';
 import {createDefaultMonokleValidator} from '../../index.js';
 
-import {PRACTICES_ALL_DISABLED, extractK8sResources, readDirectory} from '../testUtils.js';
+import {PRACTICES_ALL_DISABLED, readDirectory} from '../testUtils.js';
+import {extractK8sResources} from '@monokle/parser';
 
 it('should have fingerprints & baseline', async () => {
   const validator = createDefaultMonokleValidator();

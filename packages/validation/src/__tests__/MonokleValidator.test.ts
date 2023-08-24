@@ -6,7 +6,8 @@ import {processRefs} from '../references/process.js';
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
 import {RESOURCES} from './badResources.js';
-import {extractK8sResources, readDirectory} from './testUtils.js';
+import {extractK8sResources} from '@monokle/parser';
+import {readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
@@ -79,7 +80,7 @@ it('should support patches and additionalValuesFiles', async () => {
 
 it('should support Kustomize Components', async () => {
   const {resources, response} = await processResourcesInFolder('src/__tests__/resources/kustomize-components');
-  expect( resources.length ).toBe( 3 );
+  expect(resources.length).toBe(3);
 });
 
 it('should support ownerRefs', async () => {
@@ -140,7 +141,7 @@ it('should allow rules to be configurable', async () => {
                 type: RuleConfigMetadataType.Number,
                 name: 'Required replicas',
                 defaultValue: 1,
-              }
+              },
             },
             validate({resources, params}, {report}) {
               resources.filter(isDeployment).forEach(deployment => {

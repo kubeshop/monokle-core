@@ -59,6 +59,7 @@
     "vitest": "0.29.2"
   },
   "dependencies": {
+    "@monokle/parser": "*",
     "@monokle/types": "*",
     "@open-policy-agent/opa-wasm": "1.8.0",
     "@rollup/plugin-virtual": "3.0.1",

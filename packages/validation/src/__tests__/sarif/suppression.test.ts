@@ -2,7 +2,8 @@ import 'isomorphic-fetch';
 import {expect, it} from 'vitest';
 import {createDefaultMonokleValidator} from '../../index.js';
 
-import {PRACTICES_ALL_DISABLED, extractK8sResources, readDirectory} from '../testUtils.js';
+import {extractK8sResources} from '@monokle/parser';
+import {PRACTICES_ALL_DISABLED, readDirectory} from '../testUtils.js';
 import {FakeSuppressor} from '../../sarif/suppressions/plugins/FakeSuppressor.js';
 import YAML from 'yaml';
 import {set} from 'lodash';
