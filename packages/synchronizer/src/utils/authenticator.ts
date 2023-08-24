@@ -4,7 +4,7 @@ import {StorageHandlerAuth} from '../handlers/storageHandlerAuth.js';
 import {ApiHandler} from '../handlers/apiHandler.js';
 import {DeviceFlowHandler} from '../handlers/deviceFlowHandler.js';
 import type {Token} from '../handlers/storageHandlerAuth.js';
-import type {DeviceFlowHandle} from '../handlers/deviceFlowHandler.js';
+import type {DeviceFlowHandle, TokenSet} from '../handlers/deviceFlowHandler.js';
 
 export type AuthMethod = 'device code' | 'token';
 
@@ -74,19 +74,26 @@ export class Authenticator extends EventEmitter {
 
   async refreshToken() {
     const authData = this._user.data?.auth;
+    const tokenData = authData?.token;
 
-    if (authData?.token.token_type !== 'bearer') {
+    if (!tokenData) {
       return;
     }
 
-    if (!authData.token.refresh_token || !authData.token.expires_at) {
+    if (tokenData.token_type === 'access_token') {
       return;
     }
 
-    const expiresAtDate = new Date(authData.token.expires_at * 1000);
-    const diffMinutes = expiresAtDate.getTime() - new Date().getTime();
+    const tokenSetData = tokenData as TokenSet;
+
+    if (!tokenSetData.refresh_token || !tokenSetData.expires_at) {
+      return;
+    }
+
+    const expiresAtDateMs = new Date(tokenSetData.expires_at * 1000);
+    const diffMinutes = (expiresAtDateMs.getTime() - new Date().getTime()) / 1000 / 60;
     if (diffMinutes < 5) {
-      const newTokenData = await this._deviceFlowHandler.refreshAuthFlow(authData.token.refresh_token);
+      const newTokenData = await this._deviceFlowHandler.refreshAuthFlow(tokenSetData.refresh_token);
       return this.setUserData(newTokenData);
     }
   }
@@ -95,7 +102,7 @@ export class Authenticator extends EventEmitter {
     setTimeout(() => {
       if (this._user.isAuthenticated) {
         this.emit('login', {
-          method: this._user.data?.auth?.token.token_type === 'bearer' ? 'device code' : 'token',
+          method: this._user.data?.auth?.token.token_type?.toLowerCase() === 'bearer' ? 'device code' : 'token',
           user: this._user,
         });
       }
