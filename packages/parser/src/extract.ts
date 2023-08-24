@@ -1,9 +1,9 @@
 import {LineCounter} from 'yaml';
-import {parseAllYamlDocuments} from './parse';
-import {Resource, createResourceId, createResourceName} from './resource';
-import {BaseFile, isUntypedKustomizationFile} from './file';
-import {KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND} from './constants';
-import {isKubernetesLike} from './k8s';
+import {parseAllYamlDocuments} from './parse.js';
+import {Resource, createResourceId, createResourceName} from './resource.js';
+import {BaseFile, isUntypedKustomizationFile} from './file.js';
+import {KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND} from './constants.js';
+import {isKubernetesLike} from './k8s.js';
 
 export function extractK8sResources(files: BaseFile[]): Resource[] {
   const resources: Resource[] = [];

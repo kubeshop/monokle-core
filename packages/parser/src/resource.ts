@@ -1,7 +1,7 @@
-import {ResourceRef} from './resourceRefs';
 import {v5} from 'uuid';
 import {parse} from 'path';
-import {KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND, RESOURCE_UUID_NAMESPACE} from './constants';
+import {ResourceRef} from './resourceRefs.js';
+import {KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND, RESOURCE_UUID_NAMESPACE} from './constants.js';
 
 export type Resource = {
   id: string;
