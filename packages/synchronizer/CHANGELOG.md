@@ -1,5 +1,15 @@
 # @monokle/synchronizer
 
+## 0.4.0
+
+### Minor Changes
+
+- ea181e4: Introduced more specific 'generateDeepLink\*' methods
+
+### Patch Changes
+
+- 9019f2e: Fixed token refresh logic
+
 ## 0.3.1
 
 ### Patch Changes
