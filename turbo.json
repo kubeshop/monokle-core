@@ -5,6 +5,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**", "lib/**"]
     },
+    "@monokle/validation#test": {
+      "dependsOn": ["@monokle/parser#build"]
+    },
     "test": {
       "dependsOn": ["^test"],
       "outputs": ["coverage/**"]
