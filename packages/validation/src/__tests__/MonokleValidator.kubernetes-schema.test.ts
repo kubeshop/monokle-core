@@ -98,6 +98,12 @@ async function processResourcesInFolder(path: string, schemaVersion?: string) {
   const files = await readDirectory(path);
   const resources = extractK8sResources(files);
 
+  resources.forEach(r => {
+    if (r.apiVersion === 'test-remove') {
+      (r as any).apiVersion = undefined;
+    }
+  });
+
   const parser = new ResourceParser();
   const validator = createDefaultMonokleValidator(parser);
 
