@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.25.4
+
+### Patch Changes
+
+- f2ad727: Fixed SARIF result 'automationDetails.guid' format
+
 ## 0.25.3
 
 ### Patch Changes
