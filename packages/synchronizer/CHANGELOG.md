@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.6.0
+
+### Minor Changes
+
+- d792c1e: Introduced synchronizer `getProjectInfo()` method
+
 ## 0.5.0
 
 ### Minor Changes
