@@ -1,6 +1,6 @@
+import {v4} from 'uuid';
 import clone from 'lodash/clone.js';
 import difference from 'lodash/difference.js';
-import uniqueId from 'lodash/uniqueId.js';
 import isEqual from 'lodash/isEqual.js';
 import {ResourceParser} from './common/resourceParser.js';
 import type {Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
@@ -317,7 +317,7 @@ export class MonokleValidator implements Validator {
     }
 
     const run: ValidationRun = {
-      automationDetails: {guid: uniqueId()},
+      automationDetails: {guid: v4()},
       tool,
       results,
       taxonomies: [NSA_TAXONOMY, CIS_TAXONOMY],
