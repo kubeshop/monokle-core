@@ -300,6 +300,128 @@ describe('Synchronizer Tests', () => {
       return result;
     });
   });
+
+  describe('getProjectInfo', () => {
+    it('returns valid project info', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const queryApiStub = sinon.stub((synchronizer as any)._apiHandler, 'queryApi').callsFake(async (...args) => {
+        const query = args[0] as string;
+
+        if (query.includes('query getUser')) {
+          return {
+            data: {
+              me: {
+                id: 6,
+                email: 'user6@kubeshop.io',
+                projects: [
+                  {
+                    project: {
+                      id: 6000,
+                      slug: 'user6-proj',
+                      name: 'User6 Project',
+                      repositories: [
+                        {
+                          id: 'user6-proj-policy-id',
+                          projectId: 6000,
+                          provider: 'GITHUB',
+                          owner: 'kubeshop',
+                          name: 'monokle-core',
+                          prChecks: false,
+                          canEnablePrChecks: true,
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          };
+        }
+
+        return {};
+      });
+      stubs.push(queryApiStub);
+
+      const repoData = {
+        provider: 'github.com',
+        remote: 'origin',
+        owner: 'kubeshop',
+        name: 'monokle-core',
+      };
+
+      const projectInfo = await synchronizer.getProjectInfo(repoData, 'SAMPLE_ACCESS_TOKEN');
+
+      assert.isObject(projectInfo);
+      assert.equal(projectInfo!.id, 6000);
+      assert.equal(projectInfo!.slug, 'user6-proj');
+      assert.equal(projectInfo!.name, 'User6 Project');
+      assert.equal(queryApiStub.callCount, 1);
+    });
+
+    it('utilizes cache correctly', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const queryApiStub = sinon.stub((synchronizer as any)._apiHandler, 'queryApi').callsFake(async (...args) => {
+        const query = args[0] as string;
+
+        if (query.includes('query getUser')) {
+          return {
+            data: {
+              me: {
+                id: 6,
+                email: 'user6@kubeshop.io',
+                projects: [
+                  {
+                    project: {
+                      id: 6000,
+                      slug: 'user6-proj',
+                      name: 'User6 Project',
+                      repositories: [
+                        {
+                          id: 'user6-proj-policy-id',
+                          projectId: 6000,
+                          provider: 'GITHUB',
+                          owner: 'kubeshop',
+                          name: 'monokle-core',
+                          prChecks: false,
+                          canEnablePrChecks: true,
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          };
+        }
+
+        return {};
+      });
+      stubs.push(queryApiStub);
+
+      const repoData = {
+        provider: 'github.com',
+        remote: 'origin',
+        owner: 'kubeshop',
+        name: 'monokle-core',
+      };
+
+      const projectInfo = await synchronizer.getProjectInfo(repoData, 'SAMPLE_ACCESS_TOKEN');
+      assert.equal(projectInfo!.id, 6000);
+      assert.equal(queryApiStub.callCount, 1);
+
+      const projectInfoRetry = await synchronizer.getProjectInfo(repoData, 'SAMPLE_ACCESS_TOKEN');
+      assert.equal(projectInfoRetry!.id, 6000);
+      assert.equal(queryApiStub.callCount, 1);
+
+      const projectInfoRetryForce = await synchronizer.getProjectInfo(repoData, 'SAMPLE_ACCESS_TOKEN', true);
+      assert.equal(projectInfoRetryForce!.id, 6000);
+      assert.equal(queryApiStub.callCount, 2);
+    });
+  })
 });
 
 async function createTmpConfigDir(copyPolicyFixture = '') {

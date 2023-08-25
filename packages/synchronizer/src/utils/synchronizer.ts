@@ -5,6 +5,7 @@ import {ApiHandler} from '../handlers/apiHandler.js';
 import {GitHandler} from '../handlers/gitHandler.js';
 import type {StoragePolicyFormat} from '../handlers/storageHandlerPolicy.js';
 import type {RepoRemoteData} from '../handlers/gitHandler.js';
+import type {ApiUserProject} from '../handlers/apiHandler.js';
 
 export type RepoRemoteInputData = {
   provider: string;
@@ -18,8 +19,15 @@ export type PolicyData = {
   policy: StoragePolicyFormat;
 };
 
+export type ProjectInfo = {
+  id: number;
+  name: string;
+  slug: string;
+};
+
 export class Synchronizer extends EventEmitter {
   private _pullPromise: Promise<PolicyData> | undefined;
+  private _projectDataCache: Record<string, ApiUserProject> = {};
 
   constructor(
     private _storageHandler: StorageHandlerPolicy,
@@ -27,6 +35,35 @@ export class Synchronizer extends EventEmitter {
     private _gitHandler: GitHandler
   ) {
     super();
+  }
+
+  async getProjectInfo(rootPath: string, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
+  async getProjectInfo(repoData: RepoRemoteData, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
+  async getProjectInfo(
+    repoDataOrRootPath: RepoRemoteData | string,
+    accessToken: string,
+    forceRefetch = false,
+  ): Promise<ProjectInfo | null> {
+    const repoData =
+      typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
+
+    const cacheId = this.getRepoCacheId(repoData, accessToken);
+    const cachedProjectInfo = this._projectDataCache[cacheId];
+    if (cachedProjectInfo && !forceRefetch) {
+      return {
+        id: cachedProjectInfo.id,
+        name: cachedProjectInfo.name,
+        slug: cachedProjectInfo.slug,
+      };
+    }
+
+    const freshProjectInfo = await this.getMatchingProject(repoData, accessToken);
+
+    return !freshProjectInfo ? null : {
+      id: freshProjectInfo.id,
+      name: freshProjectInfo.name,
+      slug: freshProjectInfo.slug,
+    };
   }
 
   async getPolicy(rootPath: string, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
@@ -95,28 +132,9 @@ export class Synchronizer extends EventEmitter {
     };
 
     try {
-      const userData = await this._apiHandler.getUser(accessToken);
-      if (!userData?.data?.me) {
-        throw new Error('Cannot fetch user data, make sure you are authenticated and have internet access.');
-      }
-
-      if (!repoData?.provider || !repoData?.owner || !repoData?.name) {
-        throw new Error(`Provided invalid git repository data: '${JSON.stringify(repoData)}'.`);
-      }
-
+      const repoProject = await this.getMatchingProject(repoData, accessToken);
       const repoId = `${repoData.provider}:${repoData.owner}/${repoData.name}`;
 
-      const repoMainProject = userData.data.me.projects.find(project => {
-        return project.project.repositories.find(
-          repo => repo.owner === repoData.owner && repo.name === repoData.name && repo.prChecks
-        );
-      });
-
-      const repoFirstProject = userData.data.me.projects.find(project => {
-        return project.project.repositories.find(repo => repo.owner === repoData.owner && repo.name === repoData.name);
-      });
-
-      const repoProject = repoMainProject ?? repoFirstProject;
       if (!repoProject) {
         const projectUrl = this.generateDeepLinkProjectList();
         throw new Error(
@@ -124,9 +142,9 @@ export class Synchronizer extends EventEmitter {
         );
       }
 
-      const repoPolicy = await this._apiHandler.getPolicy(repoProject.project.slug, accessToken);
+      const repoPolicy = await this._apiHandler.getPolicy(repoProject.slug, accessToken);
 
-      const policyUrl = this.generateDeepLinkProjectPolicy(repoProject.project.slug);
+      const policyUrl = this.generateDeepLinkProjectPolicy(repoProject.slug);
       if (!repoPolicy?.data?.getProject?.policy) {
         throw new Error(
           `The '${repoId}' repository project does not have policy defined. Configure it on ${policyUrl}.`
@@ -156,6 +174,36 @@ export class Synchronizer extends EventEmitter {
       this._pullPromise = undefined;
       this.emit('synchronize', policyData);
     }
+  }
+
+  private async getMatchingProject(repoData: RepoRemoteData, accessToken: string) {
+    const userData = await this._apiHandler.getUser(accessToken);
+    if (!userData?.data?.me) {
+      throw new Error('Cannot fetch user data, make sure you are authenticated and have internet access.');
+    }
+
+    if (!repoData?.provider || !repoData?.owner || !repoData?.name) {
+      throw new Error(`Provided invalid git repository data: '${JSON.stringify(repoData)}'.`);
+    }
+
+    const repoMainProject = userData.data.me.projects.find(project => {
+      return project.project.repositories.find(
+        repo => repo.owner === repoData.owner && repo.name === repoData.name && repo.prChecks
+      );
+    });
+
+    const repoFirstProject = userData.data.me.projects.find(project => {
+      return project.project.repositories.find(repo => repo.owner === repoData.owner && repo.name === repoData.name);
+    });
+
+    const matchingProject = repoMainProject ?? repoFirstProject;
+
+    if (matchingProject?.project) {
+      const cacheId = this.getRepoCacheId(repoData, accessToken);
+      this._projectDataCache[cacheId] = matchingProject.project;
+    }
+
+    return matchingProject?.project ?? null;
   }
 
   private async getRootGitData(rootPath: string) {
@@ -189,5 +237,9 @@ export class Synchronizer extends EventEmitter {
     });
 
     return `${provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
+  }
+
+  private getRepoCacheId(repoData: RepoRemoteData, prefix: string) {
+    return `${prefix}-${repoData.provider}-${repoData.owner}-${repoData.name}`;
   }
 }
