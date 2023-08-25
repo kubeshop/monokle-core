@@ -3,6 +3,7 @@
   "private": false,
   "scripts": {
     "build": "turbo run build",
+    "test": "turbo run test",
     "release": "turbo run build && changeset publish"
   },
   "workspaces": [

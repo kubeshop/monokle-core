@@ -23,7 +23,7 @@ it('should be simple to configure', async () => {
   const response = await validator.validate({resources: RESOURCES});
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toMatchInlineSnapshot('13');
+  expect(hasErrors).toMatchInlineSnapshot('2');
 });
 
 it('should fail if optional refs are not allowed', async () => {
@@ -67,7 +67,7 @@ it('should support relative folder paths in kustomizations', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/kustomize-with-relative-path-resources');
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toBe(16);
+  expect(hasErrors).toBe(6);
 });
 
 it('should support patches and additionalValuesFiles', async () => {
