@@ -4,10 +4,11 @@ import {processRefs} from '../references/process.js';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
-import {expectResult, extractK8sResources, readDirectory} from './testUtils.js';
+import {extractK8sResources} from '@monokle/parser';
+import {readDirectory, expectResult} from './testUtils.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
-import { Config, RuleMap } from '../config/parse.js';
+import {Config, RuleMap} from '../config/parse.js';
 
 it('should detect missing recommended labels (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata');
@@ -35,7 +36,7 @@ it('should detect missing recommended labels (MTD-recommended-labels)', async ()
 
 it('should not override recommended labels but allow to config level (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
-    'metadata/recommended-labels': ['warn', ['app', 'tier', 'role']]
+    'metadata/recommended-labels': ['warn', ['app', 'tier', 'role']],
   });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
@@ -62,7 +63,7 @@ it('should not override recommended labels but allow to config level (MTD-recomm
 it('should detect missing custom labels (MTD-custom-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
     'metadata/recommended-labels': false,
-    'metadata/custom-labels': ['warn', ['app', 'tier', 'role']]
+    'metadata/custom-labels': ['warn', ['app', 'tier', 'role']],
   });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
@@ -78,7 +79,7 @@ it('should detect missing custom labels (MTD-custom-labels)', async () => {
 it('should detect missing annotations labels (MTD-custom-annotations)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
     'metadata/recommended-labels': false,
-    'metadata/custom-annotations': ['warn', ['revision', 'hash', 'annotation-1', 'annotation-2']]
+    'metadata/custom-annotations': ['warn', ['revision', 'hash', 'annotation-1', 'annotation-2']],
   });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
@@ -100,7 +101,7 @@ it('should not trigger when predefined custom rules have no names defined (MTD-c
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata', {
     'metadata/recommended-labels': false,
     'metadata/custom-labels': 'err',
-    'metadata/custom-annotations': 'err'
+    'metadata/custom-annotations': 'err',
   });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
@@ -187,7 +188,7 @@ it('should have custom-* configurable rules', async () => {
   await configureValidator(validator, {
     'metadata/recommended-labels': false,
     'metadata/custom-labels': 'err',
-    'metadata/custom-annotations': 'err'
+    'metadata/custom-annotations': 'err',
   });
 
   Object.entries(validator.rules)[0][1].forEach(rule => {
@@ -241,7 +242,7 @@ async function processResourcesInFolder(path: string, rules?: RuleMap) {
 async function configureValidator(validator: MonokleValidator, rules?: RuleMap) {
   const config: Config = {
     plugins: {
-      'metadata': true,
+      metadata: true,
     },
     settings: {
       debug: true,

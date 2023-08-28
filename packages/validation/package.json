@@ -47,6 +47,7 @@
   },
   "homepage": "https://github.com/kubeshop/monokle-core/tree/main/packages/validation",
   "devDependencies": {
+    "@monokle/parser": "*",
     "@types/isomorphic-fetch": "0.0.36",
     "@types/lodash": "4.14.185",
     "@types/require-from-string": "1.2.1",

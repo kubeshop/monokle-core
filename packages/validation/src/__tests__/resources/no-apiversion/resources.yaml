@@ -39,6 +39,7 @@ spec:
           group:
             name: "system:unauthenticated"
 ---
+apiVersion: 'test-remove'
 kind: Pod
 metadata:
   name: pod-warning

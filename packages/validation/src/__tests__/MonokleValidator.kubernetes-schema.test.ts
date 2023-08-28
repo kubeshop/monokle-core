@@ -4,7 +4,8 @@ import {processRefs} from '../references/process.js';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
-import {expectResult, extractK8sResources, readDirectory} from './testUtils.js';
+import {extractK8sResources} from '@monokle/parser';
+import {readDirectory, expectResult} from './testUtils.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
 
@@ -96,6 +97,12 @@ it('should rise warning when no apiVersion present (K8S004)', async () => {
 async function processResourcesInFolder(path: string, schemaVersion?: string) {
   const files = await readDirectory(path);
   const resources = extractK8sResources(files);
+
+  resources.forEach(r => {
+    if (r.apiVersion === 'test-remove') {
+      (r as any).apiVersion = undefined;
+    }
+  });
 
   const parser = new ResourceParser();
   const validator = createDefaultMonokleValidator(parser);
