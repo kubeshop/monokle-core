@@ -43,15 +43,14 @@ export class Synchronizer extends EventEmitter {
 
   async getProjectInfo(rootPath: string, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
   async getProjectInfo(repoData: RepoRemoteData, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
+  async getProjectInfo(projectData: ProjectInputData, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
   async getProjectInfo(
-    repoDataOrRootPath: RepoRemoteData | string,
+    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
     accessToken: string,
     forceRefetch = false,
   ): Promise<ProjectInfo | null> {
-    const repoData =
-      typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
-
-    const cacheId = this.getRepoCacheId(repoData, accessToken);
+    const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
+    const cacheId = this.getRepoCacheId(inputData, accessToken);
     const cachedProjectInfo = this._projectDataCache[cacheId];
     if (cachedProjectInfo && !forceRefetch) {
       return {
@@ -61,7 +60,9 @@ export class Synchronizer extends EventEmitter {
       };
     }
 
-    const freshProjectInfo = await this.getMatchingProject(repoData, accessToken);
+    const freshProjectInfo = this.isProjectData(inputData) ?
+      await this.getProject(inputData as ProjectInputData, accessToken) :
+      await this.getMatchingProject(inputData as RepoRemoteData, accessToken);
 
     return !freshProjectInfo ? null : {
       id: freshProjectInfo.id,
@@ -82,37 +83,18 @@ export class Synchronizer extends EventEmitter {
       throw new Error('Cannot force refetch without access token.');
     }
 
-    if (this.isProjectData(rootPathOrRepoDataOrProjectData)) {
-      const projectData: ProjectInputData = rootPathOrRepoDataOrProjectData as ProjectInputData;
-
-      if (forceRefetch) {
-        await this.synchronize(projectData, accessToken);
-      }
-
-      const policyContent = (await this.readPolicy(projectData)) ?? {};
-      const isValidPolicy = Object.keys(policyContent).length > 0;
-
-      return {
-        valid: isValidPolicy,
-        path: isValidPolicy ? this.getPolicyPath(projectData) : '',
-        policy: policyContent,
-      };
-    }
-
-    const repoDataOrRootPath = rootPathOrRepoDataOrProjectData as RepoRemoteData | string;
-    const repoData =
-      typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
+    const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
 
     if (forceRefetch) {
-      await this.synchronize(repoData, accessToken);
+      await this.synchronize(inputData as any, accessToken);
     }
 
-    const policyContent = (await this.readPolicy(repoData)) ?? {};
+    const policyContent = (await this.readPolicy(inputData)) ?? {};
     const isValidPolicy = Object.keys(policyContent).length > 0;
 
     return {
       valid: isValidPolicy,
-      path: isValidPolicy ? this.getPolicyPath(repoData) : '',
+      path: isValidPolicy ? this.getPolicyPath(inputData) : '',
       policy: policyContent,
     };
   }
@@ -172,6 +154,14 @@ export class Synchronizer extends EventEmitter {
           `The '${repoPolicy?.data?.getProject?.name ?? projectData.slug}' project does not have policy defined. Configure it on ${policyUrl}.`
         );
       }
+
+      const cacheId = this.getRepoCacheId(projectData, accessToken);
+      this._projectDataCache[cacheId] = {
+        id: repoPolicy.data.getProject.id,
+        slug: projectData.slug,
+        name: repoPolicy.data.getProject.name,
+        repositories: [],
+      };
 
       const policyContent: StoragePolicyFormat = repoPolicy.data.getProject.policy.json;
 
@@ -250,7 +240,7 @@ export class Synchronizer extends EventEmitter {
     }
   }
 
-  private async getMatchingProject(repoData: RepoRemoteData, accessToken: string) {
+  private async getMatchingProject(repoData: RepoRemoteData, accessToken: string): Promise<ApiUserProject | null> {
     const userData = await this._apiHandler.getUser(accessToken);
     if (!userData?.data?.me) {
       throw new Error('Cannot fetch user data, make sure you are authenticated and have internet access.');
@@ -278,6 +268,17 @@ export class Synchronizer extends EventEmitter {
     }
 
     return matchingProject?.project ?? null;
+  }
+
+  private async getProject(projectData: ProjectInputData, accessToken: string): Promise<ApiUserProject | null> {
+    const projectInfo = await this._apiHandler.getProject(projectData.slug, accessToken);
+
+    if (projectInfo?.data?.getProject?.id) {
+      const cacheId = this.getRepoCacheId(projectData, accessToken);
+      this._projectDataCache[cacheId] = projectInfo.data.getProject;
+    }
+
+    return !(projectInfo?.data?.getProject?.id) ? null : projectInfo.data.getProject;
   }
 
   private async getRootGitData(rootPath: string) {
@@ -318,8 +319,21 @@ export class Synchronizer extends EventEmitter {
     return `${provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
   }
 
-  private getRepoCacheId(repoData: RepoRemoteData, prefix: string) {
+  private getRepoCacheId(inputData: RepoRemoteData | ProjectInputData, prefix: string) {
+    if (this.isProjectData(inputData)) {
+      return `${prefix}-${(inputData as ProjectInputData).slug}`;
+    }
+
+    const repoData = inputData as RepoRemoteData;
     return `${prefix}-${repoData.provider}-${repoData.owner}-${repoData.name}`;
+  }
+
+  private async getRepoOrProjectData(inputData: string | RepoRemoteData | ProjectInputData) {
+    if (this.isProjectData(inputData)) {
+      return inputData as ProjectInputData;
+    }
+
+    return typeof inputData === 'string' ? await this.getRootGitData(inputData) : inputData;
   }
 
   private isProjectData(projectData: any) {

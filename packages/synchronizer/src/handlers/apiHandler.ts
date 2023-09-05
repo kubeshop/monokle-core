@@ -27,6 +27,25 @@ const getUserQuery = `
   }
 `;
 
+const getProjectQuery = `
+  query getProject($slug: String!) {
+    getProject(input: { slug: $slug }) {
+      id
+      name
+      slug
+      repositories {
+        id
+        projectId
+        provider
+        owner
+        name
+        prChecks
+        canEnablePrChecks
+      }
+    }
+  }
+`;
+
 const getPolicyQuery = `
   query getPolicy($slug: String!) {
     getProject(input: { slug: $slug }) {
@@ -71,6 +90,12 @@ export type ApiUserData = {
   };
 };
 
+export type ApiProjectData = {
+  data: {
+    getProject: ApiUserProject;
+  };
+};
+
 export type ApiPolicyData = {
   data: {
     getProject: {
@@ -93,6 +118,10 @@ export class ApiHandler {
 
   async getUser(accessToken: string): Promise<ApiUserData | undefined> {
     return this.queryApi(getUserQuery, accessToken);
+  }
+
+  async getProject(slug: string, accessToken: string): Promise<ApiProjectData | undefined> {
+    return this.queryApi(getProjectQuery, accessToken, {slug});
   }
 
   async getPolicy(slug: string, accessToken: string): Promise<ApiPolicyData | undefined> {
