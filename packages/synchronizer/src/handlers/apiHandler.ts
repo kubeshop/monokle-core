@@ -31,6 +31,7 @@ const getPolicyQuery = `
   query getPolicy($slug: String!) {
     getProject(input: { slug: $slug }) {
       id
+      name
       policy {
         id
         json
@@ -74,6 +75,7 @@ export type ApiPolicyData = {
   data: {
     getProject: {
       id: number;
+      name: string;
       policy: {
         id: string;
         json: any;

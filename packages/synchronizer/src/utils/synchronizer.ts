@@ -13,6 +13,10 @@ export type RepoRemoteInputData = {
   name: string;
 };
 
+export type ProjectInputData = {
+  slug: string
+};
+
 export type PolicyData = {
   valid: boolean;
   path: string;
@@ -68,8 +72,9 @@ export class Synchronizer extends EventEmitter {
 
   async getPolicy(rootPath: string, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
   async getPolicy(repoData: RepoRemoteData, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
+  async getPolicy(projectData: ProjectInputData, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
   async getPolicy(
-    repoDataOrRootPath: RepoRemoteData | string,
+    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
     forceRefetch = false,
     accessToken = ''
   ): Promise<PolicyData> {
@@ -77,6 +82,24 @@ export class Synchronizer extends EventEmitter {
       throw new Error('Cannot force refetch without access token.');
     }
 
+    if (this.isProjectData(rootPathOrRepoDataOrProjectData)) {
+      const projectData: ProjectInputData = rootPathOrRepoDataOrProjectData as ProjectInputData;
+
+      if (forceRefetch) {
+        await this.synchronize(projectData, accessToken);
+      }
+
+      const policyContent = (await this.readPolicy(projectData)) ?? {};
+      const isValidPolicy = Object.keys(policyContent).length > 0;
+
+      return {
+        valid: isValidPolicy,
+        path: isValidPolicy ? this.getPolicyPath(projectData) : '',
+        policy: policyContent,
+      };
+    }
+
+    const repoDataOrRootPath = rootPathOrRepoDataOrProjectData as RepoRemoteData | string;
     const repoData =
       typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
 
@@ -96,14 +119,23 @@ export class Synchronizer extends EventEmitter {
 
   async synchronize(rootPath: string, accessToken: string): Promise<PolicyData>;
   async synchronize(repoData: RepoRemoteData, accessToken: string): Promise<PolicyData>;
-  async synchronize(repoDataOrRootPath: RepoRemoteData | string, accessToken: string): Promise<PolicyData> {
+  async synchronize(projectData: ProjectInputData, accessToken: string): Promise<PolicyData>;
+  async synchronize(rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData, accessToken: string): Promise<PolicyData> {
     if (this._pullPromise) {
       return this._pullPromise;
     }
 
+    if (this.isProjectData(rootPathOrRepoDataOrProjectData)) {
+      const projectData: ProjectInputData = rootPathOrRepoDataOrProjectData as ProjectInputData;
+      this._pullPromise = this.fetchPolicyForProject(projectData, accessToken);
+
+      return this._pullPromise;
+    }
+
+    const repoDataOrRootPath = rootPathOrRepoDataOrProjectData as RepoRemoteData | string;
     const repoData =
       typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
-    this._pullPromise = this.fetchPolicy(repoData, accessToken);
+    this._pullPromise = this.fetchPolicyForRepo(repoData, accessToken);
 
     return this._pullPromise;
   }
@@ -124,7 +156,49 @@ export class Synchronizer extends EventEmitter {
     return this._apiHandler.generateDeepLink(path);
   }
 
-  private async fetchPolicy(repoData: RepoRemoteData, accessToken: string) {
+  private async fetchPolicyForProject(projectData: ProjectInputData, accessToken: string) {
+    const policyData = {
+      valid: false,
+      path: '',
+      policy: {},
+    };
+
+    try {
+      const repoPolicy = await this._apiHandler.getPolicy(projectData.slug, accessToken);
+
+      const policyUrl = this.generateDeepLinkProjectPolicy(projectData.slug);
+      if (!repoPolicy?.data?.getProject?.policy) {
+        throw new Error(
+          `The '${repoPolicy?.data?.getProject?.name ?? projectData.slug}' project does not have policy defined. Configure it on ${policyUrl}.`
+        );
+      }
+
+      const policyContent: StoragePolicyFormat = repoPolicy.data.getProject.policy.json;
+
+      const comment = [
+        ` This is remote policy downloaded from ${this._apiHandler.apiUrl}.`,
+        ` You can adjust it on ${policyUrl}.`,
+      ].join('\n');
+
+      const policyPath = await this.storePolicy(policyContent, projectData, comment);
+      if (!policyPath) {
+        throw new Error(`Error storing policy in local filesystem.`);
+      }
+
+      policyData.valid = true;
+      policyData.path = policyPath;
+      policyData.policy = policyContent;
+
+      return policyData;
+    } catch (error) {
+      throw error;
+    } finally {
+      this._pullPromise = undefined;
+      this.emit('synchronize', policyData);
+    }
+  }
+
+  private async fetchPolicyForRepo(repoData: RepoRemoteData, accessToken: string) {
     const policyData = {
       valid: false,
       path: '',
@@ -215,19 +289,24 @@ export class Synchronizer extends EventEmitter {
     return repoData;
   }
 
-  private getPolicyPath(repoData: RepoRemoteData) {
-    return this._storageHandler.getStoreDataFilePath(this.getPolicyFileName(repoData));
+  private getPolicyPath(inputData: RepoRemoteData | ProjectInputData) {
+    return this._storageHandler.getStoreDataFilePath(this.getPolicyFileName(inputData));
   }
 
-  private async storePolicy(policyContent: StoragePolicyFormat, repoData: RepoRemoteData, comment: string) {
-    return this._storageHandler.setStoreData(policyContent, this.getPolicyFileName(repoData), comment);
+  private async storePolicy(policyContent: StoragePolicyFormat, inputData: RepoRemoteData | ProjectInputData, comment: string) {
+    return this._storageHandler.setStoreData(policyContent, this.getPolicyFileName(inputData), comment);
   }
 
-  private async readPolicy(repoData: RepoRemoteData) {
-    return this._storageHandler.getStoreData(this.getPolicyFileName(repoData));
+  private async readPolicy(inputData: RepoRemoteData | ProjectInputData) {
+    return this._storageHandler.getStoreData(this.getPolicyFileName(inputData));
   }
 
-  private getPolicyFileName(repoData: RepoRemoteData) {
+  private getPolicyFileName(inputData: RepoRemoteData | ProjectInputData) {
+    if (this.isProjectData(inputData)) {
+      return `${(inputData as ProjectInputData).slug}.policy.yaml`;
+    }
+
+    const repoData = inputData as RepoRemoteData;
     const provider = slugify(repoData.provider, {
       replacement: '_',
       lower: true,
@@ -241,5 +320,9 @@ export class Synchronizer extends EventEmitter {
 
   private getRepoCacheId(repoData: RepoRemoteData, prefix: string) {
     return `${prefix}-${repoData.provider}-${repoData.owner}-${repoData.name}`;
+  }
+
+  private isProjectData(projectData: any) {
+    return Object.keys(projectData).length === 1 && projectData.slug;
   }
 }
