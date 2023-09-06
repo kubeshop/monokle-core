@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.26.0
+
+### Minor Changes
+
+- d2bcf16: Fingerprint suppressions
+
 ## 0.25.4
 
 ### Patch Changes
