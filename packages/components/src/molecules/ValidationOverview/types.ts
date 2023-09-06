@@ -46,6 +46,7 @@ export type ValidationFiltersValueType = {
   type?: 'error' | 'warning';
   showSuppressed?: boolean;
   showUnsuppressed?: boolean;
+  showAbsent?: boolean;
 };
 
 export type ProblemsType = {

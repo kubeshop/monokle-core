@@ -11,25 +11,34 @@ import {MonokleValidator} from './MonokleValidator.js';
 import kbpPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
 import {Suppressor} from './sarif/suppressions/index.js';
+import {Fixer} from './sarif/fix/index.js';
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
   schemaLoader: SchemaLoader = new SchemaLoader(),
-  suppressors?: Suppressor[]
+  suppressors?: Suppressor[],
+  fixer?: Fixer
 ) {
-  return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader), suppressors);
+  return new MonokleValidator({
+    fixer,
+    parser,
+    schemaLoader,
+    suppressors,
+    loader: createDefaultPluginLoader(parser, schemaLoader),
+  });
 }
 
 export function createDefaultPluginLoader(
   parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
+  schemaLoader: SchemaLoader = new SchemaLoader(),
+  fixer?: Fixer
 ) {
   return async (pluginName: string) => {
     switch (pluginName) {
       case 'pod-security-standards':
-        return new SimpleCustomValidator(pssPlugin, parser);
+        return new SimpleCustomValidator(pssPlugin, parser, fixer);
       case 'practices':
-        return new SimpleCustomValidator(kbpPlugin, parser);
+        return new SimpleCustomValidator(kbpPlugin, parser, fixer);
       case 'open-policy-agent':
         const wasmLoader = new RemoteWasmLoader();
         return new OpenPolicyAgentValidator(parser, wasmLoader);
@@ -39,7 +48,7 @@ export function createDefaultPluginLoader(
         return new YamlValidator(parser);
       case 'labels':
         const labelPlugin = await import('./validators/labels/plugin.js');
-        return new SimpleCustomValidator(labelPlugin.default, parser);
+        return new SimpleCustomValidator(labelPlugin.default, parser, fixer);
       case 'kubernetes-schema':
         return new KubernetesSchemaValidator(parser, schemaLoader);
       case 'metadata':

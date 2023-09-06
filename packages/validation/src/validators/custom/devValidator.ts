@@ -2,6 +2,7 @@ import {ResourceParser} from '../../common/resourceParser.js';
 import {ToolPlugin, ValidationResult, ValidationRun} from '../../common/sarif.js';
 import {CustomSchema, Incremental, Plugin, PluginMetadata, Resource, ValidateOptions} from '../../common/types.js';
 import {RuleMap} from '../../config/parse.js';
+import {Fixer} from '../../sarif/fix/index.js';
 import {Suppressor} from '../../sarif/suppressions/index.js';
 import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../../types.js';
 import {DEV_MODE_TOKEN} from './constants.js';
@@ -32,7 +33,7 @@ export class DevCustomValidator implements Plugin {
   private _debug: boolean = false;
   protected _toolComponentIndex: number = -1;
 
-  constructor(private parser: ResourceParser) {
+  constructor(private parser: ResourceParser, private fixer: Fixer | undefined) {
     this.hmr();
   }
 
@@ -63,7 +64,7 @@ export class DevCustomValidator implements Plugin {
         const dataUrl = `data:text/javascript;base64,${encodedSource}`;
         import(/* @vite-ignore */ dataUrl).then(module => {
           const pluginInit = module.default;
-          const validator = new SimpleCustomValidator(pluginInit, this.parser);
+          const validator = new SimpleCustomValidator(pluginInit, this.parser, this.fixer);
           this._currentValidator = validator;
           if (this._lastConfig) {
             const entries = Object.entries(this._lastConfig.rules ?? {}).map(([key, value]) => {

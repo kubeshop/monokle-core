@@ -5,7 +5,7 @@ import isEqual from 'lodash/isEqual.js';
 import {ResourceParser} from './common/resourceParser.js';
 import type {Suppression, Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
 import type {CustomSchema, Incremental, Plugin, Resource} from './common/types.js';
-import {Config, PluginMap} from './config/parse.js';
+import {Config} from './config/parse.js';
 import {CIS_TAXONOMY} from './taxonomies/cis.js';
 import {NSA_TAXONOMY} from './taxonomies/nsa.js';
 import {PluginMetadataWithConfig, PluginName, RuleMetadataWithConfig, Validator} from './types.js';
@@ -16,23 +16,23 @@ import invariant from './utils/invariant.js';
 import {isDefined} from './utils/isDefined.js';
 import {AnnotationSuppressor, FingerprintSuppressor, Suppressor} from './sarif/suppressions/index.js';
 import {SuppressEngine} from './sarif/suppressions/engine.js';
+import {Fixer} from './sarif/fix/index.js';
+import {SchemaLoader} from './validators/kubernetes-schema/schemaLoader.js';
 
 export type PluginLoader = (name: string, settings?: Record<string, any>) => Promise<Plugin>;
-export type CustomPluginLoader = (name: string, parser: ResourceParser, suppressor?: Suppressor) => Promise<Plugin>;
+export type CustomPluginLoader = (name: string, parser: ResourceParser, fixer?: Fixer) => Promise<Plugin>;
 
-export function createMonokleValidator(loader: PluginLoader, suppressors?: Suppressor[], fallback?: PluginMap) {
-  return new MonokleValidator(loader, suppressors, fallback);
-}
-
-/**
- * The plugins that will be loaded by default.
- */
-const DEFAULT_PLUGIN_MAP = {
-  'kubernetes-schema': true,
-  'yaml-syntax': true,
-  'pod-security-standards': true,
-  'resource-links': true,
+type MonokleInit = {
+  loader: PluginLoader;
+  parser?: ResourceParser;
+  suppressors?: Suppressor[];
+  fixer?: Fixer;
+  schemaLoader?: SchemaLoader;
 };
+
+export function createMonokleValidator(init: MonokleInit) {
+  return new MonokleValidator(init);
+}
 
 const DEFAULT_SUPPRESSORS = [new AnnotationSuppressor(), new FingerprintSuppressor()];
 
@@ -66,20 +66,7 @@ type ValidateParams = {
 };
 
 export class MonokleValidator implements Validator {
-  /**
-   * The user configuration of this validator.
-   */
-  _config?: Config;
-
-  /**
-   * The fallback configuration of this validator.
-   *
-   * This is here for sane defaults, but the moment you
-   * set configuration it's not taken into consideration
-   * to make it easier to reason about what you get.
-   */
-  _fallback: Config;
-
+  _config: Config = {};
   _abortController: AbortController = new AbortController();
   _loading?: Promise<void>;
   _loader: PluginLoader;
@@ -90,19 +77,13 @@ export class MonokleValidator implements Validator {
   _suppressions: Suppression[] = [];
   private _suppressor: SuppressEngine;
 
-  constructor(
-    loader: PluginLoader,
-    suppressors: Suppressor[] = DEFAULT_SUPPRESSORS,
-    fallback: PluginMap = DEFAULT_PLUGIN_MAP
-  ) {
-    this._loader = loader;
-    this._suppressor = new SuppressEngine(suppressors);
-    this._fallback = {plugins: fallback};
-    this._config = this._fallback;
+  constructor(init: MonokleInit) {
+    this._loader = init.loader;
+    this._suppressor = new SuppressEngine(init.suppressors ?? DEFAULT_SUPPRESSORS);
   }
 
   get config(): Config {
-    return this._config ?? this._fallback;
+    return this._config;
   }
 
   get metadata(): Record<PluginName, PluginMetadataWithConfig> {
@@ -116,32 +97,12 @@ export class MonokleValidator implements Validator {
   }
 
   /**
-   * Whether the rule exists in some plugin.
-   *
-   * @params - Either the rule identifier or display name.
-   * @example "KSV013" or "open-policy-agent/no-latest-image"
-   */
-  hasRule(rule: string): boolean {
-    return this._plugins.some(p => p.hasRule(rule));
-  }
-
-  /**
-   * Whether the rule is enabled in some plugin.
-   *
-   * @params rule - Either the rule identifier or display name.
-   * @example "KSV013" or "open-policy-agent/no-latest-image"
-   */
-  isRuleEnabled(rule: string) {
-    return this._plugins.some(p => p.isRuleEnabled(rule));
-  }
-
-  /**
    * Whether the plugin is loaded.
    *
    * @params name - The plugin name.
    * @example "open-policy-agent"
    */
-  isPluginLoaded(name: string): boolean {
+  private isPluginLoaded(name: string): boolean {
     return this._plugins.some(p => p.metadata.name === name);
   }
 
@@ -173,7 +134,7 @@ export class MonokleValidator implements Validator {
    *
    * @param config - the new configuration of the validator.
    */
-  async preload(config?: Config, suppressions?: Suppression[]): Promise<void> {
+  async preload(config: Config): Promise<void> {
     this._config = config;
     this._suppressions = suppressions || [];
     return this.load();
@@ -262,7 +223,6 @@ export class MonokleValidator implements Validator {
           settings: config.settings,
         })
       ),
-      this._suppressor.preload(this._suppressions),
     ]);
   }
 
@@ -486,7 +446,7 @@ export class MonokleValidator implements Validator {
 
     const pluginNames = this.getPlugins().map(p => p.metadata.name);
     await this.doUnload(pluginNames);
-    this._config = undefined;
+    this._config = {};
     this._failedPlugins = [];
   }
 

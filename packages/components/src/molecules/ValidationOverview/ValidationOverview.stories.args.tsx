@@ -63,6 +63,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
     version: '2.1.0',
     runs: [
       {
+        baselineGuid: '1',
         automationDetails: {
           guid: '123',
         },
@@ -1045,6 +1046,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
         results: [
           {
             ruleId: 'K8S001',
+            baselineState: 'unchanged',
             rule: {
               id: 'K8S001',
               index: 0,
@@ -1096,6 +1098,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'K8S001',
+            baselineState: 'unchanged',
             rule: {
               id: 'K8S001',
               index: 0,
@@ -1153,6 +1156,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'K8S001',
+            baselineState: 'unchanged',
             rule: {
               id: 'K8S001',
               index: 0,
@@ -1205,6 +1209,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'LNK001',
+            baselineState: 'unchanged',
             rule: {
               id: 'LNK001',
               index: 0,
@@ -1256,6 +1261,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'LNK001',
+            baselineState: 'updated',
             rule: {
               id: 'LNK001',
               index: 0,
@@ -1307,6 +1313,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'LNK001',
+            baselineState: 'unchanged',
             rule: {
               id: 'LNK001',
               index: 0,
@@ -1358,6 +1365,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'LNK001',
+            baselineState: 'unchanged',
             rule: {
               id: 'LNK001',
               index: 0,
@@ -1410,6 +1418,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'LNK001',
+            baselineState: 'unchanged',
             rule: {
               id: 'LNK001',
               index: 0,
@@ -1462,6 +1471,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV001',
+            baselineState: 'new',
             rule: {
               id: 'KSV001',
               index: 0,
@@ -1529,6 +1539,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV003',
+            baselineState: 'absent',
             rule: {
               id: 'KSV003',
               index: 2,
@@ -1580,6 +1591,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV011',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV011',
               index: 8,
@@ -1640,6 +1652,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV012',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV012',
               index: 9,
@@ -1691,6 +1704,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV013',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV013',
               index: 10,
@@ -1742,6 +1756,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV014',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV014',
               index: 11,
@@ -1844,6 +1859,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV016',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV016',
               index: 13,
@@ -1895,6 +1911,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV018',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV018',
               index: 15,
@@ -1946,6 +1963,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV020',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV020',
               index: 16,
@@ -1997,6 +2015,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV021',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV021',
               index: 17,
@@ -2048,6 +2067,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV001',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV001',
               index: 0,
@@ -2115,6 +2135,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV003',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV003',
               index: 2,
@@ -2166,6 +2187,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV011',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV011',
               index: 8,
@@ -2226,6 +2248,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV012',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV012',
               index: 9,
@@ -2277,6 +2300,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV013',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV013',
               index: 10,
@@ -2328,6 +2352,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV014',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV014',
               index: 11,
@@ -2379,6 +2404,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV015',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV015',
               index: 12,
@@ -2430,6 +2456,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV016',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV016',
               index: 13,
@@ -2481,6 +2508,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV018',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV018',
               index: 15,
@@ -2532,6 +2560,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV020',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV020',
               index: 16,
@@ -2583,6 +2612,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV021',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV021',
               index: 17,
@@ -2634,6 +2664,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV001',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV001',
               index: 0,
@@ -2702,6 +2733,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV003',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV003',
               index: 2,
@@ -2754,6 +2786,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV011',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV011',
               index: 8,
@@ -2815,6 +2848,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV012',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV012',
               index: 9,
@@ -2867,6 +2901,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV014',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV014',
               index: 11,
@@ -2919,6 +2954,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV015',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV015',
               index: 12,
@@ -2971,6 +3007,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV016',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV016',
               index: 13,
@@ -3023,6 +3060,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV018',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV018',
               index: 15,
@@ -3075,6 +3113,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV020',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV020',
               index: 16,
@@ -3127,6 +3166,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV021',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV021',
               index: 17,
@@ -3179,6 +3219,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV029',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV029',
               index: 23,
@@ -3231,6 +3272,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV001',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV001',
               index: 0,
@@ -3298,6 +3340,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV001',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV001',
               index: 0,
@@ -3365,6 +3408,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV003',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV003',
               index: 2,
@@ -3416,6 +3460,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV003',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV003',
               index: 2,
@@ -3467,6 +3512,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV011',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV011',
               index: 8,
@@ -3527,6 +3573,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV011',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV011',
               index: 8,
@@ -3587,6 +3634,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV012',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV012',
               index: 9,
@@ -3638,6 +3686,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV012',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV012',
               index: 9,
@@ -3689,6 +3738,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV013',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV013',
               index: 10,
@@ -3740,6 +3790,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV013',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV013',
               index: 10,
@@ -3791,6 +3842,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV014',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV014',
               index: 11,
@@ -3842,6 +3894,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV014',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV014',
               index: 11,
@@ -3893,6 +3946,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV015',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV015',
               index: 12,
@@ -3944,6 +3998,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV015',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV015',
               index: 12,
@@ -3995,6 +4050,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV016',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV016',
               index: 13,
@@ -4046,6 +4102,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV016',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV016',
               index: 13,
@@ -4097,6 +4154,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV018',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV018',
               index: 15,
@@ -4148,6 +4206,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV018',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV018',
               index: 15,
@@ -4199,6 +4258,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV020',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV020',
               index: 16,
@@ -4250,6 +4310,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV020',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV020',
               index: 16,
@@ -4301,6 +4362,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV021',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV021',
               index: 17,
@@ -4352,6 +4414,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV021',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV021',
               index: 17,
@@ -4403,6 +4466,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV001',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV001',
               index: 0,
@@ -4470,6 +4534,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV003',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV003',
               index: 2,
@@ -4521,6 +4586,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV011',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV011',
               index: 8,
@@ -4581,6 +4647,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV012',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV012',
               index: 9,
@@ -4632,6 +4699,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV013',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV013',
               index: 10,
@@ -4683,6 +4751,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV014',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV014',
               index: 11,
@@ -4734,6 +4803,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV015',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV015',
               index: 12,
@@ -4785,6 +4855,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV016',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV016',
               index: 13,
@@ -4836,6 +4907,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV018',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV018',
               index: 15,
@@ -4887,6 +4959,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV020',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV020',
               index: 16,
@@ -4938,6 +5011,7 @@ export const MainValidationOverviewArgs: ValidationOverviewType = {
           },
           {
             ruleId: 'KSV021',
+            baselineState: 'unchanged',
             rule: {
               id: 'KSV021',
               index: 17,

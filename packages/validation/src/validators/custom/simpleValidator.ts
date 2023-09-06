@@ -1,16 +1,19 @@
 import {paramCase, sentenceCase} from 'change-case';
 import keyBy from 'lodash/keyBy.js';
-import {Document, isNode, Node, ParsedNode} from 'yaml';
+import set from 'lodash/set.js';
+import {Document, Node, ParsedNode, isNode} from 'yaml';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
-import {ValidationResult, RuleMetadata} from '../../common/sarif.js';
+import {RuleMetadata, ValidationResult} from '../../common/sarif.js';
 import {PluginMetadata, Resource, ValidateOptions} from '../../common/types.js';
+import {Fixer} from '../../sarif/fix/index.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
-import {PluginInit, ReportArgs, Resource as PlainResource, RuleInit} from './config.js';
+import {Resource as PlainResource, PluginInit, ReportArgs, RuleInit} from './config.js';
 
 type Runtime = {
   validate: RuleInit['validate'];
+  fix: RuleInit['fix'];
 };
 
 type PlainResourceWithId = PlainResource & {_id: string};
@@ -22,10 +25,12 @@ export class SimpleCustomValidator extends AbstractPlugin {
   private _parser: ResourceParser;
   private _settings: any = {};
   private _ruleRuntime: Record<string, Runtime>;
+  private _fixer: Fixer | undefined;
 
-  constructor(plugin: PluginInit, parser: ResourceParser) {
+  constructor(plugin: PluginInit, parser: ResourceParser, fixer: Fixer | undefined) {
     super(toPluginMetadata(plugin), toSarifRules(plugin));
     this._parser = parser;
+    this._fixer = fixer;
     this._ruleRuntime = toRuntime(plugin);
   }
 
@@ -35,7 +40,6 @@ export class SimpleCustomValidator extends AbstractPlugin {
 
   async doValidate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
-    const resourceMap = keyBy(resources, r => r.id);
 
     const clonedResources: PlainResourceWithId[] = resources.map(r =>
       JSON.parse(JSON.stringify({...r.content, _id: r.id}))
@@ -43,6 +47,9 @@ export class SimpleCustomValidator extends AbstractPlugin {
     const dirtyResources = options.incremental
       ? clonedResources.filter(r => options.incremental?.resourceIds.includes(r._id))
       : clonedResources;
+
+    const resourceMap = keyBy(resources, r => r.id);
+    const clonedResourceMap = keyBy(resources, r => r.id);
 
     for (const rule of this.rules) {
       const ruleConfig = this.getRuleConfig(rule.id);
@@ -57,7 +64,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
         await validate(
           {
             resources: dirtyResources,
-            allResources: resources,
+            allResources: clonedResources,
             settings: this._settings,
             params: rule.properties?.configMetadata ? ruleConfig.parameters?.configValue : undefined,
           },
@@ -67,7 +74,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
               return this._parser.parse(resource).parsedDoc;
             },
             report: (res, args) => {
-              const resource = resourceMap[(res as PlainResourceWithId)._id];
+              const resource = clonedResourceMap[(res as PlainResourceWithId)._id];
               const result = this.adaptToValidationResult(rule, resource, args, options);
               if (!result) return;
               results.push(result);
@@ -115,12 +122,38 @@ export class SimpleCustomValidator extends AbstractPlugin {
 
     const locations = createLocations(resource, region, path);
 
-    return this.createValidationResult(rule.id, {
+    const result = this.createValidationResult(rule.id, {
       message: {
         text: args.message ?? rule.shortDescription.text,
       },
       locations,
     });
+
+    if (result && this._fixer) {
+      const {fix} = this._ruleRuntime[rule.id];
+
+      const fixedResource = JSON.parse(JSON.stringify(resource.content));
+
+      fix?.(
+        {
+          resource: fixedResource,
+          problem: result,
+          path: args.path,
+        },
+        {
+          set: (resource: Resource['content'], path: string, value: any) => {
+            set(resource, path.split('.'), value);
+          },
+        }
+      );
+
+      if (fixedResource) {
+        delete fixedResource['_id'];
+        result.fixes = this._fixer?.createFix(resource, fixedResource, this._parser);
+      }
+    }
+
+    return result;
   }
 }
 
@@ -206,7 +239,7 @@ function toSarifRules(plugin: PluginInit): RuleMetadata[] {
 
 function toRuntime(plugin: PluginInit): Record<string, Runtime> {
   const entries = Object.entries(plugin.rules).map(([_, rule]) => {
-    return [toRuleId(plugin.id, rule.id), {validate: rule.validate}];
+    return [toRuleId(plugin.id, rule.id), {validate: rule.validate, fix: rule.fix}];
   });
 
   return Object.fromEntries(entries);
