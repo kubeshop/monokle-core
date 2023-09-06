@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.7.0
+
+### Minor Changes
+
+- 1a75af3: Exposed API to get policy by project slug
+
 ## 0.6.0
 
 ### Minor Changes
