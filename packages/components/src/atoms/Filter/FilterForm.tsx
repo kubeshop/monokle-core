@@ -18,7 +18,7 @@ type FieldProps = PropsWithChildren<{
 export function FilterField({name, children}: FieldProps) {
   return (
     <FieldItem>
-      <span>{name}</span>
+      <strong>{name}</strong>
       {children}
     </FieldItem>
   );
@@ -28,8 +28,9 @@ const FieldItem = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: 3px;
+  gap: 8px;
   color: ${Colors.grey9};
+  margin-bottom: 8px;
 
   & .ant-select-clear {
     border-radius: 50% !important;

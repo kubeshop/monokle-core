@@ -9,7 +9,6 @@ import {
   ValidationResult,
 } from '@monokle/validation';
 import {ProblemsType, GroupByFilterOptionType, ValidationFiltersValueType, ValidationListNode} from './types';
-import {isSuppressed} from '@monokle/validation';
 
 export const selectProblemsByRule = (
   validationResponse: ValidationResponse,
@@ -104,13 +103,19 @@ export const filterProblems = (
   filters: ValidationFiltersValueType,
   securityFrameworkFilter: string
 ) => {
-  const suppressionFilter = filters.showSuppressed ? () => true : (problem: ValidationResult) => !isSuppressed(problem);
+  const suppressedFilter = filters.showSuppressed
+    ? () => true
+    : (problem: ValidationResult) => !problem.suppressions?.length;
+  const unsuppressedFilter = filters.showUnsuppressed
+    ? () => true
+    : (problem: ValidationResult) => problem.suppressions?.length;
 
   return Object.fromEntries(
     Object.entries(problems || {})
       .map(([filePath, validationResults]) => {
         let filteredValidationResults = validationResults
-          .filter(suppressionFilter)
+          .filter(suppressedFilter)
+          .filter(unsuppressedFilter)
           .filter(
             el =>
               (filters['type'] ? el.level === filters['type'] : true) &&

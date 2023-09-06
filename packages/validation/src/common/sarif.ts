@@ -68,6 +68,10 @@ export type Suppression = {
   status: SuppressionStatus;
   justification?: string;
 };
+
+export type ExternalSuppression = Suppression & {
+  guid: string;
+};
 export type SuppressionKind = 'inSource' | 'external';
 export type SuppressionStatus = 'underReview' | 'accepted' | 'rejected';
 

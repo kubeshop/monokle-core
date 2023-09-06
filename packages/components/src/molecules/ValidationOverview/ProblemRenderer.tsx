@@ -1,14 +1,14 @@
-import {useMemo} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {Button, Tag, Tooltip} from 'antd';
 import {Colors} from '@/styles/Colors';
-import {ProblemNode, GroupByFilterOptionType} from './types';
-import {getFileLocation, isSuppressed, RuleMetadata, ValidationResult} from '@monokle/validation';
+import {ProblemNode, GroupByFilterOptionType, SuppressionBindings} from './types';
+import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
 import {Icon, ProblemIcon, TextEllipsis} from '@/atoms';
 import {iconMap} from './constants';
-import {EyeInvisibleOutlined, SettingOutlined} from '@ant-design/icons';
+import {EyeInvisibleOutlined, EyeOutlined, FieldTimeOutlined, SettingOutlined} from '@ant-design/icons';
 
 type IProps = {
   node: ProblemNode;
@@ -18,24 +18,41 @@ type IProps = {
   onClick: () => void;
   setSecurityFrameworkFilter: (value: string) => void;
   onConfigureRuleHandler: (problem: ValidationResult) => void;
-  onProblemSuppressHandler?: (problem: ValidationResult) => void;
   onAutofixHandler?: (problem: ValidationResult) => void;
+  suppressionBindings?: SuppressionBindings;
 };
 
 const ProblemRenderer: React.FC<IProps> = props => {
   const {node, rule, selectedProblem, groupByFilterValue, onClick, setSecurityFrameworkFilter} = props;
-  const {onConfigureRuleHandler, onProblemSuppressHandler, onAutofixHandler} = props;
+  const {onConfigureRuleHandler, suppressionBindings, onAutofixHandler} = props;
 
   const isSelected = useMemo(
     () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem, groupByFilterValue) : false),
     [selectedProblem, node.problem, groupByFilterValue]
   );
-  const suppressed = isSuppressed(node.problem);
+
+  const isUnderReview = useMemo(() => {
+    return Boolean(
+      typeof suppressionBindings?.isUnderReview == 'function' && suppressionBindings.isUnderReview(node.problem)
+    );
+  }, [node.problem, suppressionBindings?.isUnderReview]);
+
+  const [suppressed, toggleSuppressed] = useState(
+    Boolean(typeof suppressionBindings?.isSuppressed == 'function' && suppressionBindings.isSuppressed(node.problem))
+  );
+  useEffect(() => {
+    toggleSuppressed(
+      Boolean(typeof suppressionBindings?.isSuppressed == 'function' && suppressionBindings.isSuppressed(node.problem))
+    );
+  }, [node.problem, suppressionBindings?.isSuppressed]);
+
+  const showSuppressionCTA = typeof suppressionBindings?.onToggleSuppression == 'function';
 
   return (
     <Row
       $isSelected={isSelected}
       $isSuppressed={suppressed}
+      $isUnderReview={isUnderReview}
       $secondary={groupByFilterValue === 'group-by-rule'}
       onClick={onClick}
     >
@@ -101,21 +118,62 @@ const ProblemRenderer: React.FC<IProps> = props => {
         </>
       )}
 
-      <ActionsContainer $isSelected={isSelected} onClick={e => e.stopPropagation()}>
+      <ActionsContainer onClick={e => e.stopPropagation()}>
         {onAutofixHandler && (
           <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Autofix">
             <Icon name="magic-wand" onClick={() => onAutofixHandler(node.problem)} />
           </Tooltip>
         )}
 
-        {onProblemSuppressHandler && (
-          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Suppress rule">
-            <EyeInvisibleOutlined onClick={() => onProblemSuppressHandler(node.problem)} />
+        {showSuppressionCTA ? (
+          <Tooltip
+            mouseEnterDelay={TOOLTIP_DELAY}
+            title={
+              isUnderReview
+                ? suppressionBindings?.hasPermissions
+                  ? 'Click to review'
+                  : 'Pending review'
+                : suppressed
+                ? 'Unsuppress rule'
+                : 'Suppress rule'
+            }
+          >
+            {isUnderReview ? (
+              <FieldTimeOutlined
+                style={{color: isSelected ? Colors.blackPure : Colors.goldWarning}}
+                onClick={() => {
+                  suppressionBindings.onToggleSuppression!(node.problem);
+                }}
+              />
+            ) : suppressed ? (
+              suppressionBindings.hasPermissions ? (
+                <EyeOutlined
+                  style={{color: isSelected ? Colors.blackPure : Colors.blue7}}
+                  onClick={() => {
+                    suppressionBindings.onToggleSuppression!(node.problem);
+                    // eager update
+                    toggleSuppressed(false);
+                  }}
+                />
+              ) : null
+            ) : (
+              <EyeInvisibleOutlined
+                style={{color: isSelected ? Colors.blackPure : Colors.blue7}}
+                onClick={() => {
+                  suppressionBindings.onToggleSuppression!(node.problem);
+                  // eager update
+                  toggleSuppressed(true);
+                }}
+              />
+            )}
           </Tooltip>
-        )}
+        ) : null}
 
         <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Configure rule">
-          <SettingOutlined onClick={() => onConfigureRuleHandler(node.problem)} />
+          <SettingOutlined
+            style={{color: isSelected ? Colors.blackPure : Colors.blue7}}
+            onClick={() => onConfigureRuleHandler(node.problem)}
+          />
         </Tooltip>
       </ActionsContainer>
     </Row>
@@ -126,14 +184,13 @@ export default ProblemRenderer;
 
 // Styled components
 
-const ActionsContainer = styled.div<{$isSelected: boolean}>`
+const ActionsContainer = styled.div`
   display: none;
   margin-left: auto;
   align-items: center;
   gap: 16px;
 
   & .anticon {
-    color: ${({$isSelected}) => ($isSelected ? Colors.blackPure : Colors.blue7)}!important;
     font-size: 16px;
   }
 `;
@@ -152,7 +209,7 @@ const ProblemText = styled.div<{$isSuppressed: boolean}>`
   text-overflow: ellipsis;
 `;
 
-const Row = styled.div<{$isSelected: boolean; $secondary: boolean; $isSuppressed: boolean}>`
+const Row = styled.div<{$isSelected: boolean; $secondary: boolean; $isSuppressed: boolean; $isUnderReview?: boolean}>`
   display: flex;
   align-items: center;
   gap: 16px;
@@ -160,7 +217,8 @@ const Row = styled.div<{$isSelected: boolean; $secondary: boolean; $isSuppressed
   font-weight: ${({$isSelected}) => ($isSelected ? '700' : '400')};
   color: ${({$isSelected, $isSuppressed, $secondary}) =>
     $isSuppressed ? Colors.grey6 : $isSelected ? Colors.grey2 : $secondary ? Colors.grey8 : Colors.whitePure};
-  background-color: ${({$isSelected}) => ($isSelected ? Colors.blue9 : 'transparent')};
+  background-color: ${({$isSelected, $isUnderReview}) =>
+    $isSelected ? Colors.blue9 : $isUnderReview ? 'rgba(248, 199, 141, 0.15)' : 'transparent'};
   transition: all 0.15s ease-in;
   flex-wrap: nowrap;
 

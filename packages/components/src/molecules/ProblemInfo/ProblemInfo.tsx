@@ -1,11 +1,17 @@
 import {Colors} from '@/styles/Colors';
 import {getFileLocation} from '@monokle/validation';
 import {Button, Descriptions, Tooltip} from 'antd';
-import {useMemo} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {ProblemInfoType} from './types';
 import {renderToolComponentName} from './utils';
-import {ArrowRightOutlined, SettingOutlined} from '@ant-design/icons';
+import {
+  ArrowRightOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
+  FieldTimeOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import {TOOLTIP_DELAY} from '@/constants';
 import {renderSeverityIcon} from '../ValidationOverview/utils';
 import {Icon, ProblemIcon} from '@/atoms';
@@ -13,7 +19,7 @@ import {iconMap} from '../ValidationOverview/constants';
 import {SecurityFrameworkTag} from '../ValidationOverview/ProblemRenderer';
 
 const ProblemInfo: React.FC<ProblemInfoType> = props => {
-  const {containerClassName = '', containerStyle = {}, problem, rule} = props;
+  const {containerClassName = '', containerStyle = {}, problem, rule, suppressionBindings} = props;
   const {onConfigureRule, onHelpURLClick, onLocationClick} = props;
 
   const errorLocation = useMemo(() => getFileLocation(problem), [problem]);
@@ -22,11 +28,28 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
     [problem.message.text]
   );
 
+  const isUnderReview = useMemo(() => {
+    return Boolean(
+      typeof suppressionBindings?.isUnderReview == 'function' && suppressionBindings.isUnderReview(problem)
+    );
+  }, [problem, suppressionBindings?.isUnderReview]);
+
+  const [suppressed, toggleSuppressed] = useState(
+    Boolean(typeof suppressionBindings?.isSuppressed == 'function' && suppressionBindings.isSuppressed(problem))
+  );
+
+  useEffect(() => {
+    toggleSuppressed(
+      Boolean(typeof suppressionBindings?.isSuppressed == 'function' && suppressionBindings.isSuppressed(problem))
+    );
+  }, [problem, suppressionBindings?.isSuppressed]);
+
+  const showSuppressionCTA = typeof suppressionBindings?.onToggleSuppression == 'function';
+
   return (
     <ProblemInfoContainer className={containerClassName} style={containerStyle}>
       <TitleContainer>
-        {title}
-
+        {suppressed ? <s style={{color: Colors.grey7}}>{title}</s> : title}
         <IconsContainer>
           <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Problem type">
             <div>
@@ -52,22 +75,68 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
               ))
             : null}
         </IconsContainer>
-
-        <Tooltip
-          mouseEnterDelay={TOOLTIP_DELAY}
-          title="Enable / disable rule, change priority, access all the rules in this plugin."
-        >
-          <Button type="link" icon={<SettingOutlined />} onClick={onConfigureRule}>
-            Configure rule
-          </Button>
-        </Tooltip>
+        <Spacer />
+        <Actions>
+          {showSuppressionCTA ? (
+            <Tooltip
+              mouseEnterDelay={TOOLTIP_DELAY}
+              title={
+                isUnderReview
+                  ? suppressionBindings?.hasPermissions
+                    ? 'Click to review'
+                    : 'Pending review'
+                  : suppressed
+                  ? 'Unsuppress rule'
+                  : 'Suppress rule'
+              }
+            >
+              {isUnderReview ? (
+                <Button
+                  type="link"
+                  onClick={() => {
+                    suppressionBindings.onToggleSuppression!(problem);
+                  }}
+                  icon={<FieldTimeOutlined style={{color: Colors.goldWarning}} />}
+                ></Button>
+              ) : suppressed ? (
+                suppressionBindings.hasPermissions ? (
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      suppressionBindings.onToggleSuppression!(problem);
+                      // eager update
+                      toggleSuppressed(false);
+                    }}
+                    icon={<EyeOutlined />}
+                  />
+                ) : null
+              ) : (
+                <Button
+                  type="link"
+                  onClick={() => {
+                    suppressionBindings.onToggleSuppression!(problem);
+                    // eager update
+                    toggleSuppressed(true);
+                  }}
+                  icon={<EyeInvisibleOutlined />}
+                />
+              )}
+            </Tooltip>
+          ) : null}
+          <Tooltip
+            mouseEnterDelay={TOOLTIP_DELAY}
+            title="Enable / disable rule, change priority, access all the rules in this plugin."
+          >
+            <Button type="link" icon={<SettingOutlined />} onClick={onConfigureRule}></Button>
+          </Tooltip>
+        </Actions>
       </TitleContainer>
 
       <TopInfoContainer>
         {renderToolComponentName(problem.rule.toolComponent.name)} <span>|</span> {rule.name} <span>|</span> {rule.id}
       </TopInfoContainer>
 
-      <ProblemInfoContent title={null} column={1} colon={false}>
+      <ProblemInfoContent $isSuppressed={suppressed} title={null} column={1} colon={false}>
         <Descriptions.Item label="Description">
           {rule.fullDescription?.text || rule.shortDescription.text}
         </Descriptions.Item>
@@ -124,7 +193,7 @@ const ProblemInfoContainer = styled.div`
   background: transparent;
 `;
 
-const ProblemInfoContent = styled(Descriptions)`
+const ProblemInfoContent = styled(Descriptions)<{$isSuppressed?: boolean}>`
   .ant-descriptions-item {
     padding-bottom: 8px !important;
   }
@@ -135,7 +204,7 @@ const ProblemInfoContent = styled(Descriptions)`
   }
 
   .ant-descriptions-item-content {
-    color: ${Colors.grey9};
+    color: ${({$isSuppressed}) => ($isSuppressed ? Colors.grey7 : Colors.grey9)};
   }
 `;
 
@@ -146,10 +215,6 @@ const TitleContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-
-  & .ant-btn-link {
-    margin-left: auto;
-  }
 `;
 
 const TopInfoContainer = styled.div`
@@ -161,4 +226,14 @@ const TopInfoContainer = styled.div`
     margin: 0 8px;
     font-weight: 300;
   }
+`;
+
+const Spacer = styled.span`
+  flex: auto;
+`;
+
+const Actions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
 `;

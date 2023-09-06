@@ -3,7 +3,7 @@ import clone from 'lodash/clone.js';
 import difference from 'lodash/difference.js';
 import isEqual from 'lodash/isEqual.js';
 import {ResourceParser} from './common/resourceParser.js';
-import type {Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
+import type {Suppression, Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
 import type {CustomSchema, Incremental, Plugin, Resource} from './common/types.js';
 import {Config, PluginMap} from './config/parse.js';
 import {CIS_TAXONOMY} from './taxonomies/cis.js';
@@ -14,7 +14,7 @@ import {extractSchema, findDefaultVersion} from './utils/customResourceDefinitio
 import {PluginLoadError} from './utils/error.js';
 import invariant from './utils/invariant.js';
 import {isDefined} from './utils/isDefined.js';
-import {AnnotationSuppressor, Suppressor} from './sarif/suppressions/index.js';
+import {AnnotationSuppressor, FingerprintSuppressor, Suppressor} from './sarif/suppressions/index.js';
 import {SuppressEngine} from './sarif/suppressions/engine.js';
 
 export type PluginLoader = (name: string, settings?: Record<string, any>) => Promise<Plugin>;
@@ -34,7 +34,7 @@ const DEFAULT_PLUGIN_MAP = {
   'resource-links': true,
 };
 
-const DEFAULT_SUPPRESSORS = [new AnnotationSuppressor()];
+const DEFAULT_SUPPRESSORS = [new AnnotationSuppressor(), new FingerprintSuppressor()];
 
 type ValidateParams = {
   /**
@@ -87,6 +87,7 @@ export class MonokleValidator implements Validator {
   _plugins: Plugin[] = [];
   _failedPlugins: string[] = [];
   _customSchemas: Set<string> = new Set();
+  _suppressions: Suppression[] = [];
   private _suppressor: SuppressEngine;
 
   constructor(
@@ -172,8 +173,9 @@ export class MonokleValidator implements Validator {
    *
    * @param config - the new configuration of the validator.
    */
-  async preload(config?: Config): Promise<void> {
+  async preload(config?: Config, suppressions?: Suppression[]): Promise<void> {
     this._config = config;
+    this._suppressions = suppressions || [];
     return this.load();
   }
 
@@ -253,14 +255,15 @@ export class MonokleValidator implements Validator {
     }
 
     // Configure validators
-    await Promise.allSettled(
-      this._plugins.map(p =>
+    await Promise.allSettled([
+      ...this._plugins.map(p =>
         p.configure({
           rules: config.rules,
           settings: config.settings,
         })
-      )
-    );
+      ),
+      this._suppressor.preload(this._suppressions),
+    ]);
   }
 
   private async doUnload(plugins: string[]) {
@@ -301,8 +304,6 @@ export class MonokleValidator implements Validator {
 
     this.preprocessCustomResourceDefinitions(resources);
 
-    new SuppressEngine().preload();
-
     const allRuns = await Promise.allSettled(validators.map(v => v.validate(resources, {incremental})));
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
@@ -333,6 +334,14 @@ export class MonokleValidator implements Validator {
       this.compareWithBaseline(result, baseline);
     }
 
+    return this.applySuppressions(result, resources);
+  }
+
+  async applySuppressions(result: ValidationResponse, resources: Resource[], suppressions?: Suppression[]) {
+    if (suppressions) {
+      this._suppressions = suppressions;
+      await this._suppressor.preload(suppressions);
+    }
     await this._suppressor.suppress(result, resources, {
       noInSourceSuppressions: this._config?.settings?.noInSourceSuppressions,
       noExternalSuppressions: this._config?.settings?.noExternalSuppressions,
