@@ -3,20 +3,27 @@ import {FingerprintSuppression, Suppressor} from '../types.js';
 
 export class FingerprintSuppressor implements Suppressor<FingerprintSuppression> {
   kind: SuppressionKind = 'external';
-
   suppressions: FingerprintSuppression[] = [];
+  suppressionsMap: Map<FingerprintSuppression['fingerprint'], FingerprintSuppression> = new Map();
 
-  preload(s: FingerprintSuppression[]): Promise<void> {
-    this.suppressions = s;
+  preload(suppressions: FingerprintSuppression[]): Promise<void> {
+    this.suppressions = suppressions;
+    this.suppressionsMap.clear();
+
+    for (const suppression of suppressions) {
+      if (suppression.kind === this.kind && suppression.fingerprint) {
+        this.suppressionsMap.set(suppression.fingerprint, suppression);
+      }
+    }
+
     return Promise.resolve();
   }
 
   suppress(problem: ValidationResult): Suppression[] | Promise<Suppression[]> {
-    const suppression = this.suppressions.find(s => {
-      return s.fingerprint && s.kind === this.kind && s.fingerprint === problem.fingerprints?.['monokleHash/v1'];
-    });
+    const fingerprint = problem.fingerprints?.['monokleHash/v1'];
+    if (!fingerprint) return [];
+    const suppression = this.suppressionsMap.get(fingerprint);
 
-    suppression && problem.suppressions?.push(suppression);
     return suppression
       ? [
           {
