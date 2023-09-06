@@ -1,5 +1,6 @@
 import {Location, RuleMetadata, ValidationResult} from '@monokle/validation';
 import React from 'react';
+import {SuppressionBindings} from '../ValidationOverview/types';
 
 export type ProblemInfoType = {
   problem: ValidationResult;
@@ -9,4 +10,5 @@ export type ProblemInfoType = {
   containerClassName?: string;
   containerStyle?: React.CSSProperties;
   onLocationClick?: (location: Location) => void;
+  suppressionBindings?: SuppressionBindings;
 };

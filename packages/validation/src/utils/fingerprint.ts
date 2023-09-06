@@ -18,7 +18,7 @@ function monokleHashV1(result: ValidationResult): string {
   const tool = result.rule.toolComponent.name;
   const rule = result.rule.id;
   const resource = result.locations[1].logicalLocations?.find(l => l.kind === 'resource')?.fullyQualifiedName;
-  const yamlPath = result.locations[1].logicalLocations?.find(l => l.kind === 'element')?.name;
+  const yamlPath = result.locations[1].logicalLocations?.find(l => l.kind === 'element')?.fullyQualifiedName;
 
   const stableIdentifier = `${tool}#${rule}#${resource}#${yamlPath}`;
   return fastHash(stableIdentifier);

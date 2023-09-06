@@ -1,5 +1,12 @@
 import {ValidationResponse, ValidationResult} from '@monokle/validation';
 
+export interface SuppressionBindings {
+  onToggleSuppression?: (problem: ValidationResult) => void;
+  isSuppressed?: (problem: ValidationResult) => boolean;
+  isUnderReview?: (problem: ValidationResult) => boolean;
+  hasPermissions?: boolean;
+}
+
 export type ValidationOverviewType = {
   status: 'uninitialized' | 'loading' | 'error' | 'loaded';
   validationResponse: ValidationResponse;
@@ -22,7 +29,7 @@ export type ValidationOverviewType = {
   onSecurityFrameworkFilterChange?: (securityFramework: string, from: 'dropdown' | 'tag') => void;
   onGroupByFilterChange?: (groupByFilterValue: GroupByFilterOptionType) => void;
   onConfigureRule: (problem: ValidationResult) => void;
-  onProblemSuppress?: (problem: ValidationResult) => void;
+  suppressionBindings?: SuppressionBindings;
   onProblemAutofix?: (problem: ValidationResult) => void;
 };
 
@@ -38,6 +45,7 @@ export type ValidationFiltersValueType = {
   'tool-component'?: string[];
   type?: 'error' | 'warning';
   showSuppressed?: boolean;
+  showUnsuppressed?: boolean;
 };
 
 export type ProblemsType = {

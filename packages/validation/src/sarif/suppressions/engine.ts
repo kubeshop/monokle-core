@@ -3,8 +3,9 @@ import {AnnotationSuppressor} from './plugins/AnnotationSuppressor.js';
 import {Suppressor} from './types.js';
 import type {Resource} from '../../common/types.js';
 import keyBy from 'lodash/keyBy.js';
+import {FingerprintSuppressor} from './plugins/FingerprintSuppressor.js';
 
-const DEFAULT_SUPPRESSORS = [new AnnotationSuppressor()];
+const DEFAULT_SUPPRESSORS = [new AnnotationSuppressor(), new FingerprintSuppressor()];
 
 type SuppressOptions = {
   noInSourceSuppressions?: boolean;
@@ -14,8 +15,8 @@ type SuppressOptions = {
 export class SuppressEngine {
   constructor(private suppressors: Suppressor[] = DEFAULT_SUPPRESSORS) {}
 
-  async preload() {
-    return Promise.allSettled(this.suppressors.map(s => s.preload()));
+  async preload(suppressions: Suppression[]) {
+    return Promise.allSettled(this.suppressors.map(s => s.preload(suppressions)));
   }
 
   private getSuppressors(options: SuppressOptions) {

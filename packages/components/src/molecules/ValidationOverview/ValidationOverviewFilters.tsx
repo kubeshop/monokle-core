@@ -1,11 +1,12 @@
 import {Filter, FilterButton, FilterField, ProblemIcon} from '@/atoms';
-import {Badge, Select, Space, Switch} from 'antd';
-import {useMemo, useState} from 'react';
+import {Badge, Checkbox, Select, Space, Switch} from 'antd';
+import {useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {DEFAULT_FILTERS_VALUE} from './constants';
 import {ValidationOverviewFiltersType} from './types';
 import {uppercaseFirstLetter} from './utils';
 import {Colors} from '@/styles/Colors';
+import {CheckboxChangeEvent} from 'antd/lib/checkbox';
 
 const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props => {
   const {onSearch, onFiltersChange, filtersValue, searchValue, activePlugins} = props;
@@ -27,6 +28,33 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
     [filtersValue]
   );
 
+  const [hideSuppressed, setHideSuppressed] = useState(!filtersValue['showSuppressed']);
+  const [showSuppressedOnly, setShowSuppressedOnly] = useState(!filtersValue['showUnsuppressed'] && !hideSuppressed);
+
+  const onChangeHideSuppressed = (e: CheckboxChangeEvent) => {
+    const value = e.target.checked;
+    setHideSuppressed(value);
+    if (value) {
+      setShowSuppressedOnly(!value);
+    }
+  };
+
+  const onChangeShowSuppressedOnly = (e: CheckboxChangeEvent) => {
+    const value = e.target.checked;
+    setShowSuppressedOnly(value);
+    if (value) {
+      setHideSuppressed(!value);
+    }
+  };
+
+  useEffect(() => {
+    onFiltersChange({
+      ...filtersValue,
+      showSuppressed: !hideSuppressed,
+      showUnsuppressed: !showSuppressedOnly,
+    });
+  }, [hideSuppressed, showSuppressedOnly]);
+
   return (
     <Filter
       hasActiveFilters={appliedFiltersCount > 0}
@@ -44,14 +72,16 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
       onToggle={() => setActive(!active)}
     >
       <FilterField name="Suppressions">
-        <Space>
-          <Switch
-            checked={filtersValue['showSuppressed']}
-            size="small"
-            onChange={value => onFiltersChange({showSuppressed: Boolean(value)})}
-          />
-          <div>Show suppressed problems</div>
-        </Space>
+        <span>
+          <Checkbox checked={hideSuppressed} onChange={onChangeHideSuppressed}>
+            Hide suppressed misconfigurations
+          </Checkbox>
+        </span>
+        <span>
+          <Checkbox checked={showSuppressedOnly} onChange={onChangeShowSuppressedOnly}>
+            Show suppressed misconfigurations only
+          </Checkbox>
+        </span>
       </FilterField>
 
       <FilterField name="Tool component">

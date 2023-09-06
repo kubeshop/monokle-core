@@ -4,6 +4,7 @@ import {ValidationFiltersValueType} from './types';
 
 export const DEFAULT_FILTERS_VALUE: ValidationFiltersValueType = {
   showSuppressed: true,
+  showUnsuppressed: true,
   'tool-component': undefined,
   type: undefined,
 };
