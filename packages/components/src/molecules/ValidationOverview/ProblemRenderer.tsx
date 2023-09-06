@@ -31,6 +31,9 @@ const ProblemRenderer: React.FC<IProps> = props => {
     [selectedProblem, node.problem, groupByFilterValue]
   );
 
+  const absent = useMemo(() => node.problem.baselineState === 'absent', [node]);
+  const hasFix = useMemo(() => node.problem.fixes && node.problem.fixes.length > 0, [node]);
+
   const isUnderReview = useMemo(() => {
     return Boolean(
       typeof suppressionBindings?.isUnderReview == 'function' && suppressionBindings.isUnderReview(node.problem)
@@ -51,7 +54,7 @@ const ProblemRenderer: React.FC<IProps> = props => {
   return (
     <Row
       $isSelected={isSelected}
-      $isSuppressed={suppressed}
+      $isSuppressed={suppressed || absent}
       $isUnderReview={isUnderReview}
       $secondary={groupByFilterValue === 'group-by-rule'}
       onClick={onClick}
@@ -84,22 +87,9 @@ const ProblemRenderer: React.FC<IProps> = props => {
             )}
           </div>
 
-          <Tooltip
-            mouseEnterDelay={TOOLTIP_DELAY}
-            title={groupByFilterValue === 'group-by-file' ? 'File content line' : 'Resource content line'}
-          >
-            <ProblemStartLine $isSelected={isSelected}>
-              {
-                node.problem.locations[groupByFilterValue === 'group-by-file' ? 0 : 1].physicalLocation?.region
-                  ?.startLine
-              }
-            </ProblemStartLine>
-          </Tooltip>
-
           <ProblemIcon level={node.problem.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
-
-          <ProblemText $isSuppressed={suppressed}>{node.problem.message.text}</ProblemText>
-
+          <ProblemText $isSuppressed={suppressed || absent}>{node.problem.message.text}</ProblemText>
+          {suppressed ? '(suppressed)' : ''}
           {node.problem.taxa?.length ? (
             <TagsContainer>
               {node.problem.taxa.map(framework => (
@@ -119,11 +109,11 @@ const ProblemRenderer: React.FC<IProps> = props => {
       )}
 
       <ActionsContainer onClick={e => e.stopPropagation()}>
-        {onAutofixHandler && (
-          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Autofix">
+        {onAutofixHandler && hasFix && !absent ? (
+<Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Autofix">
             <Icon name="magic-wand" onClick={() => onAutofixHandler(node.problem)} />
           </Tooltip>
-        )}
+        ) : null}
 
         {showSuppressionCTA ? (
           <Tooltip

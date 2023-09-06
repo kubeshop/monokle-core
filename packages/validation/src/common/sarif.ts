@@ -76,6 +76,47 @@ export type SuppressionKind = 'inSource' | 'external';
 export type SuppressionStatus = 'underReview' | 'accepted' | 'rejected';
 
 /**
+ * A suggestion to fix a problem.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541319
+ */
+export type Fix = {
+  description: string;
+  artifactChanges: ArtifactChange[];
+};
+
+export type ArtifactChange = {
+  artifactLocation: {
+    uri: string;
+  };
+  replacements: Replacement[];
+};
+
+export type Replacement = TextualReplacement | BinaryReplacement;
+
+export type TextualReplacement = {
+  deletedRegion: {
+    startLine: number;
+    startColumn: number;
+    endLine: number;
+    endColumn: number;
+  };
+  insertedContent?: {
+    text: string;
+  };
+};
+
+export type BinaryReplacement = {
+  deletedRegion: {
+    byteOffset: number;
+    byteLength: number;
+  };
+  insertedContent?: {
+    binary: string;
+  };
+};
+
+/**
  * A Monokle Validation configuration file.
  *
  * @remark Store as JSON instead YAML as it's more machine-friendly.
@@ -317,6 +358,7 @@ export type ValidationResult = {
   fingerprints?: FingerPrints;
   baselineState?: BaseLineState;
   suppressions?: Suppression[];
+  fixes?: Fix[];
 
   /**
    * The location of the error.

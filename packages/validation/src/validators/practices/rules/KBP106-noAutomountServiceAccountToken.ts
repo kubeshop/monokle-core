@@ -28,4 +28,7 @@ export const noAutomountServiceAccountToken = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, false);
+  },
 });

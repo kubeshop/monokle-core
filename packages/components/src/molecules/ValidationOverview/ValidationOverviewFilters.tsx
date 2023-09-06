@@ -73,6 +73,14 @@ const ValidationOverviewFilters: React.FC<ValidationOverviewFiltersType> = props
     >
       <FilterField name="Suppressions">
         <span>
+          <Checkbox
+            checked={filtersValue.showAbsent}
+            onChange={() => onFiltersChange({...filtersValue, showAbsent: !Boolean(filtersValue.showAbsent)})}
+          >
+            Show absent misconfigurations
+          </Checkbox>
+        </span>
+        <span>
           <Checkbox checked={hideSuppressed} onChange={onChangeHideSuppressed}>
             Hide suppressed misconfigurations
           </Checkbox>

@@ -1,5 +1,11 @@
 import type {Document, ParsedNode} from 'yaml';
-import {RuleConfigMetadataProperties, RuleConfigMetadataAllowedValues, RuleLevel, reportingDescriptorRelationship} from '../../node.js';
+import {
+  RuleConfigMetadataProperties,
+  RuleConfigMetadataAllowedValues,
+  RuleLevel,
+  reportingDescriptorRelationship,
+  ValidationResult,
+} from '../../node.js';
 
 export type PluginInit = {
   /**
@@ -112,6 +118,13 @@ export type RuleInit = {
   validate(ctx: RuleContext, api: RuleApi): Promise<void> | void;
 
   /**
+   * The runtime that gives a fix for a reported problem.
+   *
+   * @remark you can update the resource as needed.
+   */
+  fix?: (ctx: FixContext, api: FixApi) => void;
+
+  /**
    * Advanced rule settings.
    */
   advanced?: RuleAdvancedInit;
@@ -152,6 +165,21 @@ export type RuleApi = {
    * @remark this is for advanced use cases.
    */
   parse(resource: Resource): Document.Parsed<ParsedNode>;
+};
+
+export type FixContext = {
+  resource: Resource;
+  problem: ValidationResult;
+  path: string;
+};
+
+export type FixApi = {
+  /**
+   * Utility that sets the given value.
+   *
+   * @example a service's label selector relates to a deployment.
+   */
+  set(resource: Resource, path: string, value: any): void;
 };
 
 export type ReportArgs = {

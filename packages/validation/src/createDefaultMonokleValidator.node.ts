@@ -15,28 +15,34 @@ import {bundlePluginCode} from './utils/loadCustomPlugin.node.js';
 import practicesPlugin from './validators/practices/plugin.js';
 import pssPlugin from './validators/pod-security-standards/plugin.js';
 import {Suppressor} from './sarif/suppressions/index.js';
+import {Fixer} from './sarif/fix/index.js';
 
 export function createDefaultMonokleValidator(
   parser: ResourceParser = new ResourceParser(),
   schemaLoader: SchemaLoader = new SchemaLoader(),
-  suppressors?: Suppressor[]
+  suppressors?: Suppressor[],
+  fixer?: Fixer
 ) {
-  return new MonokleValidator(createDefaultPluginLoader(parser, schemaLoader), suppressors);
+  return new MonokleValidator({
+    loader: createDefaultPluginLoader(parser, schemaLoader, fixer),
+    suppressors,
+  });
 }
 
 export function createDefaultPluginLoader(
   parser: ResourceParser = new ResourceParser(),
-  schemaLoader: SchemaLoader = new SchemaLoader()
+  schemaLoader: SchemaLoader = new SchemaLoader(),
+  fixer?: Fixer
 ) {
   return async (pluginName: string) => {
     switch (pluginName) {
       case 'pod-security-standards':
-        return new SimpleCustomValidator(pssPlugin, parser);
+        return new SimpleCustomValidator(pssPlugin, parser, fixer);
       case 'practices':
-        return new SimpleCustomValidator(practicesPlugin, parser);
+        return new SimpleCustomValidator(practicesPlugin, parser, fixer);
       case 'labels':
         const lblPlugin = await getPlugin('./validators/labels/plugin.js');
-        return new SimpleCustomValidator(lblPlugin, parser);
+        return new SimpleCustomValidator(lblPlugin, parser, fixer);
       case 'open-policy-agent':
         const wasmLoader = new RemoteWasmLoader();
         return new OpenPolicyAgentValidator(parser, wasmLoader);

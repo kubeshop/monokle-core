@@ -5,6 +5,7 @@ import {
   getFileLocation,
   getResourceLocation,
   getRuleForResultV2,
+  isSuppressed,
   ValidationResponse,
   ValidationResult,
 } from '@monokle/validation';
@@ -103,29 +104,33 @@ export const filterProblems = (
   filters: ValidationFiltersValueType,
   securityFrameworkFilter: string
 ) => {
-  const suppressedFilter = filters.showSuppressed
-    ? () => true
-    : (problem: ValidationResult) => !problem.suppressions?.length;
-  const unsuppressedFilter = filters.showUnsuppressed
-    ? () => true
-    : (problem: ValidationResult) => problem.suppressions?.length;
-
   return Object.fromEntries(
     Object.entries(problems || {})
       .map(([filePath, validationResults]) => {
-        let filteredValidationResults = validationResults
-          .filter(suppressedFilter)
-          .filter(unsuppressedFilter)
-          .filter(
-            el =>
-              (filters['type'] ? el.level === filters['type'] : true) &&
-              (filters['tool-component']?.length
-                ? filters['tool-component'].includes(el.rule.toolComponent.name)
-                : true) &&
-              (securityFrameworkFilter !== 'all'
-                ? el.taxa?.find(t => t.toolComponent.name === securityFrameworkFilter)
-                : true)
-          );
+        let filteredValidationResults = validationResults.filter(
+          el =>
+            (filters['type'] ? el.level === filters['type'] : true) &&
+            (filters['tool-component']?.length
+              ? filters['tool-component'].includes(el.rule.toolComponent.name)
+              : true) &&
+            (securityFrameworkFilter !== 'all'
+              ? el.taxa?.find(t => t.toolComponent.name === securityFrameworkFilter)
+              : true)
+        );
+
+        if (filters.showSuppressed && !filters.showUnsuppressed) {
+          filteredValidationResults = filteredValidationResults.filter(p => isSuppressed(p));
+        }
+        if (!filters.showSuppressed && filters.showUnsuppressed) {
+          filteredValidationResults = filteredValidationResults.filter(p => !isSuppressed(p));
+        }
+        if (!filters.showSuppressed && !filters.showUnsuppressed) {
+          return [];
+        }
+
+        if (filters.showAbsent) {
+          filteredValidationResults = filteredValidationResults.filter(p => p.baselineState !== 'absent');
+        }
 
         if (filteredValidationResults.length > 0) {
           return [filePath, filteredValidationResults];
