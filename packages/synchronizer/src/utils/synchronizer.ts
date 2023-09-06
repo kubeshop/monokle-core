@@ -13,6 +13,10 @@ export type RepoRemoteInputData = {
   name: string;
 };
 
+export type ProjectInputData = {
+  slug: string
+};
+
 export type PolicyData = {
   valid: boolean;
   path: string;
@@ -39,15 +43,14 @@ export class Synchronizer extends EventEmitter {
 
   async getProjectInfo(rootPath: string, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
   async getProjectInfo(repoData: RepoRemoteData, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
+  async getProjectInfo(projectData: ProjectInputData, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
   async getProjectInfo(
-    repoDataOrRootPath: RepoRemoteData | string,
+    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
     accessToken: string,
     forceRefetch = false,
   ): Promise<ProjectInfo | null> {
-    const repoData =
-      typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
-
-    const cacheId = this.getRepoCacheId(repoData, accessToken);
+    const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
+    const cacheId = this.getRepoCacheId(inputData, accessToken);
     const cachedProjectInfo = this._projectDataCache[cacheId];
     if (cachedProjectInfo && !forceRefetch) {
       return {
@@ -57,7 +60,9 @@ export class Synchronizer extends EventEmitter {
       };
     }
 
-    const freshProjectInfo = await this.getMatchingProject(repoData, accessToken);
+    const freshProjectInfo = this.isProjectData(inputData) ?
+      await this.getProject(inputData as ProjectInputData, accessToken) :
+      await this.getMatchingProject(inputData as RepoRemoteData, accessToken);
 
     return !freshProjectInfo ? null : {
       id: freshProjectInfo.id,
@@ -68,8 +73,9 @@ export class Synchronizer extends EventEmitter {
 
   async getPolicy(rootPath: string, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
   async getPolicy(repoData: RepoRemoteData, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
+  async getPolicy(projectData: ProjectInputData, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
   async getPolicy(
-    repoDataOrRootPath: RepoRemoteData | string,
+    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
     forceRefetch = false,
     accessToken = ''
   ): Promise<PolicyData> {
@@ -77,33 +83,41 @@ export class Synchronizer extends EventEmitter {
       throw new Error('Cannot force refetch without access token.');
     }
 
-    const repoData =
-      typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
+    const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
 
     if (forceRefetch) {
-      await this.synchronize(repoData, accessToken);
+      await this.synchronize(inputData as any, accessToken);
     }
 
-    const policyContent = (await this.readPolicy(repoData)) ?? {};
+    const policyContent = (await this.readPolicy(inputData)) ?? {};
     const isValidPolicy = Object.keys(policyContent).length > 0;
 
     return {
       valid: isValidPolicy,
-      path: isValidPolicy ? this.getPolicyPath(repoData) : '',
+      path: isValidPolicy ? this.getPolicyPath(inputData) : '',
       policy: policyContent,
     };
   }
 
   async synchronize(rootPath: string, accessToken: string): Promise<PolicyData>;
   async synchronize(repoData: RepoRemoteData, accessToken: string): Promise<PolicyData>;
-  async synchronize(repoDataOrRootPath: RepoRemoteData | string, accessToken: string): Promise<PolicyData> {
+  async synchronize(projectData: ProjectInputData, accessToken: string): Promise<PolicyData>;
+  async synchronize(rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData, accessToken: string): Promise<PolicyData> {
     if (this._pullPromise) {
       return this._pullPromise;
     }
 
+    if (this.isProjectData(rootPathOrRepoDataOrProjectData)) {
+      const projectData: ProjectInputData = rootPathOrRepoDataOrProjectData as ProjectInputData;
+      this._pullPromise = this.fetchPolicyForProject(projectData, accessToken);
+
+      return this._pullPromise;
+    }
+
+    const repoDataOrRootPath = rootPathOrRepoDataOrProjectData as RepoRemoteData | string;
     const repoData =
       typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
-    this._pullPromise = this.fetchPolicy(repoData, accessToken);
+    this._pullPromise = this.fetchPolicyForRepo(repoData, accessToken);
 
     return this._pullPromise;
   }
@@ -124,7 +138,57 @@ export class Synchronizer extends EventEmitter {
     return this._apiHandler.generateDeepLink(path);
   }
 
-  private async fetchPolicy(repoData: RepoRemoteData, accessToken: string) {
+  private async fetchPolicyForProject(projectData: ProjectInputData, accessToken: string) {
+    const policyData = {
+      valid: false,
+      path: '',
+      policy: {},
+    };
+
+    try {
+      const repoPolicy = await this._apiHandler.getPolicy(projectData.slug, accessToken);
+
+      const policyUrl = this.generateDeepLinkProjectPolicy(projectData.slug);
+      if (!repoPolicy?.data?.getProject?.policy) {
+        throw new Error(
+          `The '${repoPolicy?.data?.getProject?.name ?? projectData.slug}' project does not have policy defined. Configure it on ${policyUrl}.`
+        );
+      }
+
+      const cacheId = this.getRepoCacheId(projectData, accessToken);
+      this._projectDataCache[cacheId] = {
+        id: repoPolicy.data.getProject.id,
+        slug: projectData.slug,
+        name: repoPolicy.data.getProject.name,
+        repositories: [],
+      };
+
+      const policyContent: StoragePolicyFormat = repoPolicy.data.getProject.policy.json;
+
+      const comment = [
+        ` This is remote policy downloaded from ${this._apiHandler.apiUrl}.`,
+        ` You can adjust it on ${policyUrl}.`,
+      ].join('\n');
+
+      const policyPath = await this.storePolicy(policyContent, projectData, comment);
+      if (!policyPath) {
+        throw new Error(`Error storing policy in local filesystem.`);
+      }
+
+      policyData.valid = true;
+      policyData.path = policyPath;
+      policyData.policy = policyContent;
+
+      return policyData;
+    } catch (error) {
+      throw error;
+    } finally {
+      this._pullPromise = undefined;
+      this.emit('synchronize', policyData);
+    }
+  }
+
+  private async fetchPolicyForRepo(repoData: RepoRemoteData, accessToken: string) {
     const policyData = {
       valid: false,
       path: '',
@@ -176,7 +240,7 @@ export class Synchronizer extends EventEmitter {
     }
   }
 
-  private async getMatchingProject(repoData: RepoRemoteData, accessToken: string) {
+  private async getMatchingProject(repoData: RepoRemoteData, accessToken: string): Promise<ApiUserProject | null> {
     const userData = await this._apiHandler.getUser(accessToken);
     if (!userData?.data?.me) {
       throw new Error('Cannot fetch user data, make sure you are authenticated and have internet access.');
@@ -206,6 +270,17 @@ export class Synchronizer extends EventEmitter {
     return matchingProject?.project ?? null;
   }
 
+  private async getProject(projectData: ProjectInputData, accessToken: string): Promise<ApiUserProject | null> {
+    const projectInfo = await this._apiHandler.getProject(projectData.slug, accessToken);
+
+    if (projectInfo?.data?.getProject?.id) {
+      const cacheId = this.getRepoCacheId(projectData, accessToken);
+      this._projectDataCache[cacheId] = projectInfo.data.getProject;
+    }
+
+    return !(projectInfo?.data?.getProject?.id) ? null : projectInfo.data.getProject;
+  }
+
   private async getRootGitData(rootPath: string) {
     const repoData = await this._gitHandler.getRepoRemoteData(rootPath);
     if (!repoData) {
@@ -215,19 +290,24 @@ export class Synchronizer extends EventEmitter {
     return repoData;
   }
 
-  private getPolicyPath(repoData: RepoRemoteData) {
-    return this._storageHandler.getStoreDataFilePath(this.getPolicyFileName(repoData));
+  private getPolicyPath(inputData: RepoRemoteData | ProjectInputData) {
+    return this._storageHandler.getStoreDataFilePath(this.getPolicyFileName(inputData));
   }
 
-  private async storePolicy(policyContent: StoragePolicyFormat, repoData: RepoRemoteData, comment: string) {
-    return this._storageHandler.setStoreData(policyContent, this.getPolicyFileName(repoData), comment);
+  private async storePolicy(policyContent: StoragePolicyFormat, inputData: RepoRemoteData | ProjectInputData, comment: string) {
+    return this._storageHandler.setStoreData(policyContent, this.getPolicyFileName(inputData), comment);
   }
 
-  private async readPolicy(repoData: RepoRemoteData) {
-    return this._storageHandler.getStoreData(this.getPolicyFileName(repoData));
+  private async readPolicy(inputData: RepoRemoteData | ProjectInputData) {
+    return this._storageHandler.getStoreData(this.getPolicyFileName(inputData));
   }
 
-  private getPolicyFileName(repoData: RepoRemoteData) {
+  private getPolicyFileName(inputData: RepoRemoteData | ProjectInputData) {
+    if (this.isProjectData(inputData)) {
+      return `${(inputData as ProjectInputData).slug}.policy.yaml`;
+    }
+
+    const repoData = inputData as RepoRemoteData;
     const provider = slugify(repoData.provider, {
       replacement: '_',
       lower: true,
@@ -239,7 +319,24 @@ export class Synchronizer extends EventEmitter {
     return `${provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
   }
 
-  private getRepoCacheId(repoData: RepoRemoteData, prefix: string) {
+  private getRepoCacheId(inputData: RepoRemoteData | ProjectInputData, prefix: string) {
+    if (this.isProjectData(inputData)) {
+      return `${prefix}-${(inputData as ProjectInputData).slug}`;
+    }
+
+    const repoData = inputData as RepoRemoteData;
     return `${prefix}-${repoData.provider}-${repoData.owner}-${repoData.name}`;
+  }
+
+  private async getRepoOrProjectData(inputData: string | RepoRemoteData | ProjectInputData) {
+    if (this.isProjectData(inputData)) {
+      return inputData as ProjectInputData;
+    }
+
+    return typeof inputData === 'string' ? await this.getRootGitData(inputData) : inputData;
+  }
+
+  private isProjectData(projectData: any) {
+    return Object.keys(projectData).length === 1 && projectData.slug;
   }
 }

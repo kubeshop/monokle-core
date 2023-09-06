@@ -198,6 +198,72 @@ describe('Synchronizer Tests', () => {
       assert.deepEqual(newPolicy, getPolicyResult);
     });
 
+    it('fetches and returns valid policy based on project slug', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const queryApiStub = sinon.stub((synchronizer as any)._apiHandler, 'queryApi').callsFake(async (...args) => {
+        const query = args[0] as string;
+
+        if (query.includes('query getPolicy')) {
+          return {
+            data: {
+              getProject: {
+                id: 6000,
+                name: 'User6 Project',
+                policy: {
+                  id: 'user6-proj-policy-id',
+                  json: {
+                    plugins: {
+                      'pod-security-standards': true,
+                      'yaml-syntax': false,
+                      'resource-links': false,
+                      'kubernetes-schema': false,
+                      practices: true,
+                    },
+                    rules: {
+                      'pod-security-standards/host-process': 'err',
+                    },
+                    settings: {
+                      'kubernetes-schema': {
+                        schemaVersion: 'v1.27.1',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          };
+        }
+
+        return {};
+      });
+      stubs.push(queryApiStub);
+
+      const policyData = {
+        slug: 'user6-proj-abc',
+      };
+
+      const policy = await synchronizer.getPolicy(policyData);
+
+      assert.isFalse(policy.valid);
+
+      const newPolicy = await synchronizer.getPolicy(policyData, true, 'SAMPLE_ACCESS_TOKEN');
+
+      assert.isObject(newPolicy);
+      assert.isTrue(newPolicy.valid);
+      assert.isNotEmpty(newPolicy.path);
+      assert.match(newPolicy.path, /user6-proj-abc.policy.yaml$/);
+      assert.isNotEmpty(newPolicy.policy);
+      assert.isNotEmpty(newPolicy.policy.plugins);
+      assert.isNotEmpty(newPolicy.policy.rules);
+      assert.isNotEmpty(newPolicy.policy.settings);
+
+      const getPolicyResult = await synchronizer.getPolicy(policyData);
+
+      assert.deepEqual(newPolicy, getPolicyResult);
+    });
+
     it('emits synchronize event after policy is fetched', async () => {
       const storagePath = await createTmpConfigDir();
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
@@ -302,7 +368,7 @@ describe('Synchronizer Tests', () => {
   });
 
   describe('getProjectInfo', () => {
-    it('returns valid project info', async () => {
+    it('returns valid project info (repo data)', async () => {
       const storagePath = await createTmpConfigDir();
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
@@ -357,6 +423,43 @@ describe('Synchronizer Tests', () => {
       assert.equal(projectInfo!.id, 6000);
       assert.equal(projectInfo!.slug, 'user6-proj');
       assert.equal(projectInfo!.name, 'User6 Project');
+      assert.equal(queryApiStub.callCount, 1);
+    });
+
+    it('returns valid project info (project data)', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const queryApiStub = sinon.stub((synchronizer as any)._apiHandler, 'queryApi').callsFake(async (...args) => {
+        const query = args[0] as string;
+
+        if (query.includes('query getProject')) {
+          return {
+            data: {
+              getProject: {
+                id: 7000,
+                slug: 'user7-proj-foobar',
+                name: 'User7 Project',
+                repositories: [],
+              },
+            },
+          };
+        }
+
+        return {};
+      });
+      stubs.push(queryApiStub);
+
+      const projectData = {
+        slug: 'user7-proj-foobar',
+      };
+
+      const projectInfo = await synchronizer.getProjectInfo(projectData, 'SAMPLE_ACCESS_TOKEN');
+
+      assert.isObject(projectInfo);
+      assert.equal(projectInfo!.id, 7000);
+      assert.equal(projectInfo!.slug, 'user7-proj-foobar');
+      assert.equal(projectInfo!.name, 'User7 Project');
       assert.equal(queryApiStub.callCount, 1);
     });
 
