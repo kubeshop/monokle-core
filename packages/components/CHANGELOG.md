@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 2.0.0
+
+### Major Changes
+
+- d2bcf16: Fingerprint suppressions
+
 ## 1.8.1
 
 ### Patch Changes
