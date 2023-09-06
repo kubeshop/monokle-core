@@ -28,6 +28,10 @@ export function isSuppressed(result: ValidationResult): boolean {
   return result.suppressions?.some(s => s.status === 'accepted') ?? false;
 }
 
+export function isPendingSuppression(result: ValidationResult): boolean {
+  return result.suppressions?.some(s => s.status === 'underReview') ?? false;
+}
+
 export function getRuleForResultV2(run: ValidationRun | undefined, result: ValidationResult): RuleMetadata {
   const plugin = getPluginForResult(run, result);
   const ruleIndex = result.rule.index;
