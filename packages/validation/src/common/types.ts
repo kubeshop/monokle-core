@@ -4,7 +4,6 @@ import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
 import {ResourceSchema} from '../validators/kubernetes-schema/schemaLoader.js';
 import {ResourceParser} from './resourceParser.js';
 import {ToolPlugin, ValidationPolicy, ValidationResult} from './sarif.js';
-import {Suppressor} from '../sarif/suppressions/types.js';
 
 export type YamlPath = Array<string | number>;
 

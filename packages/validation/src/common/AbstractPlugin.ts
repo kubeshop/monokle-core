@@ -1,7 +1,7 @@
 import keyBy from 'lodash/keyBy.js';
 import {PrimitiveRuleValue, RuleMap} from '../config/parse.js';
 import {NOT_CONFIGURED_ERR_MSG} from '../constants.js';
-import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../types.js';
+import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../core/types.js';
 import invariant from '../utils/invariant.js';
 import {getResourceId} from '../utils/sarif.js';
 import {ValidationResult, RuleMetadata, RuleConfig, ToolPlugin} from './sarif.js';

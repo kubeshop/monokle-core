@@ -1,14 +1,15 @@
 import {expect, it} from 'vitest';
-import {processRefs, ResourceParser, createDefaultMonokleValidator} from '../index.js';
+import {processRefs, ResourceParser, DisabledFixer, SchemaLoader, MonokleValidator} from '../index.js';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
 import {BAD_DEPLOYMENT, BAD_SERVICE, RESOURCES} from './badResources.js';
+import {DefaultPluginLoader} from '../pluginLoaders/PluginLoader.js';
 
 it('should work with monokle.validation.yaml', async () => {
   // Step 1: Create the validator
   const parser = new ResourceParser();
-  const validator = createDefaultMonokleValidator(parser);
+  const validator = createTestValidator(parser);
 
   // Step 2: Configure validator with monokle.validation.yaml
   await validator.preload({
@@ -16,7 +17,6 @@ it('should work with monokle.validation.yaml', async () => {
     plugins: {
       'open-policy-agent': true,
       'yaml-syntax': true,
-      labels: false,
       'kubernetes-schema': false,
       'resource-links': false,
     },
@@ -49,13 +49,12 @@ it('should work with monokle.validation.yaml', async () => {
 
 it('should handle race conditions', async () => {
   for (let i = 0; i < 3; i++) {
-    const validator = createDefaultMonokleValidator();
+    const validator = createTestValidator();
 
     validator.preload({
       plugins: {
         'open-policy-agent': true,
         'yaml-syntax': true,
-        labels: true,
         'kubernetes-schema': true,
         'resource-links': true,
       },
@@ -69,7 +68,6 @@ it('should handle race conditions', async () => {
       plugins: {
         'open-policy-agent': false,
         'yaml-syntax': true,
-        labels: false,
         'kubernetes-schema': false,
         'resource-links': false,
       },
@@ -84,7 +82,6 @@ it('should handle race conditions', async () => {
       plugins: {
         'open-policy-agent': true,
         'yaml-syntax': false,
-        labels: false,
         'kubernetes-schema': false,
         'resource-links': false,
       },
@@ -112,3 +109,23 @@ it('should handle race conditions', async () => {
     expect(hasErrors).toMatchInlineSnapshot('11');
   }
 });
+
+function createTestValidator(parser?: ResourceParser) {
+  return new MonokleValidator(
+    {
+      parser: parser ?? new ResourceParser(),
+      schemaLoader: new SchemaLoader(),
+      loader: new DefaultPluginLoader(),
+      suppressors: [],
+      fixer: new DisabledFixer(),
+    },
+    {
+      plugins: {
+        'kubernetes-schema': true,
+        'yaml-syntax': true,
+        'pod-security-standards': true,
+        'resource-links': true,
+      },
+    }
+  );
+}

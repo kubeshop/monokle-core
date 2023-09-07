@@ -13,7 +13,7 @@ import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {OPEN_POLICY_AGENT_RULES} from './rules.js';
 import {LoadedPolicy, OpaProperties, PolicyError} from './types.js';
-import {WasmLoader} from '../../wasmLoader/WasmLoader.js';
+import {WasmLoader} from './wasmLoader/WasmLoader.js';
 import {isKustomizationResource} from '../../references/utils/kustomizeRefs.js';
 import invariant from '../../utils/invariant.js';
 import {CUSTOM_PLUGINS_URL_BASE} from '../../constants.js';
