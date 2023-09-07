@@ -1,14 +1,17 @@
 import {expect, it} from 'vitest';
 import {MonokleValidator} from '../MonokleValidator.js';
-import {processRefs} from '../references/process.js';
+import {processRefs} from '../references';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
 import {ResourceParser} from '../common/resourceParser.js';
 import {Config, RuleMap} from '../config/parse.js';
-import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
 import {extractK8sResources} from '@monokle/parser';
 import {readDirectory} from './testUtils.js';
+import {ValidationConfig} from "@monokle/types";
+import {DefaultPluginLoader} from "../pluginLoaders/PluginLoader";
+import {SchemaLoader} from "../validators";
+import {DisabledFixer} from "../sarif";
 
 it('should detect invalid volume types', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/pss-1', {
@@ -25,9 +28,7 @@ async function processResourcesInFolder(path: string, rules?: RuleMap) {
   const resources = extractK8sResources(files);
 
   const parser = new ResourceParser();
-  const validator = createDefaultMonokleValidator(parser);
-
-  await configureValidator(validator, rules);
+  const validator = createTestValidator(parser, rules);
 
   processRefs(
     resources,
@@ -39,7 +40,7 @@ async function processResourcesInFolder(path: string, rules?: RuleMap) {
   return {response, resources};
 }
 
-async function configureValidator(validator: MonokleValidator, rules?: RuleMap) {
+function createTestValidator(parser: ResourceParser, rules?: ValidationConfig['rules']) {
   const config: Config = {
     plugins: {
       'pod-security-standards': true,
@@ -53,5 +54,14 @@ async function configureValidator(validator: MonokleValidator, rules?: RuleMap) 
     config.rules = rules;
   }
 
-  return validator.preload(config);
+  return new MonokleValidator(
+      {
+        loader: new DefaultPluginLoader(),
+        parser,
+        schemaLoader: new SchemaLoader(),
+        suppressors: [],
+        fixer: new DisabledFixer(),
+      },
+      config
+  );
 }

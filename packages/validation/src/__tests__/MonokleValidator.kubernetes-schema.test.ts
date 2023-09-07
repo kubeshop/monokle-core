@@ -1,13 +1,14 @@
 import {expect, it} from 'vitest';
 import {MonokleValidator} from '../MonokleValidator.js';
-import {processRefs} from '../references/process.js';
+import {processRefs} from '../references';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
 import {extractK8sResources} from '@monokle/parser';
 import {readDirectory, expectResult} from './testUtils.js';
 import {ResourceParser} from '../common/resourceParser.js';
-import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
+import {DisabledFixer, SchemaLoader} from '../commonExports.js';
+import {DefaultPluginLoader} from '../pluginLoaders/PluginLoader.js';
 
 it('should detect deprecation error - single resource, removal', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/deprecations-1');
@@ -105,9 +106,7 @@ async function processResourcesInFolder(path: string, schemaVersion?: string) {
   });
 
   const parser = new ResourceParser();
-  const validator = createDefaultMonokleValidator(parser);
-
-  await configureValidator(validator, schemaVersion);
+  const validator = createTestValidator(parser, schemaVersion);
 
   processRefs(
     resources,
@@ -119,19 +118,28 @@ async function processResourcesInFolder(path: string, schemaVersion?: string) {
   return {response, resources};
 }
 
-async function configureValidator(validator: MonokleValidator, schemaVersion = '1.24.2') {
-  return validator.preload({
-    plugins: {
-      'kubernetes-schema': true,
+function createTestValidator(parser: ResourceParser, schemaVersion = '1.24.2') {
+  return new MonokleValidator(
+    {
+      loader: new DefaultPluginLoader(),
+      parser,
+      schemaLoader: new SchemaLoader(),
+      suppressors: [],
+      fixer: new DisabledFixer(),
     },
-    rules: {
-      'kubernetes-schema/strict-mode-violated': true,
-    },
-    settings: {
-      'kubernetes-schema': {
-        schemaVersion,
+    {
+      plugins: {
+        'kubernetes-schema': true,
       },
-      debug: true,
-    },
-  });
+      rules: {
+        'kubernetes-schema/strict-mode-violated': true,
+      },
+      settings: {
+        'kubernetes-schema': {
+          schemaVersion,
+        },
+        debug: true,
+      },
+    }
+  );
 }

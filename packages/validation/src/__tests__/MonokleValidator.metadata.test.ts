@@ -1,14 +1,17 @@
 import {expect, it} from 'vitest';
 import {MonokleValidator} from '../MonokleValidator.js';
-import {processRefs} from '../references/process.js';
+import {processRefs} from '../references';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
 import {extractK8sResources} from '@monokle/parser';
 import {readDirectory, expectResult} from './testUtils.js';
 import {ResourceParser} from '../common/resourceParser.js';
-import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
 import {Config, RuleMap} from '../config/parse.js';
+import {DefaultPluginLoader} from "../pluginLoaders/PluginLoader";
+import {SchemaLoader} from "../validators";
+import {DisabledFixer} from "../sarif";
+import {ValidationConfig} from "@monokle/types";
 
 it('should detect missing recommended labels (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata');
@@ -183,9 +186,7 @@ it('should detect missing recommended labels even with no metadata at all (MTD-r
 
 it('should have custom-* configurable rules', async () => {
   const parser = new ResourceParser();
-  const validator = createDefaultMonokleValidator(parser);
-
-  await configureValidator(validator, {
+  const validator = await createTestValidator(parser, {
     'metadata/recommended-labels': false,
     'metadata/custom-labels': 'err',
     'metadata/custom-annotations': 'err',
@@ -201,9 +202,7 @@ it('should have custom-* configurable rules', async () => {
 
 it('should generate dynamic configurable rules', async () => {
   const parser = new ResourceParser();
-  const validator = createDefaultMonokleValidator(parser);
-
-  await configureValidator(validator, {
+  const validator = await createTestValidator(parser, {
     'metadata/recommended-labels': false,
     'metadata/custom-labels': false,
     'metadata/custom-annotations': false,
@@ -225,9 +224,7 @@ async function processResourcesInFolder(path: string, rules?: RuleMap) {
   const resources = extractK8sResources(files);
 
   const parser = new ResourceParser();
-  const validator = createDefaultMonokleValidator(parser);
-
-  await configureValidator(validator, rules);
+  const validator = await createTestValidator(parser, rules);
 
   processRefs(
     resources,
@@ -239,7 +236,15 @@ async function processResourcesInFolder(path: string, rules?: RuleMap) {
   return {response, resources};
 }
 
-async function configureValidator(validator: MonokleValidator, rules?: RuleMap) {
+function expectMatchList(message: string, expected: string[]) {
+  expected.forEach(e => expect(message).toMatch(e));
+}
+
+function expectNotMatchList(message: string, expected: string[]) {
+  expected.forEach(e => expect(message).not.toMatch(e));
+}
+
+async function createTestValidator(parser: ResourceParser, rules?: ValidationConfig['rules']) {
   const config: Config = {
     plugins: {
       metadata: true,
@@ -253,13 +258,17 @@ async function configureValidator(validator: MonokleValidator, rules?: RuleMap) 
     config.rules = rules;
   }
 
-  return validator.preload(config);
-}
+  const validator = new MonokleValidator(
+      {
+        loader: new DefaultPluginLoader(),
+        parser,
+        schemaLoader: new SchemaLoader(),
+        suppressors: [],
+        fixer: new DisabledFixer(),
+      }
+  );
 
-function expectMatchList(message: string, expected: string[]) {
-  expected.forEach(e => expect(message).toMatch(e));
-}
+  await validator.preload(config);
 
-function expectNotMatchList(message: string, expected: string[]) {
-  expected.forEach(e => expect(message).not.toMatch(e));
+  return validator;
 }

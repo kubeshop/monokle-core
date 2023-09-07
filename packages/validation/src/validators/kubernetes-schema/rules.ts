@@ -57,6 +57,6 @@ export const KUBERNETES_SCHEMA_RULES: RuleMetadata[] = [
     },
     defaultConfiguration: {
       enabled: false,
-    }
+    },
   },
 ];

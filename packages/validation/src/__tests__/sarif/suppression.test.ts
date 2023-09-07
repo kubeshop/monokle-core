@@ -1,26 +1,24 @@
 import 'isomorphic-fetch';
 import {expect, it} from 'vitest';
-import {createDefaultMonokleValidator} from '../../index.js';
+import {
+  AnnotationSuppressor,
+  createDefaultMonokleValidator,
+  DisabledFixer,
+  MonokleValidator,
+  ResourceParser,
+  SchemaLoader, Suppressor
+} from '../../index.js';
 
 import {extractK8sResources} from '@monokle/parser';
 import {PRACTICES_ALL_DISABLED, readDirectory} from '../testUtils.js';
 import {FakeSuppressor} from '../../sarif/suppressions/plugins/FakeSuppressor.js';
 import YAML from 'yaml';
 import {set} from 'lodash';
+import {DefaultPluginLoader} from "../../pluginLoaders/PluginLoader";
 
 it('supports suppress requests', async () => {
   const suppressor = new FakeSuppressor();
-  const validator = createDefaultMonokleValidator(undefined, undefined, [suppressor]);
-
-  await validator.preload({
-    plugins: {
-      practices: true,
-    },
-    rules: {
-      ...PRACTICES_ALL_DISABLED,
-      'practices/no-latest-image': 'err',
-    },
-  });
+  const validator = createTestValidator(suppressor);
 
   // Given a problem
   const files = await readDirectory('./src/__tests__/resources/basic-deployment');
@@ -48,18 +46,8 @@ it('supports suppress requests', async () => {
   expect(problem.suppressions?.length).toBe(1);
 });
 
-it('in-line annotation suppressions by default', async () => {
-  const validator = createDefaultMonokleValidator();
-
-  await validator.preload({
-    plugins: {
-      practices: true,
-    },
-    rules: {
-      ...PRACTICES_ALL_DISABLED,
-      'practices/no-latest-image': 'err',
-    },
-  });
+it('supports annotation suppressions', async () => {
+  const validator = createTestValidator(new AnnotationSuppressor());
 
   // Given a problem
   const files = await readDirectory('./src/__tests__/resources/basic-deployment');
@@ -82,3 +70,25 @@ it('in-line annotation suppressions by default', async () => {
   const problem = editedResponse.runs[0].results[0];
   expect(problem.suppressions?.length).toBe(1);
 });
+
+
+function createTestValidator(suppressor: Suppressor) {
+  return new MonokleValidator(
+      {
+        loader: new DefaultPluginLoader(),
+        parser: new ResourceParser(),
+        schemaLoader: new SchemaLoader(),
+        suppressors: [suppressor],
+        fixer: new DisabledFixer(),
+      },
+      {
+        plugins: {
+          practices: true,
+        },
+        rules: {
+          ...PRACTICES_ALL_DISABLED,
+          'practices/no-latest-image': 'err',
+        },
+      }
+  );
+}

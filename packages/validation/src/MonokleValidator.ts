@@ -4,71 +4,36 @@ import difference from 'lodash/difference.js';
 import isEqual from 'lodash/isEqual.js';
 import {ResourceParser} from './common/resourceParser.js';
 import type {Suppression, Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
-import type {CustomSchema, Incremental, Plugin, Resource} from './common/types.js';
+import type {CustomSchema, Plugin, Resource} from './common/types.js';
 import {Config} from './config/parse.js';
-import {CIS_TAXONOMY} from './taxonomies/cis.js';
-import {NSA_TAXONOMY} from './taxonomies/nsa.js';
-import {PluginMetadataWithConfig, PluginName, RuleMetadataWithConfig, Validator} from './types.js';
+import {CIS_TAXONOMY, NSA_TAXONOMY} from './taxonomies';
+import {PluginMetadataWithConfig, PluginName, RuleMetadataWithConfig, ValidateParams, Validator} from './types.js';
 import {nextTick, throwIfAborted} from './utils/abort.js';
 import {extractSchema, findDefaultVersion} from './utils/customResourceDefinitions.js';
 import {PluginLoadError} from './utils/error.js';
 import invariant from './utils/invariant.js';
 import {isDefined} from './utils/isDefined.js';
-import {AnnotationSuppressor, FingerprintSuppressor, Suppressor} from './sarif/suppressions/index.js';
+import {Fixer, Suppressor} from './sarif';
 import {SuppressEngine} from './sarif/suppressions/engine.js';
-import {Fixer} from './sarif/fix/index.js';
-import {SchemaLoader} from './validators/kubernetes-schema/schemaLoader.js';
+import {SchemaLoader} from './validators';
+import {PluginLoader} from './pluginLoaders/PluginLoader.js';
+import {ValidationConfig} from '@monokle/types';
+import {noop} from "lodash";
+import {PluginContext} from "./pluginLoaders/types";
 
-export type PluginLoader = (name: string, settings?: Record<string, any>) => Promise<Plugin>;
-export type CustomPluginLoader = (name: string, parser: ResourceParser, fixer?: Fixer) => Promise<Plugin>;
-
-type MonokleInit = {
+export type ValidatorInit = {
   loader: PluginLoader;
-  parser?: ResourceParser;
-  suppressors?: Suppressor[];
-  fixer?: Fixer;
-  schemaLoader?: SchemaLoader;
-};
-
-export function createMonokleValidator(init: MonokleInit) {
-  return new MonokleValidator(init);
-}
-
-const DEFAULT_SUPPRESSORS = [new AnnotationSuppressor(), new FingerprintSuppressor()];
-
-type ValidateParams = {
-  /**
-   * The resources that will be validated.
-   */
-  resources: Resource[];
-
-  /**
-   * The list of resources that recently got updated.
-   *
-   * @remarks Validators can use this information to skip non-modified resources.
-   */
-  incremental?: Incremental;
-
-  /**
-   * A previous run which acts as the baseline for detected problems.
-   *
-   * @remark Providing a baseline will set run.baselineGuid and result.baselineStatus.
-   * @remark Newly fixed problems will be added as 'absent' results.
-   * When using baseline, it is important to properly filter or
-   * indicate absent results or they appear as false positives.
-   */
-  baseline?: ValidationResponse;
-
-  /**
-   * A signal that can be used to abort processing.
-   */
-  abortSignal?: AbortSignal;
+  parser: ResourceParser;
+  suppressors: Suppressor[];
+  fixer: Fixer;
+  schemaLoader: SchemaLoader;
 };
 
 export class MonokleValidator implements Validator {
   _config: Config = {};
   _abortController: AbortController = new AbortController();
   _loading?: Promise<void>;
+  _pluginContext: PluginContext;
   _loader: PluginLoader;
   _previousPluginsInit?: Record<string, boolean>;
   _plugins: Plugin[] = [];
@@ -77,9 +42,15 @@ export class MonokleValidator implements Validator {
   _suppressions: Suppression[] = [];
   private _suppressor: SuppressEngine;
 
-  constructor(init: MonokleInit) {
+  constructor(init: ValidatorInit, config?: ValidationConfig) {
     this._loader = init.loader;
-    this._suppressor = new SuppressEngine(init.suppressors ?? DEFAULT_SUPPRESSORS);
+    this._pluginContext = {
+      parser: init.parser,
+      fixer: init.fixer,
+      schemaLoader: init.schemaLoader,
+    }
+    this._suppressor = new SuppressEngine(init.suppressors ?? []);
+    if (config) this.preload(config).catch(noop);
   }
 
   get config(): Config {
@@ -133,8 +104,9 @@ export class MonokleValidator implements Validator {
    * Eagerly load and configure the validation plugins.
    *
    * @param config - the new configuration of the validator.
+   * @param suppressions - a list with suppression requests.
    */
-  async preload(config: Config): Promise<void> {
+  async preload(config: Config, suppressions?: Suppression[]): Promise<void> {
     this._config = config;
     this._suppressions = suppressions || [];
     return this.load();
@@ -142,7 +114,7 @@ export class MonokleValidator implements Validator {
 
   /**
    * Load the plugin and prepare it.
-   * Afterwards plugin and rule metadata are available.
+   * Afterward plugin and rule metadata are available.
    *
    * @see config.plugins
    */
@@ -181,8 +153,7 @@ export class MonokleValidator implements Validator {
       const loading = await Promise.allSettled(
         missingPlugins.map(async p => {
           try {
-            const validator = await this._loader(p, config.settings?.[p]);
-            return validator;
+            return await this._loader.load(p, this._pluginContext, config.settings?.[p]);
           } catch (err) {
             const msg = err instanceof Error ? err.message : 'reason unknown';
             throw new PluginLoadError(p, msg);
@@ -223,6 +194,7 @@ export class MonokleValidator implements Validator {
           settings: config.settings,
         })
       ),
+      this._suppressor.preload(this._suppressions),
     ]);
   }
 
@@ -435,7 +407,7 @@ export class MonokleValidator implements Validator {
   }
 
   /**
-   * Unloads the Monokle Validator so it can be used as new.
+   * Unloads the Monokle Validator, so it can be used as new.
    */
   async unload(): Promise<void> {
     this.cancelLoad('unload');

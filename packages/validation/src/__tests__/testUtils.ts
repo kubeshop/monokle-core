@@ -1,10 +1,9 @@
-
-import glob from 'tiny-glob';
+import type {BaseFile} from '@monokle/parser';
 import {readFile as readFileFromFs} from 'fs/promises';
 import chunkArray from 'lodash/chunk.js';
-import {ValidationResult} from '../index.js';
+import glob from 'tiny-glob';
 import {expect} from 'vitest';
-import type {BaseFile} from '@monokle/parser';
+import {ValidationResult} from '../index.js';
 
 export async function readDirectory(directoryPath: string): Promise<BaseFile[]> {
   const filePaths = await glob(`${directoryPath}/**/*.{yaml,yml}`);

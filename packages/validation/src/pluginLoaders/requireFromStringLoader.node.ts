@@ -1,4 +1,4 @@
-import {CustomPluginLoader} from '../MonokleValidator.js';
+import type {CustomPluginLoader} from './types.js';
 import {loadCustomPlugin} from '../utils/loadCustomPlugin.node.js';
 import {SimpleCustomValidator} from '../validators/custom/simpleValidator.js';
 

@@ -6,7 +6,7 @@ import {RuleConfigMetadataType, ValidationResult} from '../../common/sarif.js';
 import {Resource, ValidateOptions} from '../../common/types.js';
 import {METADATA_RULES} from './rules.js';
 import {createLocations} from '../../utils/createLocations.js';
-import {RuleMetadataWithConfig} from '../../types.js';
+import {RuleMetadataWithConfig} from '../../core/types.js';
 import {findJsonPointerNode} from '../../utils/findJsonPointerNode.js';
 import {RuleMap} from '../../config/parse.js';
 import {isDefined} from '../../utils/isDefined.js';

@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import {expect, it} from 'vitest';
 import {MonokleValidator} from '../MonokleValidator.js';
-import {processRefs} from '../references/process.js';
+import {processRefs} from '../references';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
@@ -10,15 +10,23 @@ import {extractK8sResources} from '@monokle/parser';
 import {readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
-import {createDefaultMonokleValidator} from '../createDefaultMonokleValidator.node.js';
-import {RuleConfigMetadataType, SimpleCustomValidator, readConfig} from '../node.js';
+import {DisabledFixer, readConfig, RuleConfigMetadataType, SchemaLoader, SimpleCustomValidator} from '../node.js';
 import {defineRule} from '../custom.js';
 import {isDeployment} from '../validators/custom/schemas/deployment.apps.v1.js';
+import {DefaultPluginLoader} from "../pluginLoaders/PluginLoader";
+import {ValidationConfig} from "@monokle/types";
 
 it('should be simple to configure', async () => {
   const parser = new ResourceParser();
 
-  const validator = createDefaultMonokleValidator(parser);
+  const validator = createTestValidator(parser, {
+    plugins: {
+      'kubernetes-schema': true,
+      'yaml-syntax': true,
+      'pod-security-standards': true,
+      'resource-links': true,
+    },
+  });
 
   processRefs(RESOURCES, parser);
   const response = await validator.validate({resources: RESOURCES});
@@ -30,10 +38,9 @@ it('should be simple to configure', async () => {
 it('should fail if optional refs are not allowed', async () => {
   const parser = new ResourceParser();
 
-  const validator = createDefaultMonokleValidator(parser);
+  const validator = createOptionalResourceLinksValidator(parser);
 
   processRefs(RESOURCES, parser);
-  await configureOptionalResourceLinksValidator(validator);
   const response = await validator.validate({resources: RESOURCES});
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
@@ -45,7 +52,7 @@ async function processResourcesInFolder(path: string) {
   const resources = extractK8sResources(files);
 
   const parser = new ResourceParser();
-  const validator = createDefaultMonokleValidator(parser);
+  const validator = createTestValidator(parser);
 
   processRefs(
     resources,
@@ -68,7 +75,7 @@ it('should support relative folder paths in kustomizations', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/kustomize-with-relative-path-resources');
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
-  expect(hasErrors).toBe(6);
+  expect(hasErrors).toBe(16);
 });
 
 it('should support patches and additionalValuesFiles', async () => {
@@ -79,7 +86,7 @@ it('should support patches and additionalValuesFiles', async () => {
 });
 
 it('should support Kustomize Components', async () => {
-  const {resources, response} = await processResourcesInFolder('src/__tests__/resources/kustomize-components');
+  const {resources} = await processResourcesInFolder('src/__tests__/resources/kustomize-components');
   expect(resources.length).toBe(3);
 });
 
@@ -102,7 +109,7 @@ it('should support ownerRefs', async () => {
 it('should be flexible to configure', async () => {
   const parser = new ResourceParser();
 
-  const validator = createDefaultMonokleValidator(parser);
+  const validator = createTestValidator(parser);
   processRefs(RESOURCES, parser);
   await configureValidator(validator);
 
@@ -121,43 +128,54 @@ it('should be flexible to configure', async () => {
 
 it('should allow rules to be configurable', async () => {
   const parser = new ResourceParser();
+  const pluginLoader = new DefaultPluginLoader();
 
-  const validator = new MonokleValidator(async () => {
+  pluginLoader.register("practices", ({parser, fixer}) => {
     return new SimpleCustomValidator(
-      {
-        id: 'KBP',
-        name: 'practices',
-        description: 'debug-validator',
-        rules: {
-          highAvailable: defineRule({
-            id: 6,
-            description: 'Require at least two replicas',
-            fullDescription: 'High availability avoids downtimes when a pod crashes.',
-            help: "Set your deployment's replicas to two or higher.",
-            advanced: {
-              enabled: false,
-              severity: 3,
-              configMetadata: {
-                type: RuleConfigMetadataType.Number,
-                name: 'Required replicas',
-                defaultValue: 1,
+        {
+          id: 'KBP',
+          name: 'practices',
+          description: 'debug-validator',
+          rules: {
+            highAvailable: defineRule({
+              id: 6,
+              description: 'Require at least two replicas',
+              fullDescription: 'High availability avoids downtimes when a pod crashes.',
+              help: "Set your deployment's replicas to two or higher.",
+              advanced: {
+                enabled: false,
+                severity: 3,
+                configMetadata: {
+                  type: RuleConfigMetadataType.Number,
+                  name: 'Required replicas',
+                  defaultValue: 1,
+                },
               },
-            },
-            validate({resources, params}, {report}) {
-              resources.filter(isDeployment).forEach(deployment => {
-                const replicaCount = deployment.spec?.replicas ?? 1;
-                const replicaThreshold = params;
-                const valid = replicaCount > replicaThreshold;
-                if (valid) return;
-                report(deployment, {path: 'spec.replicas'});
-              });
-            },
-          }),
+              validate({resources, params}, {report}) {
+                resources.filter(isDeployment).forEach(deployment => {
+                  const replicaCount = deployment.spec?.replicas ?? 1;
+                  const valid = replicaCount > params;
+                  if (valid) return;
+                  report(deployment, {path: 'spec.replicas'});
+                });
+              },
+            }),
+          },
         },
-      },
-      parser
+        parser,
+        fixer
     );
-  });
+  })
+
+  const validator = new MonokleValidator(
+      {
+        loader: pluginLoader,
+        parser,
+        schemaLoader: new SchemaLoader(),
+        suppressors: [],
+        fixer: new DisabledFixer(),
+      }
+  );
 
   processRefs(RESOURCES, parser);
 
@@ -214,7 +232,7 @@ it('should be valid SARIF', async () => {
   const parser = new ResourceParser();
   const resources = RESOURCES;
 
-  const validator = createDefaultMonokleValidator(parser);
+  const validator = createTestValidator(parser);
   processRefs(resources, parser);
   await configureValidator(validator, {metadata: true});
   const response = await validator.validate({resources});
@@ -263,6 +281,8 @@ it('should correctly read config file #2', async () => {
   expect(rule2).toBe(true);
 });
 
+
+
 function configureValidator(validator: MonokleValidator, additionalPlugins: {[key: string]: boolean} = {}) {
   return validator.preload({
     plugins: {
@@ -281,13 +301,50 @@ function configureValidator(validator: MonokleValidator, additionalPlugins: {[ke
   });
 }
 
-function configureOptionalResourceLinksValidator(validator: MonokleValidator) {
-  return validator.preload({
-    plugins: {
-      'resource-links': true,
-    },
-    rules: {
-      'resource-links/no-missing-optional-links': 'warn',
-    },
-  });
+
+function createTestValidator(parser: ResourceParser, config?: ValidationConfig) {
+  return new MonokleValidator(
+      {
+        loader: new DefaultPluginLoader(),
+        parser,
+        schemaLoader: new SchemaLoader(),
+        suppressors: [],
+        fixer: new DisabledFixer(),
+      },
+      config ?? {
+        plugins: {
+          'yaml-syntax': true,
+          'resource-links': true,
+          'kubernetes-schema': true,
+          'open-policy-agent': true
+        },
+        settings: {
+          'kubernetes-schema': {
+            schemaVersion: '1.24.2',
+          },
+          debug: true,
+        },
+      }
+  );
+}
+
+
+function createOptionalResourceLinksValidator(parser: ResourceParser) {
+  return new MonokleValidator(
+      {
+        loader: new DefaultPluginLoader(),
+        parser,
+        schemaLoader: new SchemaLoader(),
+        suppressors: [],
+        fixer: new DisabledFixer(),
+      },
+      {
+        plugins: {
+          'resource-links': true,
+        },
+        rules: {
+          'resource-links/no-missing-optional-links': 'warn',
+        },
+      }
+  );
 }

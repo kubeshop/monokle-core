@@ -24,7 +24,7 @@ export const METADATA_RULES: RuleMetadata[] = [
           'app.kubernetes.io/component',
           'app.kubernetes.io/part-of',
           'app.kubernetes.io/managed',
-        ]
+        ],
       },
     },
   },

@@ -14,6 +14,35 @@ export type RuleMetadataWithConfig = RuleMetadata & {
 
 export type PluginName = string;
 
+export type ValidateParams = {
+  /**
+   * The resources that will be validated.
+   */
+  resources: Resource[];
+
+  /**
+   * The list of resources that recently got updated.
+   *
+   * @remarks Validators can use this information to skip non-modified resources.
+   */
+  incremental?: Incremental;
+
+  /**
+   * A previous run which acts as the baseline for detected problems.
+   *
+   * @remark Providing a baseline will set run.baselineGuid and result.baselineStatus.
+   * @remark Newly fixed problems will be added as 'absent' results.
+   * When using baseline, it is important to properly filter or
+   * indicate absent results or they appear as false positives.
+   */
+  baseline?: ValidationResponse;
+
+  /**
+   * A signal that can be used to abort processing.
+   */
+  abortSignal?: AbortSignal;
+};
+
 export interface Validator {
   /**
    * The user configuration.
@@ -39,11 +68,7 @@ export interface Validator {
    * @remark Plugins must be loaded and configured before you can validate.
    * this is more text
    */
-  validate(args: {
-    resources: Resource[];
-    incremental?: Incremental;
-    abortSignal?: AbortSignal;
-  }): Promise<ValidationResponse>;
+  validate(args: ValidateParams): Promise<ValidationResponse>;
 
   /**
    * Unloads all plugins.
