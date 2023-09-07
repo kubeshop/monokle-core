@@ -14,7 +14,7 @@ import {
   YamlValidator
 } from '../validators';
 import {PluginContext} from './types.js';
-import {RemoteWasmLoader} from "../validators/open-policy-agent/wasmLoader/RemoteWasmLoader.node";
+import {RemoteWasmLoader} from "../validators/open-policy-agent/wasmLoader/RemoteWasmLoader.browser";
 
 export interface PluginLoader {
   load(plugin: string, ctx: PluginContext, settings?: Record<string, any>): Plugin | Promise<Plugin>;

@@ -128,8 +128,8 @@ export const filterProblems = (
           return [];
         }
 
-        if (filters.showAbsent) {
-          filteredValidationResults = filteredValidationResults.filter(p => p.baselineState !== 'absent');
+        if (!filters.showAbsent) {
+          filteredValidationResults = filteredValidationResults.filter(p => p.baselineState === 'absent');
         }
 
         if (filteredValidationResults.length > 0) {

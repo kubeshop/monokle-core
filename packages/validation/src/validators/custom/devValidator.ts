@@ -4,7 +4,7 @@ import {CustomSchema, Incremental, Plugin, PluginMetadata, Resource, ValidateOpt
 import {RuleMap} from '../../config/parse.js';
 import {Fixer} from '../../sarif/fix/index.js';
 import {Suppressor} from '../../sarif/suppressions/index.js';
-import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../../core/types.js';
+import {PluginMetadataWithConfig, RuleMetadataWithConfig} from '../../types.js';
 import {DEV_MODE_TOKEN} from './constants.js';
 import {SimpleCustomValidator} from './simpleValidator.js';
 

@@ -1,5 +1,5 @@
 import {MonokleValidator} from './MonokleValidator.js';
-import {ResourceParser, SchemaLoader} from './node.js';
+import {ResourceParser, SchemaLoader} from './commonExports.js';
 import {RemotePluginLoader} from './pluginLoaders/PluginLoader.js';
 import {DisabledFixer} from './sarif/fix/plugins/DisabledSuppressor.js';
 import {AnnotationSuppressor, FingerprintSuppressor} from './sarif/suppressions/index.js';

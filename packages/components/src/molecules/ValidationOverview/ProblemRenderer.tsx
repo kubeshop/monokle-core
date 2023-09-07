@@ -87,6 +87,18 @@ const ProblemRenderer: React.FC<IProps> = props => {
             )}
           </div>
 
+          <Tooltip
+            mouseEnterDelay={TOOLTIP_DELAY}
+            title={groupByFilterValue === 'group-by-file' ? 'File content line' : 'Resource content line'}
+          >
+            <ProblemStartLine $isSelected={isSelected}>
+              {
+                node.problem.locations[groupByFilterValue === 'group-by-file' ? 0 : 1].physicalLocation?.region
+                  ?.startLine
+              }
+            </ProblemStartLine>
+          </Tooltip>
+
           <ProblemIcon level={node.problem.level ?? 'error'} style={{fontSize: '8px', marginRight: '-8px'}} />
           <ProblemText $isSuppressed={suppressed || absent}>{node.problem.message.text}</ProblemText>
           {suppressed ? '(suppressed)' : ''}
