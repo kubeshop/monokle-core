@@ -35,7 +35,7 @@ export type Taxonomy = {
 export type Taxon = {
   id: string;
   name: string;
-  shortDescription: {text: string};
+  shortDescription: Message;
   relationships?: reportingDescriptorRelationship[];
 };
 
@@ -47,6 +47,11 @@ export type Tool = {
 export type RunAutomationDetails = {
   guid: string;
 };
+
+export type Message = {
+  text: string;
+  markdown?: string;
+}
 
 /**
  * An artifact is any blob data relevant to the run.
@@ -81,7 +86,7 @@ export type SuppressionStatus = 'underReview' | 'accepted' | 'rejected';
  * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541319
  */
 export type Fix = {
-  description: string;
+  description?: Message;
   artifactChanges: ArtifactChange[];
 };
 
@@ -101,9 +106,7 @@ export type TextualReplacement = {
     endLine: number;
     endColumn: number;
   };
-  insertedContent?: {
-    text: string;
-  };
+  insertedContent?: Message;
 };
 
 export type BinaryReplacement = {
@@ -127,9 +130,7 @@ export type BinaryReplacement = {
 export type ConfigurationArtifact = {
   roles: ['userSpecifiedConfiguration'];
   mimeType: 'application/json';
-  contents: {
-    text: string;
-  };
+  contents: Message;
 };
 
 /**
@@ -160,17 +161,10 @@ export type ToolPlugin = ToolComponent & {
 export type RuleMetadata<TProperties = {}> = {
   id: string;
   name: string;
-  shortDescription: {
-    text: string;
-  };
-  fullDescription?: {
-    text: string;
-  };
+  shortDescription: Message;
+  fullDescription?: Message;
   helpUri?: string;
-  help: {
-    text: string;
-    markdown?: string;
-  };
+  help: Message;
   defaultConfiguration?: RuleConfig;
 
   /**
@@ -352,9 +346,7 @@ export type ValidationResult = {
   rule: reportingDescriptorReference;
   taxa?: reportingDescriptorReference[];
   level?: RuleLevel;
-  message: {
-    text: string;
-  };
+  message: Message;
   fingerprints?: FingerPrints;
   baselineState?: BaseLineState;
   suppressions?: Suppression[];

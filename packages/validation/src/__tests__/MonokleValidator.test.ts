@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import {expect, it} from 'vitest';
 import {MonokleValidator} from '../MonokleValidator.js';
-import {processRefs} from '../references';
+import {processRefs} from '../references/index.js';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';

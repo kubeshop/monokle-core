@@ -176,8 +176,6 @@ export type FixContext = {
 export type FixApi = {
   /**
    * Utility that sets the given value.
-   *
-   * @example a service's label selector relates to a deployment.
    */
   set(resource: Resource, path: string, value: any): void;
 };

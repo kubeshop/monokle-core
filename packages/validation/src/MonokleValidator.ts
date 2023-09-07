@@ -6,20 +6,19 @@ import {ResourceParser} from './common/resourceParser.js';
 import type {Suppression, Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
 import type {CustomSchema, Plugin, Resource} from './common/types.js';
 import {Config} from './config/parse.js';
-import {CIS_TAXONOMY, NSA_TAXONOMY} from './taxonomies';
+import {CIS_TAXONOMY, NSA_TAXONOMY} from './taxonomies/index.js';
 import {PluginMetadataWithConfig, PluginName, RuleMetadataWithConfig, ValidateParams, Validator} from './types.js';
 import {nextTick, throwIfAborted} from './utils/abort.js';
 import {extractSchema, findDefaultVersion} from './utils/customResourceDefinitions.js';
 import {PluginLoadError} from './utils/error.js';
 import invariant from './utils/invariant.js';
 import {isDefined} from './utils/isDefined.js';
-import {Fixer, Suppressor} from './sarif';
+import {Fixer, Suppressor} from './sarif/index.js';
 import {SuppressEngine} from './sarif/suppressions/engine.js';
-import {SchemaLoader} from './validators';
+import {SchemaLoader} from './validators/index.js';
 import {PluginLoader} from './pluginLoaders/PluginLoader.js';
 import {ValidationConfig} from '@monokle/types';
-import {noop} from "lodash";
-import {PluginContext} from "./pluginLoaders/types";
+import {PluginContext} from './pluginLoaders/types.js';
 
 export type ValidatorInit = {
   loader: PluginLoader;
@@ -48,9 +47,9 @@ export class MonokleValidator implements Validator {
       parser: init.parser,
       fixer: init.fixer,
       schemaLoader: init.schemaLoader,
-    }
+    };
     this._suppressor = new SuppressEngine(init.suppressors ?? []);
-    if (config) this.preload(config).catch(noop);
+    if (config) this.preload(config).catch(() => {});
   }
 
   get config(): Config {
@@ -106,9 +105,9 @@ export class MonokleValidator implements Validator {
    * @param config - the new configuration of the validator.
    * @param suppressions - a list with suppression requests.
    */
-  async preload(config: Config, suppressions?: Suppression[]): Promise<void> {
-    this._config = config;
-    this._suppressions = suppressions || [];
+  async preload(config?: Config, suppressions?: Suppression[]): Promise<void> {
+    this._config = config ?? {};
+    this._suppressions = suppressions ?? [];
     return this.load();
   }
 
