@@ -5,6 +5,7 @@ import {
   getFileLocation,
   getResourceLocation,
   getRuleForResultV2,
+  isPendingSuppression,
   isSuppressed,
   ValidationResponse,
   ValidationResult,
@@ -119,10 +120,12 @@ export const filterProblems = (
         );
 
         if (filters.showSuppressed && !filters.showUnsuppressed) {
-          filteredValidationResults = filteredValidationResults.filter(p => isSuppressed(p));
+          filteredValidationResults = filteredValidationResults.filter(p => isSuppressed(p) || isPendingSuppression(p));
         }
         if (!filters.showSuppressed && filters.showUnsuppressed) {
-          filteredValidationResults = filteredValidationResults.filter(p => !isSuppressed(p));
+          filteredValidationResults = filteredValidationResults.filter(
+            p => !isSuppressed(p) && !isPendingSuppression(p)
+          );
         }
         if (!filters.showSuppressed && !filters.showUnsuppressed) {
           return [];

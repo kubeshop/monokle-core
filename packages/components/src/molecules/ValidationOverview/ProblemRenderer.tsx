@@ -31,8 +31,8 @@ const ProblemRenderer: React.FC<IProps> = props => {
     [selectedProblem, node.problem, groupByFilterValue]
   );
 
-  const absent = useMemo(() => node.problem.baselineState === 'absent', [node]);
-  const hasFix = useMemo(() => node.problem.fixes && node.problem.fixes.length > 0, [node]);
+  const absent = node.problem.baselineState === 'absent';
+  const hasFix = node.problem.fixes && node.problem.fixes.length > 0;
 
   const isUnderReview = useMemo(() => {
     return Boolean(
@@ -122,8 +122,12 @@ const ProblemRenderer: React.FC<IProps> = props => {
 
       <ActionsContainer onClick={e => e.stopPropagation()}>
         {onAutofixHandler && hasFix && !absent ? (
-<Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Autofix">
-            <Icon name="magic-wand" onClick={() => onAutofixHandler(node.problem)} />
+          <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="Autofix">
+            <Icon
+              style={{color: isSelected ? Colors.blackPure : Colors.blue7}}
+              name="magic-wand"
+              onClick={() => onAutofixHandler(node.problem)}
+            />
           </Tooltip>
         ) : null}
 

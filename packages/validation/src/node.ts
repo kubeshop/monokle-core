@@ -20,7 +20,7 @@ export * from './config/index.node.js';
 export * from './config/read.node.js';
 export * from './validators/open-policy-agent/wasmLoader/RemoteWasmLoader.node.js';
 
-export function createDefaultNodeMonokleValidator() {
+export function createDefaultMonokleValidator() {
   return new MonokleValidator(
     {
       loader: new RemotePluginLoader(requireFromStringCustomPluginLoader),
