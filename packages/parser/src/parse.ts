@@ -1,7 +1,7 @@
 import {LineCounter, parseAllDocuments, parseDocument} from 'yaml';
 
 export function parseYamlDocument(text: string, lineCounter?: LineCounter) {
-  return parseDocument(text, {lineCounter, uniqueKeys: false, strict: false});
+  return parseDocument(text, {lineCounter, uniqueKeys: false, strict: false, logLevel: 'silent'});
 }
 
 /**
@@ -12,5 +12,6 @@ export function parseAllYamlDocuments(text: string, lineCounter?: LineCounter) {
     lineCounter,
     uniqueKeys: false,
     strict: false,
+    logLevel: 'silent',
   });
 }
