@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.28.0
+
+### Minor Changes
+
+- d6d1728: add autofixes
+
 ## 0.27.0
 
 ### Minor Changes
