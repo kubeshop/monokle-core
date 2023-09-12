@@ -1,7 +1,7 @@
 import {Colors} from '@/styles/Colors';
 import {getFileLocation} from '@monokle/validation';
 import {Button, Descriptions, Tooltip} from 'antd';
-import {useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
 import {ProblemInfoType} from './types';
 import {renderToolComponentName} from './utils';
@@ -19,7 +19,7 @@ import {iconMap} from '../ValidationOverview/constants';
 import {SecurityFrameworkTag} from '../ValidationOverview/ProblemRenderer';
 
 const ProblemInfo: React.FC<ProblemInfoType> = props => {
-  const {containerClassName = '', containerStyle = {}, problem, rule, suppressionBindings} = props;
+  const {containerClassName = '', containerStyle = {}, problem, rule, suppressionBindings, onProblemAutofix} = props;
   const {onConfigureRule, onHelpURLClick, onLocationClick} = props;
 
   const errorLocation = useMemo(() => getFileLocation(problem), [problem]);
@@ -27,6 +27,7 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
     () => (problem.message.text.endsWith('.') ? problem.message.text.slice(0, -1) : problem.message.text),
     [problem.message.text]
   );
+  const hasFix = problem.fixes && problem.fixes.length > 0;
 
   const isUnderReview = useMemo(() => {
     return Boolean(
@@ -45,6 +46,15 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
   }, [problem, suppressionBindings?.isSuppressed]);
 
   const showSuppressionCTA = typeof suppressionBindings?.onToggleSuppression == 'function';
+
+  const handleProblemAutofix = useCallback(() => {
+    if (!hasFix) {
+      return () => {
+        return;
+      };
+    }
+    return () => onProblemAutofix?.(problem);
+  }, [onProblemAutofix, problem, hasFix]);
 
   return (
     <ProblemInfoContainer className={containerClassName} style={containerStyle}>
@@ -77,6 +87,16 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
         </IconsContainer>
         <Spacer />
         <Actions>
+          {onProblemAutofix ? (
+            <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title={hasFix ? 'Autofix' : 'No fix available'}>
+              <Button
+                type="link"
+                onClick={handleProblemAutofix}
+                icon={<Icon style={{color: hasFix ? Colors.blue7 : Colors.grey7}} name="magic-wand" />}
+              />
+            </Tooltip>
+          ) : null}
+
           {showSuppressionCTA ? (
             <Tooltip
               mouseEnterDelay={TOOLTIP_DELAY}

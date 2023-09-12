@@ -132,7 +132,7 @@ export const filterProblems = (
         }
 
         if (!filters.showAbsent) {
-          filteredValidationResults = filteredValidationResults.filter(p => p.baselineState === 'absent');
+          filteredValidationResults = filteredValidationResults.filter(p => p.baselineState !== 'absent');
         }
 
         if (filteredValidationResults.length > 0) {

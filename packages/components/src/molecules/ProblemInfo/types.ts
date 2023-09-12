@@ -11,4 +11,5 @@ export type ProblemInfoType = {
   containerStyle?: React.CSSProperties;
   onLocationClick?: (location: Location) => void;
   suppressionBindings?: SuppressionBindings;
+  onProblemAutofix?: (problem: ValidationResult) => void;
 };
