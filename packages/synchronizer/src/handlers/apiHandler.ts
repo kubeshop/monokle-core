@@ -1,5 +1,6 @@
 import normalizeUrl from 'normalize-url';
 import fetch from 'node-fetch';
+import {SuppressionStatus} from '@monokle/types';
 import {DEFAULT_API_URL} from '../constants.js';
 
 const getUserQuery = `
@@ -59,6 +60,30 @@ const getPolicyQuery = `
   }
 `;
 
+const getSuppressionsQuery = `
+  query getSuppressions(
+    $repositoryId: ID!
+  ) {
+    getSuppressions(
+      input: {
+        repositoryId: $repositoryId
+      }
+    ) {
+      isSnapshot
+      data {
+        id
+        fingerprint
+        status
+        isUnderReview
+        isAccepted
+        isRejected
+        isExpired
+        isDeleted
+      }
+    }
+  }
+`;
+
 export type ApiUserProjectRepo = {
   id: string;
   projectId: number;
@@ -109,6 +134,26 @@ export type ApiPolicyData = {
   };
 };
 
+export type ApiSuppression = {
+  id: string;
+  fingerprint: string;
+  status: SuppressionStatus;
+  isUnderReview: boolean;
+  isAccepted: boolean;
+  isRejected: boolean;
+  isExpired: boolean;
+  isDeleted: boolean;
+};
+
+export type ApiSuppressionsData = {
+  data: {
+    getSuppressions: {
+      isSnapshot: boolean;
+      data: ApiSuppression[];
+    };
+  };
+};
+
 export class ApiHandler {
   constructor(private _apiUrl: string = DEFAULT_API_URL) {}
 
@@ -126,6 +171,10 @@ export class ApiHandler {
 
   async getPolicy(slug: string, accessToken: string): Promise<ApiPolicyData | undefined> {
     return this.queryApi(getPolicyQuery, accessToken, {slug});
+  }
+
+  async getSuppressions(repositoryId: string, accessToken: string): Promise<ApiSuppressionsData | undefined> {
+    return this.queryApi(getSuppressionsQuery, accessToken, {repositoryId});
   }
 
   generateDeepLink(path: string) {

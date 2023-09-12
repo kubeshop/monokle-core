@@ -5,7 +5,7 @@ import {ApiHandler} from '../handlers/apiHandler.js';
 import {GitHandler} from '../handlers/gitHandler.js';
 import type {StoragePolicyFormat} from '../handlers/storageHandlerPolicy.js';
 import type {RepoRemoteData} from '../handlers/gitHandler.js';
-import type {ApiUserProject} from '../handlers/apiHandler.js';
+import type {ApiSuppression, ApiUserProject} from '../handlers/apiHandler.js';
 
 export type RepoRemoteInputData = {
   provider: string;
@@ -14,7 +14,7 @@ export type RepoRemoteInputData = {
 };
 
 export type ProjectInputData = {
-  slug: string
+  slug: string;
 };
 
 export type PolicyData = {
@@ -42,12 +42,20 @@ export class Synchronizer extends EventEmitter {
   }
 
   async getProjectInfo(rootPath: string, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
-  async getProjectInfo(repoData: RepoRemoteData, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
-  async getProjectInfo(projectData: ProjectInputData, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
+  async getProjectInfo(
+    repoData: RepoRemoteData,
+    accessToken: string,
+    forceRefetch?: boolean
+  ): Promise<ProjectInfo | null>;
+  async getProjectInfo(
+    projectData: ProjectInputData,
+    accessToken: string,
+    forceRefetch?: boolean
+  ): Promise<ProjectInfo | null>;
   async getProjectInfo(
     rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
     accessToken: string,
-    forceRefetch = false,
+    forceRefetch = false
   ): Promise<ProjectInfo | null> {
     const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
     const cacheId = this.getRepoCacheId(inputData, accessToken);
@@ -60,15 +68,17 @@ export class Synchronizer extends EventEmitter {
       };
     }
 
-    const freshProjectInfo = this.isProjectData(inputData) ?
-      await this.getProject(inputData as ProjectInputData, accessToken) :
-      await this.getMatchingProject(inputData as RepoRemoteData, accessToken);
+    const freshProjectInfo = this.isProjectData(inputData)
+      ? await this.getProject(inputData as ProjectInputData, accessToken)
+      : await this.getMatchingProject(inputData as RepoRemoteData, accessToken);
 
-    return !freshProjectInfo ? null : {
-      id: freshProjectInfo.id,
-      name: freshProjectInfo.name,
-      slug: freshProjectInfo.slug,
-    };
+    return !freshProjectInfo
+      ? null
+      : {
+          id: freshProjectInfo.id,
+          name: freshProjectInfo.name,
+          slug: freshProjectInfo.slug,
+        };
   }
 
   async getPolicy(rootPath: string, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
@@ -99,10 +109,22 @@ export class Synchronizer extends EventEmitter {
     };
   }
 
+  async getSuppressions(rootPath: string, accessToken?: string): Promise<ApiSuppression[]>;
+  async getSuppressions(repoData: RepoRemoteData, accessToken?: string): Promise<ApiSuppression[]>;
+  async getSuppressions(projectData: ProjectInputData, accessToken?: string): Promise<ApiSuppression[]>;
+  async getSuppressions(rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData, accessToken = '') {
+    const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
+    const suppressions = await this.fetchSuppressionsForRepo(inputData as any, accessToken);
+    return suppressions;
+  }
+
   async synchronize(rootPath: string, accessToken: string): Promise<PolicyData>;
   async synchronize(repoData: RepoRemoteData, accessToken: string): Promise<PolicyData>;
   async synchronize(projectData: ProjectInputData, accessToken: string): Promise<PolicyData>;
-  async synchronize(rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData, accessToken: string): Promise<PolicyData> {
+  async synchronize(
+    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
+    accessToken: string
+  ): Promise<PolicyData> {
     if (this._pullPromise) {
       return this._pullPromise;
     }
@@ -151,7 +173,9 @@ export class Synchronizer extends EventEmitter {
       const policyUrl = this.generateDeepLinkProjectPolicy(projectData.slug);
       if (!repoPolicy?.data?.getProject?.policy) {
         throw new Error(
-          `The '${repoPolicy?.data?.getProject?.name ?? projectData.slug}' project does not have policy defined. Configure it on ${policyUrl}.`
+          `The '${
+            repoPolicy?.data?.getProject?.name ?? projectData.slug
+          }' project does not have policy defined. Configure it on ${policyUrl}.`
         );
       }
 
@@ -185,6 +209,28 @@ export class Synchronizer extends EventEmitter {
     } finally {
       this._pullPromise = undefined;
       this.emit('synchronize', policyData);
+    }
+  }
+
+  private async fetchSuppressionsForRepo(repoData: RepoRemoteData, accessToken: string) {
+    try {
+      const repoId = `${repoData.provider}:${repoData.owner}/${repoData.name}`;
+      const project = await this.getMatchingProject(repoData, accessToken);
+      if (!project) {
+        const projectUrl = this.generateDeepLinkProjectList();
+        throw new Error(
+          `The '${repoId}' repository does not belong to any project in Monokle Cloud. Configure it on ${projectUrl}.`
+        );
+      }
+      const projectRepo = project.repositories.find(r => r.owner === repoData.owner && r.name === repoData.name);
+      if (!projectRepo) {
+        throw new Error(`The '${repoId}' repository does not belong to any project ${project.name} in Monokle Cloud.`);
+      }
+
+      const {data} = (await this._apiHandler.getSuppressions(projectRepo.id, accessToken)) ?? {};
+      return data?.getSuppressions?.data ?? [];
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -278,7 +324,7 @@ export class Synchronizer extends EventEmitter {
       this._projectDataCache[cacheId] = projectInfo.data.getProject;
     }
 
-    return !(projectInfo?.data?.getProject?.id) ? null : projectInfo.data.getProject;
+    return !projectInfo?.data?.getProject?.id ? null : projectInfo.data.getProject;
   }
 
   private async getRootGitData(rootPath: string) {
@@ -294,7 +340,11 @@ export class Synchronizer extends EventEmitter {
     return this._storageHandler.getStoreDataFilePath(this.getPolicyFileName(inputData));
   }
 
-  private async storePolicy(policyContent: StoragePolicyFormat, inputData: RepoRemoteData | ProjectInputData, comment: string) {
+  private async storePolicy(
+    policyContent: StoragePolicyFormat,
+    inputData: RepoRemoteData | ProjectInputData,
+    comment: string
+  ) {
     return this._storageHandler.setStoreData(policyContent, this.getPolicyFileName(inputData), comment);
   }
 
@@ -313,7 +363,7 @@ export class Synchronizer extends EventEmitter {
       lower: true,
       strict: true,
       locale: 'en',
-      trim: true
+      trim: true,
     });
 
     return `${provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
