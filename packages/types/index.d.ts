@@ -35,3 +35,32 @@ export type ValidationConfig = {
   rules?: ValidationRuleMap;
   settings?: ValidationSettings;
 };
+
+export type SuppressionKind = 'inSource' | 'external';
+export type SuppressionStatus = 'underReview' | 'accepted' | 'rejected';
+
+/**
+ * A request to suppress a result.
+ *
+ * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541171
+ */
+export interface Suppression {
+  guid?: string;
+  kind: SuppressionKind;
+  status: SuppressionStatus;
+  justification?: string;
+};
+
+export interface ExternalSuppression extends Suppression  {
+  guid: string;
+};
+
+export interface AnnotationsSuppression extends Suppression {
+  kind: 'inSource';
+  status: 'accepted';
+}
+
+export interface FingerprintSuppression extends ExternalSuppression {
+  kind: 'external';
+  fingerprint: string;
+}
