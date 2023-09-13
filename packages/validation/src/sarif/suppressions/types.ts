@@ -1,7 +1,7 @@
 import {Suppression, SuppressionKind, ValidationResult, ValidationRun} from '../../common/sarif.js';
 import {Resource} from '../../common/types.js';
 
-export {AnnotationsSuppression, FingerprintSuppression} from '@monokle/types';
+export type {AnnotationsSuppression, FingerprintSuppression} from '@monokle/types';
 
 export type ResourceApi = {
   getResource: () => Resource | undefined;

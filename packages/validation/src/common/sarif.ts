@@ -1,5 +1,5 @@
 import {Suppression} from '@monokle/types';
-export {Suppression, ExternalSuppression, SuppressionStatus, SuppressionKind} from '@monokle/types';
+export type {Suppression, ExternalSuppression, SuppressionStatus, SuppressionKind} from '@monokle/types';
 
 /**
  * A response as defined by Static Analysis Results Interchange Format.
