@@ -178,10 +178,10 @@ export class ApiHandler {
   }
 
   generateDeepLink(path: string) {
-    if (this.apiUrl.includes('.monokle.com')) {
+    if (this.apiUrl.includes('staging.monokle.com')) {
+      return normalizeUrl(`https://app.staging.monokle.com/${path}`);
+    } else if (this.apiUrl.includes('.monokle.com')) {
       return normalizeUrl(`https://app.monokle.com/${path}`);
-    } else if (this.apiUrl.includes('.monokle.io')) {
-      return normalizeUrl(`https://saas.monokle.io/${path}`);
     }
 
     // For any custom base urls we just append the path.
