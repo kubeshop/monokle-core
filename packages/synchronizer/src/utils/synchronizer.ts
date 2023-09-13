@@ -109,10 +109,16 @@ export class Synchronizer extends EventEmitter {
     };
   }
 
-  async getSuppressions(rootPath: string, accessToken?: string): Promise<ApiSuppression[]>;
-  async getSuppressions(repoData: RepoRemoteData, accessToken?: string): Promise<ApiSuppression[]>;
-  async getSuppressions(projectData: ProjectInputData, accessToken?: string): Promise<ApiSuppression[]>;
-  async getSuppressions(rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData, accessToken = '') {
+  async getSuppressions(rootPath: string, accessToken: string): Promise<ApiSuppression[]>;
+  async getSuppressions(repoData: RepoRemoteData, accessToken: string): Promise<ApiSuppression[]>;
+  async getSuppressions(projectData: ProjectInputData, accessToken: string): Promise<ApiSuppression[]>;
+  async getSuppressions(
+    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
+    accessToken: string
+  ) {
+    if (!accessToken || accessToken?.length === 0) {
+      throw new Error('Cannot fetch without access token.');
+    }
     const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
     const suppressions = await this.fetchSuppressionsForRepo(inputData as any, accessToken);
     return suppressions;
