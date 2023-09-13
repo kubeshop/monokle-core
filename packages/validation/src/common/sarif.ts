@@ -1,3 +1,6 @@
+import {Suppression} from '@monokle/types';
+export type {Suppression, ExternalSuppression, SuppressionStatus, SuppressionKind} from '@monokle/types';
+
 /**
  * A response as defined by Static Analysis Results Interchange Format.
  *
@@ -51,7 +54,7 @@ export type RunAutomationDetails = {
 export type Message = {
   text: string;
   markdown?: string;
-}
+};
 
 /**
  * An artifact is any blob data relevant to the run.
@@ -61,24 +64,6 @@ export type Message = {
  * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541049
  */
 export type Artifact = ConfigurationArtifact;
-
-/**
- * A request to suppress a result.
- *
- * @see https://docs.oasis-open.org/sarif/sarif/v2.1.0/csprd01/sarif-v2.1.0-csprd01.html#_Toc10541171
- */
-export type Suppression = {
-  guid?: string;
-  kind: SuppressionKind;
-  status: SuppressionStatus;
-  justification?: string;
-};
-
-export type ExternalSuppression = Suppression & {
-  guid: string;
-};
-export type SuppressionKind = 'inSource' | 'external';
-export type SuppressionStatus = 'underReview' | 'accepted' | 'rejected';
 
 /**
  * A suggestion to fix a problem.

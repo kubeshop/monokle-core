@@ -7,14 +7,15 @@ import {
   DEV_MODE_TOKEN,
   DevCustomValidator,
   KubernetesSchemaValidator,
-  MetadataValidator, OpenPolicyAgentValidator,
+  MetadataValidator,
+  OpenPolicyAgentValidator,
   ResourceLinksValidator,
   SchemaLoader,
   SimpleCustomValidator,
-  YamlValidator
-} from '../validators';
+  YamlValidator,
+} from '../validators/index.js';
 import {PluginContext} from './types.js';
-import {RemoteWasmLoader} from "../validators/open-policy-agent/wasmLoader/RemoteWasmLoader.browser";
+import {RemoteWasmLoader} from '../validators/open-policy-agent/wasmLoader/RemoteWasmLoader.browser.js';
 
 export interface PluginLoader {
   load(plugin: string, ctx: PluginContext, settings?: Record<string, any>): Plugin | Promise<Plugin>;

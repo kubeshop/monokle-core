@@ -5,16 +5,16 @@ import {processRefs} from '../references/index.js';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
-import {RESOURCES} from './badResources.js';
 import {extractK8sResources} from '@monokle/parser';
+import {ValidationConfig} from '@monokle/types';
+import {RESOURCES} from './badResources.js';
 import {readDirectory} from './testUtils.js';
 import {ResourceRefType} from '../common/types.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {DisabledFixer, readConfig, RuleConfigMetadataType, SchemaLoader, SimpleCustomValidator} from '../node.js';
 import {defineRule} from '../custom.js';
 import {isDeployment} from '../validators/custom/schemas/deployment.apps.v1.js';
-import {DefaultPluginLoader} from "../pluginLoaders/PluginLoader";
-import {ValidationConfig} from "@monokle/types";
+import {DefaultPluginLoader} from '../pluginLoaders/PluginLoader.js';
 
 it('should be simple to configure', async () => {
   const parser = new ResourceParser();
@@ -130,52 +130,50 @@ it('should allow rules to be configurable', async () => {
   const parser = new ResourceParser();
   const pluginLoader = new DefaultPluginLoader();
 
-  pluginLoader.register("practices", ({parser, fixer}) => {
+  pluginLoader.register('practices', ({parser, fixer}) => {
     return new SimpleCustomValidator(
-        {
-          id: 'KBP',
-          name: 'practices',
-          description: 'debug-validator',
-          rules: {
-            highAvailable: defineRule({
-              id: 6,
-              description: 'Require at least two replicas',
-              fullDescription: 'High availability avoids downtimes when a pod crashes.',
-              help: "Set your deployment's replicas to two or higher.",
-              advanced: {
-                enabled: false,
-                severity: 3,
-                configMetadata: {
-                  type: RuleConfigMetadataType.Number,
-                  name: 'Required replicas',
-                  defaultValue: 1,
-                },
-              },
-              validate({resources, params}, {report}) {
-                resources.filter(isDeployment).forEach(deployment => {
-                  const replicaCount = deployment.spec?.replicas ?? 1;
-                  const valid = replicaCount > params;
-                  if (valid) return;
-                  report(deployment, {path: 'spec.replicas'});
-                });
-              },
-            }),
-          },
-        },
-        parser,
-        fixer
-    );
-  })
-
-  const validator = new MonokleValidator(
       {
-        loader: pluginLoader,
-        parser,
-        schemaLoader: new SchemaLoader(),
-        suppressors: [],
-        fixer: new DisabledFixer(),
-      }
-  );
+        id: 'KBP',
+        name: 'practices',
+        description: 'debug-validator',
+        rules: {
+          highAvailable: defineRule({
+            id: 6,
+            description: 'Require at least two replicas',
+            fullDescription: 'High availability avoids downtimes when a pod crashes.',
+            help: "Set your deployment's replicas to two or higher.",
+            advanced: {
+              enabled: false,
+              severity: 3,
+              configMetadata: {
+                type: RuleConfigMetadataType.Number,
+                name: 'Required replicas',
+                defaultValue: 1,
+              },
+            },
+            validate({resources, params}, {report}) {
+              resources.filter(isDeployment).forEach(deployment => {
+                const replicaCount = deployment.spec?.replicas ?? 1;
+                const valid = replicaCount > params;
+                if (valid) return;
+                report(deployment, {path: 'spec.replicas'});
+              });
+            },
+          }),
+        },
+      },
+      parser,
+      fixer
+    );
+  });
+
+  const validator = new MonokleValidator({
+    loader: pluginLoader,
+    parser,
+    schemaLoader: new SchemaLoader(),
+    suppressors: [],
+    fixer: new DisabledFixer(),
+  });
 
   processRefs(RESOURCES, parser);
 
@@ -281,8 +279,6 @@ it('should correctly read config file #2', async () => {
   expect(rule2).toBe(true);
 });
 
-
-
 function configureValidator(validator: MonokleValidator, additionalPlugins: {[key: string]: boolean} = {}) {
   return validator.preload({
     plugins: {
@@ -301,50 +297,48 @@ function configureValidator(validator: MonokleValidator, additionalPlugins: {[ke
   });
 }
 
-
 function createTestValidator(parser: ResourceParser, config?: ValidationConfig) {
   return new MonokleValidator(
-      {
-        loader: new DefaultPluginLoader(),
-        parser,
-        schemaLoader: new SchemaLoader(),
-        suppressors: [],
-        fixer: new DisabledFixer(),
+    {
+      loader: new DefaultPluginLoader(),
+      parser,
+      schemaLoader: new SchemaLoader(),
+      suppressors: [],
+      fixer: new DisabledFixer(),
+    },
+    config ?? {
+      plugins: {
+        'yaml-syntax': true,
+        'resource-links': true,
+        'kubernetes-schema': true,
+        'open-policy-agent': true,
       },
-      config ?? {
-        plugins: {
-          'yaml-syntax': true,
-          'resource-links': true,
-          'kubernetes-schema': true,
-          'open-policy-agent': true
+      settings: {
+        'kubernetes-schema': {
+          schemaVersion: '1.24.2',
         },
-        settings: {
-          'kubernetes-schema': {
-            schemaVersion: '1.24.2',
-          },
-          debug: true,
-        },
-      }
+        debug: true,
+      },
+    }
   );
 }
 
-
 function createOptionalResourceLinksValidator(parser: ResourceParser) {
   return new MonokleValidator(
-      {
-        loader: new DefaultPluginLoader(),
-        parser,
-        schemaLoader: new SchemaLoader(),
-        suppressors: [],
-        fixer: new DisabledFixer(),
+    {
+      loader: new DefaultPluginLoader(),
+      parser,
+      schemaLoader: new SchemaLoader(),
+      suppressors: [],
+      fixer: new DisabledFixer(),
+    },
+    {
+      plugins: {
+        'resource-links': true,
       },
-      {
-        plugins: {
-          'resource-links': true,
-        },
-        rules: {
-          'resource-links/no-missing-optional-links': 'warn',
-        },
-      }
+      rules: {
+        'resource-links/no-missing-optional-links': 'warn',
+      },
+    }
   );
 }

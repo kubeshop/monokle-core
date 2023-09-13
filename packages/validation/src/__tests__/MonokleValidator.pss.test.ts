@@ -4,14 +4,14 @@ import {processRefs} from '../references/index.js';
 
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
+import {extractK8sResources} from '@monokle/parser';
+import {ValidationConfig} from '@monokle/types';
 import {ResourceParser} from '../common/resourceParser.js';
 import {Config, RuleMap} from '../config/parse.js';
-import {extractK8sResources} from '@monokle/parser';
 import {readDirectory} from './testUtils.js';
-import {ValidationConfig} from "@monokle/types";
-import {DefaultPluginLoader} from "../pluginLoaders/PluginLoader";
-import {SchemaLoader} from "../validators";
-import {DisabledFixer} from "../sarif";
+import {DefaultPluginLoader} from '../pluginLoaders/PluginLoader.js';
+import {SchemaLoader} from '../validators/index.js';
+import {DisabledFixer} from '../sarif/index.js';
 
 it('should detect invalid volume types', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/pss-1', {
@@ -55,13 +55,13 @@ function createTestValidator(parser: ResourceParser, rules?: ValidationConfig['r
   }
 
   return new MonokleValidator(
-      {
-        loader: new DefaultPluginLoader(),
-        parser,
-        schemaLoader: new SchemaLoader(),
-        suppressors: [],
-        fixer: new DisabledFixer(),
-      },
-      config
+    {
+      loader: new DefaultPluginLoader(),
+      parser,
+      schemaLoader: new SchemaLoader(),
+      suppressors: [],
+      fixer: new DisabledFixer(),
+    },
+    config
   );
 }

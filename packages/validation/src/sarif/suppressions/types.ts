@@ -1,11 +1,7 @@
-import {
-  ExternalSuppression,
-  Suppression,
-  SuppressionKind,
-  ValidationResult,
-  ValidationRun,
-} from '../../common/sarif.js';
+import {Suppression, SuppressionKind, ValidationResult, ValidationRun} from '../../common/sarif.js';
 import {Resource} from '../../common/types.js';
+
+export type {AnnotationsSuppression, FingerprintSuppression} from '@monokle/types';
 
 export type ResourceApi = {
   getResource: () => Resource | undefined;
@@ -17,14 +13,4 @@ export interface Suppressor<S extends Suppression = Suppression> {
   preload(suppressions?: S[]): Promise<void>;
   suppress(problem: ValidationResult, run: ValidationRun, api: ResourceApi): Suppression[] | Promise<Suppression[]>;
   suppressions?: S[];
-}
-
-export interface AnnotationsSuppression extends Suppression {
-  kind: 'inSource';
-  status: 'accepted';
-}
-
-export interface FingerprintSuppression extends ExternalSuppression {
-  kind: 'external';
-  fingerprint: string;
 }

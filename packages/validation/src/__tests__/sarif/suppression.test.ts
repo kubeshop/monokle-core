@@ -1,20 +1,19 @@
 import 'isomorphic-fetch';
 import {expect, it} from 'vitest';
+import YAML from 'yaml';
+import {set} from 'lodash';
+import {extractK8sResources} from '@monokle/parser';
 import {
   AnnotationSuppressor,
-  createDefaultMonokleValidator,
   DisabledFixer,
   MonokleValidator,
   ResourceParser,
-  SchemaLoader, Suppressor
+  SchemaLoader,
+  Suppressor,
 } from '../../index.js';
-
-import {extractK8sResources} from '@monokle/parser';
 import {PRACTICES_ALL_DISABLED, readDirectory} from '../testUtils.js';
 import {FakeSuppressor} from '../../sarif/suppressions/plugins/FakeSuppressor.js';
-import YAML from 'yaml';
-import {set} from 'lodash';
-import {DefaultPluginLoader} from "../../pluginLoaders/PluginLoader";
+import {DefaultPluginLoader} from '../../pluginLoaders/PluginLoader.js';
 
 it('supports suppress requests', async () => {
   const suppressor = new FakeSuppressor();
@@ -71,24 +70,23 @@ it('supports annotation suppressions', async () => {
   expect(problem.suppressions?.length).toBe(1);
 });
 
-
 function createTestValidator(suppressor: Suppressor) {
   return new MonokleValidator(
-      {
-        loader: new DefaultPluginLoader(),
-        parser: new ResourceParser(),
-        schemaLoader: new SchemaLoader(),
-        suppressors: [suppressor],
-        fixer: new DisabledFixer(),
+    {
+      loader: new DefaultPluginLoader(),
+      parser: new ResourceParser(),
+      schemaLoader: new SchemaLoader(),
+      suppressors: [suppressor],
+      fixer: new DisabledFixer(),
+    },
+    {
+      plugins: {
+        practices: true,
       },
-      {
-        plugins: {
-          practices: true,
-        },
-        rules: {
-          ...PRACTICES_ALL_DISABLED,
-          'practices/no-latest-image': 'err',
-        },
-      }
+      rules: {
+        ...PRACTICES_ALL_DISABLED,
+        'practices/no-latest-image': 'err',
+      },
+    }
   );
 }
