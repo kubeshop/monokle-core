@@ -1,4 +1,4 @@
-import {FingerPrints, ValidationResult} from '../common/sarif';
+import {FingerPrints, ValidationResult} from '../common/sarif.js';
 
 const DEFAULT_SEED = 1337;
 

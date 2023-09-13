@@ -5,13 +5,13 @@ import {processRefs} from '../references/index.js';
 // Usage note: This library relies on fetch being on global scope!
 import 'isomorphic-fetch';
 import {extractK8sResources} from '@monokle/parser';
+import {ValidationConfig} from '@monokle/types';
 import {readDirectory, expectResult} from './testUtils.js';
 import {ResourceParser} from '../common/resourceParser.js';
 import {Config, RuleMap} from '../config/parse.js';
-import {DefaultPluginLoader} from "../pluginLoaders/PluginLoader";
-import {SchemaLoader} from "../validators";
-import {DisabledFixer} from "../sarif";
-import {ValidationConfig} from "@monokle/types";
+import {DefaultPluginLoader} from '../pluginLoaders/PluginLoader.js';
+import {SchemaLoader} from '../validators/index.js';
+import {DisabledFixer} from '../sarif/index.js';
 
 it('should detect missing recommended labels (MTD-recommended-labels)', async () => {
   const {response} = await processResourcesInFolder('src/__tests__/resources/metadata');
@@ -258,15 +258,13 @@ async function createTestValidator(parser: ResourceParser, rules?: ValidationCon
     config.rules = rules;
   }
 
-  const validator = new MonokleValidator(
-      {
-        loader: new DefaultPluginLoader(),
-        parser,
-        schemaLoader: new SchemaLoader(),
-        suppressors: [],
-        fixer: new DisabledFixer(),
-      }
-  );
+  const validator = new MonokleValidator({
+    loader: new DefaultPluginLoader(),
+    parser,
+    schemaLoader: new SchemaLoader(),
+    suppressors: [],
+    fixer: new DisabledFixer(),
+  });
 
   await validator.preload(config);
 
