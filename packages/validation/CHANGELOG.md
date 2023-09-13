@@ -1,5 +1,13 @@
 # @monokle/validation
 
+## 0.28.1
+
+### Patch Changes
+
+- 8e49957: add get suppressions query in the synchronizer package
+- Updated dependencies [8e49957]
+  - @monokle/types@0.2.1
+
 ## 0.28.0
 
 ### Minor Changes
