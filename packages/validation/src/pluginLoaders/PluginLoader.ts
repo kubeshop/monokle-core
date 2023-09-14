@@ -91,13 +91,13 @@ export class RemotePluginLoader extends DefaultPluginLoader {
 
   async load(plugin: string, ctx: PluginContext, settings?: Record<string, any>) {
     try {
-      return super.load(plugin, ctx, settings);
+      return await super.load(plugin, ctx, settings);
     } catch (err) {
       if (err instanceof Error && err.message !== 'plugin_not_found') {
         throw err;
       }
 
-      return this.loadRemote(plugin, ctx, settings);
+      return await this.loadRemote(plugin, ctx, settings);
     }
   }
 
