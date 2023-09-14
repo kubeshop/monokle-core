@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.28.2
+
+### Patch Changes
+
+- 3a19a93: fix validation remote plugin loader
+
 ## 0.28.1
 
 ### Patch Changes
