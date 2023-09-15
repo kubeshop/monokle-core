@@ -84,6 +84,7 @@
     "use-debounced-effect": "2.0.1"
   },
   "dependencies": {
-    "react-fast-compare": "^3.2.1"
+    "react-fast-compare": "^3.2.1",
+    "react-hotkeys-hook": "4.4.1"
   }
 }

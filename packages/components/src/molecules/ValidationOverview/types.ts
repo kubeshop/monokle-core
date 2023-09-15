@@ -14,6 +14,7 @@ export type ValidationOverviewType = {
   containerClassName?: string;
   containerStyle?: React.CSSProperties;
   customMessage?: string;
+  hotkeysDisabled?: boolean;
   defaultSelectError?: boolean;
   downloadSarifResponseCallback?: () => void;
   filters?: ValidationFiltersValueType;
@@ -23,7 +24,7 @@ export type ValidationOverviewType = {
   groupOnlyByResource?: boolean;
   skeletonStyle?: React.CSSProperties;
   triggerValidationSettingsRedirectCallback?: () => void;
-  onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file'}) => void;
+  onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file' | 'hotkey'}) => void;
   onFiltersChange?: (filters: ValidationFiltersValueType) => void;
   onSearchCallback?: (searchValue: string) => void;
   onSecurityFrameworkFilterChange?: (securityFramework: string, from: 'dropdown' | 'tag') => void;

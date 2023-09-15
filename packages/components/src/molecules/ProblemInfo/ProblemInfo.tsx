@@ -48,12 +48,8 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
   const showSuppressionCTA = typeof suppressionBindings?.onToggleSuppression == 'function';
 
   const handleProblemAutofix = useCallback(() => {
-    if (!hasFix) {
-      return () => {
-        return;
-      };
-    }
-    return () => onProblemAutofix?.(problem);
+    if (!hasFix) return;
+    onProblemAutofix?.(problem);
   }, [onProblemAutofix, problem, hasFix]);
 
   return (

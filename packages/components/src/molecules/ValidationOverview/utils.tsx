@@ -188,41 +188,8 @@ export const getRuleInfo = (key: string) => {
 
 export const getResourceName = (problem: ValidationResult) => getResourceLocation(problem).logicalLocations?.[0]?.name;
 
-export const isProblemSelected = (
-  selectedProblem: ValidationResult,
-  currentProblem: ValidationResult,
-  type: GroupByFilterOptionType
-) => {
-  const selectedFilePhysicalLocation = getFileLocation(selectedProblem).physicalLocation;
-  const currentFileLocationPhysicalLocation = getFileLocation(currentProblem).physicalLocation;
-
-  const selectedFileURI = selectedFilePhysicalLocation?.artifactLocation.uri;
-  const selectedFileStartLine = selectedFilePhysicalLocation?.region?.startLine;
-  const currentFileURI = currentFileLocationPhysicalLocation?.artifactLocation.uri;
-  const currentFileStartLine = currentFileLocationPhysicalLocation?.region?.startLine;
-
-  if (selectedProblem.ruleId !== currentProblem.ruleId) {
-    return false;
-  }
-
-  if (selectedProblem.message.text !== currentProblem.message.text) {
-    return false;
-  }
-
-  if (type === 'group-by-file' || type === 'group-by-rule') {
-    if (selectedFileURI === currentFileURI && selectedFileStartLine === currentFileStartLine) {
-      return true;
-    }
-  } else if (type === 'group-by-resource') {
-    if (
-      getResourceName(selectedProblem) === getResourceName(currentProblem) &&
-      selectedFileStartLine === currentFileStartLine
-    ) {
-      return true;
-    }
-  }
-
-  return false;
+export const isProblemSelected = (selectedProblem: ValidationResult, currentProblem: ValidationResult) => {
+  return selectedProblem.fingerprints?.['monokleHash/v1'] === currentProblem.fingerprints?.['monokleHash/v1'];
 };
 
 export const getValidationList = (problems: ProblemsType, collapsedHeadersKey: string[]) => {

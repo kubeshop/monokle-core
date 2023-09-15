@@ -25,7 +25,7 @@ export function useScroll({
     }
 
     const index = listRef.current.findIndex(
-      item => item.type === 'problem' && isProblemSelected(selectedProblem, item.problem, groupByFilterValue)
+      item => item.type === 'problem' && isProblemSelected(selectedProblem, item.problem)
     );
 
     if (index === -1) return;
