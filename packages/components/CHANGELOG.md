@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 2.2.0
+
+### Minor Changes
+
+- efe313b: Improved autofix
+
 ## 2.1.0
 
 ### Minor Changes
