@@ -22,6 +22,7 @@ import {useScroll} from './useScroll';
 import {getValidationList, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
 import {Icon} from '@/atoms';
+import {useHotkeys} from 'react-hotkeys-hook';
 
 let baseData: BaseDataType = {
   baseCollapsedKeys: [],
@@ -30,15 +31,32 @@ let baseData: BaseDataType = {
   baseSecurityFrameworkFilter: 'all',
 };
 
-const ValidationOverview: React.FC<ValidationOverviewType> = props => {
-  const {status, validationResponse, activePlugins = [...CORE_PLUGINS]} = props;
-  const {containerClassName = '', containerStyle = {}, height, skeletonStyle = {}, defaultSelectError = false} = props;
-  const {customMessage, newProblemsIntroducedType, selectedProblem, groupOnlyByResource, filters} = props;
-  const {onFiltersChange, onProblemSelect, downloadSarifResponseCallback, triggerValidationSettingsRedirectCallback} =
-    props;
-  const {onSearchCallback, onSecurityFrameworkFilterChange, onGroupByFilterChange} = props;
-  const {suppressionBindings, onConfigureRule, onProblemAutofix} = props;
-
+const ValidationOverview: React.FC<ValidationOverviewType> = ({
+  status,
+  validationResponse,
+  activePlugins = [...CORE_PLUGINS],
+  containerClassName = '',
+  containerStyle = {},
+  height,
+  skeletonStyle = {},
+  defaultSelectError = false,
+  customMessage,
+  newProblemsIntroducedType,
+  selectedProblem,
+  groupOnlyByResource,
+  filters,
+  onFiltersChange,
+  onProblemSelect,
+  downloadSarifResponseCallback,
+  triggerValidationSettingsRedirectCallback,
+  onSearchCallback,
+  onSecurityFrameworkFilterChange,
+  onGroupByFilterChange,
+  suppressionBindings,
+  onConfigureRule,
+  onProblemAutofix,
+  hotkeysDisabled = false,
+}) => {
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<ValidationFiltersValueType>(filters || DEFAULT_FILTERS_VALUE);
   const [searchValue, setSearchValue] = useState('');
@@ -82,6 +100,97 @@ const ValidationOverview: React.FC<ValidationOverviewType> = props => {
     () => getValidationList(filteredProblems, collapsedHeadersKey),
     [collapsedHeadersKey, filteredProblems]
   );
+
+  useHotkeys(
+    'j',
+    () => {
+      if (!selectedProblem) {
+        const next = validationList.at(1);
+        const secondNext = validationList.at(2);
+        const nextProblem =
+          next?.type === 'problem' ? next.problem : secondNext?.type === 'problem' ? secondNext.problem : undefined;
+        if (nextProblem) {
+          onProblemSelect?.({problem: nextProblem, selectedFrom: 'hotkey'});
+        }
+        return;
+      }
+
+      const currentIndex = validationList.findIndex(
+        p =>
+          p.type === 'problem' &&
+          p.problem.fingerprints?.['monokleHash/v1'] === selectedProblem?.fingerprints?.['monokleHash/v1']
+      );
+
+      if (currentIndex === 0) {
+        return;
+      }
+
+      const next = validationList.at(currentIndex + 1);
+      const secondNext = validationList.at(currentIndex + 2);
+      const nextProblem =
+        next?.type === 'problem' ? next.problem : secondNext?.type === 'problem' ? secondNext.problem : undefined;
+
+      if (nextProblem) {
+        onProblemSelect?.({problem: nextProblem, selectedFrom: 'hotkey'});
+      }
+    },
+    {enabled: !hotkeysDisabled},
+    [validationList, selectedProblem]
+  );
+
+  useHotkeys(
+    'k',
+    () => {
+      if (!selectedProblem) {
+        return;
+      }
+
+      const currentIndex = validationList.findIndex(
+        p =>
+          p.type === 'problem' &&
+          p.problem.fingerprints?.['monokleHash/v1'] === selectedProblem?.fingerprints?.['monokleHash/v1']
+      );
+
+      const previousIndex = currentIndex - 1;
+      if (previousIndex <= 0) return;
+      const previous = validationList.at(currentIndex - 1);
+      if (previous?.type === 'problem') {
+        return onProblemSelect?.({problem: previous.problem, selectedFrom: 'hotkey'});
+      }
+
+      const secondPreviousIndex = currentIndex - 2;
+      if (previousIndex <= 0) return;
+      const secondPrevious = validationList.at(secondPreviousIndex);
+      if (secondPrevious?.type === 'problem') {
+        return onProblemSelect?.({problem: secondPrevious.problem, selectedFrom: 'hotkey'});
+      }
+    },
+    {enabled: !hotkeysDisabled},
+    [validationList, selectedProblem]
+  );
+
+  useHotkeys(
+    'f',
+    () => {
+      if (!selectedProblem || selectedProblem?.baselineState === 'absent') {
+        return;
+      }
+      onProblemAutofix?.(selectedProblem);
+    },
+    {enabled: !hotkeysDisabled},
+    [selectedProblem, onProblemAutofix]
+  );
+
+  useHotkeys(
+    's',
+    () => {
+      if (!selectedProblem) return;
+      suppressionBindings?.onToggleSuppression?.(selectedProblem);
+    },
+    {enabled: !hotkeysDisabled},
+    [selectedProblem, suppressionBindings]
+  );
+
   const ref = useRef<HTMLUListElement>(null);
 
   const isCollapsed = useMemo(

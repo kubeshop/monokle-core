@@ -27,7 +27,7 @@ const ProblemRenderer: React.FC<IProps> = props => {
   const {onConfigureRuleHandler, suppressionBindings, onAutofixHandler} = props;
 
   const isSelected = useMemo(
-    () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem, groupByFilterValue) : false),
+    () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem) : false),
     [selectedProblem, node.problem, groupByFilterValue]
   );
 
