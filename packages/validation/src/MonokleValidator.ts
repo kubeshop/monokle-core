@@ -19,6 +19,7 @@ import {SchemaLoader} from './validators/index.js';
 import {PluginLoader} from './pluginLoaders/PluginLoader.js';
 import {ValidationConfig} from '@monokle/types';
 import {PluginContext} from './pluginLoaders/types.js';
+import {sortResults} from './utils/sortResults.js';
 
 export type ValidatorInit = {
   loader: PluginLoader;
@@ -255,30 +256,32 @@ export class MonokleValidator implements Validator {
       taxonomies: [NSA_TAXONOMY, CIS_TAXONOMY],
     };
 
-    const result: ValidationResponse = {
+    const response: ValidationResponse = {
       $schema: 'https://json.schemastore.org/sarif-2.1.0.json',
       version: '2.1.0',
       runs: [run],
     };
 
     if (baseline) {
-      this.compareWithBaseline(result, baseline);
+      this.compareWithBaseline(response, baseline);
     }
 
-    return this.applySuppressions(result, resources);
+    sortResults(response);
+
+    return this.applySuppressions(response, resources);
   }
 
-  async applySuppressions(result: ValidationResponse, resources: Resource[], suppressions?: Suppression[]) {
+  async applySuppressions(response: ValidationResponse, resources: Resource[], suppressions?: Suppression[]) {
     if (suppressions) {
       this._suppressions = suppressions;
       await this._suppressor.preload(suppressions);
     }
-    await this._suppressor.suppress(result, resources, {
+    await this._suppressor.suppress(response, resources, {
       noInSourceSuppressions: this._config?.settings?.noInSourceSuppressions,
       noExternalSuppressions: this._config?.settings?.noExternalSuppressions,
     });
 
-    return result;
+    return response;
   }
 
   /**
@@ -287,8 +290,8 @@ export class MonokleValidator implements Validator {
    * @remarks comparison uses fingerprints.
    * @remark enhances the result with baseline guid & state.
    */
-  private compareWithBaseline(result: ValidationResponse, baseline: ValidationResponse): void {
-    for (const run of result.runs) {
+  private compareWithBaseline(response: ValidationResponse, baseline: ValidationResponse): void {
+    for (const run of response.runs) {
       const baselineRun = baseline.runs.find(r => r.tool.driver.name === run.tool.driver.name);
       if (!baselineRun) continue;
       this.compareRunWithBaseline(run, baselineRun);
