@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.29.0
+
+### Minor Changes
+
+- efe313b: Improved autofix
+
 ## 0.28.2
 
 ### Patch Changes
