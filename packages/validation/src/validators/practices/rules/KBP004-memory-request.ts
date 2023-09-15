@@ -30,4 +30,8 @@ export const memoryRequest = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, '512M');
+    return {description: 'Sets a memory request. You might want to tweak the value to accomodate your workload.'};
+  },
 });

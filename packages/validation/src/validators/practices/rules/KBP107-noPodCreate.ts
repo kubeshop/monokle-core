@@ -21,6 +21,18 @@ export const noPodCreate = defineRule({
       });
     });
   },
+  fix({resource, path}, {set, get}) {
+    const verbs = get(resource, path);
+    if (!Array.isArray(verbs)) return;
+    set(
+      resource,
+      path,
+      verbs.filter(c => c !== 'create')
+    );
+    return {
+      description: 'Remove the create pod permission. You might end up with a service with reduced functionality.',
+    };
+  },
 });
 
 function isTarget(r: any): r is Role | ClusterRole {

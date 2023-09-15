@@ -23,4 +23,8 @@ export const noMountedDockerSock = defineRule({
       });
     });
   },
+  fix({resource, path}, {unset}) {
+    unset(resource, path);
+    return {description: 'Removes the host path.'};
+  },
 });

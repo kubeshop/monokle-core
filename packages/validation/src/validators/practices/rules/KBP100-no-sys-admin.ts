@@ -6,7 +6,7 @@ export const noSysAdmin = defineRule({
   description: 'Disallow the SYS_ADMIN capability',
   fullDescription:
     'The container should drop all default capabilities and add only those that are needed for its execution.',
-  help: "Add 'ALL' to containers[].securityContext.capabilities.drop.",
+  help: "Do not include 'SYS_ADMIN' in `securityContext.capabilities.add`.",
   advanced: {
     severity: 8,
   },
@@ -33,5 +33,15 @@ export const noSysAdmin = defineRule({
         });
       });
     });
+  },
+  fix({resource, path}, {set, get}) {
+    const capabilities = get(resource, path);
+    if (!Array.isArray(capabilities)) return;
+    set(
+      resource,
+      path,
+      capabilities.filter(c => c !== 'SYS_ADMIN')
+    );
+    return {description: 'Remove the sys admin capability.'};
   },
 });

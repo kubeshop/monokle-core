@@ -34,4 +34,16 @@ export const noRootGroup = defineRule({
       });
     });
   },
+  fix({resource, path}, {set, get}) {
+    const verbs = get(resource, path);
+    if (!Array.isArray(verbs)) return;
+    set(
+      resource,
+      path,
+      verbs.filter(c => c !== 'execute')
+    );
+    return {
+      description: 'Remove the execute pod permission. You might end up with a service with reduced functionality.',
+    };
+  },
 });

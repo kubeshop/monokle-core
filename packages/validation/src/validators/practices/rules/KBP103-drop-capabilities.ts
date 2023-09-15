@@ -36,4 +36,8 @@ export const dropCapabilities = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, 'ALL');
+    return {description: 'Drops all capabilities.'};
+  },
 });

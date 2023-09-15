@@ -30,4 +30,8 @@ export const cpuRequest = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, '350m');
+    return {description: 'Sets a cpu request. You might want to tweak the value to accomodate your workload.'};
+  },
 });

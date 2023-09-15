@@ -37,4 +37,8 @@ export const noLowGroupId = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, 10001);
+    return {description: 'Sets a high group id. You might need to tweak your Dockerfile.'};
+  },
 });
