@@ -31,19 +31,17 @@ it('should detect deprecation error - multiple resources, removal', async () => 
 
   expect(hasErrors).toBe(5);
 
-  const result1 = response.runs[0].results[0];
+  const result0 = response.runs[0].results[0];
+  expectResult(result0, 'K8S003', 'error', 'FlowSchema');
+  expect(result0.message.text).toContain('uses removed');
+
+  const result1 = response.runs[0].results[1];
   expectResult(result1, 'K8S003', 'error', 'ValidatingWebhookConfiguration');
   expect(result1.message.text).toContain('uses removed');
 
-  expectResult(response.runs[0].results[1], 'K8S004', 'warning', 'ValidatingWebhookConfiguration');
-
-  const result2 = response.runs[0].results[2];
-  expectResult(result2, 'K8S003', 'error', 'FlowSchema');
-  expect(result2.message.text).toContain('uses removed');
-
+  expectResult(response.runs[0].results[2], 'K8S004', 'warning', 'Pod');
   expectResult(response.runs[0].results[3], 'K8S004', 'warning', 'FlowSchema');
-
-  expectResult(response.runs[0].results[4], 'K8S004', 'warning', 'Pod');
+  expectResult(response.runs[0].results[4], 'K8S004', 'warning', 'ValidatingWebhookConfiguration');
 });
 
 it('should detect deprecation error - single resource, deprecation', async () => {
@@ -67,17 +65,16 @@ it('should detect deprecation error - multiple resources, removal + deprecation'
 
   expect(hasErrors).toBe(4);
 
-  const result1 = response.runs[0].results[0];
+  const result0 = response.runs[0].results[0];
+  expectResult(result0, 'K8S002', 'warning', 'KubeSchedulerConfiguration');
+  expect(result0.message.text).toContain('uses deprecated');
+
+  const result1 = response.runs[0].results[1];
   expectResult(result1, 'K8S003', 'error', 'RuntimeClass');
   expect(result1.message.text).toContain('uses removed');
 
-  expectResult(response.runs[0].results[1], 'K8S004', 'warning', 'RuntimeClass');
-
-  const result2 = response.runs[0].results[2];
-  expectResult(result2, 'K8S002', 'warning', 'KubeSchedulerConfiguration');
-  expect(result2.message.text).toContain('uses deprecated');
-
-  expectResult(response.runs[0].results[3], 'K8S004', 'warning', 'KubeSchedulerConfiguration');
+  expectResult(response.runs[0].results[2], 'K8S004', 'warning', 'KubeSchedulerConfiguration');
+  expectResult(response.runs[0].results[3], 'K8S004', 'warning', 'RuntimeClass');
 });
 
 it('should rise warning when no apiVersion present (K8S004)', async () => {
@@ -86,11 +83,11 @@ it('should rise warning when no apiVersion present (K8S004)', async () => {
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
   expect(hasErrors).toBe(2);
 
-  const error1 = response.runs[0].results[0];
+  const error1 = response.runs[0].results[1];
   expectResult(error1, 'K8S004', 'warning', 'FlowSchema');
   expect(error1.message.text).toContain('Missing "apiVersion"');
 
-  const error2 = response.runs[0].results[1];
+  const error2 = response.runs[0].results[0];
   expectResult(error2, 'K8S004', 'warning', 'Pod');
   expect(error2.message.text).toContain('Missing "apiVersion"');
 });

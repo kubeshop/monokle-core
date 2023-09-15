@@ -125,13 +125,13 @@ it('should detect missing dynamic custom labels', async () => {
 
   expect(hasErrors).toBe(2);
 
-  const result1 = response.runs[0].results[0];
+  const result0 = response.runs[0].results[0];
+  expectResult(result0, 'MTD-name-label', 'error', 'ReplicaSet');
+  expectMatchList(result0.message.text, ['name']);
+
+  const result1 = response.runs[0].results[1];
   expectResult(result1, 'MTD-role-label', 'warning', 'ReplicaSet');
   expectMatchList(result1.message.text, ['role']);
-
-  const result2 = response.runs[0].results[1];
-  expectResult(result2, 'MTD-name-label', 'error', 'ReplicaSet');
-  expectMatchList(result2.message.text, ['name']);
 });
 
 it('should detect missing dynamic custom labels (with slashes replacement)', async () => {
@@ -146,13 +146,13 @@ it('should detect missing dynamic custom labels (with slashes replacement)', asy
 
   expect(hasErrors).toBe(2);
 
-  const result1 = response.runs[0].results[0];
+  const result0 = response.runs[0].results[0];
+  expectResult(result0, 'MTD-monokle.io__group-label', 'warning', 'ReplicaSet');
+  expectMatchList(result0.message.text, ['monokle.io/group', 'red, blue']);
+
+  const result1 = response.runs[0].results[1];
   expectResult(result1, 'MTD-monokle.io__user-label', 'error', 'ReplicaSet');
   expectMatchList(result1.message.text, ['monokle.io/user']);
-
-  const result2 = response.runs[0].results[1];
-  expectResult(result2, 'MTD-monokle.io__group-label', 'warning', 'ReplicaSet');
-  expectMatchList(result2.message.text, ['monokle.io/group', 'red, blue']);
 });
 
 it('should detect missing dynamic custom annotations', async () => {
