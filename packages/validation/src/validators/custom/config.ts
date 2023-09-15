@@ -122,7 +122,7 @@ export type RuleInit = {
    *
    * @remark you can update the resource as needed.
    */
-  fix?: (ctx: FixContext, api: FixApi) => void;
+  fix?: (ctx: FixContext, api: FixApi) => FixMetadata | void;
 
   /**
    * Advanced rule settings.
@@ -175,9 +175,29 @@ export type FixContext = {
 
 export type FixApi = {
   /**
-   * Utility that sets the given value.
+   * Utility that gets the value at given path.
+   */
+  get(resource: Resource, path: string): any;
+
+  /**
+   * Utility that sets the value for given path.
    */
   set(resource: Resource, path: string, value: any): void;
+
+  /**
+   * Utility that unsets the given path.
+   */
+  unset(resource: Resource, path: string): void;
+};
+
+export type FixMetadata = {
+  /**
+   * Describes the proposed fix and recommended actions.
+   *
+   * @remark A notification with this description will appear after applying this fix.
+   * @example "Adds a user id. You might need to tweak your Dockerfile."
+   */
+  description?: string;
 };
 
 export type ReportArgs = {

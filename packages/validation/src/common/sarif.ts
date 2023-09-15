@@ -82,16 +82,27 @@ export type ArtifactChange = {
   replacements: Replacement[];
 };
 
-export type Replacement = TextualReplacement | BinaryReplacement;
+export type Replacement = OffsetTextualReplacement | LineTextualReplacement | BinaryReplacement;
 
-export type TextualReplacement = {
+export type OffsetTextualReplacement = {
+  deletedRegion: {
+    charOffset: number;
+    charLength: number;
+  };
+  insertedContent?: {
+    text: string;
+  };
+};
+
+export type LineTextualReplacement = {
   deletedRegion: {
     startLine: number;
-    startColumn: number;
-    endLine: number;
-    endColumn: number;
+    endLine?: number; // defaults to startLine for single line delete
+    endColumn?: number; // 0 for no deletion; defaults to end of line
   };
-  insertedContent?: Message;
+  insertedContent?: {
+    text: string;
+  };
 };
 
 export type BinaryReplacement = {

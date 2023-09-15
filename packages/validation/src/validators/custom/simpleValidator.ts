@@ -10,6 +10,7 @@ import {Fixer} from '../../sarif/fix/index.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {Resource as PlainResource, PluginInit, ReportArgs, RuleInit} from './config.js';
+import {get, unset} from 'lodash';
 
 type Runtime = {
   validate: RuleInit['validate'];
@@ -134,23 +135,28 @@ export class SimpleCustomValidator extends AbstractPlugin {
 
       const fixedResource = JSON.parse(JSON.stringify(resource.content));
 
-      fix?.(
-        {
-          resource: fixedResource,
-          problem: result,
-          path: args.path,
-        },
-        {
-          set: (resource: Resource['content'], path: string, value: any) => {
-            set(resource, path.split('.'), value);
+      const fixMetadata =
+        fix?.(
+          {
+            resource: fixedResource,
+            problem: result,
+            path: args.path,
           },
-        }
-      );
+          {
+            get: (resource: Resource['content'], path: string) => {
+              return get(resource, path.split('.'));
+            },
+            set: (resource: Resource['content'], path: string, value: any) => {
+              set(resource, path.split('.'), value);
+            },
+            unset: (resource: Resource['content'], path: string) => {
+              unset(resource, path.split('.'));
+            },
+          }
+        ) ?? undefined;
 
-      if (fixedResource) {
-        delete fixedResource['_id'];
-        result.fixes = this._fixer?.createFix(resource, fixedResource, this._parser);
-      }
+      delete fixedResource['_id'];
+      result.fixes = this._fixer?.createFix(resource, fixedResource, fixMetadata, this._parser);
     }
 
     return result;
