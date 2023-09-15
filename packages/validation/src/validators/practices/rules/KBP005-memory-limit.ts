@@ -29,4 +29,8 @@ export const memoryLimit = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, '512M');
+    return {description: 'Sets a memory limit. You might want to tweak the value to accomodate your workload.'};
+  },
 });

@@ -31,4 +31,8 @@ export const noWritableFs = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, true);
+    return {description: 'Sets the root filesystem to readonly.'};
+  },
 });

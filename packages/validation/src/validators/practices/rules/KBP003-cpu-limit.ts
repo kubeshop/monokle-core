@@ -29,4 +29,8 @@ export const cpuLimit = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, '500m');
+    return {description: 'Sets a cpu limit. You might want to tweak the value to accomodate your workload.'};
+  },
 });

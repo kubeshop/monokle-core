@@ -30,5 +30,6 @@ export const noAutomountServiceAccountToken = defineRule({
   },
   fix({resource, path}, {set}) {
     set(resource, path, false);
+    return {description: 'Disables automount service account tokens.'};
   },
 });
