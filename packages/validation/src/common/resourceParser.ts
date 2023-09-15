@@ -38,7 +38,14 @@ export class ResourceParser {
   parseErrorRegion(resource: Resource, pos: [number, number, number?]): Region {
     const {lineCounter} = this.parse(resource);
     const start = lineCounter.linePos(pos[0]);
-    const end = lineCounter.linePos(pos[1]);
+    let end = lineCounter.linePos(pos[1]);
+
+    if (end.line > start.line && end.col === 1) {
+      // When the cursor ends at the first character of the next line
+      // then we move it to the last character of the previous line
+      // This gives better UX when focusing the editor.
+      end = lineCounter.linePos(pos[1] - 1);
+    }
 
     return {
       startLine: start.line,
