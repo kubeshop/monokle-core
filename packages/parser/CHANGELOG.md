@@ -1,5 +1,11 @@
 # @monokle/parser
 
+## 0.2.0
+
+### Minor Changes
+
+- 7357bdf: Added flag to filter helm template files during parsing
+
 ## 0.1.1
 
 ### Patch Changes
