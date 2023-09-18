@@ -13,3 +13,9 @@ export function isYamlFile(file: BaseFile): boolean {
 export function isUntypedKustomizationFile(filePath = ''): boolean {
   return /kustomization*.yaml/.test(filePath.toLowerCase().trim());
 }
+
+const HELM_TEMPLATE_CONTENT_REGEX = /{{[^}]*}}/;
+
+export function hasHelmTemplateContent(file: BaseFile) {
+  return HELM_TEMPLATE_CONTENT_REGEX.test(file.content || '');
+}
