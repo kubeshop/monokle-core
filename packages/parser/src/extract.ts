@@ -1,14 +1,18 @@
 import {LineCounter} from 'yaml';
 import {parseAllYamlDocuments} from './parse.js';
 import {Resource, createResourceId, createResourceName} from './resource.js';
-import {BaseFile, isUntypedKustomizationFile} from './file.js';
+import {BaseFile, isUntypedKustomizationFile, isYamlFile, hasHelmTemplateContent} from './file.js';
 import {KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND} from './constants.js';
 import {isKubernetesLike} from './k8s.js';
 
-export function extractK8sResources(files: BaseFile[]): Resource[] {
+export function extractK8sResources(files: BaseFile[], extractHelmLikeFiles?: boolean): Resource[] {
   const resources: Resource[] = [];
 
   for (const file of files) {
+    if (!isYamlFile(file) || (!extractHelmLikeFiles && hasHelmTemplateContent(file))) {
+      continue;
+    }
+
     const lineCounter = new LineCounter();
     const documents = parseAllYamlDocuments(file.content, lineCounter);
 
