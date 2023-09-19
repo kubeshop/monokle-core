@@ -49,11 +49,11 @@ export interface Suppression {
   kind: SuppressionKind;
   status: SuppressionStatus;
   justification?: string;
-};
+}
 
 export interface ExternalSuppression extends Suppression  {
   guid: string;
-};
+}
 
 export interface AnnotationsSuppression extends Suppression {
   kind: 'inSource';
