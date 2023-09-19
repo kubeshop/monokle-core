@@ -1,6 +1,8 @@
 import {paramCase, sentenceCase} from 'change-case';
 import keyBy from 'lodash/keyBy.js';
 import set from 'lodash/set.js';
+import get from 'lodash/get.js';
+import unset from 'lodash/unset.js';
 import {Document, Node, ParsedNode, isNode} from 'yaml';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
@@ -10,7 +12,6 @@ import {Fixer} from '../../sarif/fix/index.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {Resource as PlainResource, PluginInit, ReportArgs, RuleInit} from './config.js';
-import {get, unset} from 'lodash';
 
 type Runtime = {
   validate: RuleInit['validate'];
