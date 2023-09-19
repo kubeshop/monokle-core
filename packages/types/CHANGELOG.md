@@ -1,5 +1,11 @@
 # @monokle/types
 
+## 0.2.2
+
+### Patch Changes
+
+- 393090b: removed unallowed semicolon from types definitions
+
 ## 0.2.1
 
 ### Patch Changes
