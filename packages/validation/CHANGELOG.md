@@ -1,5 +1,13 @@
 # @monokle/validation
 
+## 0.29.1
+
+### Patch Changes
+
+- 410cc01: Fixed lodash imports
+- Updated dependencies [393090b]
+  - @monokle/types@0.2.2
+
 ## 0.29.0
 
 ### Minor Changes
