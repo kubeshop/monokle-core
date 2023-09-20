@@ -37,7 +37,7 @@ export const dropCapabilities = defineRule({
     });
   },
   fix({resource, path}, {set}) {
-    set(resource, path, 'ALL');
-    return {description: 'Drops all capabilities.'};
+    set(resource, path, ['ALL']);
+    return {description: 'Drops all capabilities. You might end up with a degraded service.'};
   },
 });
