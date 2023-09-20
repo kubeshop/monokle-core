@@ -117,6 +117,11 @@ const ProblemRenderer: React.FC<IProps> = props => {
               ))}
             </TagsContainer>
           ) : null}
+          {onAutofixHandler && hasFix && !absent ? (
+            <AutofixHint>
+              <Icon style={{color: Colors.grey8}} name="magic-wand" />
+            </AutofixHint>
+          ) : null}
         </>
       )}
 
@@ -190,6 +195,10 @@ export default ProblemRenderer;
 
 // Styled components
 
+const AutofixHint = styled.div`
+  display: flex;
+`;
+
 const ActionsContainer = styled.div`
   display: none;
   margin-left: auto;
@@ -235,6 +244,10 @@ const Row = styled.div<{$isSelected: boolean; $secondary: boolean; $isSuppressed
   &:hover {
     ${ActionsContainer} {
       display: flex;
+    }
+
+    ${AutofixHint} {
+      display: none;
     }
 
     cursor: pointer;
