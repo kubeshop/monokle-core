@@ -19,4 +19,10 @@ export const appArmor = defineRule({
       report(resource, {path: `${prefix}.metadata.annotations`});
     });
   },
+  fix({resource}) {
+    delete resource?.metadata?.annotations?.['container.apparmor.security.beta.kubernetes.io/*'];
+    return {
+      description: 'Removes customization of app armor.',
+    };
+  },
 });

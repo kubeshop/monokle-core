@@ -59,4 +59,8 @@ export const seccompStrict = defineRule({
       }
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, 'RuntimeDefault');
+    return {description: 'Changes profile to RuntimeDefault.'};
+  },
 });

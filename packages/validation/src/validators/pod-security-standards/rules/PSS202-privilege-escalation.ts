@@ -17,7 +17,7 @@ export const privilegeEscalation = defineRule({
     validatePodSpec(resources, (resource, pod, prefix) => {
       pod.initContainers?.forEach((container, index) => {
         const allowPrivilegeEscalation = container.securityContext?.allowPrivilegeEscalation;
-        const valid = allowPrivilegeEscalation === false;
+        const valid = !allowPrivilegeEscalation;
 
         if (valid) return;
 
@@ -28,7 +28,7 @@ export const privilegeEscalation = defineRule({
 
       pod.ephemeralContainers?.forEach((container, index) => {
         const allowPrivilegeEscalation = container.securityContext?.allowPrivilegeEscalation;
-        const valid = allowPrivilegeEscalation === false;
+        const valid = !allowPrivilegeEscalation;
         if (valid) return;
 
         report(resource, {
@@ -38,7 +38,7 @@ export const privilegeEscalation = defineRule({
 
       pod.containers.forEach((container, index) => {
         const allowPrivilegeEscalation = container.securityContext?.allowPrivilegeEscalation;
-        const valid = allowPrivilegeEscalation === false;
+        const valid = !allowPrivilegeEscalation;
         if (valid) return;
 
         report(resource, {
@@ -46,5 +46,9 @@ export const privilegeEscalation = defineRule({
         });
       });
     });
+  },
+  fix({resource, path}, {set}) {
+    set(resource, path, false);
+    return {description: 'Disables privilege escalation. You might end up with a service with reduced functionality.'};
   },
 });
