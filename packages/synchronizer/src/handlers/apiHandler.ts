@@ -215,7 +215,10 @@ export class ApiHandler {
   }
 
   private formatAuthorizationHeader(tokenInfo: TokenInfo) {
-    const tokenType = tokenInfo?.tokenType?.toLowerCase() === 'bearer' || tokenInfo?.tokenType?.toLowerCase() === 'apikey' ? tokenInfo.tokenType : 'Bearer';
-    return `${tokenType} ${tokenInfo.accessToken}`
+    const tokenType =
+      tokenInfo?.tokenType?.toLowerCase() === 'bearer' || tokenInfo?.tokenType?.toLowerCase() === 'apikey'
+        ? tokenInfo.tokenType
+        : 'Bearer';
+    return `${tokenType} ${tokenInfo.accessToken}`;
   }
 }

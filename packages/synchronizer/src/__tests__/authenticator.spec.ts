@@ -1,4 +1,4 @@
-import { parse, stringify } from 'yaml'
+import {parse, stringify} from 'yaml';
 import {dirname, resolve} from 'path';
 import {fileURLToPath} from 'url';
 import {rm, mkdir, cp, readFile, writeFile} from 'fs/promises';

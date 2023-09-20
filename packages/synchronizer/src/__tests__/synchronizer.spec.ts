@@ -182,7 +182,10 @@ describe('Synchronizer Tests', () => {
 
       assert.isFalse(policy.valid);
 
-      const newPolicy = await synchronizer.getPolicy(repoData, true, {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'Bearer'});
+      const newPolicy = await synchronizer.getPolicy(repoData, true, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'Bearer',
+      });
 
       assert.isObject(newPolicy);
       assert.isTrue(newPolicy.valid);
@@ -248,7 +251,10 @@ describe('Synchronizer Tests', () => {
 
       assert.isFalse(policy.valid);
 
-      const newPolicy = await synchronizer.getPolicy(policyData, true, {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'ApiKey'});
+      const newPolicy = await synchronizer.getPolicy(policyData, true, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
 
       assert.isObject(newPolicy);
       assert.isTrue(newPolicy.valid);
@@ -417,7 +423,10 @@ describe('Synchronizer Tests', () => {
         name: 'monokle-core',
       };
 
-      const projectInfo = await synchronizer.getProjectInfo(repoData, {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'ApiKey'});
+      const projectInfo = await synchronizer.getProjectInfo(repoData, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
 
       assert.isObject(projectInfo);
       assert.equal(projectInfo!.id, 6000);
@@ -454,7 +463,10 @@ describe('Synchronizer Tests', () => {
         slug: 'user7-proj-foobar',
       };
 
-      const projectInfo = await synchronizer.getProjectInfo(projectData, {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'Bearer'});
+      const projectInfo = await synchronizer.getProjectInfo(projectData, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'Bearer',
+      });
 
       assert.isObject(projectInfo);
       assert.equal(projectInfo!.id, 7000);
@@ -512,15 +524,25 @@ describe('Synchronizer Tests', () => {
         name: 'monokle-core',
       };
 
-      const projectInfo = await synchronizer.getProjectInfo(repoData, {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'ApiKey'});
+      const projectInfo = await synchronizer.getProjectInfo(repoData, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
       assert.equal(projectInfo!.id, 6000);
       assert.equal(queryApiStub.callCount, 1);
 
-      const projectInfoRetry = await synchronizer.getProjectInfo(repoData, {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'ApiKey'});
+      const projectInfoRetry = await synchronizer.getProjectInfo(repoData, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
       assert.equal(projectInfoRetry!.id, 6000);
       assert.equal(queryApiStub.callCount, 1);
 
-      const projectInfoRetryForce = await synchronizer.getProjectInfo(repoData, {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'ApiKey'}, true);
+      const projectInfoRetryForce = await synchronizer.getProjectInfo(
+        repoData,
+        {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'ApiKey'},
+        true
+      );
       assert.equal(projectInfoRetryForce!.id, 6000);
       assert.equal(queryApiStub.callCount, 2);
     });

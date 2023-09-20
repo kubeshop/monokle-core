@@ -13,7 +13,7 @@ export class User {
     if (this._isAuthenticated) {
       this._email = data!.auth!.email;
       this._token = data!.auth!.token.access_token!;
-      this._tokenInfo = { accessToken: this._token, tokenType: data!.auth!.token.token_type! as TokenType };
+      this._tokenInfo = {accessToken: this._token, tokenType: data!.auth!.token.token_type! as TokenType};
       this._data = data;
     }
   }
