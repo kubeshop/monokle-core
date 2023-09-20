@@ -5,6 +5,7 @@ import {isDaemonSet} from './schemas/daemonset.apps.v1.js';
 import {isDeployment} from './schemas/deployment.apps.v1.js';
 import {isJob} from './schemas/job.batch.v1.js';
 import {isPod} from './schemas/pod.v1.js';
+import {YamlPath} from '../../common/types';
 
 export function validatePodSpec(
   resources: any[],
@@ -48,4 +49,21 @@ export function validatePodTemplate(
       return validateFn(resource, template, 'spec.jobTemplate.spec.template');
     }
   });
+}
+
+export function isContainerPrefix(currentPath: YamlPath): boolean {
+  return currentPath.at(-2) === 'containers';
+}
+
+export function isPodPrefix(currentPath: YamlPath, resourceKind: string): boolean {
+  if (resourceKind === 'pod') {
+    return currentPath.join('.') === 'spec';
+  }
+  if (resourceKind === 'CronJob') {
+    return currentPath.join('.') === 'spec.jobTemplate.spec.template.spec';
+  }
+  if (['Deployment', 'StatefulSet', 'DaemonSet'].includes(resourceKind)) {
+    return currentPath.join('.') === 'spec.template.spec';
+  }
+  return false;
 }
