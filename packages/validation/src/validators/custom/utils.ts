@@ -5,7 +5,7 @@ import {isDaemonSet} from './schemas/daemonset.apps.v1.js';
 import {isDeployment} from './schemas/deployment.apps.v1.js';
 import {isJob} from './schemas/job.batch.v1.js';
 import {isPod} from './schemas/pod.v1.js';
-import {YamlPath} from '../../common/types';
+import {YamlPath} from '../../common/types.js';
 
 export function validatePodSpec(
   resources: any[],
