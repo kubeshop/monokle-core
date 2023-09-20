@@ -44,7 +44,7 @@ describe('Authenticator Tests', () => {
       assert.isTrue(user.isAuthenticated);
       assert.equal(user.email, 'user1@kubeshop.io');
       assert.equal(user.token, 'USER1_ACCESS_TOKEN');
-      assert.equal(user.data?.auth?.token.token_type, 'access_token');
+      assert.equal(user.data?.auth?.token.token_type, 'ApiKey');
     });
 
     it('should return user data on init when auth file present (device code method)', async () => {
@@ -138,7 +138,7 @@ describe('Authenticator Tests', () => {
       assert.isTrue(user.isAuthenticated);
       assert.equal(user.email, 'user3@kubeshop.io');
       assert.equal(user.token, 'USER3_ACCESS_TOKEN');
-      assert.equal(user.data?.auth?.token.token_type, 'access_token');
+      assert.equal(user.data?.auth?.token.token_type, 'ApiKey');
     });
 
     it('should login with device code', async () => {
@@ -267,7 +267,7 @@ describe('Authenticator Tests', () => {
       assert.isTrue(userNew.isAuthenticated);
       assert.equal(userNew.email, 'user1@kubeshop.io');
       assert.equal(userNew.token, 'USER1_ACCESS_TOKEN');
-      assert.equal(userNew.data?.auth?.token.token_type, 'access_token');
+      assert.equal(userNew.data?.auth?.token.token_type, 'ApiKey');
 
       assert.equal(deviceFlowRefreshSpy.callCount, 0);
     });

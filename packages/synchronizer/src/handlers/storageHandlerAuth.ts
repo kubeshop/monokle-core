@@ -3,9 +3,16 @@ import {StorageHandler} from './storageHandler.js';
 import {DEFAULT_STORAGE_CONFIG_FILE_AUTH, DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants.js';
 import type {TokenSet} from './deviceFlowHandler.js';
 
+export type TokenType = 'Bearer' | 'ApiKey';
+
+export type TokenInfo = {
+  accessToken: string;
+  tokenType: TokenType;
+};
+
 export type AccessToken = {
   access_token: string;
-  token_type: 'access_token';
+  token_type: 'ApiKey';
 };
 
 export type Token = AccessToken | TokenSet;
