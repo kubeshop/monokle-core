@@ -3,7 +3,7 @@ import keyBy from 'lodash/keyBy.js';
 import set from 'lodash/set.js';
 import get from 'lodash/get.js';
 import unset from 'lodash/unset.js';
-import {Document, Node, ParsedNode, isNode} from 'yaml';
+import {Document, Node, ParsedNode, isNode, isMap, isScalar, isPair} from 'yaml';
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {RuleMetadata, ValidationResult} from '../../common/sarif.js';
@@ -12,6 +12,7 @@ import {Fixer} from '../../sarif/fix/index.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {Resource as PlainResource, PluginInit, ReportArgs, RuleInit} from './config.js';
+import {isContainerPrefix, isPodPrefix} from './utils.js';
 
 type Runtime = {
   validate: RuleInit['validate'];
@@ -119,7 +120,7 @@ export class SimpleCustomValidator extends AbstractPlugin {
     const {parsedDoc} = this._parser.parse(resource);
 
     const path = args.path.split('.');
-    const node = determineClosestNodeForPath(parsedDoc, path);
+    const node = determineClosestNodeForPath(parsedDoc, path, resource.kind);
     const region = node?.range ? this._parser.parseErrorRegion(resource, node.range) : undefined;
 
     const locations = createLocations(resource, region, path);
@@ -173,27 +174,48 @@ type YamlPath = Array<string | number>;
  * - Hint: $container.securityContext.readOnlyRootFilesystem and desired value is `true`.
  * - When $container specifies `securityContext.readOnlyRootFilesystem` then it underlines the incorrect `false` value.
  * - When $container specifies `securityContext` then it underlines whole context object.
- * - When $container does not specify `securityContext` then it underlines whole container object.
+ * - When $container does not specify `securityContext` then it falls back to the container name.
+ *   - Note: Container objects are quite big and otherwise the whole screen turns yellow/red.
+ * - When the property does not relate to a container and name cannot be used, it falls back to the whole object.
  */
 function determineClosestNodeForPath(
   resource: Document.Parsed<ParsedNode>,
   path: YamlPath,
-  prefix: YamlPath = []
+  resourceKind: string
 ): Node | undefined {
-  const currentPath = prefix.concat(path);
+  const currentPath = [...path];
 
-  while (currentPath.length > prefix.length) {
+  while (currentPath.length > 0) {
     const node = resource.getIn(currentPath, true);
 
     if (isNode(node)) {
+      // Less aggressive error highlighting for missing properties
+      // Pod objects now fall back to the parent's spec.
+      // Container objects now fall back to the container's name.
+      if (isPodPrefix(currentPath, resourceKind)) {
+        const podPath = currentPath.slice(0, -1);
+        const parent = resource.getIn(podPath, true);
+        const spec = isMap(parent)
+          ? parent.items.find(i => (isScalar(i.key) ? i.key.value === 'spec' : false))
+          : undefined;
+        if (isPair(spec) && isNode(spec.key)) {
+          return spec.key;
+        }
+      }
+      if (isContainerPrefix(currentPath)) {
+        const nameNode = resource.getIn([...currentPath, 'name'], true);
+        if (isNode(nameNode)) {
+          return nameNode;
+        }
+      }
+
       return node;
     }
 
     currentPath.pop();
   }
 
-  const node = resource.getIn(currentPath, true);
-  return isNode(node) ? node : undefined;
+  return undefined;
 }
 
 function toPluginMetadata(plugin: PluginInit): PluginMetadata {
