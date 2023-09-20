@@ -41,4 +41,5 @@ export const volumeTypes = defineRule({
       });
     });
   },
+  fix: undefined, // Autofix cannot decide the desired allowed volume type.
 });

@@ -41,4 +41,10 @@ export const procMount = defineRule({
       });
     });
   },
+  fix({resource, path}, {get, set}) {
+    const procMount = get(resource, path);
+    if (!procMount) return;
+    set(resource, path, 'Default');
+    return {description: 'Sets the default Proc Mount '};
+  },
 });

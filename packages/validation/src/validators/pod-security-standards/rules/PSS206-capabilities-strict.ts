@@ -25,7 +25,7 @@ export const capabilitiesStrict = defineRule({
           });
         }
 
-        const validAdd = container.securityContext?.capabilities?.add?.every(c => ALLOWED_ADD.includes(c));
+        const validAdd = container.securityContext?.capabilities?.add?.every(c => ALLOWED_ADD.includes(c)) ?? true;
         if (!validAdd) {
           report(resource, {
             path: `${prefix}.initContainers.${index}.securityContext.capabilities.add`,
@@ -41,7 +41,7 @@ export const capabilitiesStrict = defineRule({
           });
         }
 
-        const validAdd = container.securityContext?.capabilities?.add?.every(c => ALLOWED_ADD.includes(c));
+        const validAdd = container.securityContext?.capabilities?.add?.every(c => ALLOWED_ADD.includes(c)) ?? true;
         if (!validAdd) {
           report(resource, {
             path: `${prefix}.ephemeralContainers.${index}.securityContext.capabilities.add`,
@@ -57,7 +57,7 @@ export const capabilitiesStrict = defineRule({
           });
         }
 
-        const validAdd = container.securityContext?.capabilities?.add?.every(c => ALLOWED_ADD.includes(c));
+        const validAdd = container.securityContext?.capabilities?.add?.every(c => ALLOWED_ADD.includes(c)) ?? true;
         if (!validAdd) {
           report(resource, {
             path: `${prefix}.containers.${index}.securityContext.capabilities.add`,
@@ -65,5 +65,18 @@ export const capabilitiesStrict = defineRule({
         }
       });
     });
+  },
+  fix({resource, path}, {get, set}) {
+    if (path.endsWith('.drop')) {
+      set(resource, path, ['ALL']);
+      return {description: 'Drops all capabilities. You might end up with a degraded service.'};
+    }
+    if (path.endsWith('.add')) {
+      const capabilities = get(resource, path);
+      if (!Array.isArray(capabilities)) return;
+      const allowedCapabilities = capabilities.filter(c => ALLOWED_ADD.includes(c));
+      set(resource, path, allowedCapabilities);
+      return {description: 'Removes disallowed capabilities. You might end up with a degraded service.'};
+    }
   },
 });

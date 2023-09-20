@@ -24,4 +24,12 @@ export const hostNamespaces = defineRule({
       }
     });
   },
+  fix({resource, path}, {unset}) {
+    unset(resource, path);
+    const isPID = path.includes('hostPID');
+    const isIPC = path.includes('hostIPC');
+    const remediation = isPID ? 'Removes the host PID.' : isIPC ? 'Removes the host IPC.' : 'Removes the host network.';
+    const description = `${remediation} You might end up with a service with reduced functionality.`;
+    return {description};
+  },
 });

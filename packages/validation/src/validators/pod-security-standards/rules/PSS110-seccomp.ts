@@ -50,4 +50,8 @@ export const seccomp = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, 'RuntimeDefault');
+    return {description: 'Changes profile from Unconfined to RuntimeDefault.'};
+  },
 });

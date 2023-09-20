@@ -29,4 +29,14 @@ export const sysctls = defineRule({
       });
     });
   },
+  fix({resource, path}, {get, set}) {
+    const capabilities = get(resource, path);
+    if (!Array.isArray(capabilities)) return;
+    set(
+      resource,
+      path,
+      capabilities.filter(c => ALLOWED.includes(c))
+    );
+    return {description: 'Removes unsafe sysctl.'};
+  },
 });
