@@ -74,7 +74,7 @@ export const capabilities = defineRule({
       capabilities.filter(c => ALLOWED.includes(c))
     );
     return {
-      description: 'Remove the sys admin capability. You might end up with a degraded service.',
+      description: 'Removes the sys admin capability. You might end up with a degraded service.',
     };
   },
 });
