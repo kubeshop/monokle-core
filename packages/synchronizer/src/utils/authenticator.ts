@@ -3,7 +3,7 @@ import {User} from '../models/user.js';
 import {StorageHandlerAuth} from '../handlers/storageHandlerAuth.js';
 import {ApiHandler} from '../handlers/apiHandler.js';
 import {DeviceFlowHandler} from '../handlers/deviceFlowHandler.js';
-import type {Token} from '../handlers/storageHandlerAuth.js';
+import type {Token, TokenType} from '../handlers/storageHandlerAuth.js';
 import type {DeviceFlowHandle, TokenSet} from '../handlers/deviceFlowHandler.js';
 
 export type AuthMethod = 'device code' | 'token';
@@ -80,7 +80,7 @@ export class Authenticator extends EventEmitter {
       return;
     }
 
-    if (tokenData.token_type === 'access_token') {
+    if (tokenData.token_type === 'ApiKey') {
       return;
     }
 
@@ -112,7 +112,7 @@ export class Authenticator extends EventEmitter {
   private async loginWithToken(token: string): Promise<AuthenticatorLoginResponse> {
     const tokenData: Token = {
       access_token: token,
-      token_type: 'access_token',
+      token_type: 'ApiKey',
     };
 
     const donePromise: Promise<User> = new Promise((resolve, reject) => {
@@ -164,7 +164,10 @@ export class Authenticator extends EventEmitter {
   }
 
   private async setUserData(token: Token) {
-    const userApiData = await this._apiHandler.getUser(token.access_token!);
+    const userApiData = await this._apiHandler.getUser({
+      accessToken: token.access_token!,
+      tokenType: token.token_type! as TokenType,
+    });
 
     await this._storageHandler.setStoreData({
       auth: {

@@ -2,4 +2,4 @@ auth:
   email: user1@kubeshop.io
   token:
     access_token: 'USER1_ACCESS_TOKEN'
-    token_type: access_token
+    token_type: ApiKey
