@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.9.1
+
+### Patch Changes
+
+- 7838f08: Added more explicit GraphQL API error handling
+
 ## 0.9.0
 
 ### Minor Changes
