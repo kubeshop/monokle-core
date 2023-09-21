@@ -270,6 +270,96 @@ describe('Synchronizer Tests', () => {
       assert.deepEqual(newPolicy, getPolicyResult);
     });
 
+    it('throws unauthorized error when invalid auth credentials passed', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const sendRequestStub = sinon
+        .stub((synchronizer as any)._apiHandler, 'sendRequest')
+        .callsFake(async (...args) => {
+          return {
+            ok: true,
+            json: async () => {
+              return {
+                errors: [
+                  {
+                    message: 'Unauthorized',
+                    locations: [
+                      {
+                        line: 2,
+                        column: 3,
+                      },
+                    ],
+                    path: ['getProject'],
+                    extensions: {
+                      code: 'UNAUTHENTICATED',
+                      originalError: {
+                        statusCode: 401,
+                        message: 'Unauthorized',
+                      },
+                    },
+                  },
+                ],
+                data: null,
+              };
+            },
+          };
+        });
+      stubs.push(sendRequestStub);
+
+      const policyData = {
+        slug: 'user6-proj-abc',
+      };
+
+      try {
+        await synchronizer.getPolicy(policyData, true, {
+          accessToken: 'SAMPLE_ACCESS_TOKEN',
+          tokenType: 'ApiKey',
+        });
+        assert.fail('Should have thrown error.');
+      } catch (err: any) {
+        assert.match(err.message, /Unauthorized error\. Make sure that valid auth/);
+      }
+    });
+
+    it('throws when there is no policy for project (project slug)', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const sendRequestStub = sinon
+        .stub((synchronizer as any)._apiHandler, 'sendRequest')
+        .callsFake(async (...args) => {
+          return {
+            ok: true,
+            json: async () => {
+              return {
+                data: {
+                  getProject: {
+                    id: 6000,
+                    name: 'User6 Project',
+                  },
+                },
+              };
+            },
+          };
+        });
+      stubs.push(sendRequestStub);
+
+      const policyData = {
+        slug: 'user6-proj-abc',
+      };
+
+      try {
+        await synchronizer.getPolicy(policyData, true, {
+          accessToken: 'SAMPLE_ACCESS_TOKEN',
+          tokenType: 'ApiKey',
+        });
+        assert.fail('Should have thrown error.');
+      } catch (err: any) {
+        assert.match(err.message, /project does not have policy defined\. Configure it/);
+      }
+    });
+
     it('emits synchronize event after policy is fetched', async () => {
       const storagePath = await createTmpConfigDir();
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));

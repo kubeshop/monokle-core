@@ -192,8 +192,35 @@ export class ApiHandler {
 
   private async queryApi<OUT>(query: string, tokenInfo: TokenInfo, variables = {}): Promise<OUT | undefined> {
     const apiEndpointUrl = normalizeUrl(`${this.apiUrl}/graphql`);
+    const response = await this.sendRequest(apiEndpointUrl, tokenInfo, query, variables);
 
-    const response = await fetch(apiEndpointUrl, {
+    if (!response.ok) {
+      throw new Error(
+        `Connection error. Cannot fetch data from ${apiEndpointUrl}. Error '${response.statusText}' (${response.status}).`
+      );
+    }
+
+    const responseJson = await response.json();
+
+    if (responseJson?.errors?.length > 0) {
+      const error = responseJson.errors[0];
+      const msg = error.message;
+      const code = error.extensions?.code;
+
+      if (msg === 'Unauthorized' || code === 'UNAUTHENTICATED') {
+        throw new Error(
+          `Unauthorized error. Make sure that valid auth credentials were used. Cannot fetch data from ${apiEndpointUrl}.`
+        );
+      }
+
+      throw new Error(`${msg} error (code: ${code}). Cannot fetch data from ${apiEndpointUrl}.`);
+    }
+
+    return responseJson as Promise<OUT>;
+  }
+
+  private async sendRequest(apiEndpointUrl: string, tokenInfo: TokenInfo, query: string, variables = {}) {
+    return fetch(apiEndpointUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -204,14 +231,6 @@ export class ApiHandler {
         variables,
       }),
     });
-
-    if (!response.ok) {
-      throw new Error(
-        `Connection error. Cannot fetch data from ${apiEndpointUrl}. Error '${response.statusText}' (${response.status}).`
-      );
-    }
-
-    return response.json() as Promise<OUT>;
   }
 
   private formatAuthorizationHeader(tokenInfo: TokenInfo) {
