@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.9.0
+
+### Minor Changes
+
+- 8d03837: Require token object instead of string for API queries
+
 ## 0.8.0
 
 ### Minor Changes
