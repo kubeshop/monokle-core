@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 2.3.0
+
+### Minor Changes
+
+- c317d85: add pss autofixes
+
 ## 2.2.0
 
 ### Minor Changes

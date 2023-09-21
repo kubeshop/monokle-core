@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.30.0
+
+### Minor Changes
+
+- c317d85: add pss autofixes
+
 ## 0.29.1
 
 ### Patch Changes
