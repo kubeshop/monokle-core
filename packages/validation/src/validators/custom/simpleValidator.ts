@@ -132,9 +132,8 @@ export class SimpleCustomValidator extends AbstractPlugin {
       locations,
     });
 
-    if (result && this._fixer) {
-      const {fix} = this._ruleRuntime[rule.id];
-
+    const {fix} = this._ruleRuntime[rule.id];
+    if (result && fix && this._fixer) {
       const fixedResource = JSON.parse(JSON.stringify(resource.content));
 
       const fixMetadata =
