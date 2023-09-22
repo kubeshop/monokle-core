@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.30.1
+
+### Patch Changes
+
+- 739ab86: Polish autofix
+
 ## 0.30.0
 
 ### Minor Changes
