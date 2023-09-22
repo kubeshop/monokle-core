@@ -119,7 +119,7 @@ const ProblemRenderer: React.FC<IProps> = props => {
           ) : null}
           {onAutofixHandler && hasFix && !absent ? (
             <AutofixHint>
-              <Icon style={{color: Colors.grey8}} name="magic-wand" />
+              <Icon style={{color: isSelected ? Colors.blackPure : Colors.grey8}} name="magic-wand" />
             </AutofixHint>
           ) : null}
         </>
