@@ -65,4 +65,16 @@ export const capabilities = defineRule({
       });
     });
   },
+  fix({resource, path, problem}, {get, set}) {
+    const capabilities = get(resource, path);
+    if (!Array.isArray(capabilities)) return;
+    set(
+      resource,
+      path,
+      capabilities.filter(c => ALLOWED.includes(c))
+    );
+    return {
+      description: 'Removes the sys admin capability. You might end up with a degraded service.',
+    };
+  },
 });

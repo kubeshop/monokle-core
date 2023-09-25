@@ -38,4 +38,10 @@ export const privilegedContainers = defineRule({
       });
     });
   },
+  fix({resource, path}, {unset}) {
+    unset(resource, path);
+    return {
+      description: 'Disables usage of privileged pods. You might end up with a service with reduced functionality.',
+    };
+  },
 });

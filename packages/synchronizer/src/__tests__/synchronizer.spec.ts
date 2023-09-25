@@ -182,7 +182,10 @@ describe('Synchronizer Tests', () => {
 
       assert.isFalse(policy.valid);
 
-      const newPolicy = await synchronizer.getPolicy(repoData, true, 'SAMPLE_ACCESS_TOKEN');
+      const newPolicy = await synchronizer.getPolicy(repoData, true, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'Bearer',
+      });
 
       assert.isObject(newPolicy);
       assert.isTrue(newPolicy.valid);
@@ -248,7 +251,10 @@ describe('Synchronizer Tests', () => {
 
       assert.isFalse(policy.valid);
 
-      const newPolicy = await synchronizer.getPolicy(policyData, true, 'SAMPLE_ACCESS_TOKEN');
+      const newPolicy = await synchronizer.getPolicy(policyData, true, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
 
       assert.isObject(newPolicy);
       assert.isTrue(newPolicy.valid);
@@ -262,6 +268,96 @@ describe('Synchronizer Tests', () => {
       const getPolicyResult = await synchronizer.getPolicy(policyData);
 
       assert.deepEqual(newPolicy, getPolicyResult);
+    });
+
+    it('throws unauthorized error when invalid auth credentials passed', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const sendRequestStub = sinon
+        .stub((synchronizer as any)._apiHandler, 'sendRequest')
+        .callsFake(async (...args) => {
+          return {
+            ok: true,
+            json: async () => {
+              return {
+                errors: [
+                  {
+                    message: 'Unauthorized',
+                    locations: [
+                      {
+                        line: 2,
+                        column: 3,
+                      },
+                    ],
+                    path: ['getProject'],
+                    extensions: {
+                      code: 'UNAUTHENTICATED',
+                      originalError: {
+                        statusCode: 401,
+                        message: 'Unauthorized',
+                      },
+                    },
+                  },
+                ],
+                data: null,
+              };
+            },
+          };
+        });
+      stubs.push(sendRequestStub);
+
+      const policyData = {
+        slug: 'user6-proj-abc',
+      };
+
+      try {
+        await synchronizer.getPolicy(policyData, true, {
+          accessToken: 'SAMPLE_ACCESS_TOKEN',
+          tokenType: 'ApiKey',
+        });
+        assert.fail('Should have thrown error.');
+      } catch (err: any) {
+        assert.match(err.message, /Unauthorized error\. Make sure that valid auth/);
+      }
+    });
+
+    it('throws when there is no policy for project (project slug)', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const sendRequestStub = sinon
+        .stub((synchronizer as any)._apiHandler, 'sendRequest')
+        .callsFake(async (...args) => {
+          return {
+            ok: true,
+            json: async () => {
+              return {
+                data: {
+                  getProject: {
+                    id: 6000,
+                    name: 'User6 Project',
+                  },
+                },
+              };
+            },
+          };
+        });
+      stubs.push(sendRequestStub);
+
+      const policyData = {
+        slug: 'user6-proj-abc',
+      };
+
+      try {
+        await synchronizer.getPolicy(policyData, true, {
+          accessToken: 'SAMPLE_ACCESS_TOKEN',
+          tokenType: 'ApiKey',
+        });
+        assert.fail('Should have thrown error.');
+      } catch (err: any) {
+        assert.match(err.message, /project does not have policy defined\. Configure it/);
+      }
     });
 
     it('emits synchronize event after policy is fetched', async () => {
@@ -361,7 +457,7 @@ describe('Synchronizer Tests', () => {
         'Synchronize event not triggered'
       );
 
-      await synchronizer.getPolicy(repoData, true, 'SAMPLE_ACCESS_TOKEN');
+      await synchronizer.getPolicy(repoData, true, {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'Bearer'});
 
       return result;
     });
@@ -417,7 +513,10 @@ describe('Synchronizer Tests', () => {
         name: 'monokle-core',
       };
 
-      const projectInfo = await synchronizer.getProjectInfo(repoData, 'SAMPLE_ACCESS_TOKEN');
+      const projectInfo = await synchronizer.getProjectInfo(repoData, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
 
       assert.isObject(projectInfo);
       assert.equal(projectInfo!.id, 6000);
@@ -454,7 +553,10 @@ describe('Synchronizer Tests', () => {
         slug: 'user7-proj-foobar',
       };
 
-      const projectInfo = await synchronizer.getProjectInfo(projectData, 'SAMPLE_ACCESS_TOKEN');
+      const projectInfo = await synchronizer.getProjectInfo(projectData, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'Bearer',
+      });
 
       assert.isObject(projectInfo);
       assert.equal(projectInfo!.id, 7000);
@@ -512,19 +614,29 @@ describe('Synchronizer Tests', () => {
         name: 'monokle-core',
       };
 
-      const projectInfo = await synchronizer.getProjectInfo(repoData, 'SAMPLE_ACCESS_TOKEN');
+      const projectInfo = await synchronizer.getProjectInfo(repoData, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
       assert.equal(projectInfo!.id, 6000);
       assert.equal(queryApiStub.callCount, 1);
 
-      const projectInfoRetry = await synchronizer.getProjectInfo(repoData, 'SAMPLE_ACCESS_TOKEN');
+      const projectInfoRetry = await synchronizer.getProjectInfo(repoData, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
       assert.equal(projectInfoRetry!.id, 6000);
       assert.equal(queryApiStub.callCount, 1);
 
-      const projectInfoRetryForce = await synchronizer.getProjectInfo(repoData, 'SAMPLE_ACCESS_TOKEN', true);
+      const projectInfoRetryForce = await synchronizer.getProjectInfo(
+        repoData,
+        {accessToken: 'SAMPLE_ACCESS_TOKEN', tokenType: 'ApiKey'},
+        true
+      );
       assert.equal(projectInfoRetryForce!.id, 6000);
       assert.equal(queryApiStub.callCount, 2);
     });
-  })
+  });
 });
 
 async function createTmpConfigDir(copyPolicyFixture = '') {

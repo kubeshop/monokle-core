@@ -45,4 +45,5 @@ export const hostPorts = defineRule({
       });
     });
   },
+  fix: undefined, // Autofix makes no sense, they need to decide on another kind of volume.
 });

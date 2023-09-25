@@ -1,5 +1,17 @@
 # @monokle/components
 
+## 2.3.1
+
+### Patch Changes
+
+- 739ab86: Polish autofix
+
+## 2.3.0
+
+### Minor Changes
+
+- c317d85: add pss autofixes
+
 ## 2.2.0
 
 ### Minor Changes

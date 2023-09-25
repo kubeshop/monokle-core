@@ -79,4 +79,8 @@ export const selinux = defineRule({
       });
     });
   },
+  fix({resource, path}, {unset}) {
+    unset(resource, path);
+    return {description: 'Restricts usage of SE Linux.'};
+  },
 });

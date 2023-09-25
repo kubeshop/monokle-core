@@ -41,4 +41,8 @@ export const runningAsNonRoot = defineRule({
       });
     });
   },
+  fix({resource, path}, {set}) {
+    set(resource, path, true);
+    return {description: 'Disables running as root. You might end up with a service with reduced functionality.'};
+  },
 });

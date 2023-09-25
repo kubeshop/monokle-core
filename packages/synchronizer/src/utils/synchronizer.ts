@@ -6,6 +6,7 @@ import {GitHandler} from '../handlers/gitHandler.js';
 import type {StoragePolicyFormat} from '../handlers/storageHandlerPolicy.js';
 import type {RepoRemoteData} from '../handlers/gitHandler.js';
 import type {ApiSuppression, ApiUserProject} from '../handlers/apiHandler.js';
+import type {TokenInfo} from '../handlers/storageHandlerAuth.js';
 
 export type RepoRemoteInputData = {
   provider: string;
@@ -41,24 +42,24 @@ export class Synchronizer extends EventEmitter {
     super();
   }
 
-  async getProjectInfo(rootPath: string, accessToken: string, forceRefetch?: boolean): Promise<ProjectInfo | null>;
+  async getProjectInfo(rootPath: string, tokenInfo: TokenInfo, forceRefetch?: boolean): Promise<ProjectInfo | null>;
   async getProjectInfo(
     repoData: RepoRemoteData,
-    accessToken: string,
+    tokenInfo: TokenInfo,
     forceRefetch?: boolean
   ): Promise<ProjectInfo | null>;
   async getProjectInfo(
     projectData: ProjectInputData,
-    accessToken: string,
+    tokenInfo: TokenInfo,
     forceRefetch?: boolean
   ): Promise<ProjectInfo | null>;
   async getProjectInfo(
     rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
-    accessToken: string,
+    tokenInfo: TokenInfo,
     forceRefetch = false
   ): Promise<ProjectInfo | null> {
     const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
-    const cacheId = this.getRepoCacheId(inputData, accessToken);
+    const cacheId = this.getRepoCacheId(inputData, tokenInfo.accessToken);
     const cachedProjectInfo = this._projectDataCache[cacheId];
     if (cachedProjectInfo && !forceRefetch) {
       return {
@@ -69,8 +70,8 @@ export class Synchronizer extends EventEmitter {
     }
 
     const freshProjectInfo = this.isProjectData(inputData)
-      ? await this.getProject(inputData as ProjectInputData, accessToken)
-      : await this.getMatchingProject(inputData as RepoRemoteData, accessToken);
+      ? await this.getProject(inputData as ProjectInputData, tokenInfo)
+      : await this.getMatchingProject(inputData as RepoRemoteData, tokenInfo);
 
     return !freshProjectInfo
       ? null
@@ -81,22 +82,22 @@ export class Synchronizer extends EventEmitter {
         };
   }
 
-  async getPolicy(rootPath: string, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
-  async getPolicy(repoData: RepoRemoteData, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
-  async getPolicy(projectData: ProjectInputData, forceRefetch?: boolean, accessToken?: string): Promise<PolicyData>;
+  async getPolicy(rootPath: string, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
+  async getPolicy(repoData: RepoRemoteData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
+  async getPolicy(projectData: ProjectInputData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
   async getPolicy(
     rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
-    forceRefetch = false,
-    accessToken = ''
+    forceRefetch: boolean | undefined = false,
+    tokenInfo: TokenInfo | undefined = undefined
   ): Promise<PolicyData> {
-    if (forceRefetch && (!accessToken || accessToken?.length === 0)) {
+    if (forceRefetch && (!tokenInfo || tokenInfo?.accessToken?.length === 0)) {
       throw new Error('Cannot force refetch without access token.');
     }
 
     const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
 
     if (forceRefetch) {
-      await this.synchronize(inputData as any, accessToken);
+      await this.synchronize(inputData as any, tokenInfo!);
     }
 
     const policyContent = (await this.readPolicy(inputData)) ?? {};
@@ -109,27 +110,27 @@ export class Synchronizer extends EventEmitter {
     };
   }
 
-  async getSuppressions(rootPath: string, accessToken: string): Promise<ApiSuppression[]>;
-  async getSuppressions(repoData: RepoRemoteData, accessToken: string): Promise<ApiSuppression[]>;
-  async getSuppressions(projectData: ProjectInputData, accessToken: string): Promise<ApiSuppression[]>;
+  async getSuppressions(rootPath: string, tokenInfo: TokenInfo): Promise<ApiSuppression[]>;
+  async getSuppressions(repoData: RepoRemoteData, tokenInfo: TokenInfo): Promise<ApiSuppression[]>;
+  async getSuppressions(projectData: ProjectInputData, tokenInfo: TokenInfo): Promise<ApiSuppression[]>;
   async getSuppressions(
     rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
-    accessToken: string
+    tokenInfo: TokenInfo
   ) {
-    if (!accessToken || accessToken?.length === 0) {
+    if (!tokenInfo || tokenInfo?.accessToken?.length === 0) {
       throw new Error('Cannot fetch without access token.');
     }
     const inputData = await this.getRepoOrProjectData(rootPathOrRepoDataOrProjectData);
-    const suppressions = await this.fetchSuppressionsForRepo(inputData as any, accessToken);
+    const suppressions = await this.fetchSuppressionsForRepo(inputData as any, tokenInfo);
     return suppressions;
   }
 
-  async synchronize(rootPath: string, accessToken: string): Promise<PolicyData>;
-  async synchronize(repoData: RepoRemoteData, accessToken: string): Promise<PolicyData>;
-  async synchronize(projectData: ProjectInputData, accessToken: string): Promise<PolicyData>;
+  async synchronize(rootPath: string, tokenInfo: TokenInfo): Promise<PolicyData>;
+  async synchronize(repoData: RepoRemoteData, tokenInfo: TokenInfo): Promise<PolicyData>;
+  async synchronize(projectData: ProjectInputData, tokenInfo: TokenInfo): Promise<PolicyData>;
   async synchronize(
     rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
-    accessToken: string
+    tokenInfo: TokenInfo
   ): Promise<PolicyData> {
     if (this._pullPromise) {
       return this._pullPromise;
@@ -137,7 +138,7 @@ export class Synchronizer extends EventEmitter {
 
     if (this.isProjectData(rootPathOrRepoDataOrProjectData)) {
       const projectData: ProjectInputData = rootPathOrRepoDataOrProjectData as ProjectInputData;
-      this._pullPromise = this.fetchPolicyForProject(projectData, accessToken);
+      this._pullPromise = this.fetchPolicyForProject(projectData, tokenInfo);
 
       return this._pullPromise;
     }
@@ -145,7 +146,7 @@ export class Synchronizer extends EventEmitter {
     const repoDataOrRootPath = rootPathOrRepoDataOrProjectData as RepoRemoteData | string;
     const repoData =
       typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
-    this._pullPromise = this.fetchPolicyForRepo(repoData, accessToken);
+    this._pullPromise = this.fetchPolicyForRepo(repoData, tokenInfo);
 
     return this._pullPromise;
   }
@@ -166,7 +167,7 @@ export class Synchronizer extends EventEmitter {
     return this._apiHandler.generateDeepLink(path);
   }
 
-  private async fetchPolicyForProject(projectData: ProjectInputData, accessToken: string) {
+  private async fetchPolicyForProject(projectData: ProjectInputData, tokenInfo: TokenInfo) {
     const policyData = {
       valid: false,
       path: '',
@@ -174,7 +175,7 @@ export class Synchronizer extends EventEmitter {
     };
 
     try {
-      const repoPolicy = await this._apiHandler.getPolicy(projectData.slug, accessToken);
+      const repoPolicy = await this._apiHandler.getPolicy(projectData.slug, tokenInfo);
 
       const policyUrl = this.generateDeepLinkProjectPolicy(projectData.slug);
       if (!repoPolicy?.data?.getProject?.policy) {
@@ -185,7 +186,7 @@ export class Synchronizer extends EventEmitter {
         );
       }
 
-      const cacheId = this.getRepoCacheId(projectData, accessToken);
+      const cacheId = this.getRepoCacheId(projectData, tokenInfo.accessToken);
       this._projectDataCache[cacheId] = {
         id: repoPolicy.data.getProject.id,
         slug: projectData.slug,
@@ -218,10 +219,10 @@ export class Synchronizer extends EventEmitter {
     }
   }
 
-  private async fetchSuppressionsForRepo(repoData: RepoRemoteData, accessToken: string) {
+  private async fetchSuppressionsForRepo(repoData: RepoRemoteData, tokenInfo: TokenInfo) {
     try {
       const repoId = `${repoData.provider}:${repoData.owner}/${repoData.name}`;
-      const project = await this.getMatchingProject(repoData, accessToken);
+      const project = await this.getMatchingProject(repoData, tokenInfo);
       if (!project) {
         const projectUrl = this.generateDeepLinkProjectList();
         throw new Error(
@@ -233,14 +234,14 @@ export class Synchronizer extends EventEmitter {
         throw new Error(`The '${repoId}' repository does not belong to any project ${project.name} in Monokle Cloud.`);
       }
 
-      const {data} = (await this._apiHandler.getSuppressions(projectRepo.id, accessToken)) ?? {};
+      const {data} = (await this._apiHandler.getSuppressions(projectRepo.id, tokenInfo)) ?? {};
       return data?.getSuppressions?.data ?? [];
     } catch (error) {
       throw error;
     }
   }
 
-  private async fetchPolicyForRepo(repoData: RepoRemoteData, accessToken: string) {
+  private async fetchPolicyForRepo(repoData: RepoRemoteData, tokenInfo: TokenInfo) {
     const policyData = {
       valid: false,
       path: '',
@@ -248,7 +249,7 @@ export class Synchronizer extends EventEmitter {
     };
 
     try {
-      const repoProject = await this.getMatchingProject(repoData, accessToken);
+      const repoProject = await this.getMatchingProject(repoData, tokenInfo);
       const repoId = `${repoData.provider}:${repoData.owner}/${repoData.name}`;
 
       if (!repoProject) {
@@ -258,7 +259,7 @@ export class Synchronizer extends EventEmitter {
         );
       }
 
-      const repoPolicy = await this._apiHandler.getPolicy(repoProject.slug, accessToken);
+      const repoPolicy = await this._apiHandler.getPolicy(repoProject.slug, tokenInfo);
 
       const policyUrl = this.generateDeepLinkProjectPolicy(repoProject.slug);
       if (!repoPolicy?.data?.getProject?.policy) {
@@ -292,8 +293,8 @@ export class Synchronizer extends EventEmitter {
     }
   }
 
-  private async getMatchingProject(repoData: RepoRemoteData, accessToken: string): Promise<ApiUserProject | null> {
-    const userData = await this._apiHandler.getUser(accessToken);
+  private async getMatchingProject(repoData: RepoRemoteData, tokenInfo: TokenInfo): Promise<ApiUserProject | null> {
+    const userData = await this._apiHandler.getUser(tokenInfo);
     if (!userData?.data?.me) {
       throw new Error('Cannot fetch user data, make sure you are authenticated and have internet access.');
     }
@@ -315,18 +316,18 @@ export class Synchronizer extends EventEmitter {
     const matchingProject = repoMainProject ?? repoFirstProject;
 
     if (matchingProject?.project) {
-      const cacheId = this.getRepoCacheId(repoData, accessToken);
+      const cacheId = this.getRepoCacheId(repoData, tokenInfo.accessToken);
       this._projectDataCache[cacheId] = matchingProject.project;
     }
 
     return matchingProject?.project ?? null;
   }
 
-  private async getProject(projectData: ProjectInputData, accessToken: string): Promise<ApiUserProject | null> {
-    const projectInfo = await this._apiHandler.getProject(projectData.slug, accessToken);
+  private async getProject(projectData: ProjectInputData, tokenInfo: TokenInfo): Promise<ApiUserProject | null> {
+    const projectInfo = await this._apiHandler.getProject(projectData.slug, tokenInfo);
 
     if (projectInfo?.data?.getProject?.id) {
-      const cacheId = this.getRepoCacheId(projectData, accessToken);
+      const cacheId = this.getRepoCacheId(projectData, tokenInfo.accessToken);
       this._projectDataCache[cacheId] = projectInfo.data.getProject;
     }
 

@@ -45,4 +45,10 @@ export const hostProcess = defineRule({
       });
     });
   },
+  fix({resource, path}, {unset}) {
+    unset(resource, path);
+    return {
+      description: 'Removes host process for Windows. You might end up with a service with reduced functionality.',
+    };
+  },
 });

@@ -67,7 +67,7 @@ export abstract class StorageHandler<TData> {
       await mkdirp(dir);
       await writeFile(file, data);
     } catch (err: any) {
-      throw new Error(`Failed to write configuration to '${file}' with error: ${err.message} and data: ${data}`,);
+      throw new Error(`Failed to write configuration to '${file}' with error: ${err.message} and data: ${data}`);
     }
   }
 }
