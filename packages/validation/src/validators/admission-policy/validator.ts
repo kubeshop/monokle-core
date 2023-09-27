@@ -1,0 +1,200 @@
+import {AbstractPlugin} from '../../common/AbstractPlugin.js';
+import {Resource, ValidateOptions} from '../../common/types.js';
+import {ResourceParser} from '../../common/resourceParser.js';
+import {ValidationResult} from '../../common/sarif.js';
+import {loadWasm} from './loadWasm.js';
+import {Expression, PolicyExpressionsAndFilteredResources} from './types.js';
+import * as YAML from 'yaml';
+import {isKustomizationPatch, isKustomizationResource} from '../../references/utils/kustomizeRefs.js';
+import {ADMISSION_POLICY_RULES} from './rules.js';
+import {findJsonPointerNode} from '../../utils/findJsonPointerNode.js';
+import {createLocations} from '../../utils/createLocations.js';
+import {isDefined} from '../../utils/isDefined.js';
+
+const KNOWN_RESOURCE_KINDS_PLURAL: Record<string, string> = {
+  Deployment: 'deployments',
+};
+
+export class AdmissionPolicyValidator extends AbstractPlugin {
+  private loadedWasm: boolean | undefined;
+
+  constructor(private resourceParser: ResourceParser) {
+    super(
+      {
+        id: 'AP',
+        name: 'admission-policy',
+        displayName: 'Admission Policy',
+        description:
+          'Ensure that your manifests comply with the conditions specified in the Validating Admission Policies.',
+      },
+      ADMISSION_POLICY_RULES
+    );
+  }
+
+  override async configurePlugin(): Promise<void> {
+    if (this.loadedWasm === true) return;
+    await loadWasm();
+    this.loadedWasm = true;
+  }
+
+  async doValidate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]> {
+    const results: ValidationResult[] = [];
+
+    const resourcesToBeValidated = this.getResourcesToBeValidated(resources);
+
+    for (const [policyName, {resources: filteredResources, expressions}] of Object.entries(resourcesToBeValidated)) {
+      for (const resource of filteredResources) {
+        for (const expression of expressions) {
+          const errors = await this.validateResource(resource, expression);
+
+          results.push(...errors);
+        }
+      }
+    }
+
+    return results;
+  }
+
+  private async validateResource(resource: Resource, {message, expression}: Expression): Promise<ValidationResult[]> {
+    const output = (globalThis as any).eval(expression, YAML.stringify({object: resource.content})).output;
+
+    if (output === 'true' || output.includes('ERROR:')) {
+      return [];
+    }
+
+    return [
+      this.adaptToValidationResult(resource, ['kind'], 'VAP001', message ?? 'Admission policy conditions violated'),
+    ].filter(isDefined);
+  }
+
+  private getPolicies(resources: Resource[]): Resource[] {
+    return resources.filter(r => r.kind === 'ValidatingAdmissionPolicy');
+  }
+
+  private getPoliciesBindings(resources: Resource[]): Resource[] {
+    return resources.filter(r => r.kind === 'ValidatingAdmissionPolicyBinding');
+  }
+
+  private getResourcesToBeValidated(resources: Resource[]): PolicyExpressionsAndFilteredResources {
+    let filteredResources = resources.filter(r => !isKustomizationPatch(r) && !isKustomizationResource(r));
+
+    const policyResources = this.getPolicies(resources);
+
+    return this.policyFilter(policyResources, this.policyBindingFilter(filteredResources));
+  }
+
+  private policyBindingFilter(resources: Resource[]): Record<string, Resource[]> {
+    const policyFilteredResources: Record<string, Resource[]> = {};
+
+    const policiesBindings = this.getPoliciesBindings(resources);
+
+    for (const policyBinding of policiesBindings) {
+      const policyName = policyBinding.content?.spec?.policyName;
+
+      if (!policyName) continue;
+
+      const namespaceMatchLabels: Record<string, string> =
+        policyBinding.content?.spec?.matchResources?.namespaceSelector?.matchLabels;
+
+      if (!namespaceMatchLabels) continue;
+
+      const namespacesResources = resources.filter(r => r.kind === 'Namespace');
+
+      const filteredNamespaces = namespacesResources.filter(n => {
+        for (const key of Object.keys(namespaceMatchLabels)) {
+          if (n.content?.metadata?.labels?.[key] !== namespaceMatchLabels[key]) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      const filteredResources = resources.filter(r => filteredNamespaces.find(n => n.name === r.namespace));
+
+      if (!filteredResources.length) continue;
+
+      policyFilteredResources[policyName] = filteredResources;
+    }
+
+    return policyFilteredResources;
+  }
+
+  private policyFilter(
+    policies: Resource[],
+    policyFilteredResources: Record<string, Resource[]>
+  ): PolicyExpressionsAndFilteredResources {
+    const filteredResourcesWithExpressions: PolicyExpressionsAndFilteredResources = {};
+
+    for (const [policyName, resources] of Object.entries(policyFilteredResources)) {
+      const policy = policies.find(p => p.name === policyName);
+
+      if (!policy) continue;
+
+      const validations = policy.content?.spec?.validations;
+
+      if (!validations?.length) continue;
+
+      const policyResourceRules = policy.content?.spec?.matchConstraints?.resourceRules;
+
+      if (!policyResourceRules?.length) continue;
+
+      const filteredResourcesByPolicy = resources.filter(r => {
+        for (const resourceRule of policyResourceRules) {
+          const {apiGroups, apiVersions, resources: policyResources} = resourceRule;
+
+          const [resourceApiGroup, resourceApiVersion] = r.apiVersion.split('/');
+
+          if (apiGroups?.length) {
+            if (!apiGroups.includes(resourceApiGroup)) {
+              return false;
+            }
+          }
+
+          if (apiVersions?.length) {
+            if (!apiVersions.includes(resourceApiVersion)) {
+              return false;
+            }
+          }
+
+          if (policyResources?.length) {
+            if (!policyResources.includes(KNOWN_RESOURCE_KINDS_PLURAL[r.kind])) {
+              return false;
+            }
+          }
+        }
+
+        return true;
+      });
+
+      if (!filteredResourcesByPolicy.length) continue;
+
+      filteredResourcesWithExpressions[policy.name] = {
+        resources: filteredResourcesByPolicy,
+        expressions: validations.map((v: any) => ({
+          expression: v.expression,
+          message: v.message,
+        })),
+      };
+    }
+
+    return filteredResourcesWithExpressions;
+  }
+
+  private adaptToValidationResult(resource: Resource, path: string[], ruleId: string, errText: string) {
+    const {parsedDoc} = this.resourceParser.parse(resource);
+
+    const valueNode = findJsonPointerNode(parsedDoc, path);
+
+    const region = this.resourceParser.parseErrorRegion(resource, valueNode.range);
+
+    const locations = createLocations(resource, region);
+
+    return this.createValidationResult(ruleId, {
+      message: {
+        text: errText,
+      },
+      locations,
+    });
+  }
+}
