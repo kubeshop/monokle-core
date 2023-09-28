@@ -33,4 +33,6 @@ export const KNOWN_RESOURCE_KINDS = [
   'StatefulSet',
   'StorageClass',
   'VolumeAttachment',
+  'ValidatingAdmissionPolicy',
+  'ValidatingAdmissionPolicyBinding',
 ] as const;
