@@ -6,7 +6,7 @@ export async function loadWasm() {
     loadGoGlueCode();
     const go = new Go();
 
-    let buffer = pako.ungzip(await (await fetch('http://plugins.monokle.com/validation/cel.wasm.gz')).arrayBuffer());
+    let buffer = pako.ungzip(await (await fetch('https://plugins.monokle.com/validation/cel.wasm.gz')).arrayBuffer());
 
     if (buffer[0] === 0x1f && buffer[1] === 0x8b) {
       buffer = pako.ungzip(buffer);

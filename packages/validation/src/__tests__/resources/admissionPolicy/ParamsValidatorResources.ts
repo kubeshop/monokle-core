@@ -14,7 +14,9 @@ export const PARAMS_CONFIG_MAP: Resource = {
       name: 'rule-config',
       namespace: 'demo',
     },
-    maxReplicas: 5,
+    data: {
+      maxReplicas: 5,
+    },
   },
   id: '174d42e877a174-0',
   name: 'rule-config',
@@ -123,7 +125,7 @@ export const PARAMS_VALIDATING_ADMISSION_POLICY: Resource = {
       },
       validations: [
         {
-          expression: 'object.spec.replicas > params.maxReplicas',
+          expression: 'object.spec.replicas > params.data.maxReplicas',
         },
       ],
     },

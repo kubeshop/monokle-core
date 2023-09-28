@@ -9,4 +9,12 @@ export const ADMISSION_POLICY_RULES: RuleMetadata[] = [
       text: 'Check whether the admission policy conditions are met.',
     },
   },
+  {
+    id: 'VAP002',
+    name: 'admission-policy-failed-to-evaluate',
+    shortDescription: {text: "Admission policy couldn't be evaluated"},
+    help: {
+      text: 'Check whether the admission policy expression is properly written.',
+    },
+  },
 ];

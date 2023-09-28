@@ -69,6 +69,18 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
       return [];
     }
 
+    if (output.includes('failed to evaluate')) {
+      return [
+        this.adaptToValidationResult(
+          resource,
+          ['kind'],
+          'VAP002',
+          message ?? 'Admission policy failed to evaluate expression',
+          level
+        ),
+      ].filter(isDefined);
+    }
+
     return [
       this.adaptToValidationResult(
         resource,
