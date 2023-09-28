@@ -96,21 +96,25 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
       const namespaceMatchLabels: Record<string, string> =
         policyBinding.content?.spec?.matchResources?.namespaceSelector?.matchLabels;
 
-      if (!namespaceMatchLabels) continue;
+      let filteredResources: Resource[] = [];
 
-      const namespacesResources = resources.filter(r => r.kind === 'Namespace');
+      if (!namespaceMatchLabels) {
+        filteredResources = resources;
+      } else {
+        const namespacesResources = resources.filter(r => r.kind === 'Namespace');
 
-      const filteredNamespaces = namespacesResources.filter(n => {
-        for (const key of Object.keys(namespaceMatchLabels)) {
-          if (n.content?.metadata?.labels?.[key] !== namespaceMatchLabels[key]) {
-            return false;
+        const filteredNamespaces = namespacesResources.filter(n => {
+          for (const key of Object.keys(namespaceMatchLabels)) {
+            if (n.content?.metadata?.labels?.[key] !== namespaceMatchLabels[key]) {
+              return false;
+            }
           }
-        }
 
-        return true;
-      });
+          return true;
+        });
 
-      const filteredResources = resources.filter(r => filteredNamespaces.find(n => n.name === r.namespace));
+        filteredResources = resources.filter(r => filteredNamespaces.find(n => n.name === r.namespace));
+      }
 
       if (!filteredResources.length) continue;
 
