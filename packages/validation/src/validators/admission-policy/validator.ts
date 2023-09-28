@@ -1,9 +1,9 @@
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
 import {Resource, ValidateOptions} from '../../common/types.js';
 import {ResourceParser} from '../../common/resourceParser.js';
-import {ValidationResult} from '../../common/sarif.js';
+import {RuleLevel, ValidationResult} from '../../common/sarif.js';
 import {loadWasm} from './loadWasm.js';
-import {Expression, PolicyExpressionsAndFilteredResources} from './types.js';
+import {Expression, PolicyBindingFilterResponse, PolicyExpressionsAndFilteredResources} from './types.js';
 import * as YAML from 'yaml';
 import {isKustomizationPatch, isKustomizationResource} from '../../references/utils/kustomizeRefs.js';
 import {ADMISSION_POLICY_RULES} from './rules.js';
@@ -42,10 +42,12 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
 
     const resourcesToBeValidated = this.getResourcesToBeValidated(resources);
 
-    for (const [policyName, {resources: filteredResources, expressions}] of Object.entries(resourcesToBeValidated)) {
+    for (const [policyName, {resources: filteredResources, expressions, level}] of Object.entries(
+      resourcesToBeValidated
+    )) {
       for (const resource of filteredResources) {
         for (const expression of expressions) {
-          const errors = await this.validateResource(resource, expression);
+          const errors = await this.validateResource(resource, expression, level);
 
           results.push(...errors);
         }
@@ -55,7 +57,11 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
     return results;
   }
 
-  private async validateResource(resource: Resource, {message, expression}: Expression): Promise<ValidationResult[]> {
+  private async validateResource(
+    resource: Resource,
+    {message, expression}: Expression,
+    level: RuleLevel
+  ): Promise<ValidationResult[]> {
     const output = (globalThis as any).eval(expression, YAML.stringify({object: resource.content})).output;
 
     if (output === 'true' || output.includes('ERROR:')) {
@@ -63,7 +69,13 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
     }
 
     return [
-      this.adaptToValidationResult(resource, ['kind'], 'VAP001', message ?? 'Admission policy conditions violated'),
+      this.adaptToValidationResult(
+        resource,
+        ['kind'],
+        'VAP001',
+        message ?? 'Admission policy conditions violated',
+        level
+      ),
     ].filter(isDefined);
   }
 
@@ -83,8 +95,8 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
     return this.policyFilter(policyResources, this.policyBindingFilter(filteredResources));
   }
 
-  private policyBindingFilter(resources: Resource[]): Record<string, Resource[]> {
-    const policyFilteredResources: Record<string, Resource[]> = {};
+  private policyBindingFilter(resources: Resource[]): PolicyBindingFilterResponse {
+    const policyFilteredResources: PolicyBindingFilterResponse = {};
 
     const policiesBindings = this.getPoliciesBindings(resources);
 
@@ -118,7 +130,10 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
 
       if (!filteredResources.length) continue;
 
-      policyFilteredResources[policyName] = filteredResources;
+      policyFilteredResources[policyName] = {
+        resources: filteredResources,
+        level: policyBinding.content?.spec?.validationActions?.includes('Deny') ? 'error' : 'warning',
+      };
     }
 
     return policyFilteredResources;
@@ -126,11 +141,11 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
 
   private policyFilter(
     policies: Resource[],
-    policyFilteredResources: Record<string, Resource[]>
+    policyFilteredResources: PolicyBindingFilterResponse
   ): PolicyExpressionsAndFilteredResources {
     const filteredResourcesWithExpressions: PolicyExpressionsAndFilteredResources = {};
 
-    for (const [policyName, resources] of Object.entries(policyFilteredResources)) {
+    for (const [policyName, {resources, level}] of Object.entries(policyFilteredResources)) {
       const policy = policies.find(p => p.name === policyName);
 
       if (!policy) continue;
@@ -179,13 +194,20 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
           expression: v.expression,
           message: v.message,
         })),
+        level,
       };
     }
 
     return filteredResourcesWithExpressions;
   }
 
-  private adaptToValidationResult(resource: Resource, path: string[], ruleId: string, errText: string) {
+  private adaptToValidationResult(
+    resource: Resource,
+    path: string[],
+    ruleId: string,
+    errText: string,
+    level: RuleLevel
+  ) {
     const {parsedDoc} = this.resourceParser.parse(resource);
 
     const valueNode = findJsonPointerNode(parsedDoc, path);
@@ -199,6 +221,7 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
         text: errText,
       },
       locations,
+      level,
     });
   }
 }
