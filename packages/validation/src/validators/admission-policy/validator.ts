@@ -42,12 +42,12 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
 
     const resourcesToBeValidated = this.getResourcesToBeValidated(resources);
 
-    for (const [policyName, {resources: filteredResources, expressions, level}] of Object.entries(
+    for (const [policyName, {resources: filteredResources, expressions, level, params}] of Object.entries(
       resourcesToBeValidated
     )) {
       for (const resource of filteredResources) {
         for (const expression of expressions) {
-          const errors = await this.validateResource(resource, expression, level);
+          const errors = await this.validateResource(resource, expression, level, params);
 
           results.push(...errors);
         }
@@ -60,9 +60,10 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
   private async validateResource(
     resource: Resource,
     {message, expression}: Expression,
-    level: RuleLevel
+    level: RuleLevel,
+    params?: any
   ): Promise<ValidationResult[]> {
-    const output = (globalThis as any).eval(expression, YAML.stringify({object: resource.content})).output;
+    const output = (globalThis as any).eval(expression, YAML.stringify({object: resource.content, params})).output;
 
     if (output === 'true' || output.includes('ERROR:')) {
       return [];
@@ -133,6 +134,7 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
       policyFilteredResources[policyName] = {
         resources: filteredResources,
         level: policyBinding.content?.spec?.validationActions?.includes('Deny') ? 'error' : 'warning',
+        paramRef: policyBinding.content?.spec?.paramRef,
       };
     }
 
@@ -145,7 +147,7 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
   ): PolicyExpressionsAndFilteredResources {
     const filteredResourcesWithExpressions: PolicyExpressionsAndFilteredResources = {};
 
-    for (const [policyName, {resources, level}] of Object.entries(policyFilteredResources)) {
+    for (const [policyName, {resources, level, paramRef}] of Object.entries(policyFilteredResources)) {
       const policy = policies.find(p => p.name === policyName);
 
       if (!policy) continue;
@@ -188,6 +190,24 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
 
       if (!filteredResourcesByPolicy.length) continue;
 
+      let params: any;
+
+      const paramKind = policy.content?.spec?.paramKind;
+
+      if (paramKind && paramRef) {
+        const paramResource = resources.find(
+          r =>
+            r.kind === paramKind?.kind &&
+            r.apiVersion === paramKind?.apiVersion &&
+            r.content?.metadata?.name === paramRef.name &&
+            r.content?.metadata?.namespace === paramRef.namespace
+        );
+
+        if (paramResource) {
+          params = paramResource.content;
+        }
+      }
+
       filteredResourcesWithExpressions[policy.name] = {
         resources: filteredResourcesByPolicy,
         expressions: validations.map((v: any) => ({
@@ -195,6 +215,7 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
           message: v.message,
         })),
         level,
+        params,
       };
     }
 

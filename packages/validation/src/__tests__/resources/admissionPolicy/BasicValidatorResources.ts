@@ -1,4 +1,4 @@
-import {Resource} from '../index.js';
+import {Resource} from '../../../common/types.js';
 
 export const VALIDATING_ADMISSION_POLICY: Resource = {
   fileId: '18acb3eb78d60',

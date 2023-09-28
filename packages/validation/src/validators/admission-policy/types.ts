@@ -8,7 +8,15 @@ export type Expression = {
 
 export type PolicyExpressionsAndFilteredResources = Record<
   string,
-  {expressions: Expression[]; resources: Resource[]; level: RuleLevel}
+  {expressions: Expression[]; resources: Resource[]; level: RuleLevel; params?: any}
 >;
 
-export type PolicyBindingFilterResponse = Record<string, {resources: Resource[]; level: RuleLevel}>;
+export type ParamRef = {
+  name: string;
+  namespace: string;
+};
+
+export type PolicyBindingFilterResponse = Record<
+  string,
+  {resources: Resource[]; level: RuleLevel; paramRef?: ParamRef}
+>;

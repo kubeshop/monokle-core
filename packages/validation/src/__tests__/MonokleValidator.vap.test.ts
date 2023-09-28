@@ -10,7 +10,14 @@ import {
   VALIDATING_ADMISSION_POLICY,
   VALIDATING_ADMISSION_POLICY_BINDING,
   DEPLOYMENT,
-} from './admissionPolicyValidatorResources.js';
+} from './resources/admissionPolicy/BasicValidatorResources.js';
+import {
+  PARAMS_CONFIG_MAP,
+  PARAMS_DEPLOYMENT,
+  PARAMS_NAMESPACE,
+  PARAMS_VALIDATING_ADMISSION_POLICY,
+  PARAMS_VALIDATING_ADMISSION_POLICY_BINDING,
+} from './resources/admissionPolicy/ParamsValidatorResources.js';
 
 it('test basic admission policy', async () => {
   const parser = new ResourceParser();
@@ -23,6 +30,29 @@ it('test basic admission policy', async () => {
 
   const response = await validator.validate({
     resources: [NAMESPACE, VALIDATING_ADMISSION_POLICY, VALIDATING_ADMISSION_POLICY_BINDING, DEPLOYMENT],
+  });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toBe(1);
+});
+
+it('test params admission policy', async () => {
+  const parser = new ResourceParser();
+
+  const validator = createTestValidator(parser, {
+    plugins: {
+      'admission-policy': true,
+    },
+  });
+
+  const response = await validator.validate({
+    resources: [
+      PARAMS_NAMESPACE,
+      PARAMS_VALIDATING_ADMISSION_POLICY,
+      PARAMS_VALIDATING_ADMISSION_POLICY_BINDING,
+      PARAMS_DEPLOYMENT,
+      PARAMS_CONFIG_MAP,
+    ],
   });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
