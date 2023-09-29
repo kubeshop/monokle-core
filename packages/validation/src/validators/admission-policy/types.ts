@@ -20,3 +20,6 @@ export type PolicyBindingFilterResponse = Record<
   string,
   {resources: Resource[]; level: RuleLevel; paramRef?: ParamRef}
 >;
+
+// here the key of the record will be of type apiGroup/apiVersion#kind
+export type CRDExpressions = Record<string, Expression[]>;

@@ -1,9 +1,14 @@
 import {AbstractPlugin} from '../../common/AbstractPlugin.js';
-import {Resource, ValidateOptions} from '../../common/types.js';
+import {CustomSchema, Resource, ValidateOptions} from '../../common/types.js';
 import {ResourceParser} from '../../common/resourceParser.js';
 import {RuleLevel, ValidationResult} from '../../common/sarif.js';
 import {loadWasm} from './loadWasm.js';
-import {Expression, PolicyBindingFilterResponse, PolicyExpressionsAndFilteredResources} from './types.js';
+import {
+  CRDExpressions,
+  Expression,
+  PolicyBindingFilterResponse,
+  PolicyExpressionsAndFilteredResources,
+} from './types.js';
 import * as YAML from 'yaml';
 import {isKustomizationPatch, isKustomizationResource} from '../../references/utils/kustomizeRefs.js';
 import {ADMISSION_POLICY_RULES} from './rules.js';
@@ -17,6 +22,7 @@ const KNOWN_RESOURCE_KINDS_PLURAL: Record<string, string> = {
 
 export class AdmissionPolicyValidator extends AbstractPlugin {
   private loadedWasm: boolean | undefined;
+  private crdExpressions: CRDExpressions = {};
 
   constructor(private resourceParser: ResourceParser) {
     super(
@@ -37,8 +43,37 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
     this.loadedWasm = true;
   }
 
+  override registerCustomSchema(schema: CustomSchema, crd?: Resource): void | Promise<void> {
+    if (!crd) return;
+
+    const versions = crd.content?.spec?.versions;
+
+    if (!versions?.length) return;
+
+    const [, apiName] = schema.apiVersion.split('/');
+
+    const version = versions.find((v: any) => v.name === apiName);
+
+    if (!version) return;
+
+    const validationExpressions = version.schema?.openAPIV3Schema?.properties?.spec?.['x-kubernetes-validation'];
+
+    if (!validationExpressions?.length) return;
+
+    const key = `${schema.apiVersion}#${schema.kind}`;
+
+    this.crdExpressions = {...this.crdExpressions, [key]: []};
+
+    for (const expression of validationExpressions) {
+      this.crdExpressions[key].push({expression: expression.rule, message: expression.message});
+    }
+
+    console.log(this.crdExpressions);
+  }
+
   async doValidate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
+    console.log('Do validate:', this.crdExpressions);
 
     const resourcesToBeValidated = this.getResourcesToBeValidated(resources);
 
