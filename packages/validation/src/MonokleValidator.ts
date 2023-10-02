@@ -38,7 +38,7 @@ export class MonokleValidator implements Validator {
   _previousPluginsInit?: Record<string, boolean>;
   _plugins: Plugin[] = [];
   _failedPlugins: string[] = [];
-  _customSchemas: Set<string> = new Set();
+  _customSchemas: Record<string, CustomSchema> = {};
   _suppressions: Suppression[] = [];
   private _suppressor: SuppressEngine;
 
@@ -344,7 +344,7 @@ export class MonokleValidator implements Validator {
         continue;
       }
 
-      this.registerCustomSchema({kind, apiVersion: `${crd.content.spec.group}/${apiVersion}`, schema}, crd);
+      await this.registerCustomSchema({kind, apiVersion: `${crd.content.spec.group}/${apiVersion}`, schema}, crd);
     }
   }
 
@@ -358,7 +358,7 @@ export class MonokleValidator implements Validator {
 
     const key = `${schema.apiVersion}-${schema.kind}`;
 
-    if (this._customSchemas.has(key)) {
+    if (this._customSchemas[key] && isEqual(this._customSchemas[key], schema)) {
       this.debug('Cannot register custom schema.', {
         reason: 'The schema is already registered.',
       });
@@ -373,7 +373,7 @@ export class MonokleValidator implements Validator {
       await plugin?.registerCustomSchema(schema, plugin.metadata.name === 'admission-policy' ? crd : undefined);
     }
 
-    this._customSchemas.add(key);
+    this._customSchemas[key] = schema;
   }
 
   async unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>) {
@@ -385,7 +385,7 @@ export class MonokleValidator implements Validator {
     }
 
     const key = `${schema.apiVersion}-${schema.kind}`;
-    if (this._customSchemas.has(key)) {
+    if (this._customSchemas[key] && isEqual(this._customSchemas[key], schema)) {
       this.debug('Cannot register custom schema.', {
         reason: 'The schema is not registered.',
       });
@@ -400,7 +400,7 @@ export class MonokleValidator implements Validator {
       await plugin?.unregisterCustomSchema(schema);
     }
 
-    this._customSchemas.delete(key);
+    delete this._customSchemas[key];
   }
 
   /**
@@ -415,7 +415,7 @@ export class MonokleValidator implements Validator {
    */
   async unload(): Promise<void> {
     this.cancelLoad('unload');
-    for (const schema of this._customSchemas) {
+    for (const schema of Object.keys(this._customSchemas)) {
       const [apiVersion, kind] = schema.split('-');
       await this.unregisterCustomSchema({apiVersion, kind});
     }

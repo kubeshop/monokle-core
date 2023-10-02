@@ -60,7 +60,23 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
 
   async doValidate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]> {
     const results: ValidationResult[] = [];
-    console.log('Do validate:', this.crdExpressions);
+
+    for (const [key, keyExpressions] of Object.entries(this.crdExpressions)) {
+      const [apiGroupVersion, kind] = key.split('#');
+
+      const crds = resources.filter(r => r.kind === kind && r.apiVersion === apiGroupVersion);
+
+      for (const [property, expressions] of Object.entries(keyExpressions)) {
+        for (const expression of expressions) {
+          for (const resource of crds) {
+            if (property !== '<root>' && !resource.content[property]) continue;
+
+            const errors = await this.validateResource({type: 'crd', resource, expression, level: 'error', property});
+            results.push(...errors);
+          }
+        }
+      }
+    }
 
     const resourcesToBeValidated = this.getResourcesToBeValidated(resources);
 
@@ -69,7 +85,13 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
     )) {
       for (const resource of filteredResources) {
         for (const expression of expressions) {
-          const errors = await this.validateResource(resource, expression, level, params);
+          const errors = await this.validateResource({
+            type: 'validating-admission-policy',
+            resource,
+            expression,
+            level,
+            params,
+          });
 
           results.push(...errors);
         }
@@ -79,15 +101,35 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
     return results;
   }
 
-  private async validateResource(
-    resource: Resource,
-    {message, expression}: Expression,
-    level: RuleLevel,
-    params?: any
-  ): Promise<ValidationResult[]> {
-    const output = (globalThis as any).eval(expression, YAML.stringify({object: resource.content, params})).output;
+  private async validateResource(args: {
+    type: 'crd' | 'validating-admission-policy';
+    resource: Resource;
+    expression: Expression;
+    level: RuleLevel;
+    params?: any;
+    property?: string;
+  }): Promise<ValidationResult[]> {
+    const {
+      type,
+      resource,
+      expression: {message, expression},
+      level,
+      params,
+      property,
+    } = args;
 
-    if (output === 'true' || output.includes('ERROR:')) {
+    let output: any;
+
+    if (type === 'validating-admission-policy') {
+      output = (globalThis as any).eval(expression, YAML.stringify({object: resource.content, params})).output;
+    } else if (type === 'crd' && property) {
+      output = (globalThis as any).eval(
+        expression,
+        YAML.stringify({self: property === '<root>' ? resource.content : resource.content[property]})
+      ).output;
+    }
+
+    if (output === 'true' || output.includes('ERROR:') || !output) {
       return [];
     }
 

@@ -18,7 +18,7 @@ import {
   PARAMS_VALIDATING_ADMISSION_POLICY,
   PARAMS_VALIDATING_ADMISSION_POLICY_BINDING,
 } from './resources/admissionPolicy/ParamsValidatorResources.js';
-import {CRD, CUSTOM_RESOURCE} from './resources/admissionPolicy/CRDValidatorResources.js';
+import {CRD, CRD_2, CUSTOM_RESOURCE} from './resources/admissionPolicy/CRDValidatorResources.js';
 
 it('test basic admission policy', async () => {
   const parser = new ResourceParser();
@@ -60,19 +60,17 @@ it('test params admission policy', async () => {
   expect(hasErrors).toBe(1);
 });
 
-it.only('test crd admission policy', async () => {
+it('test crd admission policy', async () => {
   const parser = new ResourceParser();
 
-  const validator = createTestValidator(parser, {
-    plugins: {
-      'admission-policy': true,
-      'kubernetes-schema': true,
-    },
-  });
+  const validator = createTestValidator(parser);
 
   const response = await validator.validate({
     resources: [CRD, CUSTOM_RESOURCE],
   });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toBe(1);
 });
 
 function createTestValidator(parser: ResourceParser, config?: ValidationConfig) {
@@ -86,10 +84,8 @@ function createTestValidator(parser: ResourceParser, config?: ValidationConfig) 
     },
     config ?? {
       plugins: {
-        'yaml-syntax': true,
-        'resource-links': true,
-        'kubernetes-schema': true,
-        'open-policy-agent': true,
+        'admission-policy': true,
+        'kubernetes-schema': false,
       },
       settings: {
         'kubernetes-schema': {
