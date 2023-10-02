@@ -38,7 +38,7 @@ export class MonokleValidator implements Validator {
   _previousPluginsInit?: Record<string, boolean>;
   _plugins: Plugin[] = [];
   _failedPlugins: string[] = [];
-  _customSchemas: Set<string> = new Set();
+  _customSchemas: Record<string, CustomSchema> = {};
   _suppressions: Suppression[] = [];
   private _suppressor: SuppressEngine;
 
@@ -234,7 +234,7 @@ export class MonokleValidator implements Validator {
     await nextTick();
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
-    this.preprocessCustomResourceDefinitions(resources);
+    await this.preprocessCustomResourceDefinitions(resources);
 
     const allRuns = await Promise.allSettled(validators.map(v => v.validate(resources, {incremental})));
     throwIfAborted(loadAbortSignal, externalAbortSignal);
@@ -325,29 +325,30 @@ export class MonokleValidator implements Validator {
     }
   }
 
-  private preprocessCustomResourceDefinitions(resources: Resource[]) {
+  private async preprocessCustomResourceDefinitions(resources: Resource[]) {
     const crds = resources.filter(r => r.kind === 'CustomResourceDefinition');
 
     for (const crd of crds) {
       const spec = crd.content.spec;
       const kind = spec?.names?.kind;
-      const apiVersion = findDefaultVersion(crd.content);
+
+      const apiVersion = findDefaultVersion(crd);
 
       if (!apiVersion) {
         continue;
       }
 
-      const schema = extractSchema(crd.content, apiVersion);
+      const schema = extractSchema(crd, apiVersion);
 
       if (!schema) {
         continue;
       }
 
-      this.registerCustomSchema({kind, apiVersion, schema});
+      await this.registerCustomSchema({kind, apiVersion: `${crd.content.spec.group}/${apiVersion}`, schema}, crd);
     }
   }
 
-  async registerCustomSchema(schema: CustomSchema) {
+  async registerCustomSchema(schema: CustomSchema, crd?: Resource) {
     if (!this.isPluginLoaded('kubernetes-schema')) {
       this.debug('Cannot register custom schema.', {
         reason: 'Kubernetes Schema plugin must be loaded.',
@@ -356,7 +357,8 @@ export class MonokleValidator implements Validator {
     }
 
     const key = `${schema.apiVersion}-${schema.kind}`;
-    if (this._customSchemas.has(key)) {
+
+    if (this._customSchemas[key] && isEqual(this._customSchemas[key], schema)) {
       this.debug('Cannot register custom schema.', {
         reason: 'The schema is already registered.',
       });
@@ -368,10 +370,10 @@ export class MonokleValidator implements Validator {
     const otherPlugins = this.getPlugins().filter(p => p.metadata.name !== 'kubernetes-schema');
 
     for (const plugin of [kubernetesSchemaPlugin, ...otherPlugins]) {
-      await plugin?.registerCustomSchema(schema);
+      await plugin?.registerCustomSchema(schema, plugin.metadata.name === 'admission-policy' ? crd : undefined);
     }
 
-    this._customSchemas.add(key);
+    this._customSchemas[key] = schema;
   }
 
   async unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>) {
@@ -383,7 +385,7 @@ export class MonokleValidator implements Validator {
     }
 
     const key = `${schema.apiVersion}-${schema.kind}`;
-    if (this._customSchemas.has(key)) {
+    if (this._customSchemas[key] && isEqual(this._customSchemas[key], schema)) {
       this.debug('Cannot register custom schema.', {
         reason: 'The schema is not registered.',
       });
@@ -398,7 +400,7 @@ export class MonokleValidator implements Validator {
       await plugin?.unregisterCustomSchema(schema);
     }
 
-    this._customSchemas.delete(key);
+    delete this._customSchemas[key];
   }
 
   /**
@@ -413,7 +415,7 @@ export class MonokleValidator implements Validator {
    */
   async unload(): Promise<void> {
     this.cancelLoad('unload');
-    for (const schema of this._customSchemas) {
+    for (const schema of Object.keys(this._customSchemas)) {
       const [apiVersion, kind] = schema.split('-');
       await this.unregisterCustomSchema({apiVersion, kind});
     }

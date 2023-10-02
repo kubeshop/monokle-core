@@ -233,7 +233,7 @@ export interface Plugin {
    */
   configure(config: {rules?: RuleMap; settings?: any}): Promise<void>;
 
-  registerCustomSchema(schema: CustomSchema): Promise<void> | void;
+  registerCustomSchema(schema: CustomSchema, crd?: Resource): Promise<void> | void;
   unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): Promise<void> | void;
 
   validate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]>;

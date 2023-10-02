@@ -228,8 +228,8 @@ export abstract class AbstractPlugin implements Plugin {
     return Promise.resolve();
   }
 
-  registerCustomSchema(schema: CustomSchema): void | Promise<void> {
-    return;
+  registerCustomSchema(schema: CustomSchema, crd?: Resource): void | Promise<void> {
+    return Promise.resolve();
   }
 
   unregisterCustomSchema(schema: Omit<CustomSchema, 'schema'>): void | Promise<void> {
