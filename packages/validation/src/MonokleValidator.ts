@@ -234,7 +234,7 @@ export class MonokleValidator implements Validator {
     await nextTick();
     throwIfAborted(loadAbortSignal, externalAbortSignal);
 
-    this.preprocessCustomResourceDefinitions(resources);
+    await this.preprocessCustomResourceDefinitions(resources);
 
     const allRuns = await Promise.allSettled(validators.map(v => v.validate(resources, {incremental})));
     throwIfAborted(loadAbortSignal, externalAbortSignal);
@@ -325,7 +325,7 @@ export class MonokleValidator implements Validator {
     }
   }
 
-  private preprocessCustomResourceDefinitions(resources: Resource[]) {
+  private async preprocessCustomResourceDefinitions(resources: Resource[]) {
     const crds = resources.filter(r => r.kind === 'CustomResourceDefinition');
 
     for (const crd of crds) {

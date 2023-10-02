@@ -15,6 +15,7 @@ import {ADMISSION_POLICY_RULES} from './rules.js';
 import {findJsonPointerNode} from '../../utils/findJsonPointerNode.js';
 import {createLocations} from '../../utils/createLocations.js';
 import {isDefined} from '../../utils/isDefined.js';
+import {getCRDExpressions} from './utils.js';
 
 const KNOWN_RESOURCE_KINDS_PLURAL: Record<string, string> = {
   Deployment: 'deployments',
@@ -46,29 +47,15 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
   override registerCustomSchema(schema: CustomSchema, crd?: Resource): void | Promise<void> {
     if (!crd) return;
 
-    const versions = crd.content?.spec?.versions;
+    const crdExpressions = getCRDExpressions(schema, crd);
 
-    if (!versions?.length) return;
+    if (!Object.keys(crdExpressions).length) return;
 
-    const [, apiName] = schema.apiVersion.split('/');
+    const schemaKey = `${schema.apiVersion}#${schema.kind}`;
 
-    const version = versions.find((v: any) => v.name === apiName);
-
-    if (!version) return;
-
-    const validationExpressions = version.schema?.openAPIV3Schema?.properties?.spec?.['x-kubernetes-validation'];
-
-    if (!validationExpressions?.length) return;
-
-    const key = `${schema.apiVersion}#${schema.kind}`;
-
-    this.crdExpressions = {...this.crdExpressions, [key]: []};
-
-    for (const expression of validationExpressions) {
-      this.crdExpressions[key].push({expression: expression.rule, message: expression.message});
+    for (const [key, expressions] of Object.entries(crdExpressions)) {
+      this.crdExpressions = {...this.crdExpressions, [schemaKey]: {[key]: expressions}};
     }
-
-    console.log(this.crdExpressions);
   }
 
   async doValidate(resources: Resource[], options: ValidateOptions): Promise<ValidationResult[]> {

@@ -22,4 +22,4 @@ export type PolicyBindingFilterResponse = Record<
 >;
 
 // here the key of the record will be of type apiGroup/apiVersion#kind
-export type CRDExpressions = Record<string, Expression[]>;
+export type CRDExpressions = Record<string, Record<string, Expression[]>>;
