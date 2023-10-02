@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.31.1
+
+### Patch Changes
+
+- a2f0b07: Added crds x-kubernetes-validation validate of custom resources
+
 ## 0.31.0
 
 ### Minor Changes
