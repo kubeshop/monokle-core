@@ -26,7 +26,6 @@ export const CORE_PLUGINS = [
   'resource-links',
   'open-policy-agent',
   'metadata',
-  'admission-policy',
 ] as const;
 
 export const CUSTOM_PLUGINS_URL_BASE = 'https://plugins.monokle.com/validation';
