@@ -17,7 +17,7 @@ export const privilegeEscalation = defineRule({
     validatePodSpec(resources, (resource, pod, prefix) => {
       pod.initContainers?.forEach((container, index) => {
         const allowPrivilegeEscalation = container.securityContext?.allowPrivilegeEscalation;
-        const valid = !allowPrivilegeEscalation;
+        const valid = allowPrivilegeEscalation !== undefined && !allowPrivilegeEscalation;
 
         if (valid) return;
 
@@ -28,7 +28,7 @@ export const privilegeEscalation = defineRule({
 
       pod.ephemeralContainers?.forEach((container, index) => {
         const allowPrivilegeEscalation = container.securityContext?.allowPrivilegeEscalation;
-        const valid = !allowPrivilegeEscalation;
+        const valid = allowPrivilegeEscalation !== undefined && !allowPrivilegeEscalation;
         if (valid) return;
 
         report(resource, {
@@ -38,7 +38,7 @@ export const privilegeEscalation = defineRule({
 
       pod.containers.forEach((container, index) => {
         const allowPrivilegeEscalation = container.securityContext?.allowPrivilegeEscalation;
-        const valid = !allowPrivilegeEscalation;
+        const valid = allowPrivilegeEscalation !== undefined && !allowPrivilegeEscalation;
         if (valid) return;
 
         report(resource, {
