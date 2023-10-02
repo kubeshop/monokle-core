@@ -16,6 +16,7 @@ import {
 } from '../validators/index.js';
 import {PluginContext} from './types.js';
 import {RemoteWasmLoader} from '../validators/open-policy-agent/wasmLoader/RemoteWasmLoader.browser.js';
+import {AdmissionPolicyValidator} from '../validators/admission-policy/validator.js';
 
 export interface PluginLoader {
   load(plugin: string, ctx: PluginContext, settings?: Record<string, any>): Plugin | Promise<Plugin>;
@@ -58,6 +59,10 @@ export class DefaultPluginLoader implements PluginLoader {
     this.register('open-policy-agent', ({parser}) => {
       const wasmLoader = new RemoteWasmLoader();
       return new OpenPolicyAgentValidator(parser, wasmLoader);
+    });
+
+    this.register('admission-policy', ({parser}) => {
+      return new AdmissionPolicyValidator(parser);
     });
 
     this.register(DEV_MODE_TOKEN, ({parser, fixer}) => {
