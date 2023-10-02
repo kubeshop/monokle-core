@@ -12,6 +12,7 @@ import {endpointSliceMappers} from './endpointSlice.js';
 import {Resource} from '../../common/types.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {ownerReferenceMapper} from './ownerReference.js';
+import {validatingAdmissionPolicyBindingMappers} from './validatingAdmissionPolicyBinding';
 
 export type SiblingMatcher = (
   source: Resource,
@@ -82,6 +83,7 @@ export const OUTGOING_MAPPERS_BY_KIND: Partial<Record<KnownResourceKinds, RefMap
   PersistentVolume: persistentVolumeMapper,
   RoleBinding: roleBindingMappers,
   ClusterRoleBinding: clusterRoleBindingMappers,
+  ValidatingAdmissionPolicyBinding: validatingAdmissionPolicyBindingMappers,
   VolumeAttachment: volumeAttachmentMappers,
   Endpoints: endpointsMappers,
   EndpointSlice: endpointSliceMappers,

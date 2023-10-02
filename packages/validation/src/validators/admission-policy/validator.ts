@@ -30,7 +30,7 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
       {
         id: 'AP',
         name: 'admission-policy',
-        displayName: 'Admission Policy',
+        displayName: 'Admission Policy (alpha)',
         description:
           'Ensure that your manifests comply with the conditions specified in the Validating Admission Policies.',
       },
