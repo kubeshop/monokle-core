@@ -33,7 +33,11 @@ export function getCRDExpressions(schema: CustomSchema, crd: Resource): Record<s
       expressions[key] = [];
 
       for (const rule of values['x-kubernetes-validation']) {
-        expressions[key].push({expression: rule.rule, message: rule.message ?? ''});
+        expressions[key].push({
+          expression: rule.rule,
+          message: rule.message,
+          messageExpression: rule.messageExpression,
+        });
       }
     }
   }

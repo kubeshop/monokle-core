@@ -143,3 +143,62 @@ export const CUSTOM_RESOURCE: Resource = {
   id: '13cf92c8d3181f-0',
   name: 'my-new-cron-object',
 };
+
+export const CRD_MESSAGE_EXPRESSION: Resource = {
+  fileId: 'd4fc87d28c6bd',
+  filePath: 'crd.yaml',
+  fileOffset: 0,
+  text: 'apiVersion: apiextensions.k8s.io/v1\nkind: CustomResourceDefinition\nmetadata:\n  name: mycustomresources.example.com\nspec:\n  group: example.com\n  names:\n    kind: MyCustomResource\n    plural: mycustomresources\n    singular: mycustomresource\n    shortNames:\n      - mcr\n  scope: Namespaced\n  versions:\n    - name: v1\n      schema:\n        openAPIV3Schema:\n          type: object\n          properties:\n            spec:\n              type: object\n              x-kubernetes-validation:\n                - rule: "self.replicas <= self.maxReplicas"\n                  message: "replicas must be less than or equal to maxReplicas"\n              properties:\n                replicas:\n                  type: integer\n                maxReplicas:\n                  type: integer\n              required:\n                - replicas\n                - maxReplicas\n',
+  apiVersion: 'apiextensions.k8s.io/v1',
+  kind: 'CustomResourceDefinition',
+  content: {
+    apiVersion: 'apiextensions.k8s.io/v1',
+    kind: 'CustomResourceDefinition',
+    metadata: {
+      name: 'mycustomresources.example.com',
+    },
+    spec: {
+      group: 'example.com',
+      names: {
+        kind: 'MyCustomResource',
+        plural: 'mycustomresources',
+        singular: 'mycustomresource',
+        shortNames: ['mcr'],
+      },
+      scope: 'Namespaced',
+      versions: [
+        {
+          name: 'v1',
+          schema: {
+            openAPIV3Schema: {
+              type: 'object',
+              properties: {
+                spec: {
+                  type: 'object',
+                  'x-kubernetes-validation': [
+                    {
+                      rule: 'self.replicas <= self.maxReplicas',
+                      message: 'replicas must be less than or equal to maxReplicas',
+                      messageExpression: '"replicas exceeded max limit of " + string(self.maxReplicas)',
+                    },
+                  ],
+                  properties: {
+                    replicas: {
+                      type: 'integer',
+                    },
+                    maxReplicas: {
+                      type: 'integer',
+                    },
+                  },
+                  required: ['replicas', 'maxReplicas'],
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+  id: 'd4fc87d28c6bd-0',
+  name: 'mycustomresources.example.com',
+};
