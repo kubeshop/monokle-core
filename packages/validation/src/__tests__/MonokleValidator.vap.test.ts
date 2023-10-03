@@ -18,7 +18,7 @@ import {
   PARAMS_VALIDATING_ADMISSION_POLICY,
   PARAMS_VALIDATING_ADMISSION_POLICY_BINDING,
 } from './resources/admissionPolicy/ParamsValidatorResources.js';
-import {CRD, CRD_2, CUSTOM_RESOURCE} from './resources/admissionPolicy/CRDValidatorResources.js';
+import {CRD, CRD_MESSAGE_EXPRESSION, CUSTOM_RESOURCE} from './resources/admissionPolicy/CRDValidatorResources.js';
 
 it('test basic admission policy', async () => {
   const parser = new ResourceParser();
@@ -67,6 +67,19 @@ it('test crd admission policy', async () => {
 
   const response = await validator.validate({
     resources: [CRD, CUSTOM_RESOURCE],
+  });
+
+  const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);
+  expect(hasErrors).toBe(1);
+});
+
+it('test crd with message expression admission policy', async () => {
+  const parser = new ResourceParser();
+
+  const validator = createTestValidator(parser);
+
+  const response = await validator.validate({
+    resources: [CRD_MESSAGE_EXPRESSION, CUSTOM_RESOURCE],
   });
 
   const hasErrors = response.runs.reduce((sum, r) => sum + r.results.length, 0);

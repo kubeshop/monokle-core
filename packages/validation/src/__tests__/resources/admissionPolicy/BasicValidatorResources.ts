@@ -28,6 +28,7 @@ export const VALIDATING_ADMISSION_POLICY: Resource = {
       validations: [
         {
           expression: 'object.spec.replicas > 3',
+          messageExpression: '"spec replicas should be greater than 3"',
         },
       ],
     },

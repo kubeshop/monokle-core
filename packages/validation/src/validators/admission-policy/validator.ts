@@ -112,25 +112,44 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
     const {
       type,
       resource,
-      expression: {message, expression},
+      expression: {message, messageExpression, expression},
       level,
       params,
       property,
     } = args;
 
     let output: any;
+    let ruleMessage: string | undefined = message;
+    let messageExpressionOutput: string | undefined;
 
     if (type === 'validating-admission-policy') {
-      output = (globalThis as any).eval(expression, YAML.stringify({object: resource.content, params})).output;
+      const expressionParams = YAML.stringify({object: resource.content, params});
+      output = this.evaluateCelExpression(expression, expressionParams);
+
+      if (messageExpression) {
+        messageExpressionOutput = this.evaluateCelExpression(messageExpression, expressionParams);
+      }
     } else if (type === 'crd' && property) {
-      output = (globalThis as any).eval(
-        expression,
-        YAML.stringify({self: property === '<root>' ? resource.content : resource.content[property]})
-      ).output;
+      const expressionParams = YAML.stringify({
+        self: property === '<root>' ? resource.content : resource.content[property],
+      });
+      output = this.evaluateCelExpression(expression, expressionParams);
+
+      if (messageExpression) {
+        messageExpressionOutput = this.evaluateCelExpression(messageExpression, expressionParams);
+      }
     }
 
     if (output === 'true' || output.includes('ERROR:') || !output) {
       return [];
+    }
+
+    if (
+      messageExpressionOutput &&
+      !messageExpressionOutput.includes('failed to evaluate') &&
+      !messageExpressionOutput.includes('ERROR:')
+    ) {
+      ruleMessage = messageExpressionOutput;
     }
 
     if (output.includes('failed to evaluate')) {
@@ -139,7 +158,7 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
           resource,
           ['kind'],
           'VAP002',
-          message ?? 'Admission policy failed to evaluate expression',
+          ruleMessage ?? 'Admission policy failed to evaluate expression',
           level
         ),
       ].filter(isDefined);
@@ -150,7 +169,7 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
         resource,
         ['kind'],
         'VAP001',
-        message ?? 'Admission policy conditions violated',
+        ruleMessage ?? 'Admission policy conditions violated',
         level
       ),
     ].filter(isDefined);
@@ -289,6 +308,7 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
         expressions: validations.map((v: any) => ({
           expression: v.expression,
           message: v.message,
+          messageExpression: v.messageExpression,
         })),
         level,
         params,
@@ -320,5 +340,9 @@ export class AdmissionPolicyValidator extends AbstractPlugin {
       locations,
       level,
     });
+  }
+
+  private evaluateCelExpression(expression: string, params: string) {
+    return (globalThis as any).eval(expression, params).output;
   }
 }

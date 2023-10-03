@@ -3,7 +3,8 @@ import {RuleLevel} from '../../commonExports.js';
 
 export type Expression = {
   expression: string;
-  message: string;
+  message?: string;
+  messageExpression?: string;
 };
 
 export type PolicyExpressionsAndFilteredResources = Record<
