@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.31.2
+
+### Patch Changes
+
+- 8d71abd: Handle messageExpression
+
 ## 0.31.1
 
 ### Patch Changes
