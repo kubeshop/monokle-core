@@ -12,4 +12,5 @@ export type ProblemInfoType = {
   onLocationClick?: (location: Location) => void;
   suppressionBindings?: SuppressionBindings;
   onProblemAutofix?: (problem: ValidationResult) => void;
+  onProblemShare?: (problem: ValidationResult) => void;
 };

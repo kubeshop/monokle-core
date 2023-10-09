@@ -8,7 +8,13 @@ import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './uti
 import {TOOLTIP_DELAY} from '@/constants';
 import {Icon, ProblemIcon, TextEllipsis} from '@/atoms';
 import {iconMap} from './constants';
-import {EyeInvisibleOutlined, EyeOutlined, FieldTimeOutlined, SettingOutlined} from '@ant-design/icons';
+import {
+  EyeInvisibleOutlined,
+  EyeOutlined,
+  FieldTimeOutlined,
+  SettingOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons';
 
 type IProps = {
   node: ProblemNode;
@@ -19,12 +25,13 @@ type IProps = {
   setSecurityFrameworkFilter: (value: string) => void;
   onConfigureRuleHandler: (problem: ValidationResult) => void;
   onAutofixHandler?: (problem: ValidationResult) => void;
+  onShareHandler?: (problem: ValidationResult) => void;
   suppressionBindings?: SuppressionBindings;
 };
 
 const ProblemRenderer: React.FC<IProps> = props => {
   const {node, rule, selectedProblem, groupByFilterValue, onClick, setSecurityFrameworkFilter} = props;
-  const {onConfigureRuleHandler, suppressionBindings, onAutofixHandler} = props;
+  const {onConfigureRuleHandler, suppressionBindings, onAutofixHandler, onShareHandler} = props;
 
   const isSelected = useMemo(
     () => (selectedProblem ? isProblemSelected(selectedProblem, node.problem) : false),
@@ -186,6 +193,18 @@ const ProblemRenderer: React.FC<IProps> = props => {
             onClick={() => onConfigureRuleHandler(node.problem)}
           />
         </Tooltip>
+
+        {onShareHandler && (
+          <Tooltip
+            mouseEnterDelay={TOOLTIP_DELAY}
+            title="Seeking for help to fix this misconfiguration? Click to copy it to your clipboard and share it with your project members."
+          >
+            <ShareAltOutlined
+              style={{color: isSelected ? Colors.blackPure : Colors.blue7}}
+              onClick={() => onShareHandler(node.problem)}
+            />
+          </Tooltip>
+        )}
       </ActionsContainer>
     </Row>
   );

@@ -32,6 +32,7 @@ export type ValidationOverviewType = {
   onConfigureRule: (problem: ValidationResult) => void;
   suppressionBindings?: SuppressionBindings;
   onProblemAutofix?: (problem: ValidationResult) => void;
+  onProblemShare?: (problem: ValidationResult) => void;
 };
 
 export type ValidationOverviewFiltersType = {

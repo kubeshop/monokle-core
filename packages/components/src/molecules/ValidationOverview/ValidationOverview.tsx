@@ -55,6 +55,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = ({
   suppressionBindings,
   onConfigureRule,
   onProblemAutofix,
+  onProblemShare,
   hotkeysDisabled = false,
 }) => {
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
@@ -494,6 +495,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = ({
                         onConfigureRuleHandler={onConfigureRule}
                         suppressionBindings={suppressionBindings}
                         onAutofixHandler={onProblemAutofix}
+                        onShareHandler={onProblemShare}
                       />
                     )}
                   </VirtualItem>

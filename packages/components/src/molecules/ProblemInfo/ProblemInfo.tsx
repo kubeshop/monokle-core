@@ -11,6 +11,7 @@ import {
   EyeOutlined,
   FieldTimeOutlined,
   SettingOutlined,
+  ShareAltOutlined,
 } from '@ant-design/icons';
 import {TOOLTIP_DELAY} from '@/constants';
 import {renderSeverityIcon} from '../ValidationOverview/utils';
@@ -20,7 +21,7 @@ import {SecurityFrameworkTag} from '../ValidationOverview/ProblemRenderer';
 
 const ProblemInfo: React.FC<ProblemInfoType> = props => {
   const {containerClassName = '', containerStyle = {}, problem, rule, suppressionBindings, onProblemAutofix} = props;
-  const {onConfigureRule, onHelpURLClick, onLocationClick} = props;
+  const {onConfigureRule, onHelpURLClick, onLocationClick, onProblemShare} = props;
 
   const errorLocation = useMemo(() => getFileLocation(problem), [problem]);
   const title = useMemo(
@@ -145,6 +146,15 @@ const ProblemInfo: React.FC<ProblemInfoType> = props => {
           >
             <Button type="link" icon={<SettingOutlined />} onClick={onConfigureRule}></Button>
           </Tooltip>
+
+          {onProblemShare && (
+            <Tooltip
+              mouseEnterDelay={TOOLTIP_DELAY}
+              title="Seeking for help to fix this misconfiguration? Click to copy it to your clipboard and share it with your project members."
+            >
+              <Button type="link" icon={<ShareAltOutlined />} onClick={() => onProblemShare(problem)} />
+            </Tooltip>
+          )}
         </Actions>
       </TitleContainer>
 
