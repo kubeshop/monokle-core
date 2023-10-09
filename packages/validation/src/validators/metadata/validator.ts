@@ -113,7 +113,7 @@ export class MetadataValidator extends AbstractPlugin {
       .map(key =>
         this.adaptToValidationResult(
           resource,
-          ['metadata', isLabelRule ? 'labels' : 'annotations'],
+          ['metadata', isLabelRule ? 'labels' : 'annotations', key],
           rule.id,
           `Missing valid '${key}' ${isLabelRule ? 'label' : 'annotation'} in '${resource.kind}'${expectedValuesText}.`
         )
@@ -179,7 +179,7 @@ export class MetadataValidator extends AbstractPlugin {
 
     const region = this.resourceParser.parseErrorRegion(resource, valueNode.range);
 
-    const locations = createLocations(resource, region);
+    const locations = createLocations(resource, region, path);
 
     return this.createValidationResult(ruleId, {
       message: {
