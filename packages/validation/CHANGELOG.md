@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.31.4
+
+### Patch Changes
+
+- 0af6ba5: Add key to metadata yaml path
+
 ## 0.31.3
 
 ### Patch Changes
