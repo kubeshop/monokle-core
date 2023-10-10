@@ -14,7 +14,7 @@ export const METADATA_RULES: RuleMetadata[] = [
       text: 'Add all recommended labels. You can hover the key for documentation.',
     },
     defaultConfiguration: {
-      level: 'error',
+      level: 'warning',
       // Based on https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
       parameters: {
         configValue: [

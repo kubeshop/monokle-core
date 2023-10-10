@@ -21,20 +21,20 @@ it('should detect missing recommended labels (MTD-recommended-labels)', async ()
   expect(hasErrors).toBe(4);
 
   const result1 = response.runs[0].results[0];
-  expectResult(result1, 'MTD-recommended-labels', 'error', 'ReplicaSet');
-  expect(result1.message.text).toMatch('app.kubernetes.io/component');
+  expectResult(result1, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
+  expect(result1.message.text).toMatch('app.kubernetes.io/part-of');
 
   const result2 = response.runs[0].results[1];
-  expectResult(result2, 'MTD-recommended-labels', 'error', 'ReplicaSet');
-  expect(result2.message.text).toMatch('app.kubernetes.io/managed');
+  expectResult(result2, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
+  expect(result2.message.text).toMatch('app.kubernetes.io/version');
 
   const result3 = response.runs[0].results[2];
-  expectResult(result3, 'MTD-recommended-labels', 'error', 'ReplicaSet');
-  expect(result3.message.text).toMatch('app.kubernetes.io/part-of');
+  expectResult(result3, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
+  expect(result3.message.text).toMatch('app.kubernetes.io/managed');
 
   const result4 = response.runs[0].results[3];
-  expectResult(result4, 'MTD-recommended-labels', 'error', 'ReplicaSet');
-  expect(result4.message.text).toMatch('app.kubernetes.io/version');
+  expectResult(result4, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
+  expect(result4.message.text).toMatch('app.kubernetes.io/component');
 });
 
 it('should not override recommended labels but allow to config level (MTD-recommended-labels)', async () => {
@@ -48,19 +48,19 @@ it('should not override recommended labels but allow to config level (MTD-recomm
 
   const result1 = response.runs[0].results[0];
   expectResult(result1, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
-  expect(result1.message.text).toMatch('app.kubernetes.io/component');
+  expect(result1.message.text).toMatch('app.kubernetes.io/part-of');
 
   const result2 = response.runs[0].results[1];
   expectResult(result2, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
-  expect(result2.message.text).toMatch('app.kubernetes.io/managed');
+  expect(result2.message.text).toMatch('app.kubernetes.io/version');
 
   const result3 = response.runs[0].results[2];
   expectResult(result3, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
-  expect(result3.message.text).toMatch('app.kubernetes.io/part-of');
+  expect(result3.message.text).toMatch('app.kubernetes.io/managed');
 
   const result4 = response.runs[0].results[3];
   expectResult(result4, 'MTD-recommended-labels', 'warning', 'ReplicaSet');
-  expect(result4.message.text).toMatch('app.kubernetes.io/version');
+  expect(result4.message.text).toMatch('app.kubernetes.io/component');
 });
 
 it('should detect missing custom labels (MTD-custom-labels)', async () => {
@@ -90,14 +90,15 @@ it('should detect missing annotations labels (MTD-custom-annotations)', async ()
   expect(hasErrors).toBe(2);
 
   const result1 = response.runs[0].results[0];
+
   expectResult(result1, 'MTD-custom-annotations', 'warning', 'ReplicaSet');
-  expectMatchList(result1.message.text, ['annotation-1']);
-  expectNotMatchList(result1.message.text, ['revision', 'hash', 'annotation-2']);
+  expectMatchList(result1.message.text, ['annotation-2']);
+  expectNotMatchList(result1.message.text, ['revision', 'hash', 'annotation-1']);
 
   const result2 = response.runs[0].results[1];
   expectResult(result2, 'MTD-custom-annotations', 'warning', 'ReplicaSet');
-  expectMatchList(result2.message.text, ['annotation-2']);
-  expectNotMatchList(result2.message.text, ['revision', 'hash', 'annotation-1']);
+  expectMatchList(result2.message.text, ['annotation-1']);
+  expectNotMatchList(result2.message.text, ['revision', 'hash', 'annotation-2']);
 });
 
 it('should not trigger when predefined custom rules have no names defined (MTD-custom-labels, MTD-custom-annotations)', async () => {
