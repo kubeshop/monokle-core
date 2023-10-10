@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 2.3.2
+
+### Patch Changes
+
+- 3f3a838: Add shareable misconfiguration
+
 ## 2.3.1
 
 ### Patch Changes
