@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.31.3
+
+### Patch Changes
+
+- e8c7c6d: fix(core/validation): fix missing import extensions
+
 ## 0.31.2
 
 ### Patch Changes
