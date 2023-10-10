@@ -12,7 +12,7 @@ import {endpointSliceMappers} from './endpointSlice.js';
 import {Resource} from '../../common/types.js';
 import {isDefined} from '../../utils/isDefined.js';
 import {ownerReferenceMapper} from './ownerReference.js';
-import {validatingAdmissionPolicyBindingMappers} from './validatingAdmissionPolicyBinding';
+import {validatingAdmissionPolicyBindingMappers} from './validatingAdmissionPolicyBinding.js';
 
 export type SiblingMatcher = (
   source: Resource,

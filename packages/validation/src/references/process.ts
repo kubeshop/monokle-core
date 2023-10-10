@@ -12,7 +12,7 @@ import {getResourceRefNodes} from './utils/getResourceNodes.js';
 import {refMapperMatchesKind} from './utils/refMatcher.js';
 import {processKustomizations} from './utils/kustomizeRefs.js';
 import {ResourceParser} from '../common/resourceParser.js';
-import {isDefined} from '../utils/isDefined';
+import {isDefined} from '../utils/isDefined.js';
 import {isNode} from 'yaml';
 
 /**
