@@ -15,6 +15,7 @@ import {DisabledFixer, readConfig, RuleConfigMetadataType, SchemaLoader, SimpleC
 import {defineRule} from '../custom.js';
 import {isDeployment} from '../validators/custom/schemas/deployment.apps.v1.js';
 import {DefaultPluginLoader} from '../pluginLoaders/PluginLoader.js';
+import {readFile} from 'fs/promises';
 
 it('should be simple to configure', async () => {
   const parser = new ResourceParser();
@@ -241,9 +242,8 @@ it('should be valid SARIF', async () => {
     allErrors: true,
   });
 
-  const res = await fetch('https://json.schemastore.org/sarif-2.1.0.json');
-  if (!res.ok) throw new Error('schema_download_failed');
-  const schema = await res.json();
+  const res = await readFile('src/__tests__/resources/sarif-schema.json', 'utf-8');
+  const schema = JSON.parse(res);
 
   const validateSarif = ajv.compile(schema);
   validateSarif(response);
