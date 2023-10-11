@@ -7,7 +7,7 @@ import {NSA_RELATIONS} from '../../../taxonomies/nsa.js';
 export const noPodExecute = defineRule({
   id: 108,
   description: 'Disallow permissions to exec on pods',
-  help: "Do not include 'pods/exec' in 'spec.rules[x].resourcess",
+  help: "Do not include 'pods/exec' in 'spec.rules[x].resources",
   advanced: {
     severity: 5,
     relationships: [NSA_RELATIONS['kubernetes-pod-security']],
@@ -15,7 +15,7 @@ export const noPodExecute = defineRule({
   validate({resources}, {report}) {
     resources.filter(isTarget).forEach((role, index) => {
       role.rules?.forEach(rule => {
-        const isValid = rule.resources?.includes('pods/exec');
+        const isValid = rule.resources?.every(r => r.toLowerCase() !== 'pods/exec');
         if (isValid) return;
         report(role, {path: `spec.rules.${index}.resources`});
       });
