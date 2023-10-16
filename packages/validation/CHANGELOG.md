@@ -1,5 +1,13 @@
 # @monokle/validation
 
+## 0.31.5
+
+### Patch Changes
+
+- 7f6f3c2: Fix rules KBP107/no-pod-create and KBP108/no-pod-execute
+- Updated dependencies [367ef4a]
+  - @monokle/types@0.3.0
+
 ## 0.31.4
 
 ### Patch Changes

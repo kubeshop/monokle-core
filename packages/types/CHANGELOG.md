@@ -1,5 +1,11 @@
 # @monokle/types
 
+## 0.3.0
+
+### Minor Changes
+
+- 367ef4a: add dry-run config types
+
 ## 0.2.2
 
 ### Patch Changes
