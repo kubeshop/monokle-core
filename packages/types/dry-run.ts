@@ -1,6 +1,6 @@
 export type DryRunConfigKind = 'kustomize' | 'helm';
 
-type Args = Array<Array<[string]>>;
+type Args = Array<Array<string>>;
 
 interface BaseConfig {
   workdir?: string;
