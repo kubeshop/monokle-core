@@ -1,5 +1,11 @@
 # @monokle/types
 
+## 0.3.1
+
+### Patch Changes
+
+- 6201800: fix dry-run config `args` type
+
 ## 0.3.0
 
 ### Minor Changes
