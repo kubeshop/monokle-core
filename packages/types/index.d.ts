@@ -64,3 +64,9 @@ export interface FingerprintSuppression extends ExternalSuppression {
   kind: 'external';
   fingerprint: string;
 }
+
+/**
+ * Dry-run configs
+ */
+
+export type * from './dry-run'
