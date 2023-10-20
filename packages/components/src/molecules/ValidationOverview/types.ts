@@ -23,6 +23,7 @@ export type ValidationOverviewType = {
   selectedProblem?: ValidationResult;
   groupOnlyByResource?: boolean;
   skeletonStyle?: React.CSSProperties;
+  isPreviewing?: boolean;
   triggerValidationSettingsRedirectCallback?: () => void;
   onProblemSelect?: (payload: {problem: ValidationResult; selectedFrom: 'resource' | 'file' | 'hotkey'}) => void;
   onFiltersChange?: (filters: ValidationFiltersValueType) => void;
