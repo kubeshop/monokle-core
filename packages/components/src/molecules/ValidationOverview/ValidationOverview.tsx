@@ -57,6 +57,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = ({
   onProblemAutofix,
   onProblemShare,
   hotkeysDisabled = false,
+  isPreviewing = false,
 }) => {
   const [collapsedHeadersKey, setCollapsedHeadersKey] = useState<string[]>(baseData.baseCollapsedKeys);
   const [filtersValue, setFiltersValue] = useState<ValidationFiltersValueType>(filters || DEFAULT_FILTERS_VALUE);
@@ -456,6 +457,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = ({
                       <HeaderRenderer
                         node={node}
                         groupByFilterValue={groupByFilterValue}
+                        isPreviewing={isPreviewing}
                         toggleCollapse={node => {
                           if (collapsedHeadersKey.includes(node.label)) {
                             const collapsedKeys = collapsedHeadersKey.filter(item => item !== node.label);
@@ -471,6 +473,7 @@ const ValidationOverview: React.FC<ValidationOverviewType> = ({
                     ) : (
                       <ProblemRenderer
                         node={node}
+                        isPreviewing={isPreviewing}
                         rule={getRuleForResultV2(validationResponse.runs[0], node.problem)}
                         selectedProblem={selectedProblem}
                         groupByFilterValue={groupByFilterValue}

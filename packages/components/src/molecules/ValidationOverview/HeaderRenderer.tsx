@@ -10,11 +10,12 @@ import {DownOutlined as RawDownOutlined, RightOutlined as RawRightOutlined} from
 type IProps = {
   node: HeaderNode;
   groupByFilterValue: GroupByFilterOptionType;
+  isPreviewing: boolean;
   toggleCollapse: (node: HeaderNode) => void;
 };
 
 const HeaderRenderer: React.FC<IProps> = props => {
-  const {node, groupByFilterValue, toggleCollapse} = props;
+  const {node, groupByFilterValue, isPreviewing, toggleCollapse} = props;
 
   if (groupByFilterValue === 'group-by-rule') {
     const {ruleDescription, severity, toolComponentName} = getRuleInfo(node.label);
@@ -52,9 +53,13 @@ const HeaderRenderer: React.FC<IProps> = props => {
           <Tooltip title={node.resourceName} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
             <ResourceName>{node.resourceName}</ResourceName>
           </Tooltip>
-          <Tooltip title={node.filePath} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
-            <ResourceFilePath>{node.filePath}</ResourceFilePath>
-          </Tooltip>
+
+          {!isPreviewing && (
+            <Tooltip title={node.filePath} mouseEnterDelay={TOOLTIP_DELAY} placement="right">
+              <ResourceFilePath>{node.filePath}</ResourceFilePath>
+            </Tooltip>
+          )}
+
           <ResultsCount>{node.count}</ResultsCount>
         </Content>
       </Container>
@@ -128,14 +133,13 @@ const ResourceFilePath = styled.span`
   white-space: nowrap;
   overflow: hidden;
   height: max-content;
+  padding-top: 2px;
 `;
 
 const ResourceName = styled.span`
   color: ${Colors.whitePure};
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
   height: max-content;
+  min-width: max-content;
 `;
 
 const ResultsCount = styled.span`

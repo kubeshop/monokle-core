@@ -1,12 +1,12 @@
 import {useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
-import {Button, Tag, Tooltip} from 'antd';
+import {Tag, Tooltip} from 'antd';
 import {Colors} from '@/styles/Colors';
 import {ProblemNode, GroupByFilterOptionType, SuppressionBindings} from './types';
-import {getFileLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
+import {getFileLocation, getResourceLocation, RuleMetadata, ValidationResult} from '@monokle/validation';
 import {isProblemSelected, renderSeverityIcon, uppercaseFirstLetter} from './utils';
 import {TOOLTIP_DELAY} from '@/constants';
-import {Icon, ProblemIcon, TextEllipsis} from '@/atoms';
+import {Icon, ProblemIcon} from '@/atoms';
 import {iconMap} from './constants';
 import {
   EyeInvisibleOutlined,
@@ -20,6 +20,7 @@ type IProps = {
   node: ProblemNode;
   rule: RuleMetadata;
   groupByFilterValue: GroupByFilterOptionType;
+  isPreviewing: boolean;
   selectedProblem?: ValidationResult;
   onClick: () => void;
   setSecurityFrameworkFilter: (value: string) => void;
@@ -30,7 +31,7 @@ type IProps = {
 };
 
 const ProblemRenderer: React.FC<IProps> = props => {
-  const {node, rule, selectedProblem, groupByFilterValue, onClick, setSecurityFrameworkFilter} = props;
+  const {node, rule, selectedProblem, groupByFilterValue, isPreviewing, onClick, setSecurityFrameworkFilter} = props;
   const {onConfigureRuleHandler, suppressionBindings, onAutofixHandler, onShareHandler} = props;
 
   const isSelected = useMemo(
@@ -70,13 +71,19 @@ const ProblemRenderer: React.FC<IProps> = props => {
         <>
           <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="File line">
             <ProblemStartLine $isSelected={isSelected}>
-              {node.problem.locations[0].physicalLocation?.region?.startLine}
+              {node.problem.locations[1].physicalLocation?.region?.startLine}
             </ProblemStartLine>
           </Tooltip>
-          <TextEllipsis
-            style={{fontSize: '13px'}}
-            text={getFileLocation(node.problem).physicalLocation?.artifactLocation.uri ?? ''}
-          />
+
+          <ProblemText $isSuppressed={suppressed || absent} $secondary>
+            {getResourceLocation(node.problem).logicalLocations?.[0]?.name ?? ''}
+          </ProblemText>
+
+          {!isPreviewing && (
+            <ResourceFilePath>
+              {getFileLocation(node.problem).physicalLocation?.artifactLocation.uri ?? ''}
+            </ResourceFilePath>
+          )}
         </>
       ) : (
         <>
@@ -236,11 +243,22 @@ const ProblemStartLine = styled.div<{$isSelected: boolean}>`
   font-size: 13px;
 `;
 
-const ProblemText = styled.div<{$isSuppressed: boolean}>`
+const ProblemText = styled.div<{$isSuppressed: boolean; $secondary?: boolean}>`
   text-decoration: ${({$isSuppressed}) => ($isSuppressed ? 'line-through' : 'none')};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  ${({$secondary}) => {
+    if (!$secondary) {
+      return `
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      `;
+    } else {
+      return `
+        min-width: max-content;
+      `;
+    }
+  }}
 `;
 
 const Row = styled.div<{$isSelected: boolean; $secondary: boolean; $isSuppressed: boolean; $isUnderReview?: boolean}>`
@@ -289,4 +307,15 @@ export const SecurityFrameworkTag = styled(Tag)`
   &:hover {
     color: ${Colors.grey9};
   }
+`;
+
+const ResourceFilePath = styled.span`
+  color: ${Colors.grey7};
+  margin-left: 8px;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  height: max-content;
+  padding-top: 2px;
 `;
