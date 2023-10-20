@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 2.3.3
+
+### Patch Changes
+
+- a8f24c7: Refactor group-by-rule label
+
 ## 2.3.2
 
 ### Patch Changes
