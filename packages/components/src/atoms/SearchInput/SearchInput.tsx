@@ -1,9 +1,9 @@
 import {Colors} from '@/styles/Colors';
 import {SearchOutlined} from '@ant-design/icons';
-import {Input} from 'antd';
+import {Input, InputProps} from 'antd';
 import styled from 'styled-components';
 
-const SearchInput = styled(Input).attrs({
+const SearchInput = styled((props: InputProps) => <Input {...props} />).attrs({
   prefix: <SearchOutlined />,
 })`
   border-radius: 4px;

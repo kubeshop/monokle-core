@@ -67,7 +67,7 @@
     "typescript": "4.8.3",
     "use-debounced-effect": "2.0.1",
     "vite": "3.1.0",
-    "vite-plugin-dts": "^1.6.6",
+    "vite-plugin-dts": "3.6.0",
     "vite-tsconfig-paths": "^3.5.2"
   },
   "peerDependencies": {
