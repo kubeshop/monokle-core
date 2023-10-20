@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 2.3.4
+
+### Patch Changes
+
+- ba9cc62: Fix build
+
 ## 2.3.3
 
 ### Patch Changes
