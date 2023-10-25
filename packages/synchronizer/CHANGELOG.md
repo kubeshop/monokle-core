@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.10.1
+
+### Patch Changes
+
+- db453c1: Add missing fetcher export
+
 ## 0.10.0
 
 ### Minor Changes
