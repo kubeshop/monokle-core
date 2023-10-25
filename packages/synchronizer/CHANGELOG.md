@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.10.0
+
+### Minor Changes
+
+- caea9d4: Introduced util for direct API querying
+
 ## 0.9.1
 
 ### Patch Changes
