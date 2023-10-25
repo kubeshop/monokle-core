@@ -190,7 +190,7 @@ export class ApiHandler {
     return normalizeUrl(`${this.apiUrl}/${path}`);
   }
 
-  private async queryApi<OUT>(query: string, tokenInfo: TokenInfo, variables = {}): Promise<OUT | undefined> {
+  async queryApi<OUT>(query: string, tokenInfo: TokenInfo, variables = {}): Promise<OUT | undefined> {
     const apiEndpointUrl = normalizeUrl(`${this.apiUrl}/graphql`);
     const response = await this.sendRequest(apiEndpointUrl, tokenInfo, query, variables);
 
