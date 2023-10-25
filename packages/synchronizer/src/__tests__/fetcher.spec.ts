@@ -31,7 +31,7 @@ type TEST_QUERY_RESULT_TYPE = {
       }[];
     };
   };
-}
+};
 
 describe('Fetcher Tests', () => {
   const stubs: sinon.SinonStub[] = [];
@@ -48,34 +48,35 @@ describe('Fetcher Tests', () => {
 
       fetcher.useAutomationToken('SAMPLE_TOKEN');
 
-      const sendRequestStub = sinon
-        .stub((fetcher as any)._apiHandler, 'sendRequest')
-        .callsFake(async (...args) => {
-          return {
-            ok: true,
-            json: async () => {
-              return {
-                errors: [],
-                data: {
-                  getCluster: {
-                    cluster: {
-                      id: 'cluster-1',
-                      name: 'Cluster 1',
-                      namespaceSync: true,
-                      namespaces: [{
+      const sendRequestStub = sinon.stub((fetcher as any)._apiHandler, 'sendRequest').callsFake(async (...args) => {
+        return {
+          ok: true,
+          json: async () => {
+            return {
+              errors: [],
+              data: {
+                getCluster: {
+                  cluster: {
+                    id: 'cluster-1',
+                    name: 'Cluster 1',
+                    namespaceSync: true,
+                    namespaces: [
+                      {
                         id: 'ns1',
-                        name: 'NS 1'
-                      }, {
+                        name: 'NS 1',
+                      },
+                      {
                         id: 'ns2',
-                        name: 'NS 2'
-                      }]
-                    }
-                  }
+                        name: 'NS 2',
+                      },
+                    ],
+                  },
                 },
-              };
-            },
-          };
-        });
+              },
+            };
+          },
+        };
+      });
       stubs.push(sendRequestStub);
 
       const queryResult = await fetcher.query<TEST_QUERY_RESULT_TYPE>(TEST_QUERY);
@@ -102,7 +103,11 @@ describe('Fetcher Tests', () => {
 
       const sendRequestStub = sinon
         .stub((fetcher as any)._apiHandler, 'sendRequest')
-        .throws(new Error('Connection error. Cannot fetch data from https://api.monokle.com/graphql. Error \'Not Found\' (404).'));
+        .throws(
+          new Error(
+            "Connection error. Cannot fetch data from https://api.monokle.com/graphql. Error 'Not Found' (404)."
+          )
+        );
       stubs.push(sendRequestStub);
 
       const queryResult = await fetcher.query<TEST_QUERY_RESULT_TYPE>(TEST_QUERY);

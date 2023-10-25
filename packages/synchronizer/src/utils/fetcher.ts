@@ -16,9 +16,7 @@ export type QueryResult<T_DATA> = {
 export class Fetcher extends EventEmitter {
   private _token: TokenInfo | undefined;
 
-  constructor(
-    private _apiHandler: ApiHandler,
-  ) {
+  constructor(private _apiHandler: ApiHandler) {
     super();
   }
 
@@ -42,7 +40,7 @@ export class Fetcher extends EventEmitter {
         data: undefined,
         success: false,
         error: 'No token set. Use useBearerToken or useAutomationToken before calling query.',
-      }
+      };
     }
 
     this.emit('queryStarted', {apiUrl: this._apiHandler.apiUrl, query, variables});
@@ -50,7 +48,7 @@ export class Fetcher extends EventEmitter {
     const result: QueryResult<T_DATA> = {
       data: undefined,
       success: false,
-    }
+    };
 
     try {
       const response = await this._apiHandler.queryApi<ApiResponse<T_DATA>>(query, this._token, variables);
@@ -59,7 +57,12 @@ export class Fetcher extends EventEmitter {
     } catch (error: any) {
       result.error = error.message;
     } finally {
-      this.emit(result.success ? 'queryDone' : 'queryFailed', {apiUrl: this._apiHandler.apiUrl, query, variables, result});
+      this.emit(result.success ? 'queryDone' : 'queryFailed', {
+        apiUrl: this._apiHandler.apiUrl,
+        query,
+        variables,
+        result,
+      });
       return result;
     }
   }
