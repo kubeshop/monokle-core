@@ -156,7 +156,11 @@ export type ApiSuppressionsData = {
 };
 
 export class ApiHandler {
-  constructor(private _apiUrl: string = DEFAULT_API_URL) {}
+  constructor(private _apiUrl: string = DEFAULT_API_URL) {
+    if ((_apiUrl || '').length === 0) {
+      this._apiUrl = DEFAULT_API_URL;
+    }
+  }
 
   get apiUrl() {
     return normalizeUrl(this._apiUrl);
