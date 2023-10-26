@@ -1,5 +1,12 @@
 # @monokle/synchronizer
 
+## 0.10.2
+
+### Patch Changes
+
+- 3eae996: Add missing Fetcher global export
+- e51b791: Use default API URL in ApiHandler when falsy value passed
+
 ## 0.10.1
 
 ### Patch Changes
