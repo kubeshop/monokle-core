@@ -1,4 +1,4 @@
-export type DryRunConfigKind = 'kustomize' | 'helm';
+export type DryRunConfigKind = 'kustomize' | 'helm' | 'script';
 
 type Args = Array<Array<string>>;
 
