@@ -1,4 +1,4 @@
-export type DryRunConfigKind = 'kustomize' | 'helm';
+export type DryRunConfigKind = 'kustomize' | 'helm' | 'script';
 
 type Args = Array<Array<string>>;
 
@@ -32,6 +32,14 @@ interface KustomizeConfig extends BaseConfig {
   args?: Args;
 }
 
+interface ScriptConfig extends BaseConfig {
+  kind: 'script';
+  env?: {
+    [k: string]: unknown;
+  };
+  args?: Args;
+}
+
 export interface DryRunHelmConfig extends HelmConfig {
   postRender?: Array<HelmConfig | Omit<DryRunKustomizeConfig, 'postRender'>>
 }
@@ -40,7 +48,11 @@ export interface DryRunKustomizeConfig extends KustomizeConfig {
   postRender?: Array<Omit<DryRunHelmConfig, 'postRender'> | Omit<DryRunKustomizeConfig, 'postRender'>>
 }
 
-export type DryRunConfig = DryRunKustomizeConfig | DryRunHelmConfig;
+export interface DryRunScriptConfig extends ScriptConfig {
+  postRender?: Array<Omit<ScriptConfig, 'postRender'>>
+}
+
+export type DryRunConfig = DryRunKustomizeConfig | DryRunHelmConfig | DryRunScriptConfig;
 
 export interface DryRunConfigObject<
   T extends DryRunConfig = DryRunConfig
