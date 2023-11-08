@@ -1,5 +1,11 @@
 # @monokle/types
 
+## 0.3.2
+
+### Patch Changes
+
+- 0ce5665: added ScriptConfig dry-run type
+
 ## 0.3.1
 
 ### Patch Changes

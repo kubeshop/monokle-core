@@ -1,5 +1,11 @@
 # @monokle/components
 
+## 2.3.5
+
+### Patch Changes
+
+- 2e63f58: correct misconfiguration line numbers
+
 ## 2.3.4
 
 ### Patch Changes
