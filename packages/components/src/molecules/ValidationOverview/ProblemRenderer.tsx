@@ -71,7 +71,7 @@ const ProblemRenderer: React.FC<IProps> = props => {
         <>
           <Tooltip mouseEnterDelay={TOOLTIP_DELAY} title="File line">
             <ProblemStartLine $isSelected={isSelected}>
-              {node.problem.locations[1].physicalLocation?.region?.startLine}
+              {getResourceLocation(node.problem).physicalLocation?.region?.startLine}
             </ProblemStartLine>
           </Tooltip>
 
@@ -106,10 +106,7 @@ const ProblemRenderer: React.FC<IProps> = props => {
             title={groupByFilterValue === 'group-by-file' ? 'File content line' : 'Resource content line'}
           >
             <ProblemStartLine $isSelected={isSelected}>
-              {
-                node.problem.locations[groupByFilterValue === 'group-by-file' ? 0 : 1].physicalLocation?.region
-                  ?.startLine
-              }
+              {getResourceLocation(node.problem).physicalLocation?.region?.startLine}
             </ProblemStartLine>
           </Tooltip>
 
