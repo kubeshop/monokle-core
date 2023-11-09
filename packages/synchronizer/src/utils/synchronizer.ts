@@ -77,8 +77,9 @@ export class Synchronizer extends EventEmitter {
       };
     }
 
-    const freshProjectInfo = this.isProjectData(inputData)
-      ? await this.getProject(inputData as ProjectInputData, tokenInfo)
+    const projectSlugFromInput = this.getProjectSlug(rootPathOrRepoDataOrProjectData);
+    const freshProjectInfo = projectSlugFromInput
+      ? await this.getProject({ slug: projectSlugFromInput }, tokenInfo)
       : await this.getMatchingProject(inputData as RepoRemoteInputData, tokenInfo);
 
     return !freshProjectInfo
