@@ -8,10 +8,13 @@ import type {RepoRemoteData} from '../handlers/gitHandler.js';
 import type {ApiSuppression, ApiUserProject} from '../handlers/apiHandler.js';
 import type {TokenInfo} from '../handlers/storageHandlerAuth.js';
 
-export type RepoRemoteInputData = {
-  provider: string;
-  owner: string;
-  name: string;
+export type RepoRemoteInputData = RepoRemoteData & {
+  ownerProjectSlug?: string;
+};
+
+export type RepoPathInputData = {
+  path: string;
+  ownerProjectSlug?: string;
 };
 
 export type ProjectInputData = {
@@ -44,7 +47,12 @@ export class Synchronizer extends EventEmitter {
 
   async getProjectInfo(rootPath: string, tokenInfo: TokenInfo, forceRefetch?: boolean): Promise<ProjectInfo | null>;
   async getProjectInfo(
-    repoData: RepoRemoteData,
+    rootPathWithProject: RepoPathInputData,
+    tokenInfo: TokenInfo,
+    forceRefetch?: boolean
+  ): Promise<ProjectInfo | null>;
+  async getProjectInfo(
+    repoData: RepoRemoteInputData,
     tokenInfo: TokenInfo,
     forceRefetch?: boolean
   ): Promise<ProjectInfo | null>;
@@ -54,7 +62,7 @@ export class Synchronizer extends EventEmitter {
     forceRefetch?: boolean
   ): Promise<ProjectInfo | null>;
   async getProjectInfo(
-    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
+    rootPathOrRepoDataOrProjectData: string | RepoPathInputData | RepoRemoteInputData | ProjectInputData,
     tokenInfo: TokenInfo,
     forceRefetch = false
   ): Promise<ProjectInfo | null> {
@@ -71,7 +79,7 @@ export class Synchronizer extends EventEmitter {
 
     const freshProjectInfo = this.isProjectData(inputData)
       ? await this.getProject(inputData as ProjectInputData, tokenInfo)
-      : await this.getMatchingProject(inputData as RepoRemoteData, tokenInfo);
+      : await this.getMatchingProject(inputData as RepoRemoteInputData, tokenInfo);
 
     return !freshProjectInfo
       ? null
@@ -83,10 +91,11 @@ export class Synchronizer extends EventEmitter {
   }
 
   async getPolicy(rootPath: string, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
-  async getPolicy(repoData: RepoRemoteData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
+  async getPolicy(rootPathWithProject: RepoPathInputData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
+  async getPolicy(repoData: RepoRemoteInputData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
   async getPolicy(projectData: ProjectInputData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
   async getPolicy(
-    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
+    rootPathOrRepoDataOrProjectData: string | RepoPathInputData | RepoRemoteInputData | ProjectInputData,
     forceRefetch: boolean | undefined = false,
     tokenInfo: TokenInfo | undefined = undefined
   ): Promise<PolicyData> {
@@ -111,10 +120,11 @@ export class Synchronizer extends EventEmitter {
   }
 
   async getSuppressions(rootPath: string, tokenInfo: TokenInfo): Promise<ApiSuppression[]>;
-  async getSuppressions(repoData: RepoRemoteData, tokenInfo: TokenInfo): Promise<ApiSuppression[]>;
+  async getSuppressions(rootPathWithProject: RepoPathInputData, tokenInfo: TokenInfo): Promise<ApiSuppression[]>;
+  async getSuppressions(repoData: RepoRemoteInputData, tokenInfo: TokenInfo): Promise<ApiSuppression[]>;
   async getSuppressions(projectData: ProjectInputData, tokenInfo: TokenInfo): Promise<ApiSuppression[]>;
   async getSuppressions(
-    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
+    rootPathOrRepoDataOrProjectData: string | RepoPathInputData | RepoRemoteInputData | ProjectInputData,
     tokenInfo: TokenInfo
   ) {
     if (!tokenInfo || tokenInfo?.accessToken?.length === 0) {
@@ -126,24 +136,24 @@ export class Synchronizer extends EventEmitter {
   }
 
   async synchronize(rootPath: string, tokenInfo: TokenInfo): Promise<PolicyData>;
-  async synchronize(repoData: RepoRemoteData, tokenInfo: TokenInfo): Promise<PolicyData>;
+  async synchronize(rootPathWithProject: RepoPathInputData, tokenInfo: TokenInfo): Promise<PolicyData>;
+  async synchronize(repoData: RepoRemoteInputData, tokenInfo: TokenInfo): Promise<PolicyData>;
   async synchronize(projectData: ProjectInputData, tokenInfo: TokenInfo): Promise<PolicyData>;
   async synchronize(
-    rootPathOrRepoDataOrProjectData: string | RepoRemoteData | ProjectInputData,
+    rootPathOrRepoDataOrProjectData: string | RepoPathInputData | RepoRemoteInputData | ProjectInputData,
     tokenInfo: TokenInfo
   ): Promise<PolicyData> {
     if (this._pullPromise) {
       return this._pullPromise;
     }
 
-    if (this.isProjectData(rootPathOrRepoDataOrProjectData)) {
-      const projectData: ProjectInputData = rootPathOrRepoDataOrProjectData as ProjectInputData;
-      this._pullPromise = this.fetchPolicyForProject(projectData, tokenInfo);
-
+    const projectSlugFromInput = this.getProjectSlug(rootPathOrRepoDataOrProjectData);
+    if (projectSlugFromInput) {
+      this._pullPromise = this.fetchPolicyForProject({ slug: projectSlugFromInput }, tokenInfo);
       return this._pullPromise;
     }
 
-    const repoDataOrRootPath = rootPathOrRepoDataOrProjectData as RepoRemoteData | string;
+    const repoDataOrRootPath = rootPathOrRepoDataOrProjectData as RepoRemoteInputData | string;
     const repoData =
       typeof repoDataOrRootPath === 'string' ? await this.getRootGitData(repoDataOrRootPath) : repoDataOrRootPath;
     this._pullPromise = this.fetchPolicyForRepo(repoData, tokenInfo);
@@ -219,29 +229,44 @@ export class Synchronizer extends EventEmitter {
     }
   }
 
-  private async fetchSuppressionsForRepo(repoData: RepoRemoteData, tokenInfo: TokenInfo) {
+  private async fetchSuppressionsForRepo(repoData: RepoRemoteInputData, tokenInfo: TokenInfo) {
     try {
-      const repoId = `${repoData.provider}:${repoData.owner}/${repoData.name}`;
-      const project = await this.getMatchingProject(repoData, tokenInfo);
-      if (!project) {
-        const projectUrl = this.generateDeepLinkProjectList();
-        throw new Error(
-          `The '${repoId}' repository does not belong to any project in Monokle Cloud. Configure it on ${projectUrl}.`
-        );
-      }
-      const projectRepo = project.repositories.find(r => r.owner === repoData.owner && r.name === repoData.name);
-      if (!projectRepo) {
-        throw new Error(`The '${repoId}' repository does not belong to any project ${project.name} in Monokle Cloud.`);
-      }
-
-      const {data} = (await this._apiHandler.getSuppressions(projectRepo.id, tokenInfo)) ?? {};
+      const repoId = await this.getRepoId(repoData, tokenInfo);
+      const {data} = (await this._apiHandler.getSuppressions(repoId, tokenInfo)) ?? {};
       return data?.getSuppressions?.data ?? [];
     } catch (error) {
       throw error;
     }
   }
 
-  private async fetchPolicyForRepo(repoData: RepoRemoteData, tokenInfo: TokenInfo) {
+  private async getRepoId(repoData: RepoRemoteInputData, tokenInfo: TokenInfo) {
+    if (repoData.ownerProjectSlug) {
+      const repoIdData = await this._apiHandler.getRepoId(repoData.ownerProjectSlug, repoData.owner, repoData.name, tokenInfo);
+
+      if (!repoIdData?.data?.getProject?.repository?.id) {
+        throw new Error(`The '${repoData.owner}/${repoData.name}' repository does not belong to a '${repoData.ownerProjectSlug}' project.`);
+      }
+
+      return repoIdData.data.getProject.repository.id;
+    }
+
+    const repoPath = `${repoData.provider}:${repoData.owner}/${repoData.name}`;
+    const project = await this.getMatchingProject(repoData, tokenInfo);
+    if (!project) {
+      const projectUrl = this.generateDeepLinkProjectList();
+      throw new Error(
+        `The '${repoPath}' repository does not belong to any project in Monokle Cloud. Configure it on ${projectUrl}.`
+      );
+    }
+    const projectRepo = project.repositories.find(r => r.owner === repoData.owner && r.name === repoData.name);
+    if (!projectRepo) {
+      throw new Error(`The '${repoPath}' repository does not belong to any project ${project.name} in Monokle Cloud.`);
+    }
+
+    return projectRepo.id;
+  }
+
+  private async fetchPolicyForRepo(repoData: RepoRemoteInputData, tokenInfo: TokenInfo) {
     const policyData = {
       valid: false,
       path: '',
@@ -249,22 +274,28 @@ export class Synchronizer extends EventEmitter {
     };
 
     try {
-      const repoProject = await this.getMatchingProject(repoData, tokenInfo);
-      const repoId = `${repoData.provider}:${repoData.owner}/${repoData.name}`;
+      const repoPath = `${repoData.provider}:${repoData.owner}/${repoData.name}`;
 
-      if (!repoProject) {
-        const projectUrl = this.generateDeepLinkProjectList();
-        throw new Error(
-          `The '${repoId}' repository does not belong to any project in Monokle Cloud. Configure it on ${projectUrl}.`
-        );
+      let repoProjectSlug = repoData.ownerProjectSlug;
+      if (!repoProjectSlug) {
+        const repoProject = await this.getMatchingProject(repoData, tokenInfo);
+
+        if (!repoProject) {
+          const projectUrl = this.generateDeepLinkProjectList();
+          throw new Error(
+            `The '${repoPath}' repository does not belong to any project in Monokle Cloud. Configure it on ${projectUrl}.`
+          );
+        }
+
+        repoProjectSlug = repoProject.slug;
       }
 
-      const repoPolicy = await this._apiHandler.getPolicy(repoProject.slug, tokenInfo);
+      const repoPolicy = await this._apiHandler.getPolicy(repoProjectSlug, tokenInfo);
 
-      const policyUrl = this.generateDeepLinkProjectPolicy(repoProject.slug);
+      const policyUrl = this.generateDeepLinkProjectPolicy(repoProjectSlug);
       if (!repoPolicy?.data?.getProject?.policy) {
         throw new Error(
-          `The '${repoId}' repository project does not have policy defined. Configure it on ${policyUrl}.`
+          `The '${repoPath}' repository project does not have policy defined. Configure it on ${policyUrl}.`
         );
       }
 
@@ -293,7 +324,7 @@ export class Synchronizer extends EventEmitter {
     }
   }
 
-  private async getMatchingProject(repoData: RepoRemoteData, tokenInfo: TokenInfo): Promise<ApiUserProject | null> {
+  private async getMatchingProject(repoData: RepoRemoteInputData, tokenInfo: TokenInfo): Promise<ApiUserProject | null> {
     const userData = await this._apiHandler.getUser(tokenInfo);
     if (!userData?.data?.me) {
       throw new Error('Cannot fetch user data, make sure you are authenticated and have internet access.');
@@ -302,6 +333,10 @@ export class Synchronizer extends EventEmitter {
     if (!repoData?.provider || !repoData?.owner || !repoData?.name) {
       throw new Error(`Provided invalid git repository data: '${JSON.stringify(repoData)}'.`);
     }
+
+    const repoMatchingProjectBySlug = userData.data.me.projects.find(project => {
+      return project.project.slug === repoData.ownerProjectSlug;
+    });
 
     const repoMainProject = userData.data.me.projects.find(project => {
       return project.project.repositories.find(
@@ -313,7 +348,7 @@ export class Synchronizer extends EventEmitter {
       return project.project.repositories.find(repo => repo.owner === repoData.owner && repo.name === repoData.name);
     });
 
-    const matchingProject = repoMainProject ?? repoFirstProject;
+    const matchingProject = repoMatchingProjectBySlug ?? repoMainProject ?? repoFirstProject;
 
     if (matchingProject?.project) {
       const cacheId = this.getRepoCacheId(repoData, tokenInfo.accessToken);
@@ -343,28 +378,28 @@ export class Synchronizer extends EventEmitter {
     return repoData;
   }
 
-  private getPolicyPath(inputData: RepoRemoteData | ProjectInputData) {
+  private getPolicyPath(inputData: RepoRemoteInputData | ProjectInputData) {
     return this._storageHandler.getStoreDataFilePath(this.getPolicyFileName(inputData));
   }
 
   private async storePolicy(
     policyContent: StoragePolicyFormat,
-    inputData: RepoRemoteData | ProjectInputData,
+    inputData: RepoRemoteInputData | ProjectInputData,
     comment: string
   ) {
     return this._storageHandler.setStoreData(policyContent, this.getPolicyFileName(inputData), comment);
   }
 
-  private async readPolicy(inputData: RepoRemoteData | ProjectInputData) {
+  private async readPolicy(inputData: RepoRemoteInputData | ProjectInputData) {
     return this._storageHandler.getStoreData(this.getPolicyFileName(inputData));
   }
 
-  private getPolicyFileName(inputData: RepoRemoteData | ProjectInputData) {
+  private getPolicyFileName(inputData: RepoRemoteInputData | ProjectInputData) {
     if (this.isProjectData(inputData)) {
       return `${(inputData as ProjectInputData).slug}.policy.yaml`;
     }
 
-    const repoData = inputData as RepoRemoteData;
+    const repoData = inputData as RepoRemoteInputData;
     const provider = slugify(repoData.provider, {
       replacement: '_',
       lower: true,
@@ -376,24 +411,42 @@ export class Synchronizer extends EventEmitter {
     return `${provider}-${repoData.owner}-${repoData.name}.policy.yaml`;
   }
 
-  private getRepoCacheId(inputData: RepoRemoteData | ProjectInputData, prefix: string) {
+  private getRepoCacheId(inputData: RepoRemoteInputData | ProjectInputData, prefix: string) {
     if (this.isProjectData(inputData)) {
       return `${prefix}-${(inputData as ProjectInputData).slug}`;
     }
 
-    const repoData = inputData as RepoRemoteData;
+    const repoData = inputData as RepoRemoteInputData;
     return `${prefix}-${repoData.provider}-${repoData.owner}-${repoData.name}`;
   }
 
-  private async getRepoOrProjectData(inputData: string | RepoRemoteData | ProjectInputData) {
+  private async getRepoOrProjectData(inputData: string | RepoPathInputData | RepoRemoteInputData | ProjectInputData): Promise<ProjectInputData | RepoRemoteInputData> {
     if (this.isProjectData(inputData)) {
       return inputData as ProjectInputData;
     }
 
-    return typeof inputData === 'string' ? await this.getRootGitData(inputData) : inputData;
+    if (this.isRepoPathData(inputData)) {
+      const gitData = await this.getRootGitData((inputData as RepoPathInputData).path);
+      return {
+        ...gitData,
+        ownerProjectSlug: (inputData as RepoPathInputData).ownerProjectSlug,
+      };
+    }
+
+    return typeof inputData === 'string' ? await this.getRootGitData(inputData) : inputData as RepoRemoteData;
   }
 
   private isProjectData(projectData: any) {
     return Object.keys(projectData).length === 1 && projectData.slug;
+  }
+
+  private isRepoPathData(repoData: any) {
+    return (Object.keys(repoData).length === 1 || Object.keys(repoData).length === 2) && repoData.path;
+  }
+
+  private getProjectSlug(input: any) {
+    return this.isProjectData(input) || input.ownerProjectSlug?.length > 0 ?
+      input.slug ?? input.ownerProjectSlug :
+      undefined;
   }
 }

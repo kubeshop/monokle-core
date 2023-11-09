@@ -85,6 +85,16 @@ const getSuppressionsQuery = `
   }
 `;
 
+const getRepoIdQuery = `
+  query getRepoId($projectSlug: String!, $repoName: String!, $repoOwner: String!) {
+    getProject(input: { slug: $projectSlug }) {
+      repository(input: { name: $repoName, owner: $repoOwner }) {
+        id
+      }
+    }
+  }
+`;
+
 export type ApiUserProjectRepo = {
   id: string;
   projectId: number;
@@ -155,6 +165,16 @@ export type ApiSuppressionsData = {
   };
 };
 
+export type ApiRepoIdData = {
+  data: {
+    getProject: {
+      repository: {
+        id: string
+      }
+    }
+  }
+};
+
 export class ApiHandler {
   constructor(private _apiUrl: string = DEFAULT_API_URL) {
     if ((_apiUrl || '').length === 0) {
@@ -180,6 +200,10 @@ export class ApiHandler {
 
   async getSuppressions(repositoryId: string, tokenInfo: TokenInfo): Promise<ApiSuppressionsData | undefined> {
     return this.queryApi(getSuppressionsQuery, tokenInfo, {repositoryId});
+  }
+
+  async getRepoId(projectSlug: string, repoOwner: string, repoName: string, tokenInfo: TokenInfo): Promise<ApiRepoIdData | undefined> {
+    return this.queryApi(getRepoIdQuery, tokenInfo, {projectSlug, repoOwner, repoName});
   }
 
   generateDeepLink(path: string) {
