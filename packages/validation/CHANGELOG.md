@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.31.6
+
+### Patch Changes
+
+- 5a47018: fix plugin bundle loader
+
 ## 0.31.5
 
 ### Patch Changes
