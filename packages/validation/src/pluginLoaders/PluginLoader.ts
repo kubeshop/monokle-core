@@ -1,7 +1,7 @@
 import {Plugin} from '../common/types.js';
 import kbpPlugin from '../validators/practices/plugin.js';
 import pssPlugin from '../validators/pod-security-standards/plugin.js';
-import {CUSTOM_PLUGINS_URL_BASE} from '../constants.js';
+import {PLUGINS_CDN_BASE_URL} from '../constants.js';
 import {dynamicImportCustomPluginLoader} from './dynamicImportLoader.js';
 import {
   DEV_MODE_TOKEN,
@@ -113,9 +113,9 @@ export class RemotePluginLoader extends DefaultPluginLoader {
       if (settings?.pluginUrl) {
         nameOrUrl = settings.pluginUrl;
       } else if (settings?.ref) {
-        nameOrUrl = `${CUSTOM_PLUGINS_URL_BASE}/${settings.ref}/plugin.js`;
+        nameOrUrl = `${PLUGINS_CDN_BASE_URL}/${settings.ref}/plugin.js`;
       } else {
-        nameOrUrl = `${CUSTOM_PLUGINS_URL_BASE}/${plugin}/latest.js`;
+        nameOrUrl = `${PLUGINS_CDN_BASE_URL}/${plugin}/latest.js`;
       }
 
       return await this.bundleLoader(nameOrUrl, parser, fixer);
