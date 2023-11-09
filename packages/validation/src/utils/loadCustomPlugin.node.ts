@@ -4,7 +4,7 @@ import fetch from 'isomorphic-fetch';
 import requireFromString from 'require-from-string';
 import virtual from '@rollup/plugin-virtual';
 import {rollup} from 'rollup';
-import {CUSTOM_PLUGINS_URL_BASE} from '../constants.js';
+import {PLUGINS_CDN_BASE_URL} from '../constants.js';
 
 export async function bundlePluginCode(code: string) {
   const bundle = await rollup({
@@ -21,7 +21,7 @@ export async function bundlePluginCode(code: string) {
 }
 
 export async function fetchCustomPluginCode(pluginName: string, pluginUrl?: string) {
-  const url = pluginUrl ?? `${CUSTOM_PLUGINS_URL_BASE}/${pluginName}/latest.js`;
+  const url = pluginUrl ?? `${PLUGINS_CDN_BASE_URL}/${pluginName}/latest.js`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Error fetching ${url}: ${response.statusText}`);

@@ -16,12 +16,12 @@ import {LoadedPolicy, OpaProperties, PolicyError} from './types.js';
 import {WasmLoader} from './wasmLoader/WasmLoader.js';
 import {isKustomizationResource} from '../../references/utils/kustomizeRefs.js';
 import invariant from '../../utils/invariant.js';
-import {CUSTOM_PLUGINS_URL_BASE} from '../../constants.js';
+import {PLUGINS_CDN_BASE_URL} from '../../constants.js';
 
 type Settings = z.infer<typeof Settings>;
 
 const Settings = z.object({
-  wasmSrc: z.string().default(`${CUSTOM_PLUGINS_URL_BASE}/open-policy-agent/trivy.wasm`),
+  wasmSrc: z.string().default(`${PLUGINS_CDN_BASE_URL}/open-policy-agent/trivy.wasm`),
 });
 
 const CONTROLLER_KINDS = ['Deployment', 'StatefulSet', 'Job', 'DaemonSet', 'ReplicaSet', 'ReplicationController'];
