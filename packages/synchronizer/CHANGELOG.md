@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.11.0
+
+### Minor Changes
+
+- 6812547: Allow synchronization with explicit project slug
+
 ## 0.10.2
 
 ### Patch Changes
