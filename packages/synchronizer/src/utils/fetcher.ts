@@ -1,3 +1,5 @@
+import normalizeUrl from 'normalize-url';
+import fetch from 'node-fetch';
 import {EventEmitter} from 'events';
 import {ApiHandler} from '../handlers/apiHandler.js';
 import {TokenInfo} from '../handlers/storageHandlerAuth.js';
@@ -13,11 +15,45 @@ export type QueryResult<T_DATA> = {
   error?: string;
 };
 
+export type OriginConfig = {
+  origin: string;
+  apiOrigin: string;
+  authOrigin: string;
+  authClientId: string;
+  [key: string]: string;
+};
+
 export class Fetcher extends EventEmitter {
   private _token: TokenInfo | undefined;
 
   constructor(private _apiHandler: ApiHandler) {
     super();
+  }
+
+  static async getOriginConfig(origin: string): Promise<OriginConfig | undefined> {
+    try {
+      const configUrl = normalizeUrl(`${origin}/config.js`);
+      const response = await fetch(configUrl);
+      const responseText = await response.text();
+
+      const values = responseText.match(/([A-Z_]+)\s*:\s*"(.*?)"/gm)?.reduce((acc: Record<string, string>, match) => {
+        if (match[1] && match[2]) {
+          acc[match[1]] = match[2];
+        }
+        return acc;
+      }, {});
+
+      if (values) {
+        values.origin = origin;
+        values.apiOrigin = values.API_ORIGIN;
+        values.authOrigin = values.OIDC_DISCOVERY_URL;
+        values.authClientId = values.CLIENT_ID;
+      }
+
+      return values as OriginConfig;
+    } catch (error: any) {
+      return undefined;
+    }
   }
 
   useBearerToken(token: string) {

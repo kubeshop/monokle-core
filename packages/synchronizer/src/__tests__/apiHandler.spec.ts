@@ -55,6 +55,7 @@ describe('ApiHandler Tests', () => {
       assert.equal('https://api.monokle.com', (new ApiHandler(null as any)).apiUrl);
       assert.equal('https://api.monokle.com', (new ApiHandler(undefined as any)).apiUrl);
       assert.equal('https://api.monokle.com', (new ApiHandler(0 as any)).apiUrl);
+      assert.equal('https://api.monokle.com', (new ApiHandler([] as any)).apiUrl);
     });
 
     it('uses passed Api Url', async () => {
