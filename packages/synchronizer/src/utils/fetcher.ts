@@ -36,7 +36,7 @@ export class Fetcher extends EventEmitter {
       const response = await fetch(configUrl);
       const responseText = await response.text();
 
-      const values = responseText.match(/([A-Z_]+)\s*:\s*"(.*?)"/gm)?.reduce((acc: Record<string, string>, match) => {
+      const values = Array.from(responseText.matchAll(/([A-Z_]+)\s*:\s*"(.*?)"/gm)).reduce((acc: Record<string, string>, match) => {
         if (match[1] && match[2]) {
           acc[match[1]] = match[2];
         }
@@ -44,7 +44,7 @@ export class Fetcher extends EventEmitter {
       }, {});
 
       if (values) {
-        values.origin = origin;
+        values.origin = normalizeUrl(origin);
         values.apiOrigin = values.API_ORIGIN;
         values.authOrigin = values.OIDC_DISCOVERY_URL;
         values.authClientId = values.CLIENT_ID;
@@ -52,7 +52,8 @@ export class Fetcher extends EventEmitter {
 
       return values as OriginConfig;
     } catch (error: any) {
-      return undefined;
+      // Rethrow error so integrations can catch it and propagate/react.
+      throw error;
     }
   }
 
