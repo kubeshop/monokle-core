@@ -16,3 +16,6 @@ export * from './constants.js';
 export * from './createDefaultMonokleAuthenticator.js';
 export * from './createDefaultMonokleFetcher.js';
 export * from './createDefaultMonokleSynchronizer.js';
+
+export * from './createMonokleAuthenticatorFromOrigin.js';
+export * from './createMonokleSynchronizerFromOrigin.js';
