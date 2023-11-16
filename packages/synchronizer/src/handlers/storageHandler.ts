@@ -4,7 +4,7 @@ import {mkdirp} from 'mkdirp';
 import {existsSync, readFileSync} from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
-import {DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants';
+import {DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants.js';
 
 export abstract class StorageHandler<TData> {
   constructor(private _storageFolderPath: string) {}
