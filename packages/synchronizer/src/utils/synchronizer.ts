@@ -79,7 +79,7 @@ export class Synchronizer extends EventEmitter {
 
     const projectSlugFromInput = this.getProjectSlug(rootPathOrRepoDataOrProjectData);
     const freshProjectInfo = projectSlugFromInput
-      ? await this.getProject({ slug: projectSlugFromInput }, tokenInfo)
+      ? await this.getProject({slug: projectSlugFromInput}, tokenInfo)
       : await this.getMatchingProject(inputData as RepoRemoteInputData, tokenInfo);
 
     return !freshProjectInfo
@@ -92,7 +92,11 @@ export class Synchronizer extends EventEmitter {
   }
 
   async getPolicy(rootPath: string, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
-  async getPolicy(rootPathWithProject: RepoPathInputData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
+  async getPolicy(
+    rootPathWithProject: RepoPathInputData,
+    forceRefetch?: boolean,
+    tokenInfo?: TokenInfo
+  ): Promise<PolicyData>;
   async getPolicy(repoData: RepoRemoteInputData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
   async getPolicy(projectData: ProjectInputData, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
   async getPolicy(
@@ -150,7 +154,7 @@ export class Synchronizer extends EventEmitter {
 
     const projectSlugFromInput = this.getProjectSlug(rootPathOrRepoDataOrProjectData);
     if (projectSlugFromInput) {
-      this._pullPromise = this.fetchPolicyForProject({ slug: projectSlugFromInput }, tokenInfo);
+      this._pullPromise = this.fetchPolicyForProject({slug: projectSlugFromInput}, tokenInfo);
       return this._pullPromise;
     }
 
@@ -242,10 +246,17 @@ export class Synchronizer extends EventEmitter {
 
   private async getRepoId(repoData: RepoRemoteInputData, tokenInfo: TokenInfo) {
     if (repoData.ownerProjectSlug) {
-      const repoIdData = await this._apiHandler.getRepoId(repoData.ownerProjectSlug, repoData.owner, repoData.name, tokenInfo);
+      const repoIdData = await this._apiHandler.getRepoId(
+        repoData.ownerProjectSlug,
+        repoData.owner,
+        repoData.name,
+        tokenInfo
+      );
 
       if (!repoIdData?.data?.getProject?.repository?.id) {
-        throw new Error(`The '${repoData.owner}/${repoData.name}' repository does not belong to a '${repoData.ownerProjectSlug}' project.`);
+        throw new Error(
+          `The '${repoData.owner}/${repoData.name}' repository does not belong to a '${repoData.ownerProjectSlug}' project.`
+        );
       }
 
       return repoIdData.data.getProject.repository.id;
@@ -325,7 +336,10 @@ export class Synchronizer extends EventEmitter {
     }
   }
 
-  private async getMatchingProject(repoData: RepoRemoteInputData, tokenInfo: TokenInfo): Promise<ApiUserProject | null> {
+  private async getMatchingProject(
+    repoData: RepoRemoteInputData,
+    tokenInfo: TokenInfo
+  ): Promise<ApiUserProject | null> {
     const userData = await this._apiHandler.getUser(tokenInfo);
     if (!userData?.data?.me) {
       throw new Error('Cannot fetch user data, make sure you are authenticated and have internet access.');
@@ -421,7 +435,9 @@ export class Synchronizer extends EventEmitter {
     return `${prefix}-${repoData.provider}-${repoData.owner}-${repoData.name}`;
   }
 
-  private async getRepoOrProjectData(inputData: string | RepoPathInputData | RepoRemoteInputData | ProjectInputData): Promise<ProjectInputData | RepoRemoteInputData> {
+  private async getRepoOrProjectData(
+    inputData: string | RepoPathInputData | RepoRemoteInputData | ProjectInputData
+  ): Promise<ProjectInputData | RepoRemoteInputData> {
     if (this.isProjectData(inputData)) {
       return inputData as ProjectInputData;
     }
@@ -434,7 +450,7 @@ export class Synchronizer extends EventEmitter {
       };
     }
 
-    return typeof inputData === 'string' ? await this.getRootGitData(inputData) : inputData as RepoRemoteData;
+    return typeof inputData === 'string' ? await this.getRootGitData(inputData) : (inputData as RepoRemoteData);
   }
 
   private isProjectData(projectData: any) {
@@ -446,8 +462,8 @@ export class Synchronizer extends EventEmitter {
   }
 
   private getProjectSlug(input: any) {
-    return this.isProjectData(input) || input.ownerProjectSlug?.length > 0 ?
-      input.slug ?? input.ownerProjectSlug :
-      undefined;
+    return this.isProjectData(input) || input.ownerProjectSlug?.length > 0
+      ? input.slug ?? input.ownerProjectSlug
+      : undefined;
   }
 }

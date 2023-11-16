@@ -36,12 +36,15 @@ export class Fetcher extends EventEmitter {
       const response = await fetch(configUrl);
       const responseText = await response.text();
 
-      const values = Array.from(responseText.matchAll(/([A-Z_]+)\s*:\s*"(.*?)"/gm)).reduce((acc: Record<string, string>, match) => {
-        if (match[1] && match[2]) {
-          acc[match[1]] = match[2];
-        }
-        return acc;
-      }, {});
+      const values = Array.from(responseText.matchAll(/([A-Z_]+)\s*:\s*"(.*?)"/gm)).reduce(
+        (acc: Record<string, string>, match) => {
+          if (match[1] && match[2]) {
+            acc[match[1]] = match[2];
+          }
+          return acc;
+        },
+        {}
+      );
 
       if (values) {
         values.origin = normalizeUrl(origin);

@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import {assert} from 'chai';
 import express from 'express';
 import {createDefaultMonokleFetcher} from '../createDefaultMonokleFetcher.js';
-import { Fetcher } from '../utils/fetcher.js';
+import {Fetcher} from '../utils/fetcher.js';
 
 const TEST_QUERY = `
   query getCluster($id: ID) {

@@ -46,23 +46,23 @@ describe('ApiHandler Tests', () => {
 
   describe('Api Url', () => {
     it('uses default Api Url by default', () => {
-      assert.equal('https://api.monokle.com', (new ApiHandler()).apiUrl);
+      assert.equal('https://api.monokle.com', new ApiHandler().apiUrl);
     });
 
     it('uses default Api Url when falsy value passed', () => {
-      assert.equal('https://api.monokle.com', (new ApiHandler('')).apiUrl);
-      assert.equal('https://api.monokle.com', (new ApiHandler(false as any)).apiUrl);
-      assert.equal('https://api.monokle.com', (new ApiHandler(null as any)).apiUrl);
-      assert.equal('https://api.monokle.com', (new ApiHandler(undefined as any)).apiUrl);
-      assert.equal('https://api.monokle.com', (new ApiHandler(0 as any)).apiUrl);
-      assert.equal('https://api.monokle.com', (new ApiHandler([] as any)).apiUrl);
+      assert.equal('https://api.monokle.com', new ApiHandler('').apiUrl);
+      assert.equal('https://api.monokle.com', new ApiHandler(false as any).apiUrl);
+      assert.equal('https://api.monokle.com', new ApiHandler(null as any).apiUrl);
+      assert.equal('https://api.monokle.com', new ApiHandler(undefined as any).apiUrl);
+      assert.equal('https://api.monokle.com', new ApiHandler(0 as any).apiUrl);
+      assert.equal('https://api.monokle.com', new ApiHandler([] as any).apiUrl);
     });
 
     it('uses passed Api Url', () => {
-      assert.equal('https://dev.api.monokle.com', (new ApiHandler('https://dev.api.monokle.com')).apiUrl);
-      assert.equal('https://api.monokle.io', (new ApiHandler('https://api.monokle.io')).apiUrl);
-      assert.equal('http://localhost:5000', (new ApiHandler('http://localhost:5000')).apiUrl);
-      assert.equal('http://localhost', (new ApiHandler('http://localhost:80')).apiUrl);
+      assert.equal('https://dev.api.monokle.com', new ApiHandler('https://dev.api.monokle.com').apiUrl);
+      assert.equal('https://api.monokle.io', new ApiHandler('https://api.monokle.io').apiUrl);
+      assert.equal('http://localhost:5000', new ApiHandler('http://localhost:5000').apiUrl);
+      assert.equal('http://localhost', new ApiHandler('http://localhost:80').apiUrl);
     });
 
     it('uses passed origin data #1', () => {
@@ -87,9 +87,15 @@ describe('ApiHandler Tests', () => {
     });
 
     it('generates correct deep links', () => {
-      assert.equal('https://app.monokle.com/projects', (new ApiHandler('')).generateDeepLink('projects'));
-      assert.equal('https://app.staging.monokle.com/projects', (new ApiHandler('https://api.staging.monokle.com')).generateDeepLink('projects'));
-      assert.equal('http://localhost:5000/projects', (new ApiHandler('http://localhost:5000')).generateDeepLink('projects'));
+      assert.equal('https://app.monokle.com/projects', new ApiHandler('').generateDeepLink('projects'));
+      assert.equal(
+        'https://app.staging.monokle.com/projects',
+        new ApiHandler('https://api.staging.monokle.com').generateDeepLink('projects')
+      );
+      assert.equal(
+        'http://localhost:5000/projects',
+        new ApiHandler('http://localhost:5000').generateDeepLink('projects')
+      );
 
       const apiHandler = new ApiHandler({
         origin: 'https://custom.domain.io',

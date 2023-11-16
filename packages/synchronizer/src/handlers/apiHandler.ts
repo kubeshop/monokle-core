@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import {SuppressionStatus} from '@monokle/types';
 import {DEFAULT_API_URL} from '../constants.js';
 import type {TokenInfo} from './storageHandlerAuth.js';
-import { OriginConfig } from '../utils/fetcher.js';
+import {OriginConfig} from '../utils/fetcher.js';
 
 const getUserQuery = `
   query getUser {
@@ -170,10 +170,10 @@ export type ApiRepoIdData = {
   data: {
     getProject: {
       repository: {
-        id: string
-      }
-    }
-  }
+        id: string;
+      };
+    };
+  };
 };
 
 export class ApiHandler {
@@ -184,10 +184,13 @@ export class ApiHandler {
   constructor(_apiUrl: string);
   constructor(_originConfig: OriginConfig);
   constructor(_apiUrlOrOriginConfig: string | OriginConfig = DEFAULT_API_URL) {
-
     if (typeof _apiUrlOrOriginConfig === 'string') {
       this._apiUrl = _apiUrlOrOriginConfig;
-    } else if (_apiUrlOrOriginConfig !== null && typeof _apiUrlOrOriginConfig === 'object' && !Array.isArray(_apiUrlOrOriginConfig)) {
+    } else if (
+      _apiUrlOrOriginConfig !== null &&
+      typeof _apiUrlOrOriginConfig === 'object' &&
+      !Array.isArray(_apiUrlOrOriginConfig)
+    ) {
       this._originConfig = _apiUrlOrOriginConfig;
       this._apiUrl = _apiUrlOrOriginConfig.apiOrigin;
     } else {
@@ -219,7 +222,12 @@ export class ApiHandler {
     return this.queryApi(getSuppressionsQuery, tokenInfo, {repositoryId});
   }
 
-  async getRepoId(projectSlug: string, repoOwner: string, repoName: string, tokenInfo: TokenInfo): Promise<ApiRepoIdData | undefined> {
+  async getRepoId(
+    projectSlug: string,
+    repoOwner: string,
+    repoName: string,
+    tokenInfo: TokenInfo
+  ): Promise<ApiRepoIdData | undefined> {
     return this.queryApi(getRepoIdQuery, tokenInfo, {projectSlug, repoOwner, repoName});
   }
 
