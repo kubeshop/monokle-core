@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import {assert} from 'chai';
 import express from 'express';
 import {createDefaultMonokleFetcher} from '../createDefaultMonokleFetcher.js';
-import {Fetcher} from '../utils/fetcher.js';
+import {fetchOriginConfig} from '../handlers/configHandler.js';
 
 const TEST_QUERY = `
   query getCluster($id: ID) {
@@ -141,7 +141,7 @@ describe('Fetcher Tests', () => {
 
         const server = app.listen(13000, async () => {
           try {
-            const originData = await Fetcher.getOriginConfig('localhost:13000');
+            const originData = await fetchOriginConfig('localhost:13000');
 
             assert.equal(originData?.origin, 'http://localhost:13000');
             assert.equal(originData?.apiOrigin, 'https://api.monokle.local');

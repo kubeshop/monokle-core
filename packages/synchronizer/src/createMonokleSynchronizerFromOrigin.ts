@@ -1,20 +1,32 @@
 import {DEFAULT_ORIGIN} from './constants.js';
 import {ApiHandler} from './handlers/apiHandler.js';
+import {OriginConfig, fetchOriginConfig} from './handlers/configHandler.js';
 import {GitHandler} from './handlers/gitHandler.js';
 import {StorageHandlerPolicy} from './handlers/storageHandlerPolicy.js';
-import {Fetcher} from './utils/fetcher.js';
 import {Synchronizer} from './utils/synchronizer.js';
 
-export async function createMonokleSynchronizerFromOrigin(origin: string = DEFAULT_ORIGIN) {
+export async function createMonokleSynchronizerFromOrigin(
+  origin: string = DEFAULT_ORIGIN,
+  storageHandler: StorageHandlerPolicy = new StorageHandlerPolicy(),
+  gitHandler: GitHandler = new GitHandler()
+) {
   try {
-    const originConfig = await Fetcher.getOriginConfig(origin);
+    const originConfig = await fetchOriginConfig(origin);
 
-    if (!originConfig?.apiOrigin) {
-      throw new Error(`No api origin found in origin config from ${origin}.`);
-    }
-
-    return new Synchronizer(new StorageHandlerPolicy(), new ApiHandler(originConfig.apiOrigin), new GitHandler());
+    return createMonokleSynchronizerFromConfig(originConfig, storageHandler, gitHandler);
   } catch (err: any) {
     throw err;
   }
+}
+
+export function createMonokleSynchronizerFromConfig(
+  config: OriginConfig,
+  storageHandler: StorageHandlerPolicy = new StorageHandlerPolicy(),
+  gitHandler: GitHandler = new GitHandler()
+) {
+  if (!config?.apiOrigin) {
+    throw new Error(`No api origin found in origin config from ${origin}.`);
+  }
+
+  return new Synchronizer(storageHandler, new ApiHandler(config), gitHandler);
 }

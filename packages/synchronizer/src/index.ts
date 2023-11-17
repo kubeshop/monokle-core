@@ -1,4 +1,5 @@
 export * from './handlers/apiHandler.js';
+export * from './handlers/configHandler.js';
 export * from './handlers/deviceFlowHandler.js';
 export * from './handlers/gitHandler.js';
 export * from './handlers/storageHandler.js';
@@ -18,4 +19,5 @@ export * from './createDefaultMonokleFetcher.js';
 export * from './createDefaultMonokleSynchronizer.js';
 
 export * from './createMonokleAuthenticatorFromOrigin.js';
+export * from './createMonokleFetcherFromOrigin.js';
 export * from './createMonokleSynchronizerFromOrigin.js';

@@ -6,7 +6,7 @@ import {Synchronizer} from './utils/synchronizer.js';
 /**
  * Creates default Monokle Synchronizer instance.
  *
- * @deprecated Use createMonokleSynchronizerFromOrigin instead which does not rely on hardcoded config.
+ * @deprecated Use createMonokleSynchronizerFromOrigin or createMonokleSynchronizerFromConfig instead which does not rely on hardcoded config.
  *
  * @param storageHandler
  * @param apiHandler

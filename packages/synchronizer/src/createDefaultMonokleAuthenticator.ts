@@ -6,7 +6,7 @@ import {Authenticator} from './utils/authenticator.js';
 /**
  * Creates default Monokle Authenticator instance.
  *
- * @deprecated Use createMonokleAuthenticatorFromOrigin instead which does not rely on hardcoded config.
+ * @deprecated Use createMonokleAuthenticatorFromOrigin or createMonokleAuthenticatorFromConfig instead which does not rely on hardcoded config.
  *
  * @param storageHandler
  * @param apiHandler

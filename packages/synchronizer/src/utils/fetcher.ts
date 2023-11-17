@@ -1,5 +1,3 @@
-import normalizeUrl from 'normalize-url';
-import fetch from 'node-fetch';
 import {EventEmitter} from 'events';
 import {ApiHandler} from '../handlers/apiHandler.js';
 import {TokenInfo} from '../handlers/storageHandlerAuth.js';
@@ -15,68 +13,11 @@ export type QueryResult<T_DATA> = {
   error?: string;
 };
 
-export type OriginConfig = {
-  origin: string;
-  apiOrigin: string;
-  authOrigin: string;
-  [key: string]: string;
-};
-
-export type CachedOriginConfig = {
-  config: OriginConfig;
-  downloadedAt: number;
-  origin: string;
-};
-
 export class Fetcher extends EventEmitter {
-  static _originConfig: CachedOriginConfig | undefined;
-
   private _token: TokenInfo | undefined;
 
   constructor(private _apiHandler: ApiHandler) {
     super();
-  }
-
-  static async getOriginConfig(origin: string): Promise<OriginConfig | undefined> {
-    if (Fetcher._originConfig) {
-      // Use recently fetched config if from same origin and it's less than 5 minutes old.
-      if (origin === Fetcher._originConfig.origin && (Date.now()) - Fetcher._originConfig.downloadedAt < 1000 * 60 * 5) {
-        return Fetcher._originConfig.config;
-      }
-    }
-
-    try {
-      const configUrl = normalizeUrl(`${origin}/config.js`);
-      const response = await fetch(configUrl);
-      const responseText = await response.text();
-
-      const values = Array.from(responseText.matchAll(/([A-Z_]+)\s*:\s*"(.*?)"/gm)).reduce(
-        (acc: Record<string, string>, match) => {
-          if (match[1] && match[2]) {
-            acc[match[1]] = match[2];
-          }
-          return acc;
-        },
-        {}
-      );
-
-      if (values) {
-        values.origin = normalizeUrl(origin);
-        values.apiOrigin = values.API_ORIGIN;
-        values.authOrigin = values.OIDC_DISCOVERY_URL;
-      }
-
-      Fetcher._originConfig = {
-        config: values as OriginConfig,
-        downloadedAt: Date.now(),
-        origin,
-      };
-
-      return values as OriginConfig;
-    } catch (error: any) {
-      // Rethrow error so integrations can catch it and propagate/react.
-      throw error;
-    }
   }
 
   useBearerToken(token: string) {

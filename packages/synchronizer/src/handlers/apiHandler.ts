@@ -2,8 +2,8 @@ import normalizeUrl from 'normalize-url';
 import fetch from 'node-fetch';
 import {SuppressionStatus} from '@monokle/types';
 import {DEFAULT_API_URL} from '../constants.js';
+import {OriginConfig} from '../handlers/configHandler.js';
 import type {TokenInfo} from './storageHandlerAuth.js';
-import {OriginConfig} from '../utils/fetcher.js';
 
 const getUserQuery = `
   query getUser {
