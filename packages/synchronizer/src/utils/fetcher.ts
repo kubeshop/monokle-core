@@ -25,6 +25,7 @@ export type OriginConfig = {
 export type CachedOriginConfig = {
   config: OriginConfig;
   downloadedAt: number;
+  origin: string;
 };
 
 export class Fetcher extends EventEmitter {
@@ -38,10 +39,8 @@ export class Fetcher extends EventEmitter {
 
   static async getOriginConfig(origin: string): Promise<OriginConfig | undefined> {
     if (Fetcher._originConfig) {
-      const now = Date.now();
-
-      // Use already fetched config if it's less than 5 minutes old.
-      if (now - Fetcher._originConfig.downloadedAt < 1000 * 60 * 5) {
+      // Use recently fetched config if from same origin and it's less than 5 minutes old.
+      if (origin === Fetcher._originConfig.origin && (Date.now()) - Fetcher._originConfig.downloadedAt < 1000 * 60 * 5) {
         return Fetcher._originConfig.config;
       }
     }
@@ -70,6 +69,7 @@ export class Fetcher extends EventEmitter {
       Fetcher._originConfig = {
         config: values as OriginConfig,
         downloadedAt: Date.now(),
+        origin,
       };
 
       return values as OriginConfig;
