@@ -17,7 +17,7 @@ export async function createMonokleAuthenticatorFromOrigin(origin: string = DEFA
       throw new Error(`No auth origin found in origin config from ${origin}.`);
     }
 
-    if (!originConfig?.clientId) {
+    if (!originConfig?.authClientId) {
       throw new Error(`No auth clientId found in origin config from ${origin}.`);
     }
 
@@ -25,7 +25,7 @@ export async function createMonokleAuthenticatorFromOrigin(origin: string = DEFA
       new StorageHandlerAuth(),
       new ApiHandler(originConfig.apiOrigin),
       new DeviceFlowHandler(originConfig.authOrigin, {
-        client_id: originConfig.clientId,
+        client_id: originConfig.authClientId,
         client_secret: DEFAULT_DEVICE_FLOW_CLIENT_SECRET,
         id_token_signed_response_alg: DEFAULT_DEVICE_FLOW_ALG,
       })
