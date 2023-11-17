@@ -1,10 +1,11 @@
+import {DEFAULT_ORIGIN} from './constants.js';
 import {ApiHandler} from './handlers/apiHandler.js';
 import {GitHandler} from './handlers/gitHandler.js';
 import {StorageHandlerPolicy} from './handlers/storageHandlerPolicy.js';
 import {Fetcher} from './utils/fetcher.js';
 import {Synchronizer} from './utils/synchronizer.js';
 
-export async function createMonokleSynchronizerFromOrigin(origin: string) {
+export async function createMonokleSynchronizerFromOrigin(origin: string = DEFAULT_ORIGIN) {
   try {
     const originConfig = await Fetcher.getOriginConfig(origin);
 

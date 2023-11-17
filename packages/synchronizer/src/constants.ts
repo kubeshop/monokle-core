@@ -1,6 +1,7 @@
 export const DEFAULT_STORAGE_CONFIG_FOLDER = 'monokle';
 export const DEFAULT_STORAGE_CONFIG_FILE_AUTH = 'auth.yaml';
 
+export const DEFAULT_ORIGIN = 'https://app.monokle.com';
 export const DEFAULT_API_URL = 'https://api.monokle.com';
 
 export const DEFAULT_DEVICE_FLOW_IDP_URL = 'https://id.monokle.com/realms/monokle';

@@ -23,7 +23,14 @@ export type OriginConfig = {
   [key: string]: string;
 };
 
+export type CachedOriginConfig = {
+  config: OriginConfig;
+  downloadedAt: number;
+};
+
 export class Fetcher extends EventEmitter {
+  static _originConfig: CachedOriginConfig | undefined;
+
   private _token: TokenInfo | undefined;
 
   constructor(private _apiHandler: ApiHandler) {
@@ -31,6 +38,15 @@ export class Fetcher extends EventEmitter {
   }
 
   static async getOriginConfig(origin: string): Promise<OriginConfig | undefined> {
+    if (Fetcher._originConfig) {
+      const now = Date.now();
+
+      // Use already fetched config if it's less than 5 minutes old.
+      if (now - Fetcher._originConfig.downloadedAt < 1000 * 60 * 5) {
+        return Fetcher._originConfig.config;
+      }
+    }
+
     try {
       const configUrl = normalizeUrl(`${origin}/config.js`);
       const response = await fetch(configUrl);
@@ -52,6 +68,11 @@ export class Fetcher extends EventEmitter {
         values.authOrigin = values.OIDC_DISCOVERY_URL;
         values.authClientId = values.CLIENT_ID;
       }
+
+      Fetcher._originConfig = {
+        config: values as OriginConfig,
+        downloadedAt: Date.now(),
+      };
 
       return values as OriginConfig;
     } catch (error: any) {

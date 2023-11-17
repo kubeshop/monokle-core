@@ -3,9 +3,9 @@ import {DeviceFlowHandler} from './handlers/deviceFlowHandler.js';
 import {StorageHandlerAuth} from './handlers/storageHandlerAuth.js';
 import {Fetcher} from './utils/fetcher.js';
 import {Authenticator} from './utils/authenticator.js';
-import {DEFAULT_DEVICE_FLOW_ALG, DEFAULT_DEVICE_FLOW_CLIENT_SECRET} from './constants.js';
+import {DEFAULT_DEVICE_FLOW_ALG, DEFAULT_DEVICE_FLOW_CLIENT_SECRET, DEFAULT_ORIGIN} from './constants.js';
 
-export async function createMonokleAuthenticatorFromOrigin(origin: string) {
+export async function createMonokleAuthenticatorFromOrigin(origin: string = DEFAULT_ORIGIN) {
   try {
     const originConfig = await Fetcher.getOriginConfig(origin);
 
