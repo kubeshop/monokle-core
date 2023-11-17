@@ -70,7 +70,6 @@ describe('ApiHandler Tests', () => {
         origin: 'https://test.monokle.com',
         apiOrigin: 'https://api.test.monokle.com',
         authOrigin: 'https://auth.test.monokle.com',
-        authClientId: 'SAMPLE_CLIENT_ID',
       });
       assert.equal('https://api.test.monokle.com', apiHandler.apiUrl);
     });
@@ -80,7 +79,6 @@ describe('ApiHandler Tests', () => {
         origin: 'https://custom.domain.io',
         apiOrigin: 'https://custom.domain.io/api',
         authOrigin: 'https://custom.domain.io/auth',
-        authClientId: 'SAMPLE_CLIENT_ID',
       });
 
       assert.equal('https://custom.domain.io/api', apiHandler.apiUrl);
@@ -101,7 +99,6 @@ describe('ApiHandler Tests', () => {
         origin: 'https://custom.domain.io',
         apiOrigin: 'https://custom.domain.io/api',
         authOrigin: 'https://custom.domain.io/auth',
-        authClientId: 'SAMPLE_CLIENT_ID',
       });
       assert.equal('https://custom.domain.io/projects', apiHandler.generateDeepLink('projects'));
     });

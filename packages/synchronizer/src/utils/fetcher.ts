@@ -19,7 +19,6 @@ export type OriginConfig = {
   origin: string;
   apiOrigin: string;
   authOrigin: string;
-  authClientId: string;
   [key: string]: string;
 };
 
@@ -66,7 +65,6 @@ export class Fetcher extends EventEmitter {
         values.origin = normalizeUrl(origin);
         values.apiOrigin = values.API_ORIGIN;
         values.authOrigin = values.OIDC_DISCOVERY_URL;
-        values.authClientId = values.CLIENT_ID;
       }
 
       Fetcher._originConfig = {
