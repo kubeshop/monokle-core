@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.12.0
+
+### Minor Changes
+
+- 69fb68a: Introduced method to fetch origin config
+
 ## 0.11.0
 
 ### Minor Changes
