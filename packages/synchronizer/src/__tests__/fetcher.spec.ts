@@ -1,6 +1,8 @@
 import sinon from 'sinon';
 import {assert} from 'chai';
+import express from 'express';
 import {createDefaultMonokleFetcher} from '../createDefaultMonokleFetcher.js';
+import {fetchOriginConfig} from '../handlers/configHandler.js';
 
 const TEST_QUERY = `
   query getCluster($id: ID) {
@@ -115,6 +117,44 @@ describe('Fetcher Tests', () => {
       assert.isFalse(queryResult.success);
       assert.isUndefined(queryResult.data);
       assert.match(queryResult.error ?? '', /Connection error/);
+    });
+  });
+
+  describe('getOriginConfig', () => {
+    it('fetches and parses config.js from origin', async () => {
+      return new Promise((res, rej) => {
+        const app = express();
+
+        app.get('/config.js', (_req, res) => {
+          res.send(`
+            globalThis.import_meta_env = {
+              API_ORIGIN: "https://api.monokle.local",
+              CONTENT_ORIGIN: "https://api.monokle.local",
+              COLLAB_STREAM_URL: "wss://api.monokle.local/collab",
+              COLLAB_HTTP_URL: "https://api.monokle.local/collab",
+
+              OIDC_DISCOVERY_URL: "https://id.monokle.local/realms/monokle",
+              CLIENT_ID: "clientId",
+            };
+          `);
+        });
+
+        const server = app.listen(13000, async () => {
+          try {
+            const originData = await fetchOriginConfig('localhost:13000');
+
+            assert.equal(originData?.origin, 'http://localhost:13000');
+            assert.equal(originData?.apiOrigin, 'https://api.monokle.local');
+            assert.equal(originData?.authOrigin, 'https://id.monokle.local/realms/monokle');
+
+            res();
+          } catch (err) {
+            rej(err);
+          } finally {
+            server.close();
+          }
+        });
+      });
     });
   });
 });

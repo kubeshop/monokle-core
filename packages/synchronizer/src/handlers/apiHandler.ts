@@ -2,6 +2,7 @@ import normalizeUrl from 'normalize-url';
 import fetch from 'node-fetch';
 import {SuppressionStatus} from '@monokle/types';
 import {DEFAULT_API_URL} from '../constants.js';
+import {OriginConfig} from '../handlers/configHandler.js';
 import type {TokenInfo} from './storageHandlerAuth.js';
 
 const getUserQuery = `
@@ -169,15 +170,34 @@ export type ApiRepoIdData = {
   data: {
     getProject: {
       repository: {
-        id: string
-      }
-    }
-  }
+        id: string;
+      };
+    };
+  };
 };
 
 export class ApiHandler {
-  constructor(private _apiUrl: string = DEFAULT_API_URL) {
-    if ((_apiUrl || '').length === 0) {
+  private _apiUrl: string;
+  private _originConfig?: OriginConfig;
+
+  constructor();
+  constructor(_apiUrl: string);
+  constructor(_originConfig: OriginConfig);
+  constructor(_apiUrlOrOriginConfig: string | OriginConfig = DEFAULT_API_URL) {
+    if (typeof _apiUrlOrOriginConfig === 'string') {
+      this._apiUrl = _apiUrlOrOriginConfig;
+    } else if (
+      _apiUrlOrOriginConfig !== null &&
+      typeof _apiUrlOrOriginConfig === 'object' &&
+      !Array.isArray(_apiUrlOrOriginConfig)
+    ) {
+      this._originConfig = _apiUrlOrOriginConfig;
+      this._apiUrl = _apiUrlOrOriginConfig.apiOrigin;
+    } else {
+      this._apiUrl = DEFAULT_API_URL;
+    }
+
+    if ((this._apiUrl || '').length === 0) {
       this._apiUrl = DEFAULT_API_URL;
     }
   }
@@ -202,20 +222,29 @@ export class ApiHandler {
     return this.queryApi(getSuppressionsQuery, tokenInfo, {repositoryId});
   }
 
-  async getRepoId(projectSlug: string, repoOwner: string, repoName: string, tokenInfo: TokenInfo): Promise<ApiRepoIdData | undefined> {
+  async getRepoId(
+    projectSlug: string,
+    repoOwner: string,
+    repoName: string,
+    tokenInfo: TokenInfo
+  ): Promise<ApiRepoIdData | undefined> {
     return this.queryApi(getRepoIdQuery, tokenInfo, {projectSlug, repoOwner, repoName});
   }
 
   generateDeepLink(path: string) {
-    if (this.apiUrl.includes('staging.monokle.com')) {
-      return normalizeUrl(`https://app.staging.monokle.com/${path}`);
-    } else if (this.apiUrl.includes('.monokle.com')) {
-      return normalizeUrl(`https://app.monokle.com/${path}`);
+    let appUrl = this._originConfig?.origin;
+
+    if (!appUrl) {
+      if (this.apiUrl.includes('staging.monokle.com')) {
+        appUrl = 'https://app.staging.monokle.com/';
+      } else if (this.apiUrl.includes('.monokle.com')) {
+        appUrl = 'https://app.monokle.com/';
+      } else {
+        appUrl = this.apiUrl;
+      }
     }
 
-    // For any custom base urls we just append the path.
-    // @TODO this might need adjustment in the future for self-hosted solutions.
-    return normalizeUrl(`${this.apiUrl}/${path}`);
+    return normalizeUrl(`${appUrl}/${path}`);
   }
 
   async queryApi<OUT>(query: string, tokenInfo: TokenInfo, variables = {}): Promise<OUT | undefined> {

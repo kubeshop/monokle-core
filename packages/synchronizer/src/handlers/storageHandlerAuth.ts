@@ -1,6 +1,5 @@
-import envPaths from 'env-paths';
-import {StorageHandler} from './storageHandler.js';
-import {DEFAULT_STORAGE_CONFIG_FILE_AUTH, DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants.js';
+import {StorageHandler, getDefaultStorageConfigPaths} from './storageHandler.js';
+import {DEFAULT_STORAGE_CONFIG_FILE_AUTH} from '../constants.js';
 import type {TokenSet} from './deviceFlowHandler.js';
 
 export type TokenType = 'Bearer' | 'ApiKey';
@@ -28,7 +27,7 @@ export class StorageHandlerAuth extends StorageHandler<StorageAuthFormat> {
   private _defaultFileName: string;
 
   constructor(
-    storageFolderPath: string = envPaths(DEFAULT_STORAGE_CONFIG_FOLDER, {suffix: ''}).config,
+    storageFolderPath: string = getDefaultStorageConfigPaths().config,
     defaultFileName: string = DEFAULT_STORAGE_CONFIG_FILE_AUTH
   ) {
     super(storageFolderPath);

@@ -1,8 +1,10 @@
+import envPaths from 'env-paths';
 import {Document, parse} from 'yaml';
 import {mkdirp} from 'mkdirp';
 import {existsSync, readFileSync} from 'fs';
 import {readFile, writeFile} from 'fs/promises';
 import {dirname, join, normalize} from 'path';
+import {DEFAULT_STORAGE_CONFIG_FOLDER} from '../constants.js';
 
 export abstract class StorageHandler<TData> {
   constructor(private _storageFolderPath: string) {}
@@ -70,4 +72,8 @@ export abstract class StorageHandler<TData> {
       throw new Error(`Failed to write configuration to '${file}' with error: ${err.message} and data: ${data}`);
     }
   }
+}
+
+export function getDefaultStorageConfigPaths(suffix = '') {
+  return envPaths(DEFAULT_STORAGE_CONFIG_FOLDER, {suffix});
 }
