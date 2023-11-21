@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.31.7
+
+### Patch Changes
+
+- f56eea8: Add schema loader config
+
 ## 0.31.6
 
 ### Patch Changes
