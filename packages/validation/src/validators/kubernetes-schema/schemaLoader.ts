@@ -4,11 +4,12 @@ import {isKnownResourceKind} from '../../utils/knownResourceKinds.js';
 export type FullSchema = {definitions: Record<string, ResourceSchema>};
 export type ResourceSchema = any;
 
-const CORE_SCHEMA_BASE = 'https://plugins.monokle.com/schemas';
-const CRD_SCHEMA_BASE = 'https://plugins.monokle.com/schemas';
+const BASE_URL = 'https://plugins.monokle.com/schemas';
 
 export class SchemaLoader {
   private schemaCache = new Map<string, ResourceSchema | undefined>();
+
+  constructor(private baseUrl = BASE_URL) {}
 
   async getResourceSchema(
     schemaVersion: string,
@@ -49,11 +50,11 @@ export class SchemaLoader {
       const kind = resource.kind.toLowerCase();
       const [group, apiVersion] = resource.apiVersion.split('/');
       // e.g. https://plugins.monokle.com/schemas/crds/argoproj.io/v1alpha1/application.json
-      return `${CRD_SCHEMA_BASE}/crds/${group}/${apiVersion}/${kind}.json`;
+      return `${this.baseUrl}/crds/${group}/${apiVersion}/${kind}.json`;
     } else {
       const kind = resource.kind.toLowerCase();
       // e.g. https://plugins.monokle.com/schemas/v1.24.2-standalone/service.json
-      return `${CORE_SCHEMA_BASE}/${kubernetesVersion}-standalone/${kind}.json`;
+      return `${this.baseUrl}/${kubernetesVersion}-standalone/${kind}.json`;
     }
   }
 
@@ -65,7 +66,7 @@ export class SchemaLoader {
       const cacheKey = schemaVersion;
       const cachedSchema = this.schemaCache.get(cacheKey);
       const kubernetesVersion = this.getKubernetesVersion(schemaVersion);
-      const schemaUri = `${CORE_SCHEMA_BASE}/${kubernetesVersion}-standalone/definitions.json`;
+      const schemaUri = `${this.baseUrl}/${kubernetesVersion}-standalone/definitions.json`;
 
       if (cachedSchema) {
         return {schema: cachedSchema, url: schemaUri};
