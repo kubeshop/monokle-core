@@ -287,6 +287,7 @@ export class ApiHandler {
         query,
         variables,
       }),
+      timeout: 30 * 1000,
     });
   }
 

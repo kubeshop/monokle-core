@@ -1,4 +1,4 @@
-import {Issuer} from 'openid-client';
+import {Issuer, custom} from 'openid-client';
 import {
   DEFAULT_DEVICE_FLOW_IDP_URL,
   DEFAULT_DEVICE_FLOW_CLIENT_ID,
@@ -28,7 +28,11 @@ export class DeviceFlowHandler {
       id_token_signed_response_alg: DEFAULT_DEVICE_FLOW_ALG,
     },
     private _clientScope: string = DEFAULT_DEVICE_FLOW_CLIENT_SCOPE
-  ) {}
+  ) {
+    custom.setHttpOptionsDefaults({
+      timeout: 10 * 1000,
+    });
+  }
 
   async initializeAuthFlow(): Promise<DeviceFlowHandle> {
     const client = await this.getClient();
