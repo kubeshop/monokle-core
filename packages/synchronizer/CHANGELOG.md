@@ -1,5 +1,12 @@
 # @monokle/synchronizer
 
+## 0.12.2
+
+### Patch Changes
+
+- 25b86ff: Improved project matching logic.
+- 1a5a238: Clear auth user data on origin conflict by default
+
 ## 0.12.1
 
 ### Patch Changes
