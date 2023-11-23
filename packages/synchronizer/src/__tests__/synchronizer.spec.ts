@@ -42,7 +42,7 @@ describe('Synchronizer Tests', () => {
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
       const policy = await synchronizer.getPolicy({
-        provider: 'github.com',
+        provider: 'GITHUB',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -55,7 +55,7 @@ describe('Synchronizer Tests', () => {
     });
 
     it('returns policy if there is policy file (from path)', async () => {
-      const storagePath = await createTmpConfigDir('githubcom-kubeshop-monokle-core.policy.yaml');
+      const storagePath = await createTmpConfigDir('github-kubeshop-monokle-core.policy.yaml');
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
       const policy = await synchronizer.getPolicy(storagePath);
@@ -63,16 +63,16 @@ describe('Synchronizer Tests', () => {
       assert.isObject(policy);
       assert.isTrue(policy.valid);
       assert.isNotEmpty(policy.path);
-      assert.match(policy.path, /githubcom-kubeshop-monokle-core.policy.yaml$/);
+      assert.match(policy.path, /github-kubeshop-monokle-core.policy.yaml$/);
       assert.isNotEmpty(policy.policy);
     });
 
     it('returns policy if there is policy file (from git data)', async () => {
-      const storagePath = await createTmpConfigDir('githubcom-kubeshop-monokle-core.policy.yaml');
+      const storagePath = await createTmpConfigDir('github-kubeshop-monokle-core.policy.yaml');
       const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
 
       const policy = await synchronizer.getPolicy({
-        provider: 'github.com',
+        provider: 'GITHUB',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -81,7 +81,7 @@ describe('Synchronizer Tests', () => {
       assert.isObject(policy);
       assert.isTrue(policy.valid);
       assert.isNotEmpty(policy.path);
-      assert.match(policy.path, /githubcom-kubeshop-monokle-core.policy.yaml$/);
+      assert.match(policy.path, /github-kubeshop-monokle-core.policy.yaml$/);
       assert.isNotEmpty(policy.policy);
       assert.isNotEmpty(policy.policy.plugins);
     });
@@ -172,7 +172,7 @@ describe('Synchronizer Tests', () => {
       stubs.push(queryApiStub);
 
       const repoData = {
-        provider: 'github.com',
+        provider: 'GITHUB',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -190,7 +190,7 @@ describe('Synchronizer Tests', () => {
       assert.isObject(newPolicy);
       assert.isTrue(newPolicy.valid);
       assert.isNotEmpty(newPolicy.path);
-      assert.match(newPolicy.path, /githubcom-kubeshop-monokle-core.policy.yaml$/);
+      assert.match(newPolicy.path, /github-kubeshop-monokle-core.policy.yaml$/);
       assert.isNotEmpty(newPolicy.policy);
       assert.isNotEmpty(newPolicy.policy.plugins);
       assert.isNotEmpty(newPolicy.policy.rules);
@@ -268,6 +268,204 @@ describe('Synchronizer Tests', () => {
       const getPolicyResult = await synchronizer.getPolicy(policyData);
 
       assert.deepEqual(newPolicy, getPolicyResult);
+    });
+
+    it('fetches and returns valid policy based on repo data (GITHUB provider)', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const queryApiStub = sinon.stub((synchronizer as any)._apiHandler, 'queryApi').callsFake(async (...args) => {
+        const query = args[0] as string;
+
+        if (query.includes('query getUser')) {
+          return {
+            data: {
+              me: {
+                id: 7,
+                email: 'user7@kubeshop.io',
+                projects: [
+                  {
+                    project: {
+                      id: 7000,
+                      slug: 'user7-proj',
+                      name: 'User7 Project',
+                      repositories: [
+                        {
+                          id: 'user7-proj-policy-id',
+                          projectId: 7000,
+                          provider: 'GITHUB',
+                          owner: 'kubeshop',
+                          name: 'monokle-core',
+                          prChecks: false,
+                          canEnablePrChecks: true,
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          };
+        }
+
+        if (query.includes('query getPolicy')) {
+          return {
+            data: {
+              getProject: {
+                id: 7000,
+                name: 'User7 Project',
+                policy: {
+                  id: 'user7-proj-policy-id',
+                  json: {
+                    plugins: {
+                      'pod-security-standards': true,
+                      'yaml-syntax': false,
+                      'resource-links': false,
+                      'kubernetes-schema': false,
+                      practices: true,
+                    },
+                    rules: {
+                      'pod-security-standards/host-process': 'err',
+                    },
+                    settings: {
+                      'kubernetes-schema': {
+                        schemaVersion: 'v1.27.1',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          };
+        }
+
+        return {};
+      });
+      stubs.push(queryApiStub);
+
+      const repoData = {
+        provider: 'GITHUB',
+        remote: 'origin',
+        owner: 'kubeshop',
+        name: 'monokle-core',
+      };
+
+      const policy = await synchronizer.getPolicy(repoData);
+
+      assert.isFalse(policy.valid);
+
+      const newPolicy = await synchronizer.getPolicy(repoData, true, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
+
+      assert.isObject(newPolicy);
+      assert.isTrue(newPolicy.valid);
+      assert.isNotEmpty(newPolicy.path);
+      assert.match(newPolicy.path, /github-kubeshop-monokle-core.policy.yaml$/);
+      assert.isNotEmpty(newPolicy.policy);
+      assert.isNotEmpty(newPolicy.policy.plugins);
+      assert.isNotEmpty(newPolicy.policy.rules);
+      assert.isNotEmpty(newPolicy.policy.settings);
+    });
+
+    it('fetches and returns valid policy based on repo data (HTTPS provider)', async () => {
+      const storagePath = await createTmpConfigDir();
+      const synchronizer = createDefaultMonokleSynchronizer(new StorageHandlerPolicy(storagePath));
+
+      const queryApiStub = sinon.stub((synchronizer as any)._apiHandler, 'queryApi').callsFake(async (...args) => {
+        const query = args[0] as string;
+
+        if (query.includes('query getUser')) {
+          return {
+            data: {
+              me: {
+                id: 8,
+                email: 'user8@kubeshop.io',
+                projects: [
+                  {
+                    project: {
+                      id: 8000,
+                      slug: 'user8-proj',
+                      name: 'User8 Project',
+                      repositories: [
+                        {
+                          id: 'user8-proj-policy-id',
+                          projectId: 8000,
+                          provider: 'HTTPS',
+                          owner: 'sample-org',
+                          name: 'demo',
+                          prChecks: false,
+                          canEnablePrChecks: true,
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          };
+        }
+
+        if (query.includes('query getPolicy')) {
+          return {
+            data: {
+              getProject: {
+                id: 8000,
+                name: 'User8 Project',
+                policy: {
+                  id: 'user8-proj-policy-id',
+                  json: {
+                    plugins: {
+                      'pod-security-standards': true,
+                      'yaml-syntax': false,
+                      'resource-links': false,
+                      'kubernetes-schema': false,
+                      practices: true,
+                    },
+                    rules: {
+                      'pod-security-standards/host-process': 'err',
+                    },
+                    settings: {
+                      'kubernetes-schema': {
+                        schemaVersion: 'v1.27.1',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          };
+        }
+
+        return {};
+      });
+      stubs.push(queryApiStub);
+
+      const repoData = {
+        provider: 'HTTPS',
+        remote: 'origin',
+        owner: 'sample-org',
+        name: 'demo',
+      };
+
+      const policy = await synchronizer.getPolicy(repoData);
+
+      assert.isFalse(policy.valid);
+
+      const newPolicy = await synchronizer.getPolicy(repoData, true, {
+        accessToken: 'SAMPLE_ACCESS_TOKEN',
+        tokenType: 'ApiKey',
+      });
+
+      assert.isObject(newPolicy);
+      assert.isTrue(newPolicy.valid);
+      assert.isNotEmpty(newPolicy.path);
+      assert.match(newPolicy.path, /https-sample-org-demo.policy.yaml$/);
+      assert.isNotEmpty(newPolicy.policy);
+      assert.isNotEmpty(newPolicy.policy.plugins);
+      assert.isNotEmpty(newPolicy.policy.rules);
+      assert.isNotEmpty(newPolicy.policy.settings);
     });
 
     it('throws unauthorized error when invalid auth credentials passed', async () => {
@@ -433,7 +631,7 @@ describe('Synchronizer Tests', () => {
       stubs.push(queryApiStub);
 
       const repoData = {
-        provider: 'github.com',
+        provider: 'GITHUB',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -445,7 +643,7 @@ describe('Synchronizer Tests', () => {
             assert.isObject(policy);
             assert.isTrue(policy.valid);
             assert.isNotEmpty(policy.path);
-            assert.match(policy.path, /githubcom-kubeshop-monokle-core.policy.yaml$/);
+            assert.match(policy.path, /github-kubeshop-monokle-core.policy.yaml$/);
             assert.isNotEmpty(policy.policy);
             assert.isNotEmpty(policy.policy.plugins);
             assert.isNotEmpty(policy.policy.rules);
@@ -507,7 +705,7 @@ describe('Synchronizer Tests', () => {
       stubs.push(queryApiStub);
 
       const repoData = {
-        provider: 'github.com',
+        provider: 'GITHUB',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
@@ -608,7 +806,7 @@ describe('Synchronizer Tests', () => {
       stubs.push(queryApiStub);
 
       const repoData = {
-        provider: 'github.com',
+        provider: 'GITHUB',
         remote: 'origin',
         owner: 'kubeshop',
         name: 'monokle-core',
