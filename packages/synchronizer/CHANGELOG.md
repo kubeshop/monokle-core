@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.12.1
+
+### Patch Changes
+
+- 3bbb688: Add explicit timeouts for API communication
+
 ## 0.12.0
 
 ### Minor Changes
