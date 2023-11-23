@@ -353,17 +353,16 @@ export class Synchronizer extends EventEmitter {
       return project.project.slug === repoData.ownerProjectSlug;
     });
 
-    const repoMainProject = userData.data.me.projects.find(project => {
+    const repoFirstProject = userData.data.me.projects.find(project => {
       return project.project.repositories.find(
-        repo => repo.owner === repoData.owner && repo.name === repoData.name && repo.prChecks
+        repo =>
+          repo.owner.toLowerCase() === repoData.owner.toLowerCase() &&
+          repo.name.toLowerCase() === repoData.name.toLowerCase() &&
+          repo.provider.toLowerCase() === repoData.provider.toLowerCase()
       );
     });
 
-    const repoFirstProject = userData.data.me.projects.find(project => {
-      return project.project.repositories.find(repo => repo.owner === repoData.owner && repo.name === repoData.name);
-    });
-
-    const matchingProject = repoMatchingProjectBySlug ?? repoMainProject ?? repoFirstProject;
+    const matchingProject = repoMatchingProjectBySlug ?? repoFirstProject;
 
     if (matchingProject?.project) {
       const cacheId = this.getRepoCacheId(repoData, tokenInfo.accessToken);

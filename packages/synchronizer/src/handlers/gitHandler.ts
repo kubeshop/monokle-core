@@ -7,7 +7,14 @@ export type RepoRemoteData = {
   remote: string;
   owner: string;
   name: string;
+  details?: gitUrlParse.GitUrl;
 };
+
+export const KNOWN_GIT_PROVIDERS: Record<string, string> = {
+  'github.com': 'GITHUB',
+};
+
+export const GENERIC_GIT_PROVIDER = 'HTTPS';
 
 export class GitHandler {
   async getRepoRemoteData(folderPath: string): Promise<RepoRemoteData | undefined> {
@@ -25,10 +32,11 @@ export class GitHandler {
       const urlParts = gitUrlParse(url);
 
       return {
-        provider: urlParts.source,
+        provider: this.matchProvider(urlParts),
         remote: remote.name,
         owner: urlParts.owner,
         name: urlParts.name,
+        details: urlParts,
       };
     } catch (err: any) {
       return undefined;
@@ -60,5 +68,42 @@ export class GitHandler {
         throw err;
       }
     }
+  }
+
+  // Sample `gitUrlParse.GitUrl` object (as it's not fully consistent with TS typings):
+  // {
+  //   protocols: [ 'ssh' ],
+  //   protocol: 'ssh',
+  //   port: '',
+  //   resource: 'github.com',
+  //   host: 'github.com',
+  //   user: 'git',
+  //   password: '',
+  //   pathname: '/kubeshop/monokle-demo.git',
+  //   hash: '',
+  //   search: '',
+  //   href: 'git@github.com:kubeshop/monokle-demo.git',
+  //   query: {},
+  //   parse_failed: false,
+  //   token: '',
+  //   toString: [Function (anonymous)],
+  //   source: 'github.com',
+  //   git_suffix: true,
+  //   name: 'monokle-demo',
+  //   owner: 'kubeshop',
+  //   commit: undefined,
+  //   ref: '',
+  //   filepathtype: '',
+  //   filepath: '',
+  //   organization: 'kubeshop',
+  //   full_name: 'kubeshop/monokle-demo'
+  // }
+  private matchProvider(repoMetadata: gitUrlParse.GitUrl) {
+    return (
+      KNOWN_GIT_PROVIDERS[repoMetadata.source] ||
+      KNOWN_GIT_PROVIDERS[repoMetadata.resource] ||
+      KNOWN_GIT_PROVIDERS[(repoMetadata as any).host] ||
+      GENERIC_GIT_PROVIDER
+    );
   }
 }
