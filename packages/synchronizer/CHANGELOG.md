@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.12.3
+
+### Patch Changes
+
+- 4b6b812: Added 'schemasOrigin' as predefined 'OriginConfig' key
+
 ## 0.12.2
 
 ### Patch Changes
