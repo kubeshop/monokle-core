@@ -5,6 +5,7 @@ export type OriginConfig = {
   origin: string;
   apiOrigin: string;
   authOrigin: string;
+  schemasOrigin: string;
   [key: string]: string;
 };
 
@@ -43,6 +44,7 @@ export async function fetchOriginConfig(origin: string) {
       values.origin = normalizeUrl(origin);
       values.apiOrigin = values.API_ORIGIN;
       values.authOrigin = values.OIDC_DISCOVERY_URL;
+      values.schemasOrigin = values.SCHEMA_BASE_URL;
     }
 
     originConfigCache = {
