@@ -70,6 +70,7 @@ describe('ApiHandler Tests', () => {
         origin: 'https://test.monokle.com',
         apiOrigin: 'https://api.test.monokle.com',
         authOrigin: 'https://auth.test.monokle.com',
+        schemasOrigin: 'https://schemas.test.monokle.com',
       });
       assert.equal('https://api.test.monokle.com', apiHandler.apiUrl);
     });
@@ -79,6 +80,7 @@ describe('ApiHandler Tests', () => {
         origin: 'https://custom.domain.io',
         apiOrigin: 'https://custom.domain.io/api',
         authOrigin: 'https://custom.domain.io/auth',
+        schemasOrigin: 'https://custom.domain.io/schemas',
       });
 
       assert.equal('https://custom.domain.io/api', apiHandler.apiUrl);
@@ -99,6 +101,7 @@ describe('ApiHandler Tests', () => {
         origin: 'https://custom.domain.io',
         apiOrigin: 'https://custom.domain.io/api',
         authOrigin: 'https://custom.domain.io/auth',
+        schemasOrigin: 'https://custom.domain.io/schemas',
       });
       assert.equal('https://custom.domain.io/projects', apiHandler.generateDeepLink('projects'));
     });

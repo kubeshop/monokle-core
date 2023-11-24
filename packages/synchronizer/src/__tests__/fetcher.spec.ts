@@ -135,6 +135,8 @@ describe('Fetcher Tests', () => {
 
               OIDC_DISCOVERY_URL: "https://id.monokle.local/realms/monokle",
               CLIENT_ID: "clientId",
+
+              SCHEMA_BASE_URL: "https://plugins.monokle.local/schemas",
             };
           `);
         });
@@ -146,6 +148,7 @@ describe('Fetcher Tests', () => {
             assert.equal(originData?.origin, 'http://localhost:13000');
             assert.equal(originData?.apiOrigin, 'https://api.monokle.local');
             assert.equal(originData?.authOrigin, 'https://id.monokle.local/realms/monokle');
+            assert.equal(originData?.schemasOrigin, 'https://plugins.monokle.local/schemas');
 
             res();
           } catch (err) {
