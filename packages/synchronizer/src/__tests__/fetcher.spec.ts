@@ -143,7 +143,7 @@ describe('Fetcher Tests', () => {
 
         const server = app.listen(13000, async () => {
           try {
-            const originData = await fetchOriginConfig('localhost:13000');
+            const originData = await fetchOriginConfig('http://localhost:13000');
 
             assert.equal(originData?.origin, 'http://localhost:13000');
             assert.equal(originData?.apiOrigin, 'https://api.monokle.local');
