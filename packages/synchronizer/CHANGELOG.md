@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.12.4
+
+### Patch Changes
+
+- cdfe62d: Imporve origin config fetching by assuring response status and using https as default proto
+
 ## 0.12.3
 
 ### Patch Changes
