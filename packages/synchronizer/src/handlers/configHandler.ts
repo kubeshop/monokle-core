@@ -28,6 +28,11 @@ export async function fetchOriginConfig(origin: string) {
   try {
     const configUrl = normalize(`${origin}/config.js`);
     const response = await fetch(configUrl);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch config from ${configUrl} with status ${response.status}: ${response.statusText}`);
+    }
+
     const responseText = await response.text();
 
     const values = Array.from(responseText.matchAll(/([A-Z_]+)\s*:\s*"(.*?)"/gm)).reduce(
