@@ -26,7 +26,7 @@ export async function fetchOriginConfig(origin: string) {
   }
 
   try {
-    const configUrl = normalizeUrl(`${origin}/config.js`);
+    const configUrl = normalize(`${origin}/config.js`);
     const response = await fetch(configUrl);
     const responseText = await response.text();
 
@@ -41,7 +41,7 @@ export async function fetchOriginConfig(origin: string) {
     );
 
     if (values) {
-      values.origin = normalizeUrl(origin);
+      values.origin = normalize(origin);
       values.apiOrigin = values.API_ORIGIN;
       values.authOrigin = values.OIDC_DISCOVERY_URL;
       values.schemasOrigin = values.SCHEMA_BASE_URL;
@@ -58,4 +58,11 @@ export async function fetchOriginConfig(origin: string) {
     // Rethrow error so integrations can catch it and propagate/react.
     throw error;
   }
+}
+
+function normalize(url: string) {
+  return normalizeUrl(url, {
+    defaultProtocol: 'https:',
+    normalizeProtocol: true,
+  });
 }
