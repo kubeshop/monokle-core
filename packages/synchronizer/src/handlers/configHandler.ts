@@ -17,7 +17,7 @@ export type CachedOriginConfig = {
 
 let originConfigCache: CachedOriginConfig | undefined = undefined;
 
-export async function fetchOriginConfig(origin: string) {
+export async function fetchOriginConfig(origin: string, timeout = 30 * 1000) {
   if (originConfigCache) {
     // Use recently fetched config if from same origin and it's less than 5 minutes old.
     if (origin === originConfigCache.origin && Date.now() - originConfigCache.downloadedAt < 1000 * 60 * 5) {
@@ -27,7 +27,7 @@ export async function fetchOriginConfig(origin: string) {
 
   try {
     const configUrl = normalize(`${origin}/config.js`);
-    const response = await fetch(configUrl);
+    const response = await fetch(configUrl, { timeout });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch config from ${configUrl} with status ${response.status}: ${response.statusText}`);
