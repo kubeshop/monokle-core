@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.12.5
+
+### Patch Changes
+
+- 1119919: Added explicit timeout to conifg request
+
 ## 0.12.4
 
 ### Patch Changes
