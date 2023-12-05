@@ -131,6 +131,11 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       return undefined;
     }
 
+    if (!resource.content) {
+      // This happens when the YAML has invalid syntax and the parser fails.
+      return undefined;
+    }
+
     validate(resource.content);
 
     const errors = validate.errors ?? [];
