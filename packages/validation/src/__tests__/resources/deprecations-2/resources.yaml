@@ -5,18 +5,18 @@ metadata:
 webhooks:
   - name: webhook-server.webhook-demo.svc
     sideEffects: None
-    admissionReviewVersions: ["v1", "v1beta1"]
+    admissionReviewVersions: ['v1', 'v1beta1']
     clientConfig:
       service:
         name: webhook-server
         namespace: webhook-demo
-        path: "/validate"
-      caBundle: ""
+        path: '/validate'
+      caBundle: ''
     rules:
-      - operations: [ "CREATE" ]
-        apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
+      - operations: ['CREATE']
+        apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
 ---
 apiVersion: flowcontrol.apiserver.k8s.io/v1beta2
 kind: FlowSchema
@@ -28,28 +28,20 @@ spec:
     name: exempt
   rules:
     - nonResourceRules:
-      - nonResourceURLs:
-          - "/healthz"
-          - "/livez"
-          - "/readyz"
-        verbs:
-          - "*"
+        - nonResourceURLs:
+            - '/healthz'
+            - '/livez'
+            - '/readyz'
+          verbs:
+            - '*'
       subjects:
         - kind: Group
           group:
-            name: "system:unauthenticated"
+            name: 'system:unauthenticated'
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: example.io/v1
+kind: SomeCustomResource
 metadata:
-  name: pod-warning
-  labels:
-    app: pod-warning
+  name: crd-example
 spec:
-  restartPolicy: OnFailure
-  securityContext:
-    runAsNonRoot: false
-  containers:
-    - name: busybox
-      image: busybox
-      command: ["sh", "-c", "echo I am running as user $(id -u)"]
+  hello: world
