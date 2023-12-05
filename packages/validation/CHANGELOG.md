@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.31.8
+
+### Patch Changes
+
+- f5cfcbf: Improve Kubernetes Schema rules
+
 ## 0.31.7
 
 ### Patch Changes
