@@ -93,18 +93,36 @@ export class KubernetesSchemaValidator extends AbstractPlugin {
       }
 
       // K8S004
-      const hasApiVersion = resource.apiVersion && resource.apiVersion.length > 0;
-      if (resourceErrors === undefined || !hasApiVersion) {
-        const errorKey = resource.apiVersion !== undefined ? 'apiVersion' : 'kind';
-        const errorText = hasApiVersion
-          ? `Invalid or unsupported "apiVersion" value for "${resource.kind}".`
-          : `Missing "apiVersion" field for "${resource.kind}".`;
-        const validationResult = this.adaptToValidationResult(resource, [errorKey], 'K8S004', errorText);
-        isDefined(validationResult) && results.push(validationResult);
+      const strictError = await this.validateStrictMode(resource, Boolean(deprecationError));
+      if (strictError) {
+        results.push(strictError);
       }
     }
 
     return results;
+  }
+
+  /**
+   * Strict mode ensures that the Kubernetes schema got validated.
+   * This prevents surprises when you apply it to the Kubernetes API server.
+   *
+   * Strict mode might get violated due to typo's in apiVersion/kind or missing schemas for CRDs.
+   * Deprecated schemas are taken into account, as those are not _missing_ but _removed_ schemas.
+   */
+  private async validateStrictMode(resource: Resource, deprecated: boolean): Promise<ValidationResult | undefined> {
+    const validate = await this.getResourceValidator(resource);
+    const hasSchema = Boolean(validate);
+
+    if (hasSchema || deprecated) {
+      return;
+    }
+
+    return this.adaptToValidationResult(
+      resource,
+      ['apiVersion'],
+      'K8S004',
+      `The schema for ${resource.apiVersion}/${resource.kind} is not found and cannot be checked.`
+    );
   }
 
   override registerCustomSchema({kind, apiVersion, schema}: CustomSchema): void | Promise<void> {
