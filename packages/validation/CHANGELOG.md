@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.32.0
+
+### Minor Changes
+
+- 6b60086: add srcroot configuration
+
 ## 0.31.8
 
 ### Patch Changes
