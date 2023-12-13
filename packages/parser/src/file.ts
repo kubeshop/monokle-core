@@ -14,8 +14,16 @@ export function isUntypedKustomizationFile(filePath = ''): boolean {
   return /kustomization*.yaml/.test(filePath.toLowerCase().trim());
 }
 
-const HELM_TEMPLATE_CONTENT_REGEX = /{{[^}]*}}/;
-
 export function hasHelmTemplateContent(file: BaseFile) {
-  return HELM_TEMPLATE_CONTENT_REGEX.test(file.content || '');
+  return isHelmTemplateLike(file) || isHelmValuesLike(file);
+}
+
+function isHelmTemplateLike(file: BaseFile): boolean {
+  return file.path.includes('/templates/') || file.path.startsWith('templates/');
+}
+
+const HELM_VALUES_REGEX = /values[^\/|\\]*.(yaml|yml)/;
+
+function isHelmValuesLike(file: BaseFile): boolean {
+  return HELM_VALUES_REGEX.test(file.path.toLocaleLowerCase());
 }
