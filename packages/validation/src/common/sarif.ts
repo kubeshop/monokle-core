@@ -15,6 +15,7 @@ export type ValidationResponse = {
 
 export type ValidationRun = {
   tool: Tool;
+  originalUriBaseIds: OriginalUriBaseIds;
   invocations?: ValidationInvocation[];
   results: ValidationResult[];
   taxonomies?: Taxonomy[];
@@ -76,9 +77,7 @@ export type Fix = {
 };
 
 export type ArtifactChange = {
-  artifactLocation: {
-    uri: string;
-  };
+  artifactLocation: ArtifactLocation;
   replacements: Replacement[];
 };
 
@@ -227,6 +226,9 @@ export type RuleConfig = {
    */
   parameters?: PropertyBag & {configValue?: RuleConfigMetadataAllowedValues; dynamic?: boolean};
 };
+
+export type UriBaseIds = 'SRCROOT' | 'RESOURCE' | string;
+export type OriginalUriBaseIds = Record<UriBaseIds, Partial<ArtifactLocation>>;
 
 export type RuleLevel = 'warning' | 'error';
 
@@ -400,6 +402,12 @@ export type PhysicalLocation = {
   };
   region?: Region;
 };
+
+export type ArtifactLocation = {
+  uri: string;
+  uriBaseId?: string;
+  description?: Message;
+}
 
 export type Region = {
   startLine: number;

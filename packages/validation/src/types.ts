@@ -38,6 +38,17 @@ export type ValidateParams = {
   baseline?: ValidationResponse;
 
   /**
+   * Adds the original URI base to the SARIF response which allows SARIF consumers
+   * to work with absolute file names.
+   * 
+   * @remark Setting a srcroot reduces portability, determinism and privacy when sharing responses. 
+   *  Generally you should only set this when producing and consuming SARIF on your local machine.
+   * @remark The outcome of setting srcroot is that `run.originalUriBaseIds` to be present.
+   * @example `"file:///Users/john/code/example-repository"`
+   */
+  srcroot?: string;
+
+  /**
    * A signal that can be used to abort processing.
    */
   abortSignal?: AbortSignal;

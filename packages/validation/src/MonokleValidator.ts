@@ -20,6 +20,7 @@ import {PluginLoader} from './pluginLoaders/PluginLoader.js';
 import {ValidationConfig} from '@monokle/types';
 import {PluginContext} from './pluginLoaders/types.js';
 import {sortResults} from './utils/sortResults.js';
+import { createOriginalUriBaseIds } from './utils/uriBase.js';
 
 export type ValidatorInit = {
   loader: PluginLoader;
@@ -215,6 +216,7 @@ export class MonokleValidator implements Validator {
     incremental,
     baseline,
     abortSignal: externalAbortSignal,
+    srcroot
   }: ValidateParams): Promise<ValidationResponse> {
     if (this._loading === undefined) {
       this.load();
@@ -251,6 +253,7 @@ export class MonokleValidator implements Validator {
 
     const run: ValidationRun = {
       automationDetails: {guid: v4()},
+      originalUriBaseIds: createOriginalUriBaseIds({srcroot}),
       tool,
       results,
       taxonomies: [NSA_TAXONOMY, CIS_TAXONOMY],
