@@ -1,6 +1,6 @@
 {
   "name": "@monokle/parser",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Kubernetes resource parser",
   "author": "Kubeshop",
   "license": "MIT",
