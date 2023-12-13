@@ -19,7 +19,10 @@ export function hasHelmTemplateContent(file: BaseFile) {
 }
 
 function isHelmTemplateLike(file: BaseFile): boolean {
-  return file.path.includes('/templates/') || file.path.startsWith('templates/');
+  return file.path.includes('/templates/') ||
+    file.path.includes('\\templates\\') ||
+    file.path.startsWith('templates/') ||
+    file.path.startsWith('templates\\')
 }
 
 const HELM_VALUES_REGEX = /values[^\/|\\]*.(yaml|yml)/;
