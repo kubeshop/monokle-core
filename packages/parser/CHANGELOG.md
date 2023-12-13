@@ -1,5 +1,11 @@
 # @monokle/parser
 
+## 0.3.2
+
+### Patch Changes
+
+- 74c0a7c: Support Windows separator in helm path checks
+
 ## 0.3.1
 
 ### Patch Changes
