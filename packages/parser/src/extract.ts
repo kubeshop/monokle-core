@@ -5,7 +5,7 @@ import {BaseFile, isUntypedKustomizationFile, isYamlFile, hasHelmTemplateContent
 import {KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND} from './constants.js';
 import {isKubernetesLike} from './k8s.js';
 
-export function extractK8sResources(files: BaseFile[], extractHelmLikeFiles?: boolean): Resource[] {
+export function extractK8sResources(files: BaseFile[], extractHelmLikeFiles?: boolean, guessResources?: boolean): Resource[] {
   const resources: Resource[] = [];
 
   for (const file of files) {
@@ -16,15 +16,36 @@ export function extractK8sResources(files: BaseFile[], extractHelmLikeFiles?: bo
     const lineCounter = new LineCounter();
     const documents = parseAllYamlDocuments(file.content, lineCounter);
 
-    for (const document of documents) {
+    documents.forEach((document, index) => {
       const content = document.toJS();
-
-      if (document.errors.length || !content) {
-        continue;
-      }
 
       const rawFileOffset = lineCounter.linePos(document.range[0]).line;
       const fileOffset = rawFileOffset === 1 ? 0 : rawFileOffset;
+
+      if (document.errors.length || !content) {
+        if (guessResources) {
+          const guess = guessResource(file.content, index);
+
+          if (guess) {
+            const resource = {
+              id: `${file.id}-${index}`,
+              fileId: file.id,
+              filePath: file.path,
+              fileOffset,
+              fileIndex: index,
+              text: guess.text,
+              apiVersion: guess.apiVersion,
+              kind: guess.kind,
+              name: guess.name,
+              content: undefined,
+              namespace: undefined,
+            };
+            resources.push(resource);
+          }
+        }
+
+        return;
+      }
 
       const resourceBase = {
         apiVersion: content.apiVersion,
@@ -61,7 +82,7 @@ export function extractK8sResources(files: BaseFile[], extractHelmLikeFiles?: bo
 
         resources.push(resource);
       }
-    }
+    });
   }
 
   return resources;
@@ -72,4 +93,25 @@ export function extractNamespace(content: any) {
   return content.metadata?.namespace && typeof content.metadata.namespace === 'string'
     ? content.metadata.namespace
     : undefined;
+}
+
+const GUESS_API_REGEX = /^apiVersion: ([^\s]+).*$/m;
+const GUESS_KIND_REGEX = /^kind: ([^\s]+).*$/m;
+const GUESS_NAME_REGEX = /^ {2}name: ([^\s]+).*$/m;
+const GUESS_API_FALLBACK = 'unknown.monokle.io/v1';
+const GUESS_KIND_FALLBACK = 'Unknown';
+const GUESS_NAME_FALLBACK = 'unknown';
+
+function guessResource(content: string, index: number) {
+  const text = content.split('---').at(index);
+
+  if (!text) {
+    return undefined;
+  }
+
+  const apiVersion = GUESS_API_REGEX.exec(text)?.at(1) ?? GUESS_API_FALLBACK;
+  const kind = GUESS_KIND_REGEX.exec(text)?.at(1) ?? GUESS_KIND_FALLBACK;
+  const name = GUESS_NAME_REGEX.exec(text)?.at(1) ?? GUESS_NAME_FALLBACK;
+
+  return { apiVersion, kind, name, text };
 }
