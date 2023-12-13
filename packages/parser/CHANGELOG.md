@@ -1,5 +1,11 @@
 # @monokle/parser
 
+## 0.3.0
+
+### Minor Changes
+
+- 333ea82: Add logic to guess resources if yaml invalid
+
 ## 0.2.0
 
 ### Minor Changes
