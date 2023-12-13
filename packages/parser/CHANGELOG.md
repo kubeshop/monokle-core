@@ -1,5 +1,11 @@
 # @monokle/parser
 
+## 0.3.1
+
+### Patch Changes
+
+- 0f8d7c5: Improve helm files check
+
 ## 0.3.0
 
 ### Minor Changes
