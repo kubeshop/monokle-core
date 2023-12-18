@@ -179,6 +179,8 @@ export type ApiRepoIdData = {
 export type ClientConfig = {
   name: string;
   version: string;
+  os?: string;
+  additionalData?: Record<string, string>;
 };
 
 export class ApiHandler {
@@ -210,6 +212,8 @@ export class ApiHandler {
     this._clientConfig = {
       name: clientConfig?.name || 'unknown',
       version: clientConfig?.version || 'unknown',
+      os: clientConfig?.os || '',
+      additionalData: clientConfig?.additionalData || {},
     };
   }
 
@@ -293,7 +297,7 @@ export class ApiHandler {
       headers: {
         'Content-Type': 'application/json',
         Authorization: this.formatAuthorizationHeader(tokenInfo),
-        'User-Agent': `${this._clientConfig.name}; ${this._clientConfig.version}`,
+        'User-Agent': this.formatUserAgentHeader(this._clientConfig),
       },
       body: JSON.stringify({
         query,
@@ -309,5 +313,19 @@ export class ApiHandler {
         ? tokenInfo.tokenType
         : 'Bearer';
     return `${tokenType} ${tokenInfo.accessToken}`;
+  }
+
+  private formatUserAgentHeader(clientConfig: ClientConfig) {
+    const product = `${clientConfig.name}/${clientConfig.version}`;
+
+    const comment = [];
+    if (clientConfig.os) {
+      comment.push(clientConfig.os);
+    }
+    if (clientConfig.additionalData) {
+      comment.push(Object.entries(clientConfig.additionalData).map(([key, value]) => `${key}=${value}`));
+    }
+
+    return `${product}${comment.length > 0 ? ` (${comment.join('; ')})` : ''}`;
   }
 }
