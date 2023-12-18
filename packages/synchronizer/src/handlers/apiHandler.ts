@@ -210,7 +210,7 @@ export class ApiHandler {
     this._clientConfig = {
       name: clientConfig?.name || 'unknown',
       version: clientConfig?.version || 'unknown',
-    }
+    };
   }
 
   get apiUrl() {

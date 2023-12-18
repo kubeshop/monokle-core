@@ -27,10 +27,12 @@ export async function fetchOriginConfig(origin: string, timeout = 30 * 1000) {
 
   try {
     const configUrl = normalize(`${origin}/config.js`);
-    const response = await fetch(configUrl, { timeout });
+    const response = await fetch(configUrl, {timeout});
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch config from ${configUrl} with status ${response.status}: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch config from ${configUrl} with status ${response.status}: ${response.statusText}`
+      );
     }
 
     const responseText = await response.text();
