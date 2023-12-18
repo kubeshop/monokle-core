@@ -176,14 +176,20 @@ export type ApiRepoIdData = {
   };
 };
 
+export type ClientConfig = {
+  name: string;
+  version: string;
+};
+
 export class ApiHandler {
   private _apiUrl: string;
+  private _clientConfig: ClientConfig;
   private _originConfig?: OriginConfig;
 
   constructor();
-  constructor(_apiUrl: string);
-  constructor(_originConfig: OriginConfig);
-  constructor(_apiUrlOrOriginConfig: string | OriginConfig = DEFAULT_API_URL) {
+  constructor(_apiUrl: string, clientConfig?: ClientConfig);
+  constructor(_originConfig: OriginConfig, clientConfig?: ClientConfig);
+  constructor(_apiUrlOrOriginConfig: string | OriginConfig = DEFAULT_API_URL, clientConfig?: ClientConfig) {
     if (typeof _apiUrlOrOriginConfig === 'string') {
       this._apiUrl = _apiUrlOrOriginConfig;
     } else if (
@@ -199,6 +205,11 @@ export class ApiHandler {
 
     if ((this._apiUrl || '').length === 0) {
       this._apiUrl = DEFAULT_API_URL;
+    }
+
+    this._clientConfig = {
+      name: clientConfig?.name || 'unknown',
+      version: clientConfig?.version || 'unknown',
     }
   }
 
@@ -282,6 +293,7 @@ export class ApiHandler {
       headers: {
         'Content-Type': 'application/json',
         Authorization: this.formatAuthorizationHeader(tokenInfo),
+        'User-Agent': `${this._clientConfig.name}; ${this._clientConfig.version}`,
       },
       body: JSON.stringify({
         query,
