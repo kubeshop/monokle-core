@@ -77,7 +77,7 @@ export class Authenticator extends EventEmitter {
     }
   }
 
-  async refreshToken(force = false, options: RefreshTokenOptions = { logoutOnInvalidGrant: true }) {
+  async refreshToken(force = false, options: RefreshTokenOptions = {logoutOnInvalidGrant: true}) {
     const authData = this._user.data?.auth;
     const tokenData = authData?.token;
 
@@ -104,7 +104,10 @@ export class Authenticator extends EventEmitter {
       } catch (err: any) {
         // This is a workaround for origin conflict where user is logged in already with different origin
         // and authenticator is querying different one.
-        if (options?.logoutOnFail || options?.logoutOnInvalidGrant && err.message.toLowerCase().includes('invalid_grant')) {
+        if (
+          options?.logoutOnFail ||
+          (options?.logoutOnInvalidGrant && err.message.toLowerCase().includes('invalid_grant'))
+        ) {
           await this._storageHandler.emptyStoreData();
           this._user = new User(null);
           // Do not emit logout event since we treat this as user not being logged in with desired origin.

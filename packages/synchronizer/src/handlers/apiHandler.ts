@@ -176,14 +176,22 @@ export type ApiRepoIdData = {
   };
 };
 
+export type ClientConfig = {
+  name: string;
+  version: string;
+  os?: string;
+  additionalData?: Record<string, string>;
+};
+
 export class ApiHandler {
   private _apiUrl: string;
+  private _clientConfig: ClientConfig;
   private _originConfig?: OriginConfig;
 
   constructor();
-  constructor(_apiUrl: string);
-  constructor(_originConfig: OriginConfig);
-  constructor(_apiUrlOrOriginConfig: string | OriginConfig = DEFAULT_API_URL) {
+  constructor(_apiUrl: string, clientConfig?: ClientConfig);
+  constructor(_originConfig: OriginConfig, clientConfig?: ClientConfig);
+  constructor(_apiUrlOrOriginConfig: string | OriginConfig = DEFAULT_API_URL, clientConfig?: ClientConfig) {
     if (typeof _apiUrlOrOriginConfig === 'string') {
       this._apiUrl = _apiUrlOrOriginConfig;
     } else if (
@@ -200,6 +208,13 @@ export class ApiHandler {
     if ((this._apiUrl || '').length === 0) {
       this._apiUrl = DEFAULT_API_URL;
     }
+
+    this._clientConfig = {
+      name: clientConfig?.name || 'unknown',
+      version: clientConfig?.version || 'unknown',
+      os: clientConfig?.os || '',
+      additionalData: clientConfig?.additionalData || {},
+    };
   }
 
   get apiUrl() {
@@ -282,6 +297,7 @@ export class ApiHandler {
       headers: {
         'Content-Type': 'application/json',
         Authorization: this.formatAuthorizationHeader(tokenInfo),
+        'User-Agent': this.formatUserAgentHeader(this._clientConfig),
       },
       body: JSON.stringify({
         query,
@@ -297,5 +313,19 @@ export class ApiHandler {
         ? tokenInfo.tokenType
         : 'Bearer';
     return `${tokenType} ${tokenInfo.accessToken}`;
+  }
+
+  private formatUserAgentHeader(clientConfig: ClientConfig) {
+    const product = `${clientConfig.name}/${clientConfig.version}`;
+
+    const comment = [];
+    if (clientConfig.os) {
+      comment.push(clientConfig.os);
+    }
+    if (clientConfig.additionalData) {
+      comment.push(Object.entries(clientConfig.additionalData).map(([key, value]) => `${key}=${value}`));
+    }
+
+    return `${product}${comment.length > 0 ? ` (${comment.join('; ')})` : ''}`;
   }
 }

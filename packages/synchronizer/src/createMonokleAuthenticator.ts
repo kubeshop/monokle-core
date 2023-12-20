@@ -1,4 +1,4 @@
-import {ApiHandler} from './handlers/apiHandler.js';
+import {ApiHandler, ClientConfig} from './handlers/apiHandler.js';
 import {DeviceFlowHandler} from './handlers/deviceFlowHandler.js';
 import {StorageHandlerAuth} from './handlers/storageHandlerAuth.js';
 import {Authenticator} from './utils/authenticator.js';
@@ -7,13 +7,14 @@ import {OriginConfig, fetchOriginConfig} from './handlers/configHandler.js';
 
 export async function createMonokleAuthenticatorFromOrigin(
   authClientId: string,
+  clientConfig: ClientConfig,
   origin: string = DEFAULT_ORIGIN,
   storageHandler: StorageHandlerAuth = new StorageHandlerAuth()
 ) {
   try {
     const originConfig = await fetchOriginConfig(origin);
 
-    return createMonokleAuthenticatorFromConfig(authClientId, originConfig, storageHandler);
+    return createMonokleAuthenticatorFromConfig(authClientId, clientConfig, originConfig, storageHandler);
   } catch (err: any) {
     throw err;
   }
@@ -21,25 +22,26 @@ export async function createMonokleAuthenticatorFromOrigin(
 
 export function createMonokleAuthenticatorFromConfig(
   authClientId: string,
-  config: OriginConfig,
+  clientConfig: ClientConfig,
+  originConfig: OriginConfig,
   storageHandler: StorageHandlerAuth = new StorageHandlerAuth()
 ) {
   if (!authClientId) {
     throw new Error(`No auth clientId provided.`);
   }
 
-  if (!config?.apiOrigin) {
+  if (!originConfig?.apiOrigin) {
     throw new Error(`No api origin found in origin config from ${origin}.`);
   }
 
-  if (!config?.authOrigin) {
+  if (!originConfig?.authOrigin) {
     throw new Error(`No auth origin found in origin config from ${origin}.`);
   }
 
   return new Authenticator(
     storageHandler,
-    new ApiHandler(config),
-    new DeviceFlowHandler(config.authOrigin, {
+    new ApiHandler(originConfig, clientConfig),
+    new DeviceFlowHandler(originConfig.authOrigin, {
       client_id: authClientId,
       client_secret: DEFAULT_DEVICE_FLOW_CLIENT_SECRET,
       id_token_signed_response_alg: DEFAULT_DEVICE_FLOW_ALG,
