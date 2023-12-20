@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.13.0
+
+### Minor Changes
+
+- 7126eb4: Add mechanism to pass client identity config with every API request
+
 ## 0.12.5
 
 ### Patch Changes
