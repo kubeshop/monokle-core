@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.32.1
+
+### Patch Changes
+
+- 4fc3634: Fix taxonomies
+
 ## 0.32.0
 
 ### Minor Changes
