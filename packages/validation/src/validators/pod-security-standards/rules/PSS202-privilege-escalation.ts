@@ -1,4 +1,4 @@
-import {CIS_RELATIONS, NSA_RELATIONS, PSS_RELATIONS} from '../../../taxonomies/index.js';
+import {NSA_RELATIONS, PSS_RELATIONS} from '../../../taxonomies/index.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -11,7 +11,7 @@ export const privilegeEscalation = defineRule({
   advanced: {
     enabled: false,
     severity: 8,
-    relationships: [PSS_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security'], CIS_RELATIONS['general']],
+    relationships: [PSS_RELATIONS['restricted'], NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

@@ -1,4 +1,4 @@
-import {CIS_RELATIONS, NSA_RELATIONS} from '../../../taxonomies/index.js';
+import {NSA_RELATIONS} from '../../../taxonomies/index.js';
 import {defineRule} from '../../custom/config.js';
 import {validatePodSpec} from '../../custom/utils.js';
 
@@ -10,7 +10,7 @@ export const dropCapabilities = defineRule({
   help: "Add 'ALL' to containers[].securityContext.capabilities.drop.",
   advanced: {
     severity: 5,
-    relationships: [NSA_RELATIONS['kubernetes-pod-security'], CIS_RELATIONS['general']],
+    relationships: [NSA_RELATIONS['kubernetes-pod-security']],
   },
   validate({resources}, {report}) {
     validatePodSpec(resources, (resource, pod, prefix) => {

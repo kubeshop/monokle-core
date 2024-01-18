@@ -1,4 +1,3 @@
-import {CIS_RELATIONS} from '../../taxonomies/cis.js';
 import {NSA_RELATIONS} from '../../taxonomies/nsa.js';
 import {PolicyMetadata} from './types.js';
 
@@ -32,7 +31,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         entrypoint: 'appshield/kubernetes/KSV001/deny',
         path: '$container.securityContext.allowPrivilegeEscalation',
       },
-      relationships: [NSA_RELATIONS['kubernetes-pod-security'], CIS_RELATIONS['general']],
+      relationships: [NSA_RELATIONS['kubernetes-pod-security']],
     },
     {
       id: 'KSV002',
@@ -141,7 +140,7 @@ export const DEFAULT_TRIVY_PLUGIN: PolicyMetadata = {
         entrypoint: 'appshield/kubernetes/KSV008/deny',
         path: 'spec.template.spec.hostIPC',
       },
-      relationships: [NSA_RELATIONS['kubernetes-pod-security'], CIS_RELATIONS['general']],
+      relationships: [NSA_RELATIONS['kubernetes-pod-security']],
     },
     {
       id: 'KSV009',

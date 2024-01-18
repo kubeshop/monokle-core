@@ -6,7 +6,7 @@ import {ResourceParser} from './common/resourceParser.js';
 import type {Suppression, Tool, ValidationResponse, ValidationResult, ValidationRun} from './common/sarif.js';
 import type {CustomSchema, Plugin, Resource} from './common/types.js';
 import {Config} from './config/parse.js';
-import {CIS_TAXONOMY, NSA_TAXONOMY} from './taxonomies/index.js';
+import {NSA_TAXONOMY, PSS_TAXONOMY} from './taxonomies/index.js';
 import {PluginMetadataWithConfig, PluginName, RuleMetadataWithConfig, ValidateParams, Validator} from './types.js';
 import {nextTick, throwIfAborted} from './utils/abort.js';
 import {extractSchema, findDefaultVersion} from './utils/customResourceDefinitions.js';
@@ -20,7 +20,7 @@ import {PluginLoader} from './pluginLoaders/PluginLoader.js';
 import {ValidationConfig} from '@monokle/types';
 import {PluginContext} from './pluginLoaders/types.js';
 import {sortResults} from './utils/sortResults.js';
-import { createOriginalUriBaseIds } from './utils/uriBase.js';
+import {createOriginalUriBaseIds} from './utils/uriBase.js';
 
 export type ValidatorInit = {
   loader: PluginLoader;
@@ -216,7 +216,7 @@ export class MonokleValidator implements Validator {
     incremental,
     baseline,
     abortSignal: externalAbortSignal,
-    srcroot
+    srcroot,
   }: ValidateParams): Promise<ValidationResponse> {
     if (this._loading === undefined) {
       this.load();
@@ -256,7 +256,7 @@ export class MonokleValidator implements Validator {
       originalUriBaseIds: createOriginalUriBaseIds({srcroot}),
       tool,
       results,
-      taxonomies: [NSA_TAXONOMY, CIS_TAXONOMY],
+      taxonomies: [NSA_TAXONOMY, PSS_TAXONOMY],
     };
 
     const response: ValidationResponse = {
