@@ -14,6 +14,13 @@ import {noRootGroup} from './rules/KBP109-no-root-group.js';
 import {noPodExecute} from './rules/KBP108-noPodExecute.js';
 import {noPodCreate} from './rules/KBP107-noPodCreate.js';
 import {noAutomountServiceAccountToken} from './rules/KBP106-noAutomountServiceAccountToken.js';
+import {noSshExposed} from './rules/KBP110-no-ssh-exposed.js';
+import {noSecretMountedAsEnv} from './rules/KBP112-no-secret-mounted-as-env.js';
+import {noSecretEnv} from './rules/KBP111-no-secret-env.js';
+import {privilegedPorts} from './rules/KBP113-privileged-ports.js';
+import {noExposedService} from './rules/KBP114-no-exposed-service.js';
+import {mountPropagation} from './rules/KBP115-mount-propagation.js';
+import {imageTagged} from './rules/KBP116-image-tagged.js';
 
 export default definePlugin({
   id: 'KBP',
@@ -36,5 +43,12 @@ export default definePlugin({
     noPodExecute,
     noPodCreate,
     noAutomountServiceAccountToken,
+    noSshExposed,
+    noSecretEnv,
+    noSecretMountedAsEnv,
+    privilegedPorts,
+    noExposedService,
+    mountPropagation,
+    imageTagged,
   },
 });
