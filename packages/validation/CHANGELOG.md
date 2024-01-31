@@ -1,5 +1,11 @@
 # @monokle/validation
 
+## 0.33.0
+
+### Minor Changes
+
+- e54b199: Improve compatibility with RHACS default security policy
+
 ## 0.32.1
 
 ### Patch Changes
