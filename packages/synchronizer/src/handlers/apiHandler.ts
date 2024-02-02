@@ -49,6 +49,79 @@ const getProjectQuery = `
   }
 `;
 
+const getProjectPermissionsQuery = `
+  query getProjectPermissions($slug: String!) {
+    getProject(input: { slug: $slug }) {
+      permissions {
+        project {
+          view
+          update
+          delete
+        }
+        members {
+          view
+          update
+          delete
+        }
+        repositories {
+          read
+          write
+        }
+      }
+    }
+  }
+`;
+
+const getProjectDetailsQuery = `
+  query getProjectDetails($slug: String!, $owner: String!, $name: String!, $provider: String!) {
+    getProject(input: { slug: $slug }) {
+      id
+      name
+      slug
+      projectRepository: repository(input: { owner: $owner, name: $name, provider: $provider }) {
+        id
+        projectId
+        provider
+        owner
+        name
+        suppressions {
+          id
+          fingerprint
+          description
+          status
+          justification
+          expiresAt
+          isUnderReview
+          isAccepted
+          isRejected
+          isExpired
+          isDeleted
+        }
+      }
+      permissions {
+        project {
+          view
+          update
+          delete
+        }
+        members {
+          view
+          update
+          delete
+        }
+        repositories {
+          read
+          write
+        }
+      }
+      policy {
+        id
+        json
+      }
+    }
+  }
+`;
+
 const getPolicyQuery = `
   query getPolicy($slug: String!) {
     getProject(input: { slug: $slug }) {
@@ -183,6 +256,56 @@ export type ClientConfig = {
   additionalData?: Record<string, string>;
 };
 
+export type ApiProjectPermissions = {
+  project: {
+    view: boolean,
+    update: boolean,
+    delete: boolean
+  },
+  members: {
+    view: boolean,
+    update: boolean,
+    delete: boolean
+  },
+  repositories: {
+    read: boolean,
+    write: boolean
+  }
+};
+
+export type ApiProjectPermissionsData = {
+  data: {
+    getProject: {
+      permissions: ApiProjectPermissions
+    }
+  }
+};
+
+export type ApiProjectDetailsData = {
+  data: {
+    getProject: {
+      id: number;
+      slug: string;
+      name: string;
+      projectRepository: ApiUserProjectRepo & {
+        suppressions: (ApiSuppression & {justification: string; expiresAt: string;})[];
+      };
+      permissions: ApiProjectPermissions;
+      policy: {
+        id: string;
+        json: any;
+      }
+    }
+  }
+};
+
+export type getProjectDetailsInput = {
+  slug: string;
+  owner: string;
+  name: string;
+  provider:string;
+}
+
 export class ApiHandler {
   private _apiUrl: string;
   private _clientConfig: ClientConfig;
@@ -227,6 +350,14 @@ export class ApiHandler {
 
   async getProject(slug: string, tokenInfo: TokenInfo): Promise<ApiProjectData | undefined> {
     return this.queryApi(getProjectQuery, tokenInfo, {slug});
+  }
+
+  async getProjectPermissions(slug: string, tokenInfo: TokenInfo): Promise<ApiProjectPermissionsData | undefined> {
+    return this.queryApi(getProjectPermissionsQuery, tokenInfo, {slug});
+  }
+
+  async getProjectDetails(input: getProjectDetailsInput, tokenInfo: TokenInfo): Promise<ApiProjectDetailsData | undefined>{
+    return this.queryApi(getProjectDetailsQuery, tokenInfo, input);
   }
 
   async getPolicy(slug: string, tokenInfo: TokenInfo): Promise<ApiPolicyData | undefined> {
