@@ -33,16 +33,6 @@ export type ProjectInfo = {
   slug: string;
 };
 
-export type ProjectRepoInputData = {
-  repoData: RepoRemoteInputData;
-  ownerProjectSlug: string;
-};
-
-export type ProjectRepoPathData = {
-  repoPath: string;
-  ownerProjectSlug: string;
-};
-
 export class Synchronizer extends EventEmitter {
   private _pullPromise: Promise<PolicyData> | undefined;
   private _projectDataCache: Record<string, ApiUserProject> = {};
@@ -99,31 +89,6 @@ export class Synchronizer extends EventEmitter {
           name: freshProjectInfo.name,
           slug: freshProjectInfo.slug,
         };
-  }
-
-  async getProjectRepoDetails(projectRepoPath: ProjectRepoPathData, tokenInfo: TokenInfo): Promise<any>;
-  async getProjectRepoDetails(projectRepoData: ProjectRepoInputData, tokenInfo: TokenInfo): Promise<any>;
-  async getProjectRepoDetails(
-    projectRepoPathOrData: ProjectRepoPathData | ProjectRepoInputData,
-    tokenInfo: TokenInfo
-  ) {
-    if (!tokenInfo || tokenInfo?.accessToken?.length === 0) {
-      throw new Error('Cannot fetch without access token.');
-    }
-
-    let projectRepoInput = projectRepoPathOrData as ProjectRepoInputData;
-    if (this.isProjectRepoPath(projectRepoPathOrData)) {
-      projectRepoInput = await this.getProjectRepoData(projectRepoPathOrData as ProjectRepoPathData);
-    }
-
-    const response = await this._apiHandler.getProjectDetails({
-      slug: projectRepoInput.ownerProjectSlug,
-      owner: projectRepoInput.repoData.owner,
-      name: projectRepoInput.repoData.name,
-      provider: projectRepoInput.repoData.provider,
-    }, tokenInfo);
-
-    return response?.data?.getProject;
   }
 
   async getPolicy(rootPath: string, forceRefetch?: boolean, tokenInfo?: TokenInfo): Promise<PolicyData>;
@@ -487,14 +452,6 @@ export class Synchronizer extends EventEmitter {
     return typeof inputData === 'string' ? await this.getRootGitData(inputData) : (inputData as RepoRemoteData);
   }
 
-  private async getProjectRepoData(repoProjectPath: ProjectRepoPathData): Promise<ProjectRepoInputData> {
-    const gitData = await this.getRootGitData(repoProjectPath.repoPath);
-    return {
-      repoData: gitData,
-      ownerProjectSlug: repoProjectPath.ownerProjectSlug,
-    };
-  }
-
   private isProjectData(projectData: any) {
     return Object.keys(projectData).length === 1 && projectData.slug;
   }
@@ -507,9 +464,5 @@ export class Synchronizer extends EventEmitter {
     return this.isProjectData(input) || input.ownerProjectSlug?.length > 0
       ? input.slug ?? input.ownerProjectSlug
       : undefined;
-  }
-
-  private isProjectRepoPath(repoData: any) {
-    return Object.keys(repoData).length === 2 && repoData.repoPath;
   }
 }
