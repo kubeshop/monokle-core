@@ -4,9 +4,9 @@ import {normalize} from 'path';
 import {StorageHandlerPolicy, StoragePolicyFormat} from '../handlers/storageHandlerPolicy.js';
 import {ApiHandler} from '../handlers/apiHandler.js';
 import {GitHandler} from '../handlers/gitHandler.js';
-import type {ApiProjectDetailsData, ApiUserProject} from '../handlers/apiHandler.js';
+import type {ApiProjectDetailsData, ApiProjectPermissions, ApiUserProject} from '../handlers/apiHandler.js';
 import type {TokenInfo} from '../handlers/storageHandlerAuth.js';
-import type {RepoRemoteInputData} from './synchronizer.js';
+import type {ProjectInfo, RepoRemoteInputData} from './synchronizer.js';
 
 export class ProjectSynchronizer extends EventEmitter {
   private _dataCache: Record<string, ApiProjectDetailsData['data']['getProject']> = {};
@@ -20,7 +20,7 @@ export class ProjectSynchronizer extends EventEmitter {
     super();
   }
 
-  getProjectInfo(rootPath: string, projectSlug?: string) {
+  getProjectInfo(rootPath: string, projectSlug?: string): ProjectInfo | undefined {
     const cached = this._dataCache[this.getCacheId(rootPath, projectSlug)];
 
     return cached ? {
@@ -30,7 +30,7 @@ export class ProjectSynchronizer extends EventEmitter {
     } : undefined;
   }
 
-  getProjectPermissions(rootPath: string, projectSlug?: string) {
+  getProjectPermissions(rootPath: string, projectSlug?: string): ApiProjectPermissions | undefined {
     return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.permissions;
   }
 
@@ -57,11 +57,15 @@ export class ProjectSynchronizer extends EventEmitter {
       };
     }
 
-    return undefined;
+    return {
+      valid: false,
+      path: '',
+      policy: undefined,
+    };
   }
 
   getRepositorySuppressions(rootPath: string, projectSlug?: string) {
-    return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.projectRepository.suppressions;
+    return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.projectRepository.suppressions ?? [];
   }
 
   async synchronize(tokenInfo: TokenInfo, rootPath: string, projectSlug?: string): Promise<void> {
