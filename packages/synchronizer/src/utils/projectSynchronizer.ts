@@ -112,6 +112,8 @@ export class ProjectSynchronizer extends EventEmitter {
       if (!policyPath) {
         throw new Error(`Error storing policy in local filesystem.`);
       }
+
+      this.emit('synchronized');
     }
   }
 

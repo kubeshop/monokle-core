@@ -11,6 +11,7 @@ export * from './models/user.js';
 export * from './utils/authenticator.js';
 export * from './utils/fetcher.js';
 export * from './utils/synchronizer.js';
+export * from './utils/projectSynchronizer.js';
 
 export * from './constants.js';
 
