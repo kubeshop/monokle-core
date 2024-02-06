@@ -34,43 +34,33 @@ export class ProjectSynchronizer extends EventEmitter {
     return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.permissions;
   }
 
+  getRepositorySuppressions(rootPath: string, projectSlug?: string) {
+    return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.projectRepository.suppressions ?? [];
+  }
+
   getProjectPolicy(rootPath: string, projectSlug?: string) {
     const cacheId = this.getCacheId(rootPath, projectSlug);
     const cached = this._dataCache[cacheId];
     const repoData = this._pathToRepoMap[cacheId];
-    const policyPath = this.getPolicyPath(repoData);
 
-    if (cached) {
+    if (cached && repoData) {
       return {
         valid: true,
-        path: policyPath,
+        path: this.getPolicyPath(repoData),
         policy: cached.policy.json,
-      };
-    }
-
-    const stored = this.readPolicy(repoData);
-    if (stored) {
-      return {
-        valid: true,
-        path: policyPath,
-        policy: stored,
       };
     }
 
     return {
       valid: false,
       path: '',
-      policy: undefined,
+      policy: '',
     };
   }
 
-  getRepositorySuppressions(rootPath: string, projectSlug?: string) {
-    return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.projectRepository.suppressions ?? [];
-  }
-
   async synchronize(tokenInfo: TokenInfo, rootPath: string, projectSlug?: string): Promise<void> {
-    if (!tokenInfo || tokenInfo?.accessToken?.length === 0) {
-      throw new Error('Cannot fetch without access token.');
+    if (!tokenInfo?.accessToken?.length) {
+      throw new Error('Cannot fetch data without access token.');
     }
 
     const cacheId = this.getCacheId(rootPath, projectSlug);
