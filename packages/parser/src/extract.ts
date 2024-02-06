@@ -5,7 +5,11 @@ import {BaseFile, isUntypedKustomizationFile, isYamlFile, hasHelmTemplateContent
 import {KUSTOMIZATION_API_GROUP, KUSTOMIZATION_KIND} from './constants.js';
 import {isKubernetesLike} from './k8s.js';
 
-export function extractK8sResources(files: BaseFile[], extractHelmLikeFiles?: boolean, guessResources?: boolean): Resource[] {
+export function extractK8sResources(
+  files: BaseFile[],
+  extractHelmLikeFiles?: boolean,
+  guessResources?: boolean
+): Resource[] {
   const resources: Resource[] = [];
 
   for (const file of files) {
@@ -54,7 +58,10 @@ export function extractK8sResources(files: BaseFile[], extractHelmLikeFiles?: bo
         fileId: file.id,
         filePath: file.path,
         fileOffset,
-        text: document.toString({directives: false}),
+        text:
+          documents.length > 1
+            ? getTextDocuments(file.content).at(index) ?? document.toString({directives: false})
+            : file.content,
       };
 
       if (isKubernetesLike(content)) {
@@ -95,15 +102,15 @@ export function extractNamespace(content: any) {
     : undefined;
 }
 
-const GUESS_API_REGEX = /^apiVersion: ([^\s]+).*$/m;
-const GUESS_KIND_REGEX = /^kind: ([^\s]+).*$/m;
-const GUESS_NAME_REGEX = /^ {2}name: ([^\s]+).*$/m;
-const GUESS_API_FALLBACK = 'unknown.monokle.io/v1';
-const GUESS_KIND_FALLBACK = 'Unknown';
-const GUESS_NAME_FALLBACK = 'unknown';
+export const GUESS_API_REGEX = /^apiVersion: ([^\s]+).*$/m;
+export const GUESS_KIND_REGEX = /^kind: ([^\s]+).*$/m;
+export const GUESS_NAME_REGEX = /^metadata.*\s*.*\s*name:\s*([^\s]+).*$/m;
+export const GUESS_API_FALLBACK = 'unknown.monokle.io/v1';
+export const GUESS_KIND_FALLBACK = 'Unknown';
+export const GUESS_NAME_FALLBACK = 'unknown';
 
 function guessResource(content: string, index: number) {
-  const text = content.split('---').at(index);
+  const text = getTextDocuments(content).at(index);
 
   if (!text) {
     return undefined;
@@ -113,5 +120,9 @@ function guessResource(content: string, index: number) {
   const kind = GUESS_KIND_REGEX.exec(text)?.at(1) ?? GUESS_KIND_FALLBACK;
   const name = GUESS_NAME_REGEX.exec(text)?.at(1) ?? GUESS_NAME_FALLBACK;
 
-  return { apiVersion, kind, name, text };
+  return {apiVersion, kind, name, text};
+}
+
+export function getTextDocuments(content: string) {
+  return content.split(/-{3}|\.{3}/).filter(s => !!s.trim());
 }
