@@ -84,19 +84,6 @@ const getProjectDetailsQuery = `
         provider
         owner
         name
-        suppressions {
-          id
-          fingerprint
-          description
-          status
-          justification
-          expiresAt
-          isUnderReview
-          isAccepted
-          isRejected
-          isExpired
-          isDeleted
-        }
       }
       permissions {
         project {
@@ -116,7 +103,7 @@ const getProjectDetailsQuery = `
       }
       policy {
         id
-        json
+        updatedAt
       }
     }
   }
@@ -137,11 +124,13 @@ const getPolicyQuery = `
 
 const getSuppressionsQuery = `
   query getSuppressions(
-    $repositoryId: ID!
+    $repositoryId: ID!,
+    $from: String
   ) {
     getSuppressions(
       input: {
-        repositoryId: $repositoryId
+        repositoryId: $repositoryId,
+        from: $from
       }
     ) {
       isSnapshot
@@ -287,13 +276,11 @@ export type ApiProjectDetailsData = {
       id: number;
       slug: string;
       name: string;
-      projectRepository: ApiUserProjectRepo & {
-        suppressions: (ApiSuppression & {justification: string; expiresAt: string;})[];
-      };
+      projectRepository: ApiUserProjectRepo;
       permissions: ApiProjectPermissions;
       policy: {
         id: string;
-        json: any;
+        updatedAt: string;
       }
     }
   }
@@ -364,8 +351,8 @@ export class ApiHandler {
     return this.queryApi(getPolicyQuery, tokenInfo, {slug});
   }
 
-  async getSuppressions(repositoryId: string, tokenInfo: TokenInfo): Promise<ApiSuppressionsData | undefined> {
-    return this.queryApi(getSuppressionsQuery, tokenInfo, {repositoryId});
+  async getSuppressions(repositoryId: string, tokenInfo: TokenInfo, from?: string): Promise<ApiSuppressionsData | undefined> {
+    return this.queryApi(getSuppressionsQuery, tokenInfo, {repositoryId, from});
   }
 
   async getRepoId(
