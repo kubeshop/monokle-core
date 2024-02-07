@@ -50,10 +50,6 @@ export class ProjectSynchronizer extends EventEmitter {
     return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.permissions;
   }
 
-  getRepositorySuppressions(rootPath: string, projectSlug?: string) {
-    return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.suppressions ?? [];
-  }
-
   getProjectPolicy(rootPath: string, projectSlug?: string) {
     const cacheId = this.getCacheId(rootPath, projectSlug);
     const cached = this._dataCache[cacheId];
@@ -74,9 +70,53 @@ export class ProjectSynchronizer extends EventEmitter {
     };
   }
 
-  async toggleSuppression(fingerprint: string, repoId: string, description: string) {}
+  getRepositoryData(rootPath: string, projectSlug?: string) {
+    return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.repository ?? undefined;
+  }
 
-  async reviewSuppression(suppressionId: string, accepted: boolean) {}
+  getRepositorySuppressions(rootPath: string, projectSlug?: string) {
+    return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.suppressions ?? [];
+  }
+
+  async toggleSuppression(tokenInfo: TokenInfo, fingerprint: string, description: string, rootPath: string, projectSlug?: string) {
+    if (!tokenInfo?.accessToken?.length) {
+      throw new Error('Cannot use suppressions without access token.');
+    }
+
+    const repoData = await this.getRootGitData(rootPath);
+
+    let {id} = this.getRepositoryData(rootPath, projectSlug);
+    let {slug} = this.getProjectInfo(rootPath, projectSlug);
+    if (!id || !slug) {
+      const ownerProject = await this.getMatchingProject(repoData, tokenInfo);
+      if (!ownerProject) {
+        // This error would mostly be caused by incorrect integration. Integrator should
+        // make sure that suppressions are only used for repos with owner project.
+        throw new Error('Trying to suppress annotation for repo without owner project!');
+      }
+
+      const repoIdData = await this._apiHandler.getRepoId(ownerProject.slug, repoData.owner, repoData.name, tokenInfo);
+
+      id = repoIdData?.data.getProject.repository.id ?? '';
+      slug = ownerProject.slug;
+    }
+
+    if (!id || !slug) {
+      throw new Error('Cannot suppress due to missing repository id or project slug!');
+    }
+
+    const suppressionResult = await this._apiHandler.toggleSuppression(fingerprint, id, description, tokenInfo);
+    if (suppressionResult) {
+        const existingSuppressions = await this.readSuppressions(repoData);
+        const allSuppressions = this.mergeSuppressions(existingSuppressions, [suppressionResult]);
+        await this.storeSuppressions(allSuppressions, repoData);
+
+        const cacheId = this.getCacheId(rootPath, projectSlug);
+        if (this._dataCache[cacheId]) {
+          this._dataCache[cacheId].suppressions = allSuppressions;
+        }
+    }
+  }
 
   async synchronize(tokenInfo: TokenInfo, rootPath: string, projectSlug?: string): Promise<void> {
     if (!tokenInfo?.accessToken?.length) {

@@ -137,12 +137,19 @@ const getSuppressionsQuery = `
       data {
         id
         fingerprint
+        description
+        location
         status
+        justification
+        expiresAt
+        updatedAt
+        createdAt
         isUnderReview
         isAccepted
         isRejected
         isExpired
         isDeleted
+        repositoryId
       }
     }
   }
@@ -154,6 +161,30 @@ const getRepoIdQuery = `
       repository(input: { name: $repoName, owner: $repoOwner }) {
         id
       }
+    }
+  }
+`;
+
+const toggleSuppressionMutation = `
+  mutation toggleSuppression($fingerprint: String!, $repoId: ID!, $description: String!) {
+    toggleSuppression(
+      input: {fingerprint: $fingerprint, repository: $repoId, description: $description, skipReview: true}
+    ) {
+      id
+      fingerprint
+      description
+      location
+      status
+      justification
+      expiresAt
+      updatedAt
+      createdAt
+      isUnderReview
+      isAccepted
+      isRejected
+      isExpired
+      isDeleted
+      repositoryId
     }
   }
 `;
@@ -211,12 +242,19 @@ export type ApiPolicyData = {
 export type ApiSuppression = {
   id: string;
   fingerprint: string;
+  description: string;
+  locations: string;
   status: SuppressionStatus;
+  justification: string;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
   isUnderReview: boolean;
   isAccepted: boolean;
   isRejected: boolean;
   isExpired: boolean;
   isDeleted: boolean;
+  repositoryId: string;
 };
 
 export type ApiSuppressionsData = {
@@ -362,6 +400,10 @@ export class ApiHandler {
     tokenInfo: TokenInfo
   ): Promise<ApiRepoIdData | undefined> {
     return this.queryApi(getRepoIdQuery, tokenInfo, {projectSlug, repoOwner, repoName});
+  }
+
+  async toggleSuppression(fingerprint: string, repoId: string, description: string, tokenInfo: TokenInfo) {
+    return this.queryApi<ApiSuppression>(toggleSuppressionMutation, tokenInfo, {fingerprint, repoId, description});
   }
 
   generateDeepLink(path: string) {
