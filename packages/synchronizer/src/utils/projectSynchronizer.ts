@@ -74,6 +74,10 @@ export class ProjectSynchronizer extends EventEmitter {
     };
   }
 
+  async toggleSuppression(fingerprint: string, repoId: string, description: string) {}
+
+  async reviewSuppression(suppressionId: string, accepted: boolean) {}
+
   async synchronize(tokenInfo: TokenInfo, rootPath: string, projectSlug?: string): Promise<void> {
     if (!tokenInfo?.accessToken?.length) {
       throw new Error('Cannot fetch data without access token.');
@@ -112,8 +116,7 @@ export class ProjectSynchronizer extends EventEmitter {
         tokenInfo
       );
 
-      const cachedSuppressionsFile = this.getSuppressionsFileName(repoData);
-      const cachedSuppressions = (await this._storageHandlerJsonCache.getStoreData(cachedSuppressionsFile) ?? []) as ApiSuppression[];
+      const existingSuppressions = await this.readSuppressions(repoData);
       const dataCache: ProjectDataCache = {
         project: {
           id: projectDetails.data.getProject.id,
@@ -122,14 +125,13 @@ export class ProjectSynchronizer extends EventEmitter {
         },
         permissions: projectDetails.data.getProject.permissions,
         repository: projectDetails.data.getProject.projectRepository,
-        suppressions: cachedSuppressions,
+        suppressions: existingSuppressions,
         policy: {}
       };
 
       if (projectValidationData.suppressions.length) {
-        // @TODO What about modified suppressions? We should probably check by id and replace?
-        const allSuppressions = [...cachedSuppressions, ...projectValidationData.suppressions];
-        this._storageHandlerJsonCache.setStoreData(allSuppressions, cachedSuppressionsFile);
+        const allSuppressions = this.mergeSuppressions(existingSuppressions, projectValidationData.suppressions);
+        await this.storeSuppressions(allSuppressions, repoData);
         dataCache.suppressions = allSuppressions;
       }
 
@@ -167,8 +169,7 @@ export class ProjectSynchronizer extends EventEmitter {
   }
 
   private async refetchProjectValidationData(repoData: RepoRemoteInputData, repoId: string, policyUpdatedAt: string, ownerProjectSlug: string, tokenInfo: TokenInfo) {
-    const cacheFile = this.getMetadataFileName(repoData);
-    const cacheMetadata = await this._storageHandlerJsonCache.getStoreData(cacheFile) as CacheMetadata;
+    const cacheMetadata = await this.readCacheMetadata(repoData);
     const isCachedProjectMatching = ownerProjectSlug === cacheMetadata?.projectSlug;
 
     const newSuppressionsLastFetchDate = (new Date()).toISOString();
@@ -188,7 +189,7 @@ export class ProjectSynchronizer extends EventEmitter {
       policyLastUpdatedAt: policyUpdatedAt,
       projectSlug: ownerProjectSlug
     };
-    this._storageHandlerJsonCache.setStoreData(newCacheMetadata, cacheFile);
+    this.storeCacheMetadata(newCacheMetadata, repoData);
 
     return {
       suppressions: (newData[0] as ApiSuppressionsData | undefined)?.data?.getSuppressions?.data ?? [],
@@ -225,6 +226,19 @@ export class ProjectSynchronizer extends EventEmitter {
     return (repoMatchingProjectBySlug ?? repoFirstProject)?.project ?? null;
   }
 
+  private async getRootGitData(rootPath: string) {
+    const repoData = await this._gitHandler.getRepoRemoteData(rootPath);
+    if (!repoData) {
+      throw new Error(`The '${rootPath}' is not a git repository or does not have any remotes.`);
+    }
+
+    return repoData;
+  }
+
+   private getCacheId(rootPath: string, projectSlug?: string) {
+    return `${normalize(rootPath)}${projectSlug ? `+${projectSlug}` : ''}`;
+  }
+
   private async storePolicy(
     policyContent: StoragePolicyFormat,
     repoData: RepoRemoteInputData,
@@ -241,17 +255,33 @@ export class ProjectSynchronizer extends EventEmitter {
     return this._storageHandlerPolicy.getStoreDataFilePath(this.getPolicyFileName(inputData));
   }
 
-  private async getRootGitData(rootPath: string) {
-    const repoData = await this._gitHandler.getRepoRemoteData(rootPath);
-    if (!repoData) {
-      throw new Error(`The '${rootPath}' is not a git repository or does not have any remotes.`);
-    }
-
-    return repoData;
+  private async storeSuppressions(suppressions: ApiSuppression[], repoData: RepoRemoteInputData) {
+    return this._storageHandlerJsonCache.setStoreData(suppressions, this.getSuppressionsFileName(repoData));
   }
 
-   private getCacheId(rootPath: string, projectSlug?: string) {
-    return `${normalize(rootPath)}${projectSlug ? `+${projectSlug}` : ''}`;
+  private async readSuppressions(repoData: RepoRemoteInputData) {
+    return (await this._storageHandlerJsonCache.getStoreData(this.getSuppressionsFileName(repoData)) ?? []) as ApiSuppression[];
+  }
+
+  private mergeSuppressions(existing: ApiSuppression[], updated: ApiSuppression[]) {
+    const suppressionsMap = existing.reduce((prev: Record<string, ApiSuppression>, curr: ApiSuppression) => {
+      prev[curr.id] = curr;
+      return prev;
+    }, {});
+
+    updated.forEach(suppression => {
+      suppressionsMap[suppression.id] = suppression;
+    });
+
+    return Object.values(suppressionsMap);
+  }
+
+  private async storeCacheMetadata(cacheMetadata: CacheMetadata, repoData: RepoRemoteInputData) {
+    return this._storageHandlerJsonCache.setStoreData(cacheMetadata, this.getMetadataFileName(repoData));
+  }
+
+  private async readCacheMetadata(repoData: RepoRemoteInputData) {
+    return (await this._storageHandlerJsonCache.getStoreData(this.getMetadataFileName(repoData)) ?? {}) as CacheMetadata;
   }
 
   private getPolicyFileName(repoData: RepoRemoteInputData) {
