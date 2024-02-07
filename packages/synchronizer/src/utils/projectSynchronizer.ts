@@ -199,6 +199,12 @@ export class ProjectSynchronizer extends EventEmitter {
     }
   }
 
+  async forceSynchronize(tokenInfo: TokenInfo, rootPath: string, projectSlug?: string): Promise<void> {
+    const repoData = await this.getRootGitData(rootPath);
+    await this.dropCacheMetadata(repoData);
+    return this.synchronize(tokenInfo, rootPath, projectSlug);
+  }
+
   private async refetchProjectDetails(repoData: RepoRemoteInputData, ownerProjectSlug: string, tokenInfo: TokenInfo) {
     return this._apiHandler.getProjectDetails({
       slug: ownerProjectSlug,
@@ -322,6 +328,10 @@ export class ProjectSynchronizer extends EventEmitter {
 
   private async readCacheMetadata(repoData: RepoRemoteInputData) {
     return (await this._storageHandlerJsonCache.getStoreData(this.getMetadataFileName(repoData)) ?? {}) as CacheMetadata;
+  }
+
+  private async dropCacheMetadata(repoData: RepoRemoteInputData) {
+    return this._storageHandlerJsonCache.emptyStoreData(this.getMetadataFileName(repoData));
   }
 
   private getPolicyFileName(repoData: RepoRemoteInputData) {
