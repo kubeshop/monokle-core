@@ -106,9 +106,9 @@ export class ProjectSynchronizer extends EventEmitter {
     }
 
     const suppressionResult = await this._apiHandler.toggleSuppression(fingerprint, id, description, tokenInfo);
-    if (suppressionResult) {
+    if (suppressionResult?.data?.getSuppressions?.data?.length) {
         const existingSuppressions = await this.readSuppressions(repoData);
-        const allSuppressions = this.mergeSuppressions(existingSuppressions, [suppressionResult]);
+        const allSuppressions = this.mergeSuppressions(existingSuppressions, suppressionResult.data.getSuppressions.data);
         await this.storeSuppressions(allSuppressions, repoData);
 
         const cacheId = this.getCacheId(rootPath, projectSlug);
@@ -319,7 +319,8 @@ export class ProjectSynchronizer extends EventEmitter {
       suppressionsMap[suppression.id] = suppression;
     });
 
-    return Object.values(suppressionsMap);
+    return Object.values(suppressionsMap)
+      .filter(suppression => !(suppression.isDeleted || suppression.isRejected));
   }
 
   private async storeCacheMetadata(cacheMetadata: CacheMetadata, repoData: RepoRemoteInputData) {

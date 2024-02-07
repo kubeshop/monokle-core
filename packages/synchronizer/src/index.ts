@@ -4,6 +4,7 @@ export * from './handlers/deviceFlowHandler.js';
 export * from './handlers/gitHandler.js';
 export * from './handlers/storageHandler.js';
 export * from './handlers/storageHandlerAuth.js';
+export * from './handlers/storageHandlerJsonCache.js'
 export * from './handlers/storageHandlerPolicy.js';
 
 export * from './models/user.js';

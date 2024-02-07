@@ -403,7 +403,7 @@ export class ApiHandler {
   }
 
   async toggleSuppression(fingerprint: string, repoId: string, description: string, tokenInfo: TokenInfo) {
-    return this.queryApi<ApiSuppression>(toggleSuppressionMutation, tokenInfo, {fingerprint, repoId, description});
+    return this.queryApi<ApiSuppressionsData>(toggleSuppressionMutation, tokenInfo, {fingerprint, repoId, description});
   }
 
   generateDeepLink(path: string) {
