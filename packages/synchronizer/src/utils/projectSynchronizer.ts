@@ -148,6 +148,20 @@ export class ProjectSynchronizer extends EventEmitter {
         );
       }
 
+      let resyncDueToError = false;
+      let existingSuppressions: ApiSuppression[] = [];
+      let existingPolicy = {};
+      try {
+        existingSuppressions = await this.readSuppressions(repoData);
+        existingPolicy = await this.readPolicy(repoData) ?? {}
+      } catch (err) {
+        resyncDueToError = true;
+      }
+
+      if (resyncDueToError) {
+        await this.dropCacheMetadata(repoData);
+      }
+
       const projectValidationData = await this.refetchProjectValidationData(
         repoData,
         projectDetails.data.getProject.projectRepository.id,
@@ -156,7 +170,6 @@ export class ProjectSynchronizer extends EventEmitter {
         tokenInfo
       );
 
-      const existingSuppressions = await this.readSuppressions(repoData);
       const dataCache: ProjectDataCache = {
         project: {
           id: projectDetails.data.getProject.id,
@@ -166,7 +179,7 @@ export class ProjectSynchronizer extends EventEmitter {
         permissions: projectDetails.data.getProject.permissions,
         repository: projectDetails.data.getProject.projectRepository,
         suppressions: existingSuppressions,
-        policy: {}
+        policy: existingPolicy
       };
 
       if (projectValidationData.suppressions.length) {
@@ -189,8 +202,6 @@ export class ProjectSynchronizer extends EventEmitter {
         }
 
         dataCache.policy = projectValidationData.policy.json;
-      } else {
-        dataCache.policy = await this.readPolicy(repoData) ?? {};
       }
 
       this._dataCache[cacheId] = dataCache;
@@ -328,7 +339,11 @@ export class ProjectSynchronizer extends EventEmitter {
   }
 
   private async readCacheMetadata(repoData: RepoRemoteInputData) {
-    return (await this._storageHandlerJsonCache.getStoreData(this.getMetadataFileName(repoData)) ?? {}) as CacheMetadata;
+    try {
+      return (await this._storageHandlerJsonCache.getStoreData(this.getMetadataFileName(repoData)) ?? {}) as CacheMetadata;
+    } catch (err) {
+      return {} as CacheMetadata;
+    }
   }
 
   private async dropCacheMetadata(repoData: RepoRemoteInputData) {
