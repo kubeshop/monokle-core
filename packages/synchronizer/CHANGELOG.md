@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.14.0
+
+### Minor Changes
+
+- fc929fe: introduced ProjectSynchronzier to allow fetching all project data at once
+
 ## 0.13.0
 
 ### Minor Changes
