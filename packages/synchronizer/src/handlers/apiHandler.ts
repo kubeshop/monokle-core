@@ -49,6 +49,66 @@ const getProjectQuery = `
   }
 `;
 
+const getProjectPermissionsQuery = `
+  query getProjectPermissions($slug: String!) {
+    getProject(input: { slug: $slug }) {
+      permissions {
+        project {
+          view
+          update
+          delete
+        }
+        members {
+          view
+          update
+          delete
+        }
+        repositories {
+          read
+          write
+        }
+      }
+    }
+  }
+`;
+
+const getProjectDetailsQuery = `
+  query getProjectDetails($slug: String!, $owner: String!, $name: String!, $provider: String!) {
+    getProject(input: { slug: $slug }) {
+      id
+      name
+      slug
+      projectRepository: repository(input: { owner: $owner, name: $name, provider: $provider }) {
+        id
+        projectId
+        provider
+        owner
+        name
+      }
+      permissions {
+        project {
+          view
+          update
+          delete
+        }
+        members {
+          view
+          update
+          delete
+        }
+        repositories {
+          read
+          write
+        }
+      }
+      policy {
+        id
+        updatedAt
+      }
+    }
+  }
+`;
+
 const getPolicyQuery = `
   query getPolicy($slug: String!) {
     getProject(input: { slug: $slug }) {
@@ -64,23 +124,32 @@ const getPolicyQuery = `
 
 const getSuppressionsQuery = `
   query getSuppressions(
-    $repositoryId: ID!
+    $repositoryId: ID!,
+    $from: String
   ) {
     getSuppressions(
       input: {
-        repositoryId: $repositoryId
+        repositoryId: $repositoryId,
+        from: $from
       }
     ) {
       isSnapshot
       data {
         id
         fingerprint
+        description
+        location
         status
+        justification
+        expiresAt
+        updatedAt
+        createdAt
         isUnderReview
         isAccepted
         isRejected
         isExpired
         isDeleted
+        repositoryId
       }
     }
   }
@@ -92,6 +161,30 @@ const getRepoIdQuery = `
       repository(input: { name: $repoName, owner: $repoOwner }) {
         id
       }
+    }
+  }
+`;
+
+const toggleSuppressionMutation = `
+  mutation toggleSuppression($fingerprint: String!, $repoId: ID!, $description: String!) {
+    toggleSuppression(
+      input: {fingerprint: $fingerprint, repository: $repoId, description: $description, skipReview: true}
+    ) {
+      id
+      fingerprint
+      description
+      location
+      status
+      justification
+      expiresAt
+      updatedAt
+      createdAt
+      isUnderReview
+      isAccepted
+      isRejected
+      isExpired
+      isDeleted
+      repositoryId
     }
   }
 `;
@@ -149,12 +242,19 @@ export type ApiPolicyData = {
 export type ApiSuppression = {
   id: string;
   fingerprint: string;
+  description: string;
+  locations: string;
   status: SuppressionStatus;
+  justification: string;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
   isUnderReview: boolean;
   isAccepted: boolean;
   isRejected: boolean;
   isExpired: boolean;
   isDeleted: boolean;
+  repositoryId: string;
 };
 
 export type ApiSuppressionsData = {
@@ -182,6 +282,54 @@ export type ClientConfig = {
   os?: string;
   additionalData?: Record<string, string>;
 };
+
+export type ApiProjectPermissions = {
+  project: {
+    view: boolean,
+    update: boolean,
+    delete: boolean
+  },
+  members: {
+    view: boolean,
+    update: boolean,
+    delete: boolean
+  },
+  repositories: {
+    read: boolean,
+    write: boolean
+  }
+};
+
+export type ApiProjectPermissionsData = {
+  data: {
+    getProject: {
+      permissions: ApiProjectPermissions
+    }
+  }
+};
+
+export type ApiProjectDetailsData = {
+  data: {
+    getProject: {
+      id: number;
+      slug: string;
+      name: string;
+      projectRepository: ApiUserProjectRepo;
+      permissions: ApiProjectPermissions;
+      policy: {
+        id: string;
+        updatedAt: string;
+      }
+    }
+  }
+};
+
+export type getProjectDetailsInput = {
+  slug: string;
+  owner: string;
+  name: string;
+  provider:string;
+}
 
 export class ApiHandler {
   private _apiUrl: string;
@@ -229,12 +377,20 @@ export class ApiHandler {
     return this.queryApi(getProjectQuery, tokenInfo, {slug});
   }
 
+  async getProjectPermissions(slug: string, tokenInfo: TokenInfo): Promise<ApiProjectPermissionsData | undefined> {
+    return this.queryApi(getProjectPermissionsQuery, tokenInfo, {slug});
+  }
+
+  async getProjectDetails(input: getProjectDetailsInput, tokenInfo: TokenInfo): Promise<ApiProjectDetailsData | undefined>{
+    return this.queryApi(getProjectDetailsQuery, tokenInfo, input);
+  }
+
   async getPolicy(slug: string, tokenInfo: TokenInfo): Promise<ApiPolicyData | undefined> {
     return this.queryApi(getPolicyQuery, tokenInfo, {slug});
   }
 
-  async getSuppressions(repositoryId: string, tokenInfo: TokenInfo): Promise<ApiSuppressionsData | undefined> {
-    return this.queryApi(getSuppressionsQuery, tokenInfo, {repositoryId});
+  async getSuppressions(repositoryId: string, tokenInfo: TokenInfo, from?: string): Promise<ApiSuppressionsData | undefined> {
+    return this.queryApi(getSuppressionsQuery, tokenInfo, {repositoryId, from});
   }
 
   async getRepoId(
@@ -244,6 +400,10 @@ export class ApiHandler {
     tokenInfo: TokenInfo
   ): Promise<ApiRepoIdData | undefined> {
     return this.queryApi(getRepoIdQuery, tokenInfo, {projectSlug, repoOwner, repoName});
+  }
+
+  async toggleSuppression(fingerprint: string, repoId: string, description: string, tokenInfo: TokenInfo) {
+    return this.queryApi<ApiSuppressionsData>(toggleSuppressionMutation, tokenInfo, {fingerprint, repoId, description});
   }
 
   generateDeepLink(path: string) {

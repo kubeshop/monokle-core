@@ -41,7 +41,7 @@ export abstract class StorageHandler<TData> {
 
     try {
       const data = readFileSync(file, 'utf8');
-      const config = parse(data);
+      const config = this.parseData(data);
       return config;
     } catch (err: any) {
       throw new Error(`Failed to read configuration from '${file}' with error: ${err.message}`);
@@ -55,7 +55,7 @@ export abstract class StorageHandler<TData> {
 
     try {
       const data = await readFile(file, 'utf8');
-      const config = parse(data);
+      const config = this.parseData(data);
       return config;
     } catch (err: any) {
       throw new Error(`Failed to read configuration from '${file}' with error: ${err.message}`);
@@ -71,6 +71,10 @@ export abstract class StorageHandler<TData> {
     } catch (err: any) {
       throw new Error(`Failed to write configuration to '${file}' with error: ${err.message} and data: ${data}`);
     }
+  }
+
+  protected parseData(data: string) {
+    return parse(data);
   }
 }
 

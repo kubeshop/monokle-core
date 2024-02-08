@@ -33,6 +33,9 @@ export type ProjectInfo = {
   slug: string;
 };
 
+/**
+ * @deprecated ProjectSynchronizer should be used instead if possible.
+ */
 export class Synchronizer extends EventEmitter {
   private _pullPromise: Promise<PolicyData> | undefined;
   private _projectDataCache: Record<string, ApiUserProject> = {};
