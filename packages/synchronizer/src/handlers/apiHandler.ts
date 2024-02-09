@@ -168,7 +168,7 @@ const getRepoIdQuery = `
 const toggleSuppressionMutation = `
   mutation toggleSuppression($fingerprint: String!, $repoId: ID!, $description: String!, $location: String) {
     toggleSuppression(
-      input: {fingerprint: $fingerprint, repository: $repoId, description: $description, $location: location, skipReview: true}
+      input: {fingerprint: $fingerprint, repository: $repoId, description: $description, location: $location, skipReview: true}
     ) {
       id
       fingerprint
