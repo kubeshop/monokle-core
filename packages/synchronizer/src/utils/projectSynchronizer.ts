@@ -78,7 +78,7 @@ export class ProjectSynchronizer extends EventEmitter {
     return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.suppressions ?? [];
   }
 
-  async toggleSuppression(tokenInfo: TokenInfo, fingerprint: string, description: string, rootPath: string, projectSlug?: string) {
+  async toggleSuppression(tokenInfo: TokenInfo, fingerprint: string, description: string, location: string, rootPath: string, projectSlug?: string) {
     if (!tokenInfo?.accessToken?.length) {
       throw new Error('Cannot use suppressions without access token.');
     }
@@ -105,7 +105,7 @@ export class ProjectSynchronizer extends EventEmitter {
       throw new Error('Cannot suppress due to missing repository id or project slug!');
     }
 
-    const suppressionResult = await this._apiHandler.toggleSuppression(fingerprint, id, description, tokenInfo);
+    const suppressionResult = await this._apiHandler.toggleSuppression(fingerprint, id, description, location, tokenInfo);
     if (suppressionResult?.data?.getSuppressions?.data?.length) {
         const existingSuppressions = await this.readSuppressions(repoData);
         const allSuppressions = this.mergeSuppressions(existingSuppressions, suppressionResult.data.getSuppressions.data);
