@@ -78,7 +78,7 @@ export class ProjectSynchronizer extends EventEmitter {
     return this._dataCache[this.getCacheId(rootPath, projectSlug)]?.suppressions ?? [];
   }
 
-  async toggleSuppression(tokenInfo: TokenInfo, fingerprint: string, description: string, location: string, rootPath: string, projectSlug?: string) {
+  async toggleSuppression(tokenInfo: TokenInfo, fingerprint: string, description: string, location: string | undefined, rootPath: string, projectSlug?: string) {
     if (!tokenInfo?.accessToken?.length) {
       throw new Error('Cannot use suppressions without access token.');
     }
