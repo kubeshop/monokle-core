@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.14.1
+
+### Patch Changes
+
+- 94d4b02: Suppression location can now be passed 'toggleSuppression' API
+
 ## 0.14.0
 
 ### Minor Changes
