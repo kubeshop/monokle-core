@@ -166,9 +166,9 @@ const getRepoIdQuery = `
 `;
 
 const toggleSuppressionMutation = `
-  mutation toggleSuppression($fingerprint: String!, $repoId: ID!, $description: String!) {
+  mutation toggleSuppression($fingerprint: String!, $repoId: ID!, $description: String!, $location: String) {
     toggleSuppression(
-      input: {fingerprint: $fingerprint, repository: $repoId, description: $description, skipReview: true}
+      input: {fingerprint: $fingerprint, repository: $repoId, description: $description, location: $location, skipReview: true}
     ) {
       id
       fingerprint
@@ -243,7 +243,7 @@ export type ApiSuppression = {
   id: string;
   fingerprint: string;
   description: string;
-  locations: string;
+  location: string;
   status: SuppressionStatus;
   justification: string;
   expiresAt: string;
@@ -402,8 +402,8 @@ export class ApiHandler {
     return this.queryApi(getRepoIdQuery, tokenInfo, {projectSlug, repoOwner, repoName});
   }
 
-  async toggleSuppression(fingerprint: string, repoId: string, description: string, tokenInfo: TokenInfo) {
-    return this.queryApi<ApiSuppressionsData>(toggleSuppressionMutation, tokenInfo, {fingerprint, repoId, description});
+  async toggleSuppression(fingerprint: string, repoId: string, description: string, location: string | undefined, tokenInfo: TokenInfo) {
+    return this.queryApi<ApiSuppressionsData>(toggleSuppressionMutation, tokenInfo, {fingerprint, repoId, description, location});
   }
 
   generateDeepLink(path: string) {
