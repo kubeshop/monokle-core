@@ -369,11 +369,11 @@ export class ProjectSynchronizer extends EventEmitter {
   }
 
   private getSuppressionsFileName(repoData: RepoRemoteInputData) {
-    return this.getFileName(repoData, 'suppressions');
+    return this.getFileName(repoData, 'suppressions', 'json');
   }
 
   private getMetadataFileName(repoData: RepoRemoteInputData) {
-    return this.getFileName(repoData, 'metadata');
+    return this.getFileName(repoData, 'metadata', 'json');
   }
 
   private getFileName(repoData: RepoRemoteInputData, suffix: string, ext = 'yaml') {
