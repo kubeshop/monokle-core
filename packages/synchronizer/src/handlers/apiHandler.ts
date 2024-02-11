@@ -329,7 +329,13 @@ export type getProjectDetailsInput = {
   owner: string;
   name: string;
   provider:string;
-}
+};
+
+export type ApiToggleSuppressionData = {
+  data: {
+    toggleSuppression: ApiSuppression
+  }
+};
 
 export class ApiHandler {
   private _apiUrl: string;
@@ -403,7 +409,7 @@ export class ApiHandler {
   }
 
   async toggleSuppression(fingerprint: string, repoId: string, description: string, location: string | undefined, tokenInfo: TokenInfo) {
-    return this.queryApi<ApiSuppressionsData>(toggleSuppressionMutation, tokenInfo, {fingerprint, repoId, description, location});
+    return this.queryApi<ApiToggleSuppressionData>(toggleSuppressionMutation, tokenInfo, {fingerprint, repoId, description, location});
   }
 
   generateDeepLink(path: string) {
