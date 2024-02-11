@@ -107,14 +107,19 @@ export class ProjectSynchronizer extends EventEmitter {
 
     const suppressionResult = await this._apiHandler.toggleSuppression(fingerprint, id, description, location, tokenInfo);
     if (suppressionResult?.data?.toggleSuppression) {
-        const existingSuppressions = await this.readSuppressions(repoData);
-        const allSuppressions = this.mergeSuppressions(existingSuppressions, [suppressionResult?.data?.toggleSuppression]);
-        await this.storeSuppressions(allSuppressions, repoData);
+      let existingSuppressions: ApiSuppression[] = [];
+      try {
+        existingSuppressions = await this.readSuppressions(repoData);
+      } catch (err) {
+        existingSuppressions = this.getRepositorySuppressions(rootPath, projectSlug);
+      }
+      const allSuppressions = this.mergeSuppressions(existingSuppressions, [suppressionResult?.data?.toggleSuppression]);
+      await this.storeSuppressions(allSuppressions, repoData);
 
-        const cacheId = this.getCacheId(rootPath, projectSlug);
-        if (this._dataCache[cacheId]) {
-          this._dataCache[cacheId].suppressions = allSuppressions;
-        }
+      const cacheId = this.getCacheId(rootPath, projectSlug);
+      if (this._dataCache[cacheId]) {
+        this._dataCache[cacheId].suppressions = allSuppressions;
+      }
     }
   }
 
