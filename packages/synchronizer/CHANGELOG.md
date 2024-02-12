@@ -1,5 +1,11 @@
 # @monokle/synchronizer
 
+## 0.14.2
+
+### Patch Changes
+
+- ad6a15c: Fixed synchronization cache
+
 ## 0.14.1
 
 ### Patch Changes
