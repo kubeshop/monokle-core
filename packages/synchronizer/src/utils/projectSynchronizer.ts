@@ -83,7 +83,7 @@ export class ProjectSynchronizer extends EventEmitter {
       throw new Error('Cannot use suppressions without access token.');
     }
 
-    const repoData = await this.getRootGitData(rootPath);
+    const repoData = await this.getRootGitData(rootPath, projectSlug);
 
     let {id} = this.getRepositoryData(rootPath, projectSlug);
     let {slug} = this.getProjectInfo(rootPath, projectSlug);
@@ -106,15 +106,20 @@ export class ProjectSynchronizer extends EventEmitter {
     }
 
     const suppressionResult = await this._apiHandler.toggleSuppression(fingerprint, id, description, location, tokenInfo);
-    if (suppressionResult?.data?.getSuppressions?.data?.length) {
-        const existingSuppressions = await this.readSuppressions(repoData);
-        const allSuppressions = this.mergeSuppressions(existingSuppressions, suppressionResult.data.getSuppressions.data);
-        await this.storeSuppressions(allSuppressions, repoData);
+    if (suppressionResult?.data?.toggleSuppression) {
+      let existingSuppressions: ApiSuppression[] = [];
+      try {
+        existingSuppressions = await this.readSuppressions(repoData);
+      } catch (err) {
+        existingSuppressions = this.getRepositorySuppressions(rootPath, projectSlug);
+      }
+      const allSuppressions = this.mergeSuppressions(existingSuppressions, [suppressionResult?.data?.toggleSuppression]);
+      await this.storeSuppressions(allSuppressions, repoData);
 
-        const cacheId = this.getCacheId(rootPath, projectSlug);
-        if (this._dataCache[cacheId]) {
-          this._dataCache[cacheId].suppressions = allSuppressions;
-        }
+      const cacheId = this.getCacheId(rootPath, projectSlug);
+      if (this._dataCache[cacheId]) {
+        this._dataCache[cacheId].suppressions = allSuppressions;
+      }
     }
   }
 
@@ -123,7 +128,7 @@ export class ProjectSynchronizer extends EventEmitter {
       throw new Error('Cannot fetch data without access token.');
     }
 
-    const repoData = await this.getRootGitData(rootPath);
+    const repoData = await this.getRootGitData(rootPath, projectSlug);
     const ownerProjectSlug = projectSlug ?? (await this.getMatchingProject(repoData, tokenInfo))?.slug;
 
     const cacheId = this.getCacheId(rootPath, projectSlug);
@@ -158,8 +163,13 @@ export class ProjectSynchronizer extends EventEmitter {
         resyncDueToError = true;
       }
 
-      if (resyncDueToError) {
-        await this.dropCacheMetadata(repoData);
+      const cacheMetadata = await this.readCacheMetadata(repoData);
+      const isCachedProjectMatching = ownerProjectSlug === cacheMetadata?.projectSlug;
+
+      if (!isCachedProjectMatching || resyncDueToError) {
+        existingSuppressions = [];
+        existingPolicy = {};
+        await this.dropCache(rootPath, projectSlug)
       }
 
       const projectValidationData = await this.refetchProjectValidationData(
@@ -211,8 +221,7 @@ export class ProjectSynchronizer extends EventEmitter {
   }
 
   async forceSynchronize(tokenInfo: TokenInfo, rootPath: string, projectSlug?: string): Promise<void> {
-    const repoData = await this.getRootGitData(rootPath);
-    await this.dropCacheMetadata(repoData);
+    await this.dropCache(rootPath, projectSlug);
     return this.synchronize(tokenInfo, rootPath, projectSlug);
   }
 
@@ -283,10 +292,14 @@ export class ProjectSynchronizer extends EventEmitter {
     return (repoMatchingProjectBySlug ?? repoFirstProject)?.project ?? null;
   }
 
-  private async getRootGitData(rootPath: string) {
-    const repoData = await this._gitHandler.getRepoRemoteData(rootPath);
+  private async getRootGitData(rootPath: string, projectSlug: string | undefined): Promise<RepoRemoteInputData> {
+    const repoData: RepoRemoteInputData | undefined = await this._gitHandler.getRepoRemoteData(rootPath);
     if (!repoData) {
       throw new Error(`The '${rootPath}' is not a git repository or does not have any remotes.`);
+    }
+
+    if (projectSlug) {
+      repoData.ownerProjectSlug = projectSlug;
     }
 
     return repoData;
@@ -346,8 +359,14 @@ export class ProjectSynchronizer extends EventEmitter {
     }
   }
 
-  private async dropCacheMetadata(repoData: RepoRemoteInputData) {
-    return this._storageHandlerJsonCache.emptyStoreData(this.getMetadataFileName(repoData));
+  private async dropCache(rootPath: string, projectSlug?: string) {
+    const cacheId = this.getCacheId(rootPath, projectSlug);
+    delete this._dataCache[cacheId];
+
+    const repoData = await this.getRootGitData(rootPath, projectSlug);
+    await this._storageHandlerJsonCache.emptyStoreData(this.getMetadataFileName(repoData));
+    await this._storageHandlerJsonCache.emptyStoreData(this.getSuppressionsFileName(repoData));
+    await this._storageHandlerPolicy.emptyStoreData(this.getPolicyFileName(repoData));
   }
 
   private getPolicyFileName(repoData: RepoRemoteInputData) {
@@ -355,11 +374,11 @@ export class ProjectSynchronizer extends EventEmitter {
   }
 
   private getSuppressionsFileName(repoData: RepoRemoteInputData) {
-    return this.getFileName(repoData, 'suppressions');
+    return this.getFileName(repoData, 'suppressions', 'json');
   }
 
   private getMetadataFileName(repoData: RepoRemoteInputData) {
-    return this.getFileName(repoData, 'metadata');
+    return this.getFileName(repoData, 'metadata', 'json');
   }
 
   private getFileName(repoData: RepoRemoteInputData, suffix: string, ext = 'yaml') {
@@ -371,6 +390,11 @@ export class ProjectSynchronizer extends EventEmitter {
       trim: true,
     });
 
-    return `${provider}-${repoData.owner}-${repoData.name}.${suffix}.${ext}`;
+    let projectSuffix = '';
+    if (repoData.ownerProjectSlug) {
+      projectSuffix = `.${repoData.ownerProjectSlug}`
+    }
+
+    return `${provider}-${repoData.owner}-${repoData.name}${projectSuffix}.${suffix}.${ext}`;
   }
 }

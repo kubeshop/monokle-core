@@ -74,6 +74,10 @@ describe('ProjectSynchronizer Tests', () => {
     assert.equal(callsCounter.getPolicy, 1);
     assert.equal(callsCounter.getSuppression, 1);
 
+    const suppressions1 = synchronizer.getRepositorySuppressions(storagePath);
+    assert.isArray(suppressions1);
+    assert.equal(suppressions1.length, 1);
+
     await synchronizer.synchronize({
       accessToken: 'SAMPLE_TOKEN'
     } as any, storagePath);
@@ -83,6 +87,10 @@ describe('ProjectSynchronizer Tests', () => {
     assert.equal(callsCounter.getPolicy, 1);
     assert.equal(callsCounter.getSuppression, 2);
 
+    const suppressions2 = synchronizer.getRepositorySuppressions(storagePath);
+    assert.isArray(suppressions2);
+    assert.equal(suppressions2.length, 2);
+
     await synchronizer.forceSynchronize({
       accessToken: 'SAMPLE_TOKEN'
     } as any, storagePath);
@@ -91,6 +99,48 @@ describe('ProjectSynchronizer Tests', () => {
     assert.equal(callsCounter.getProject, 3);
     assert.equal(callsCounter.getPolicy, 2);
     assert.equal(callsCounter.getSuppression, 3);
+
+    // We force sync and 3rd stubbed getSuppressions call returns no suppressions.
+    // This checks if memory and file cache was purged properly.
+    const suppressions3 = synchronizer.getRepositorySuppressions(storagePath);
+    assert.isArray(suppressions3);
+    assert.equal(suppressions3.length, 0);
+  });
+
+  it('refetches whole data when repo owner project changes', async () => {
+    const storagePath = await createTmpConfigDir();
+    const synchronizer = createSynchronizer(storagePath, stubs);
+
+    const callsCounter = stubApi(synchronizer, stubs);
+
+    await synchronizer.synchronize({
+      accessToken: 'SAMPLE_TOKEN'
+    } as any, storagePath);
+
+    assert.equal(callsCounter.getUser, 1);
+    assert.equal(callsCounter.getProject, 1);
+    assert.equal(callsCounter.getPolicy, 1);
+    assert.equal(callsCounter.getSuppression, 1);
+
+    const suppressions1 = synchronizer.getRepositorySuppressions(storagePath);
+    assert.isArray(suppressions1);
+    assert.equal(suppressions1.length, 1);
+    assert.isTrue(suppressions1[0].isAccepted);
+
+    await synchronizer.synchronize({
+      accessToken: 'SAMPLE_TOKEN'
+    } as any, storagePath, 'new-project');
+
+    assert.equal(callsCounter.getUser, 1); // Since we pass project slug.
+    assert.equal(callsCounter.getProject, 2);
+    assert.equal(callsCounter.getPolicy, 2);
+    assert.equal(callsCounter.getSuppression, 2);
+
+    const suppressions2 = synchronizer.getRepositorySuppressions(storagePath, 'new-project');
+    assert.isArray(suppressions2);
+    assert.equal(suppressions2.length, 2);
+    assert.isTrue(suppressions2[0].isAccepted);
+    assert.isTrue(suppressions2[1].isUnderReview);
   });
 
   it('synchronizes correctly', async () => {
